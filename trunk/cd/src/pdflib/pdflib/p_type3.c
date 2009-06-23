@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_type3.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_type3.c,v 1.2 2009-06-23 03:18:34 scuri Exp $
  *
  * Routines for Type 3 (user-defined) fonts
  *
@@ -633,7 +633,7 @@ pdf__begin_glyph(
         /* see comment in p_font.c for explanation */
         glyph->width = 1000 * wx * font->ft.matrix.a;
 
-        /* if the strdup above fails, cleanup won't touch this slot. */
+        /* if the pdc_strdup above fails, cleanup won't touch this slot. */
         t3font->next_glyph++;
     }
     glyph->pass = t3font->pass;
