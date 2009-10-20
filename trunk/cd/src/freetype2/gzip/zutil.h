@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id: zutil.h,v 1.1 2008-10-17 06:10:37 scuri Exp $ */
+/* @(#) $Id: zutil.h,v 1.2 2009-10-20 17:20:25 scuri Exp $ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -182,7 +182,7 @@ typedef unsigned long  ulg;
 #endif
 
 /* Diagnostic functions */
-#ifdef Z_DEBUG
+#ifdef Z_DEBUG   /* CDLIB */
 #  include <stdio.h>
    extern int z_verbose;
    extern void z_error    OF((char *m));
