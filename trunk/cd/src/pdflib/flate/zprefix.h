@@ -1,4 +1,4 @@
-/* $Id: zprefix.h,v 1.1 2008-10-17 06:10:42 scuri Exp $ */
+/* $Id: zprefix.h,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
 
 /*
  * If you *really* need a unique prefix for all types and library functions,

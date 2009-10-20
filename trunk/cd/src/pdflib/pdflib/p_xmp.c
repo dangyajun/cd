@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_xmp.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_xmp.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * PDFlib Metadata (XMP) related routines
  *
@@ -19,6 +19,11 @@
 #define P_XMP_C
 
 #include "p_intern.h"
+
+
+
+
+
 
 
 

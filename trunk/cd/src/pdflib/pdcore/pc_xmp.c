@@ -10,15 +10,36 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_xmp.c,v 1.1 2008-10-17 06:10:43 scuri Exp $
+/* $Id: pc_xmp.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
  *
  * The core XMP support.
  *
  */
 
+#include "pc_ctype.h"
 #include "pc_util.h"
 #include "pc_strconst.h"
 #include "pc_md5.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

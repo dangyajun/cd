@@ -1,11 +1,11 @@
-/* $Id: p_icclib.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_icclib.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * ICClib routines for PDFlib, slightly modified from the original ICClib.
  * (see below).
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.3  2007/11/06 15:48:55  scuri
- * PDF Lite library updated to version "7.0.2".
+ * Revision 1.18.8.4  2007/11/22 17:54:38  kurt
+ * bug #1538 (Relax date check for embedded ICC profile) fixed
  *
  * Revision 1.18.8.3  2007/05/23 21:15:00  york
  * fixed #1230: "Performance problems in mulithreaded env with tolower/toupper".

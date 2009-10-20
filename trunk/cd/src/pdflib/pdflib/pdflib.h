@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------*
  |              PDFlib - A library for generating PDF on the fly             |
  +---------------------------------------------------------------------------+
- | Copyright (c) 1997-2006 Thomas Merz and PDFlib GmbH. All rights reserved. |
+ | Copyright (c) 1997-2009 Thomas Merz and PDFlib GmbH. All rights reserved. |
  +---------------------------------------------------------------------------+
  |                                                                           |
  |    This software is subject to the PDFlib license. It is NOT in the       |
@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pdflib.h,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: pdflib.h,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * Public function declarations for PDFlib Lite, PDFlib, PDFlib+PDI, and PPS;
  * see PDFlib API reference for details.
@@ -37,8 +37,8 @@ extern "C" {
 
 #define PDFLIB_MAJORVERSION	7		/* major version number */
 #define PDFLIB_MINORVERSION	0       	/* minor version number */
-#define PDFLIB_REVISION		2       	/* revision number */
-#define PDFLIB_VERSIONSTRING	"7.0.2"       /* The whole bunch */
+#define PDFLIB_REVISION		4       	/* revision number */
+#define PDFLIB_VERSIONSTRING	"7.0.4p4"       /* The whole bunch */
 
 
 /*
@@ -1512,6 +1512,7 @@ typedef enum
 #pragma deprecated(PDF_open_image)
 #pragma deprecated(PDF_open_image_file)
 #pragma deprecated(PDF_open_mem)
+#pragma deprecated(PDF_open_pdi)
 #pragma deprecated(PDF_place_image)
 #pragma deprecated(PDF_place_pdi_page)
 #pragma deprecated(PDF_set_border_color)

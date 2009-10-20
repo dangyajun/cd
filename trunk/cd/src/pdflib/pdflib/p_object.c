@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_object.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_object.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * PDFlib PDF object functions
  *
@@ -25,17 +25,17 @@
 
 static const pdc_keyconn pdf_scope_keylist[] =
 {
-    {"object",      pdf_state_object},
-    {"document",    pdf_state_document},
-    {"page",        pdf_state_page},
-    {"pattern",     pdf_state_pattern},
-    {"template",    pdf_state_template},
-    {"path",        pdf_state_path},
-    {"font",        pdf_state_font},
-    {"glyph",       pdf_state_glyph},
-    {"glyphmetric", pdf_state_glyphmetric},
-    {"glyphignore", pdf_state_glyphignore},
-    {"error",       pdf_state_error},
+    {"object",       pdf_state_object},
+    {"document",     pdf_state_document},
+    {"page",         pdf_state_page},
+    {"pattern",      pdf_state_pattern},
+    {"template",     pdf_state_template},
+    {"path",         pdf_state_path},
+    {"font",         pdf_state_font},
+    {"glyph",        pdf_state_glyph},
+    {"glyphmetrics", pdf_state_glyphmetrics},
+    {"glyphignore",  pdf_state_glyphignore},
+    {"error",        pdf_state_error},
     {NULL, 0}
 };
 
@@ -243,7 +243,10 @@ pdf__delete(PDF *p)
 
 
     if (p->out)
+    {
 	pdc_free(p->pdc, p->out);
+        p->out = NULL;
+    }
 
     /* we never reach this point if (p->pdc == NULL).
     */

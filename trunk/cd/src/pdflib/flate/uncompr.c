@@ -3,8 +3,8 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* $Id: uncompr.c,v 1.1 2008-10-17 06:10:42 scuri Exp $ */
-/* @(#) $Id: uncompr.c,v 1.1 2008-10-17 06:10:42 scuri Exp $ */
+/* $Id: uncompr.c,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
+/* @(#) $Id: uncompr.c,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
 
 #define ZLIB_INTERNAL
 #include "zlib.h"

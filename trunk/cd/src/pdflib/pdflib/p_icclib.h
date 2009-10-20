@@ -1,11 +1,8 @@
-/* $Id: p_icclib.h,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_icclib.h,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * ICClib Header file icc.h for PDFlib
  *
  * $Log: not supported by cvs2svn $
- * Revision 1.3  2007/11/06 15:48:55  scuri
- * PDF Lite library updated to version "7.0.2".
- *
  * Revision 1.12.8.1  2007/03/28 12:47:10  kurt
  * bug #1180 (Function prefixes missing for zlib assembler and ICC code) fixed
  * names of all external functions of ICClib have the prefix "pdf_" now

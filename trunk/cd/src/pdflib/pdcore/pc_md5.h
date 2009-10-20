@@ -1,4 +1,4 @@
-/* $Id: pc_md5.h,v 1.1 2008-10-17 06:10:43 scuri Exp $
+/* $Id: pc_md5.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
  *
  * Header file for the PDFlib MD5 message digest routines
  *

@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_bmp.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_bmp.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * BMP processing for PDFlib
  *
@@ -36,7 +36,7 @@ pdf_process_BMP_data(
     PDF *p,
     int imageslot)
 {
-    pdf_image *image = &p->images[imageslot];
+    (void) imageslot;
 
     pdc_set_errmsg(p->pdc, PDF_E_UNSUPP_IMAGE, "BMP", 0, 0, 0);
 
