@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_digsig.h,v 1.1 2008-10-17 06:10:43 scuri Exp $
+/* $Id: pc_digsig.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
  *
  * Digital Signature hashing/signing routines
  *

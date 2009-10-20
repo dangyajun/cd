@@ -6,7 +6,7 @@
  |          Proprietary source code -- do not redistribute!                  |
  *---------------------------------------------------------------------------*/
 
-/* $Id: ft_pdffont.c,v 1.1 2008-10-17 06:10:43 scuri Exp $
+/* $Id: ft_pdffont.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
  *
  * Routine for parsing font dictionaries in PDF files by pCOS
  *

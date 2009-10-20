@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: ft_font.h,v 1.1 2008-10-17 06:10:43 scuri Exp $
+/* $Id: ft_font.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
  *
  * Header file for font handling
  *
@@ -77,11 +77,17 @@
 #define FNT_SMALLCAPS       (long) (1L<<17)
 #define FNT_FORCEBOLD       (long) (1L<<18)
 
+#define FNT_FI_ITALIC        255
+#define FNT_FI_ITALICNAME    "Italic"
 #define FNT_DEF_ITALICANGLE  -12           /* default italic angle */
+
 #define FNT_MISSING_FONTVAL  PDC_SHRT_MIN  /* missing font value */
 
 /* start sequence of PFA files */
 #define FNT_PFA_STARTSEQU   "%!PS"
+
+/* missing file name for font outline data */
+#define FNT_MISSING_FILENAME  "__missing__filename__"
 
 /* Font types */
 typedef enum

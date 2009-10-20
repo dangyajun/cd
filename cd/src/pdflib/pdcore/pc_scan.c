@@ -6,7 +6,7 @@
  |          Proprietary source code -- do not redistribute!                  |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_scan.c,v 1.1 2008-10-17 06:10:43 scuri Exp $ */
+/* $Id: pc_scan.c,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
 
 
 #include "pc_util.h"

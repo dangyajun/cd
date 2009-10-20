@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_filter.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_filter.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * Compressed and uncompressed stream output
  *

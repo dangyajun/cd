@@ -9,9 +9,9 @@
  */
 
 
-/* $Id: deflate.h,v 1.1 2008-10-17 06:10:42 scuri Exp $ */
+/* $Id: deflate.h,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
 
-/* @(#) $Id: deflate.h,v 1.1 2008-10-17 06:10:42 scuri Exp $ */
+/* @(#) $Id: deflate.h,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
 
 #ifndef DEFLATE_H
 #define DEFLATE_H

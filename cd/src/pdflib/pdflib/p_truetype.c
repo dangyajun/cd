@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_truetype.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_truetype.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * PDFlib TrueType handling routines
  *
@@ -248,9 +248,11 @@ pdf_get_metrics_tt(PDF *p, pdf_font *font, const char *fontname,
         pdc_logg(p->pdc,
             "\tFull font name: \"%s\"\n"
             "\tPostScript font name: \"%s\"\n"
-            "\tFont embedding: %s\n",
+            "\tFont embedding: %s\n"
+            "\tVertical font: %s\n",
             font->ft.name, font->ft.m.name,
-            PDC_BOOLSTR(font->opt.embedding));
+            PDC_BOOLSTR(font->opt.embedding),
+            PDC_BOOLSTR(font->ft.vertical));
 
         if (ttf->tab_name->producer != NULL)
             pdc_logg(p->pdc, "\tFont producer: \"%s\"\n",
@@ -264,6 +266,7 @@ pdf_get_metrics_tt(PDF *p, pdf_font *font, const char *fontname,
 
     /* Flags for creating font arrays */
     flags = TT_FONT_code2gid | TT_FONT_m_widths;
+
 
 
     /* Create font mapping and width arrays */

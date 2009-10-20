@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_jpeg.c,v 1.1 2008-10-17 06:11:49 scuri Exp $
+/* $Id: p_jpeg.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
  *
  * JPEG processing for PDFlib
  *
@@ -36,14 +36,13 @@ pdf_process_JPEG_data(
     PDF *p,
     int imageslot)
 {
-    pdf_image *image = &p->images[imageslot];
+    (void) imageslot;
 
     pdc_set_errmsg(p->pdc, PDF_E_UNSUPP_IMAGE, "JPEG", 0, 0, 0);
 
     return -1;
 }
 
-/* CDPDF - added missing function */    
 void
 pdf_cleanup_jpeg(PDF *p, pdf_image *image)
 {

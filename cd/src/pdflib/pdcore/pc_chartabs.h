@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_chartabs.h,v 1.1 2008-10-17 06:10:43 scuri Exp $
+/* $Id: pc_chartabs.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
  *
  * This file contains Adobe Glyph Names, HTML character reference names and
  * some special glyph names.
