@@ -1,5 +1,5 @@
 /***************************************************************************\
-* $Id: cdlua5ctx.c,v 1.1 2008-10-17 06:10:42 scuri Exp $
+* $Id: cdlua5ctx.c,v 1.2 2009-12-02 20:31:02 scuri Exp $
 *                                                                           *
 \***************************************************************************/
 
@@ -23,6 +23,7 @@
 #include "cdclipbd.h"
 #include "cdmf.h"
 #include "cdps.h"
+#include "cdsvg.h"
 #include "cddbuf.h"
 #include "cdgdiplus.h"
 
@@ -688,6 +689,24 @@ static cdluaContext cdluapsctx =
 };
 
 /***************************************************************************\
+* CD_SVG.                                                                    *
+\***************************************************************************/
+static void *cdsvg_checkdata( lua_State *L, int param)
+{
+  return (void *)luaL_checkstring(L, param);
+}
+
+static cdluaContext cdluasvgctx = 
+{
+  0,
+  "SVG",
+  cdContextSVG,
+  cdsvg_checkdata,
+  NULL,
+  0
+};
+
+/***************************************************************************\
 * CD_PRINTER.                                                               *
 \***************************************************************************/
 static void *cdprinter_checkdata(lua_State *L, int param)
@@ -793,6 +812,7 @@ void cdlua_initdrivers(lua_State * L, cdluaLuaState* cdL)
   cdlua_addcontext(L, cdL, &cdluacgmctx);
   cdlua_addcontext(L, cdL, &cdluamfctx);
   cdlua_addcontext(L, cdL, &cdluapsctx);
+  cdlua_addcontext(L, cdL, &cdluasvgctx);
   cdlua_addcontext(L, cdL, &cdluaclipboardctx);
   cdlua_addcontext(L, cdL, &cdluanativewindowctx);
   cdlua_addcontext(L, cdL, &cdluaprinterctx);
