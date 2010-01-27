@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_file.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: pc_file.c,v 1.3 2010-01-27 02:27:21 scuri Exp $
  *
  * Various file routines
  *
@@ -54,6 +54,10 @@
 #endif
 
 #if defined(WIN32) && !defined(__BORLANDC__)
+
+#ifndef _IOB_ENTRIES
+#define _IOB_ENTRIES 20
+#endif
 
 #define PDC_MAXFILEHANDLES 2048
 
