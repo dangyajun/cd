@@ -1,5 +1,5 @@
 /***************************************************************************\
-* $Id: cdlua5ctx.c,v 1.4 2010-06-11 17:28:56 scuri Exp $
+* $Id: cdlua5ctx.c,v 1.5 2010-10-13 19:19:05 scuri Exp $
 *                                                                           *
 \***************************************************************************/
 
@@ -835,14 +835,14 @@ static int clipboard_sizecb(cdCanvas *canvas, int w, int h, double mm_w, double 
 \***************************************************************************/
 static void *cdnativewindow_checkdata(lua_State *L, int param)
 {
-#ifdef WIN32
-  if (!lua_isnil(L,param) && !lua_isuserdata(L,param))
-    luaL_argerror(L, param, "data should be of type userdata");
+  if (!lua_isnil(L,param) && 
+     (!lua_isuserdata(L,param) || !lua_isstring(L, param)))
+    luaL_argerror(L, param, "data should be of type userdata or a string");
 
-  return lua_touserdata(L,param);
-#else
-  return (void *)luaL_checkstring(L,param);
-#endif
+  if (lua_isuserdata(L,param))
+    return lua_touserdata(L,param);
+  else
+    return (void *)luaL_checkstring(L,param);
 }
 
 static cdluaContext cdluanativewindowctx = 
