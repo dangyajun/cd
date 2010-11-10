@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_file.c,v 1.3 2010-01-27 02:27:21 scuri Exp $
+/* $Id: pc_file.c,v 1.4 2010-11-10 02:55:49 scuri Exp $
  *
  * Various file routines
  *
@@ -53,7 +53,7 @@
 #include <ssdef.h>
 #endif
 
-#if defined(WIN32) && !defined(__BORLANDC__)
+#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)
 
 #ifndef _IOB_ENTRIES
 #define _IOB_ENTRIES 20
