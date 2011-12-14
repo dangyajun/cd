@@ -626,6 +626,9 @@ void cdCanvasClear(cdCanvas* canvas)
   canvas->cxClear(canvas->ctxcanvas);
 }
 
+/* hidden function to simply control invert_yaxis behavior.
+   several features will NOT behave as expected, such as 
+   arc direction, text position, image position and vector text */
 int cdCanvasYAxisMode(cdCanvas* canvas, int invert)
 {
   int old_invert_yaxis;
@@ -636,8 +639,7 @@ int cdCanvasYAxisMode(cdCanvas* canvas, int invert)
     return canvas->invert_yaxis;
 
   old_invert_yaxis = canvas->invert_yaxis;
-  if (!(canvas->context->caps & CD_CAP_YAXIS))
-    canvas->invert_yaxis = invert;
+  canvas->invert_yaxis = invert;
   return old_invert_yaxis;
 }
 
