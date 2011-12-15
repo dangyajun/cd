@@ -649,7 +649,7 @@ int cdCanvasUpdateYAxis(cdCanvas* canvas, int* y)
   assert(y);
   if (!_cdCheckCanvas(canvas)) return CD_ERROR;
 
-  if(canvas->invert_yaxis)
+  if(!(canvas->context->caps&CD_CAP_YAXIS))
   {
     *y = _cdInvertYAxis(canvas, *y);
 
@@ -666,7 +666,7 @@ double cdfCanvasUpdateYAxis(cdCanvas* canvas, double* y)
   assert(y);
   if (!_cdCheckCanvas(canvas)) return CD_ERROR;
 
-  if (canvas->invert_yaxis)
+  if(!(canvas->context->caps&CD_CAP_YAXIS))
   {
     *y = _cdInvertYAxis(canvas, *y);
 
