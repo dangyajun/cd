@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_pfm.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
+/* $Id: p_pfm.c,v 1.3 2012-01-03 17:42:56 scuri Exp $
  *
  * PDFlib routines for fast reading of PFM font metrics files
  *
@@ -78,6 +78,7 @@
 #define PFM_RUSSIAN_CHARSET     204
 #define PFM_THAI_CHARSET        222
 #define PFM_EASTEUROPE_CHARSET  238
+#define PFM_OEM_CHARSET         255
 
 static const pdc_keyconn pdf_charset_keylist[] =
 {
@@ -92,6 +93,7 @@ static const pdc_keyconn pdf_charset_keylist[] =
     {"cp1251",  PFM_RUSSIAN_CHARSET   },
     {"cp874",   PFM_THAI_CHARSET      },
     {"cp1250",  PFM_EASTEUROPE_CHARSET},
+    {"",        PFM_OEM_CHARSET       },
     {NULL, 0},
 };
 

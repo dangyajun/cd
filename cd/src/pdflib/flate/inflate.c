@@ -79,7 +79,7 @@
  *
  * The history for versions after 1.2.0 are in ChangeLog in zlib distribution.
  */
-/* $Id: inflate.c,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
+/* $Id: inflate.c,v 1.3 2012-01-03 17:42:39 scuri Exp $ */
 
 #include "zutil.h"
 #include "inftrees.h"

@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_hyper.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
+/* $Id: p_hyper.c,v 1.3 2012-01-03 17:42:56 scuri Exp $
  *
  * PDFlib routines for hypertext stuff:
  * named destination, bookmarks, document info
@@ -1405,7 +1405,8 @@ pdf_write_info(PDF *p, pdc_bool moddate)
 
 
 
-    const char  *product = "PDFlib Lite";
+    const char *product = "PDFlib Lite";
+    const char *security = "";
 
     (void) logg3;
 
@@ -1462,11 +1463,11 @@ pdf_write_info(PDF *p, pdc_bool moddate)
      */
 
     if (p->pdc->binding)
-        pdc_sprintf(p->pdc, pdc_false, producer, "%s %s (%s/%s)", product,
-            PDFLIB_VERSIONSTRING, p->pdc->binding, PDF_PLATFORM);
+        pdc_sprintf(p->pdc, pdc_false, producer, "%s %s%s (%s/%s)", product,
+            PDFLIB_VERSIONSTRING, security, p->pdc->binding, PDF_PLATFORM);
     else
-        pdc_sprintf(p->pdc, pdc_false, producer, "%s %s (%s)", product,
-            PDFLIB_VERSIONSTRING, PDF_PLATFORM);
+        pdc_sprintf(p->pdc, pdc_false, producer, "%s %s%s (%s)", product,
+            PDFLIB_VERSIONSTRING, security, PDF_PLATFORM);
 
     pdc_puts(p->out, "/Producer ");
     pdf_put_hypertext(p, producer);

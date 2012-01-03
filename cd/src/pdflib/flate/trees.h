@@ -1,7 +1,7 @@
 /* header created automatically with -DGEN_TREES_H */
 
 
-/* $Id: trees.h,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
+/* $Id: trees.h,v 1.3 2012-01-03 17:42:39 scuri Exp $ */
 
 local const ct_data static_ltree[L_CODES+2] = {
 {{ 12},{  8}}, {{140},{  8}}, {{ 76},{  8}}, {{204},{  8}}, {{ 44},{  8}},

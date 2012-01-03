@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_generr.h,v 1.2 2009-10-20 18:14:16 scuri Exp $
+/* $Id: p_generr.h,v 1.3 2012-01-03 17:42:56 scuri Exp $
  *
  * PDFlib error messages
  *
@@ -491,6 +491,9 @@ gen(0, 2520, FONT_NOGLYPHID, "Font doesn't contain any glyph IDs")
 */
 
 gen(0, 2522, FONT_FORCEEMBED2, "Metadata requires embedding")
+
+gen(0, 2523, FONT_CORRUPT_PFA,
+    "Corrupt PFA font data (invalid hex code after 'currentfile eexec')")
 
 gen(0, 2530, CJK_UNSUPP_REGISTRY,
     "Font not supported (contains non-Adobe registry in CMap)")

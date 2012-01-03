@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_core.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: pc_core.c,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * PDFlib core services
  *
@@ -375,7 +375,6 @@ pdc_new_core(
     pdc->uniqueno = 0;
 
 
-
 #ifdef PDC_DEBUG
     pdc->pr->hexdump = pdc_true;
 #endif
@@ -441,6 +440,7 @@ pdc_new_core(
     /* enable error messages
     */
     pdc->pr->in_error = pdc_false;
+
 
     return pdc;
 }

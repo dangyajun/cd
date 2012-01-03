@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_xmp.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: pc_xmp.c,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * The core XMP support.
  *
@@ -20,6 +20,7 @@
 #include "pc_util.h"
 #include "pc_strconst.h"
 #include "pc_md5.h"
+
 
 
 

@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_type3.c,v 1.3 2009-10-20 18:14:16 scuri Exp $
+/* $Id: p_type3.c,v 1.4 2012-01-03 17:42:56 scuri Exp $
  *
  * Routines for Type 3 (user-defined) fonts
  *
@@ -573,6 +573,7 @@ pdf__begin_glyph(
     pdf_font *font;
     pdf_t3font *t3font;
     pdf_t3glyph *glyph = NULL;
+    pdc_scalar tbc;
     int ig;
 
     if (glyphname == NULL || *glyphname == '\0')
@@ -612,6 +613,21 @@ pdf__begin_glyph(
             (llx != 0 || lly != 0 ||
              urx != 0 || ury != 0))
             pdc_error(p->pdc, PDF_E_T3_BADBBOX, 0, 0, 0, 0);
+
+
+        if (urx < llx)
+        {
+            tbc = llx;
+            llx = urx;
+            urx = tbc;
+        }
+
+        if (ury < lly)
+        {
+            tbc = lly;
+            lly = ury;
+            ury = tbc;
+        }
 
         if (ig == t3font->capacity)
         {
