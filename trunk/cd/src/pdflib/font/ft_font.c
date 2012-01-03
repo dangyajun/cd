@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: ft_font.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: ft_font.c,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * FONT basic font functions
  *
@@ -153,6 +153,7 @@ fnt_cleanup_fontimg(pdc_core *pdc, fnt_font *font)
         font->imgname = NULL;
     }
 }
+
 
 void
 fnt_cleanup_font(pdc_core *pdc, fnt_font *font)

@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_params.c,v 1.3 2010-11-10 02:55:49 scuri Exp $
+/* $Id: p_params.c,v 1.4 2012-01-03 17:42:56 scuri Exp $
  *
  * PDFlib parameter handling
  *
@@ -578,7 +578,7 @@ pdf__set_value(PDF *p, const char *key, double value)
 
     switch (i)
     {
-#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__BORLANDC__)
         case PDF_PARAMETER_MAXFILEHANDLES:
             ivalue = pdc_set_maxfilehandles(p->pdc, ivalue);
             if (ivalue == -1)
@@ -847,7 +847,7 @@ pdf__get_value(PDF *p, const char *key, double mod)
 
     switch (i)
     {
-#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__BORLANDC__)
         case PDF_PARAMETER_MAXFILEHANDLES:
             result = (double) pdc_get_maxfilehandles();
         break;

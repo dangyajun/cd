@@ -9,7 +9,7 @@
  |    available, please check http://www.pdflib.com.                         |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_3d.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
+/* $Id: p_3d.c,v 1.3 2012-01-03 17:42:56 scuri Exp $
  *
  * PDFlib 3D functions routines
  *

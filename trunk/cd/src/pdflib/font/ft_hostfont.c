@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: ft_hostfont.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: ft_hostfont.c,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * FONT host font handling routines for Windows and Mac
  *

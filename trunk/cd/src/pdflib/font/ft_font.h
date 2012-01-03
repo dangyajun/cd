@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: ft_font.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: ft_font.h,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * Header file for font handling
  *
@@ -237,6 +237,7 @@ enum
 void fnt_register_errtab(pdc_core *pdc);
 void fnt_init_font(fnt_font *font);
 void fnt_cleanup_font(pdc_core *pdc, fnt_font *font);
+void fnt_cleanup_font_alien(pdc_core *pdc, fnt_font *font);
 void fnt_cleanup_fontimg(pdc_core *pdc, fnt_font *font);
 int fnt_get_glyphid(int code, fnt_font *font);
 int fnt_get_code(int gid, fnt_font *font);

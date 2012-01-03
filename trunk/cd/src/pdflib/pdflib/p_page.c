@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: p_page.c,v 1.2 2009-10-20 18:14:16 scuri Exp $
+/* $Id: p_page.c,v 1.3 2012-01-03 17:42:56 scuri Exp $
  *
  * PDFlib page related routines
  *
@@ -1650,7 +1650,9 @@ get_page_options3(PDF *p, pdc_resopt *resopts, pdc_bool end_page)
     }
 
     if (pdc_get_optvalues("transparencygroup", resopts, NULL, &slist))
+    {
         pdf_set_transgroup(p, slist[0], &po->tgroup);
+    }
 
     /* the "width" and "height" options must be processed BEFORE the
     ** "mediabox" option, since the latter dominates over the formers.

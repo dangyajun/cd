@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_classic.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: pc_classic.h,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * Header for CodeWarrior to activate Classic builds (without CarbonLib).
  *

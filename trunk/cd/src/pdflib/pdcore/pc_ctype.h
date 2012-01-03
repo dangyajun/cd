@@ -6,7 +6,7 @@
  |          Proprietary source code -- do not redistribute!                  |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_ctype.h,v 1.2 2009-10-20 18:12:26 scuri Exp $ */
+/* $Id: pc_ctype.h,v 1.3 2012-01-03 17:42:39 scuri Exp $ */
 
 #ifndef PC_CTYPE_H_INCLUDED
 #define PC_CTYPE_H_INCLUDED

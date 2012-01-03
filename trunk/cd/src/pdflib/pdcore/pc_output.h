@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_output.h,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: pc_output.h,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * PDFlib output defines and routines
  *
@@ -139,6 +139,10 @@ typedef struct
     size_t    (*writeproc)(pdc_output *out, void *data, size_t size);
 
     pdc_flush_state flush;
+
+
+
+
 #if defined(MVS) || defined(MVS_TEST)
     const char *fopenparams;            /* additional fopen() parameters */
     int		recordsize;		/* file record size */

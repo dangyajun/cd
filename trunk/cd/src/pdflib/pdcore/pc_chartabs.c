@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_chartabs.c,v 1.2 2009-10-20 18:12:26 scuri Exp $
+/* $Id: pc_chartabs.c,v 1.3 2012-01-03 17:42:39 scuri Exp $
  *
  * PDFlib routines for converting glyph or character names to Unicode
  * and vice versa
