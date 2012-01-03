@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_file.c,v 1.5 2012-01-03 17:42:39 scuri Exp $
+/* $Id: pc_file.c,v 1.6 2012-01-03 19:46:28 scuri Exp $
  *
  * Various file routines
  *
@@ -53,7 +53,12 @@
 #include <ssdef.h>
 #endif
 
-#if defined(WIN32) && !defined(__BORLANDC__)
+/* CDLIB */
+#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)
+
+#ifndef _IOB_ENTRIES
+#define _IOB_ENTRIES 20
+#endif
 
 #define PDC_MAXFILEHANDLES 2048
 

@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_util.c,v 1.3 2012-01-03 17:42:39 scuri Exp $
+/* $Id: pc_util.c,v 1.4 2012-01-03 19:46:28 scuri Exp $
  *
  * PDFlib various utility routines
  *
@@ -351,7 +351,7 @@ pdc_getenv_filename(pdc_core *pdc, const char *envname)
     const wchar_t *wenvvalue;
     wchar_t *wenvname;
 
-    DWORD nSize = PDC_FILENAMELEN;
+/*    DWORD nSize = PDC_FILENAMELEN; CDLIB */
 
     wlen = 2 * (len + 1);
     wenvname = (wchar_t *) pdc_calloc(pdc, wlen, fn);
