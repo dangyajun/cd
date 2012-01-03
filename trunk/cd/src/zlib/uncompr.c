@@ -1,10 +1,9 @@
 /* uncompr.c -- decompress a memory buffer
- * Copyright (C) 1995-2003 Jean-loup Gailly.
+ * Copyright (C) 1995-2003, 2010 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* $Id: uncompr.c,v 1.3 2012-01-03 17:42:39 scuri Exp $ */
-/* @(#) $Id: uncompr.c,v 1.3 2012-01-03 17:42:39 scuri Exp $ */
+/* @(#) $Id: uncompr.c,v 1.1 2012-01-03 19:48:11 scuri Exp $ */
 
 #define ZLIB_INTERNAL
 #include "zlib.h"
@@ -17,18 +16,16 @@
    been saved previously by the compressor and transmitted to the decompressor
    by some mechanism outside the scope of this compression library.)
    Upon exit, destLen is the actual size of the compressed buffer.
-     This function can be used to decompress a whole file at once if the
-   input file is mmap'ed.
 
      uncompress returns Z_OK if success, Z_MEM_ERROR if there was not
    enough memory, Z_BUF_ERROR if there was not enough room in the output
    buffer, or Z_DATA_ERROR if the input data was corrupted.
 */
-int ZEXPORT uncompress (
-    Bytef *dest,
-    uLongf *destLen,
-    const Bytef *source,
-    uLong sourceLen)
+int ZEXPORT uncompress (dest, destLen, source, sourceLen)
+    Bytef *dest;
+    uLongf *destLen;
+    const Bytef *source;
+    uLong sourceLen;
 {
     z_stream stream;
     int err;
