@@ -10,7 +10,7 @@
  |                                                                           |
  *---------------------------------------------------------------------------*/
 
-/* $Id: pc_util.c,v 1.4 2012-01-03 19:46:28 scuri Exp $
+/* $Id: pc_util.c,v 1.5 2012-01-04 01:51:07 scuri Exp $
  *
  * PDFlib various utility routines
  *
@@ -345,7 +345,7 @@ pdc_getenv_filename(pdc_core *pdc, const char *envname)
     char *envvalue = NULL;
     int flags = PDC_CONV_TMPALLOC;
 
-#if defined(WIN32)
+#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)  /* CDLIB */
 
     size_t len = strlen(envname), wlen;
     const wchar_t *wenvvalue;
