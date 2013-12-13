@@ -743,7 +743,12 @@ static void cdline (cdCtxCanvas* ctxcanvas, int x1, int y1, int x2, int y2)
   
   MoveToEx( ctxcanvas->hDC, x1, y1, NULL );
   LineTo( ctxcanvas->hDC, x2, y2 );
-  SetPixelV(ctxcanvas->hDC, x2, y2, ctxcanvas->fg);
+
+  /* complement a simple line drawing with an extra pixel at the end */
+  if (ctxcanvas->canvas->write_mode == CD_REPLACE &&
+      ctxcanvas->canvas->line_style == CD_CONTINUOUS &&
+      ctxcanvas->logPen.lopnWidth.x == 1)
+    SetPixelV(ctxcanvas->hDC, x2, y2, ctxcanvas->fg);
 }
 
 static void cdrect (cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
