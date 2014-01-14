@@ -1394,7 +1394,7 @@ static int cdlua5_vectortexttransform(lua_State *L)
   for (i=0; i < 6; i++)
   {
     lua_pushnumber(L, old_matrix[i]);
-    lua_rawseti(L, 1, i+1);
+    lua_rawseti(L, -2, i+1);
   }
   return 1;
 }
