@@ -1735,12 +1735,18 @@ static int cgm_txt_asf(tCGM* cgm)   /* asfs */
 
   while(cgm_txt_get_ter_noerr(cgm))
   {
-    pair =(tASF *) malloc(sizeof(tASF));
+    pair = (tASF*)malloc(sizeof(tASF));
 
     if(cgm_txt_get_e(cgm, &(pair->type), asf_type)) 
+    {
+      free(pair);
       return CGM_ERR_READ;
-    if(cgm_txt_get_e(cgm, &(pair->value), asf_value)) 
+    }
+    if (cgm_txt_get_e(cgm, &(pair->value), asf_value))
+    {
+      free(pair);
       return CGM_ERR_READ;
+    }
 
     cgm_list_append(cgm->asf_list, pair);
   }

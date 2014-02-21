@@ -687,7 +687,10 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
     int err;
     err = cdsizecb(canvas, w, h, w, h);
     if (err)
+    {
+      fclose(file);
       return CD_ERROR;
+    }
   }
 
   while (!feof(file))
@@ -1104,7 +1107,6 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
   }
 
   fclose(file);
-
   return CD_OK;
 }
 

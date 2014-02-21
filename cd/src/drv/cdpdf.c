@@ -1220,7 +1220,8 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 
   rgb_size = 3*rw*rh;
   rgb_data = (unsigned char*)malloc(rgb_size);
-  if (!rgb_data) return;
+  if (!rgb_data) 
+    return;
 
   d = 0;
   for (i=ymax; i>=ymin; i--)
@@ -1234,7 +1235,11 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 
   alpha_size = rw*rh;
   alpha_data = (unsigned char*)malloc(alpha_size);
-  if (!alpha_data) return;
+  if (!alpha_data)
+  {
+    free(rgb_data);
+    return;
+  }
 
   d = 0;
   for (i=ymax; i>=ymin; i--)
@@ -1584,12 +1589,12 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdCtxCanvas *ctxcanvas;
   char filename[10240] = "";
 
-  ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
-  memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
-
   line += cdGetFileName(line, filename);
   if (filename[0] == 0)
     return;
+
+  ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
+  memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
 
   ctxcanvas->pdf = PDF_new();
   if (!ctxcanvas->pdf)

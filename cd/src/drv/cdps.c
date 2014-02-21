@@ -1970,16 +1970,16 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdCtxCanvas *ctxcanvas;
   char filename[10240] = "";
 
+  line += cdGetFileName(line, filename);
+  if (filename[0] == 0)
+    return;
+
   ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
 
   /* SVN specification states that number must use dot as decimal separator */
   ctxcanvas->old_locale = cdStrDup(setlocale(LC_NUMERIC, NULL));
   setlocale(LC_NUMERIC, "C");
-
-  line += cdGetFileName(line, filename);
-  if (filename[0] == 0)
-    return;
 
   if ((ctxcanvas->file = fopen(filename, "w")) == NULL)
   {
