@@ -94,7 +94,7 @@ static char* cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int l
   {
     wchar_t* toUnicode;
     int wlen = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
-    if(!wlen)
+    if (!wlen)
       return (char*)str;
 
     toUnicode = (wchar_t*)calloc((wlen+1), sizeof(wchar_t));
@@ -102,8 +102,11 @@ static char* cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int l
     toUnicode[wlen] = 0;
 
     len = WideCharToMultiByte(CP_UTF8, 0, toUnicode, wlen, NULL, 0, NULL, NULL);
-    if(!len)
+    if (!len)
+    {
+      free(toUnicode);
       return (char*)str;
+    }
 
     ctxcanvas->utf8_buffer = (char*)calloc((len+1), sizeof(char));
     WideCharToMultiByte(CP_UTF8, 0, toUnicode, wlen, ctxcanvas->utf8_buffer, len, NULL, NULL);
@@ -121,8 +124,11 @@ static char* cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int l
     char* utf8 = calloc(utf8len, 1);
 
     cd = iconv_open("UTF-8", "ISO-8859-1");
-    if(cd == (iconv_t)-1)
+    if (cd == (iconv_t)-1)
+    {
+      free(utf8);
       return (char*)str;
+    }
 
     ctxcanvas->utf8_buffer = utf8;
 		iconv(cd, (char**)&str, &ulen, &utf8, &utf8len);

@@ -265,7 +265,7 @@ static void cdpalette(cdCtxCanvas* ctxcanvas, int pal_size, const long int *colo
     }
 
     ctxcanvas->bitmap->SetPalette(palette);
-    delete palette;
+    delete [] palette;
   }
 }
 
@@ -566,7 +566,7 @@ static void cdstipple(cdCtxCanvas* ctxcanvas, int w, int h, const unsigned char 
   delete ctxcanvas->fillBrush;
   ctxcanvas->fillBrush = new TextureBrush(&StippleImage); 
 
-  delete bitmap_data;
+  delete [] bitmap_data;
 }
 
 static void cdpattern(cdCtxCanvas* ctxcanvas, int w, int h, const long int *colors)
@@ -596,7 +596,7 @@ static void cdpattern(cdCtxCanvas* ctxcanvas, int w, int h, const long int *colo
   delete ctxcanvas->fillBrush;
   ctxcanvas->fillBrush = new TextureBrush(&PatternImage); 
 
-  delete bitmap_data;
+  delete [] bitmap_data;
 }
 
 static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
@@ -2622,6 +2622,7 @@ static cdAttribute img_points_attrib =
   get_img_points_attrib
 }; 
 
+/* check IUP code from iupwin_info.c for Windows 8.1 compatibility */
 static BOOL Is_WinXP_or_WinSrv03(void) 
 {
   OSVERSIONINFO osvi;

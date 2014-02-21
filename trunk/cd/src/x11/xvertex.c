@@ -522,8 +522,11 @@ static RotatedTextItem *XRotCreateTextItem(Display *dpy, XFontStruct *font, doub
   
   /* find width of longest section */
   str1=my_strdup(text, len);
-  if(str1==NULL)
+  if (str1 == NULL)
+  {
+    free(item);
     return NULL;
+  }
   
   str3=my_strtok(str1, str2);
   
@@ -577,16 +580,21 @@ static RotatedTextItem *XRotCreateTextItem(Display *dpy, XFontStruct *font, doub
   if (fabs(cos_angle)==1.0) sin_angle=0;
   
   /* text background will be drawn using XFillPolygon */
-  item->corners_x=
-    (double *)malloc((unsigned)(4*item->nl*sizeof(double)));
-  if(!item->corners_x)
+  item->corners_x = (double *)malloc((unsigned)(4*item->nl*sizeof(double)));
+  if (!item->corners_x)
+  {
+    free(item);
     return NULL;
+  }
   
-  item->corners_y=
-    (double *)malloc((unsigned)(4*item->nl*sizeof(double)));
+  item->corners_y = (double *)malloc((unsigned)(4*item->nl*sizeof(double)));
   if(!item->corners_y)
+  {
+    free(item->corners_x);
+    free(item);
     return NULL;
-  
+  }
+
   /* draw text horizontally */
   
   /* start at top of bitmap */
@@ -594,8 +602,13 @@ static RotatedTextItem *XRotCreateTextItem(Display *dpy, XFontStruct *font, doub
   
   str1=my_strdup(text, len);
   if(str1==NULL)
+  {
+    free(item->corners_x);
+    free(item->corners_y);
+    free(item);
     return NULL;
-  
+  }
+
   str3=my_strtok(str1, str2);
   
   /* loop through each section in the string */
@@ -640,8 +653,13 @@ static RotatedTextItem *XRotCreateTextItem(Display *dpy, XFontStruct *font, doub
   /* create image to hold horizontal text */
   I_in=MakeXImage(dpy, item->cols_in, item->rows_in);
   if(I_in==NULL)
+  {
+    free(item->corners_x);
+    free(item->corners_y);
+    free(item);
     return NULL;
-  
+  }
+
   /* extract horizontal text */
   XGetSubImage(dpy, canvas, 0, 0, item->cols_in, item->rows_in, 1, XYPixmap, I_in, 0, 0);
   I_in->format=XYBitmap;
@@ -673,8 +691,13 @@ static RotatedTextItem *XRotCreateTextItem(Display *dpy, XFontStruct *font, doub
   /* create image to hold rotated text */
   item->ximage=MakeXImage(dpy, item->cols_out, item->rows_out);
   if(item->ximage==NULL)
+  {
+    free(item->corners_x);
+    free(item->corners_y);
+    free(item);
     return NULL;
-  
+  }
+
   byte_w_in=(item->cols_in-1)/8+1;
   byte_w_out=(item->cols_out-1)/8+1;
   
@@ -685,7 +708,7 @@ static RotatedTextItem *XRotCreateTextItem(Display *dpy, XFontStruct *font, doub
   dj=0.5-(double)item->rows_out/2;
   
   /* where abouts does text actually lie in rotated image? */
-  if(angle==0 || angle==M_PI/2 || angle==M_PI || angle==3*M_PI/2) 
+  if (angle==0 || angle==M_PI/2 || angle==M_PI || angle==3*M_PI/2) 
   {
     xl=0;
     xr=(double)item->cols_out;
@@ -1173,8 +1196,11 @@ XPoint *XRotTextExtents(Display* dpy, XFontStruct* font, double angle, int x, in
     return NULL;
   
   xp_out=(XPoint *)malloc((unsigned)(5*sizeof(XPoint)));
-  if(!xp_out)
+  if (!xp_out)
+  {
+    free(xp_in);
     return NULL;
+  }
   
   /* bounding box when horizontal, relative to bitmap centre */
   xp_in[0].x=-(double)cols_in*style.magnify/2-style.bbx_pad;

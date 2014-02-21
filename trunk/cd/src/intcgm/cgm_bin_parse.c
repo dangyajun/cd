@@ -1954,12 +1954,18 @@ static int cgm_bin_asf(tCGM* cgm)
 
   while(cgm->buff.bc < cgm->buff.len)
   {
-    pair =(tASF *) malloc(sizeof(tASF));
+    pair = (tASF*)malloc(sizeof(tASF));
 
     if(cgm_bin_get_e(cgm, &(pair->type))) 
+    {
+      free(pair);
       return CGM_ERR_READ;
+    }
     if(cgm_bin_get_e(cgm, &(pair->value))) 
+    {
+      free(pair);
       return CGM_ERR_READ;
+    }
 
     cgm_list_append(cgm->asf_list, pair);
   }
