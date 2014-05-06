@@ -50,6 +50,18 @@ static char hatches[NUM_HATCHES][8] = {
   {0x18,0x18,0x24,0x42,0x81,0x81,0x42,0x24}   /* DIAGCROSS */
 };
 
+
+typedef struct cdFtglFontCache
+{
+  char filename[10240];
+  int size;
+  FTGLfont *font;
+} cdFtglFontCache;
+
+static cdFtglFontCache* ftgl_fonts = NULL;
+static int ftgl_fonts_count = 0;
+static int ftgl_fonts_max = 0;
+
 struct _cdCtxImage
 {
   unsigned int w, h;
@@ -61,7 +73,6 @@ struct _cdCtxCanvas
   cdCanvas* canvas;
 
   FTGLfont *font;
-  int txt_antialias;
 
   double rotate_angle;
   int rotate_center_x;
@@ -367,6 +378,9 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
     }
   }
 
+  if (ctxcanvas->font)
+    ftglDestroyFont(ctxcanvas->font);
+
   ctxcanvas->font = ftglCreateTextureFont(filename);
   if (!ctxcanvas->font)
     return 0;
@@ -379,7 +393,6 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
   /* CD: that means 1 point is actually being mapped to 1 pixel */
   size = cdGetFontSizePixels(ctxcanvas->canvas, size);
   ftglSetFontFaceSize(ctxcanvas->font, size, (int)(ctxcanvas->canvas->xres*25.4));
-  ftglSetFontCharMap(ctxcanvas->font, ft_encoding_unicode);
 
   return 1;
 }
@@ -500,8 +513,7 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 
 static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, int len)
 {
-  int stipple = 0, reset_antialias = 0;
-  float bounds[6];
+  int stipple = 0;
   int w, h, descent, baseline;
   double x_origin = x;
   double y_origin = y;
@@ -510,11 +522,10 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
     return;
 
   s = cdglStrConvertToUTF8(ctxcanvas, s, len);
-  ftglGetFontBBox(ctxcanvas->font, s, len, bounds);
+  w = (int)ftglGetFontAdvance(ctxcanvas->font, s);
+  h = (int)ftglGetFontLineHeight(ctxcanvas->font);
 
   descent = (int)ftglGetFontDescender(ctxcanvas->font);
-  w = (int)ceil(bounds[3] - bounds[0]);
-  h = (int)ceil(bounds[4] - bounds[1]);
   baseline = (int)ftglGetFontLineHeight(ctxcanvas->font) - (int)ftglGetFontAscender(ctxcanvas->font);
 
   switch (ctxcanvas->canvas->text_alignment)
@@ -577,20 +588,11 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
     glDisable(GL_POLYGON_STIPPLE);
   }
 
-  if (ctxcanvas->txt_antialias && !glIsEnabled(GL_LINE_SMOOTH))
-  {
-    cdCanvasSetAttribute(ctxcanvas->canvas, "ANTIALIAS", "1");
-    reset_antialias = 1;
-  }
-
   glPushMatrix();
     glTranslated(x, y, 0.0);
     glRotated(ctxcanvas->canvas->text_orientation, 0, 0, 1);
     ftglRenderFont(ctxcanvas->font, s, FTGL_RENDER_ALL);
   glPopMatrix();
-
-  if (reset_antialias)
-    cdCanvasSetAttribute(ctxcanvas->canvas, "ANTIALIAS", "0");
 
   if(stipple)
     glEnable(GL_POLYGON_STIPPLE);
@@ -603,16 +605,13 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *s, int len)
 
 static void cdgettextsize(cdCtxCanvas *ctxcanvas, const char *s, int len, int *width, int *height)
 {
-  float bounds[6];
-
   if (!ctxcanvas->font)
     return;
 
   s = cdglStrConvertToUTF8(ctxcanvas, s, len);
-  ftglGetFontBBox(ctxcanvas->font, s, len, bounds);
 
-  if (width)  *width  = (int)ceil(bounds[3] - bounds[0]);
-  if (height) *height = (int)ceil(bounds[4] - bounds[1]);
+  if (width)  *width = (int)ftglGetFontAdvance(ctxcanvas->font, s);
+  if (height) *height = (int)ftglGetFontLineHeight(ctxcanvas->font);
 }
 
 static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
@@ -1162,29 +1161,6 @@ static cdAttribute aa_attrib =
   get_aa_attrib
 };
 
-static void set_txtaa_attrib(cdCtxCanvas* ctxcanvas, char* data)
-{
-  if (!data || data[0] == '0')
-    ctxcanvas->txt_antialias = 0;
-  else
-    ctxcanvas->txt_antialias = 1;
-}
-
-static char* get_txtaa_attrib(cdCtxCanvas* ctxcanvas)
-{
-  if (ctxcanvas->txt_antialias)
-    return "1";
-  else
-    return "0";
-}
-
-static cdAttribute txtaa_attrib =
-{
-  "TEXTANTIALIAS",
-  set_txtaa_attrib,
-  get_txtaa_attrib
-}; 
-
 static void set_utf8mode_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (!data || data[0] == '0')
@@ -1346,12 +1322,10 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdRegisterAttribute(canvas, &size_attrib);
   cdRegisterAttribute(canvas, &alpha_attrib);
   cdRegisterAttribute(canvas, &aa_attrib);
-  cdRegisterAttribute(canvas, &txtaa_attrib);
   cdRegisterAttribute(canvas, &utf8mode_attrib);
 
   cdCanvasSetAttribute(canvas, "ALPHA", "1");
   cdCanvasSetAttribute(canvas, "ANTIALIAS", "1");
-  cdCanvasSetAttribute(canvas, "TEXTANTIALIAS", "1");
 }
 
 static void cdinittable(cdCanvas* canvas)
