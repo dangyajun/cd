@@ -69,16 +69,19 @@ static void cdTT_checkversion(cdTT_Text* tt_text)
 ********************************************/
 cdTT_Text* cdTT_create(void)
 {
-  static int first = 1;
   cdTT_Text * tt_text = malloc(sizeof(cdTT_Text));
   memset(tt_text, 0, sizeof(cdTT_Text));
   
   FT_Init_FreeType(&tt_text->library);
 
-  if (first)
   {
-    cdTT_checkversion(tt_text);
-    first = 0;
+    static int first = 1;
+    char* env = getenv("CD_QUIET");
+    if (first && env && strcmp(env, "NO") == 0)  /* default is quite */
+    {
+      cdTT_checkversion(tt_text);
+      first = 0;
+    }
   }
 
   return tt_text;
