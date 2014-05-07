@@ -77,7 +77,7 @@ cdTT_Text* cdTT_create(void)
   {
     static int first = 1;
     char* env = getenv("CD_QUIET");
-    if (first && env && strcmp(env, "NO") == 0)  /* default is quite */
+    if (first && env && strcmp(env, "NO") == 0)  /* default is quiet */
     {
       cdTT_checkversion(tt_text);
       first = 0;
