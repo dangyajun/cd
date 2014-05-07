@@ -149,7 +149,7 @@ cdCanvas *cdCreateCanvas(cdContext* context, void *data_str)
   {
     static int first = 1;
     char* env = getenv("CD_QUIET");
-    if (first && env && strcmp(env, "NO") == 0)  /* default is quite */
+    if (first && env && strcmp(env, "NO") == 0)  /* default is quiet */
     {
       printf("CD  " CD_VERSION CD_VERSION_FIX " " CD_COPYRIGHT "\n");
       first = 0;

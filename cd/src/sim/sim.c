@@ -316,7 +316,8 @@ cdSimulation* cdCreateSimulation(cdCanvas* canvas)
 
 void cdKillSimulation(cdSimulation* simulation)
 {
-  if (simulation->tt_text) cdTT_free(simulation->tt_text);
+  if (simulation->tt_text) 
+    cdTT_free(simulation->tt_text);
 
   memset(simulation, 0, sizeof(cdSimulation));
   free(simulation);
