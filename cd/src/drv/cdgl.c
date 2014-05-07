@@ -51,16 +51,21 @@ static char hatches[NUM_HATCHES][8] = {
 };
 
 
-typedef struct cdFtglFontCache
+typedef struct _cdglFontCache
 {
   char filename[10240];
   int size;
   FTGLfont *font;
-} cdFtglFontCache;
+} cdglFontCache;
 
-static cdFtglFontCache* ftgl_fonts = NULL;
-static int ftgl_fonts_count = 0;
-static int ftgl_fonts_max = 0;
+static cdglFontCache* cdgl_fonts = NULL;
+static int cdgl_fonts_count = 0;
+static int cdgl_fonts_max = 0;
+
+static int gl_canvas_count = 0;
+#ifndef WIN32
+iconv_t cdgl_iconv = (iconv_t)-1;
+#endif
 
 struct _cdCtxImage
 {
@@ -82,81 +87,155 @@ struct _cdCtxCanvas
   int holes;
 
   char* utf8_buffer;
-  int utf8mode;
+  int utf8mode, utf8_buffer_len;
 };
 
 /******************************************************/
 
-static char* cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
+static FTGLfont* cdglGetFont(const char* filename, int size, int res)
 {
-  if (ctxcanvas->utf8mode)
-    return (char*)str;
+  int i;
+  FTGLfont* font;
 
-  if (cdStrIsAscii(str))
-    return (char*)str;
-
-  if (ctxcanvas->utf8_buffer)
+  if (!cdgl_fonts)
   {
-    free(ctxcanvas->utf8_buffer);
-    ctxcanvas->utf8_buffer = NULL;
+    cdgl_fonts_max = 10;
+    cdgl_fonts_count = 0;
+    cdgl_fonts = malloc(sizeof(cdglFontCache)*cdgl_fonts_max);
+  }
+
+  /* search for an existent font */
+  for (i = 0; i < cdgl_fonts_count; i++)
+  {
+    if (cdStrEqualNoCase(cdgl_fonts[i].filename, filename) &&
+        cdgl_fonts[i].size == size)
+      return cdgl_fonts[i].font;
+  }
+
+  /* not found, create a new font and add it to the cache */
+
+  font = ftglCreateTextureFont(filename);
+  if (!font)
+    return NULL;
+
+  ftglSetFontFaceSize(font, size, res);
+
+  if (cdgl_fonts_count == cdgl_fonts_max)
+  {
+    cdgl_fonts_max += 10;
+    cdgl_fonts = realloc(cdgl_fonts, sizeof(cdglFontCache)*cdgl_fonts_max);
+  }
+
+  cdgl_fonts[cdgl_fonts_count].font = font;
+  strcpy(cdgl_fonts[cdgl_fonts_count].filename, filename);
+  cdgl_fonts[cdgl_fonts_count].size = size;
+
+  cdgl_fonts_count++;
+  return font;
+}
+
+static void cdglCheckUtf8Buffer(cdCtxCanvas *ctxcanvas, int len)
+{
+  if (!ctxcanvas->utf8_buffer)
+  {
+    ctxcanvas->utf8_buffer = malloc(len + 1);
+    ctxcanvas->utf8_buffer_len = len;
+  }
+  else if (ctxcanvas->utf8_buffer_len < len)
+  {
+    ctxcanvas->utf8_buffer = realloc(ctxcanvas->utf8_buffer, len + 1);
+    ctxcanvas->utf8_buffer_len = len;
+  }
+}
+
+static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
+{
+  /* FTGL multibute strings are always UTF-8 */
+
+  if (ctxcanvas->utf8mode || cdStrIsAscii(str))
+  {
+    cdglCheckUtf8Buffer(ctxcanvas, len);
+    memcpy(ctxcanvas->utf8_buffer, str, len);
+    ctxcanvas->utf8_buffer[len] = 0;
+    return;
   }
 
 #ifdef WIN32
   {
-    wchar_t* toUnicode;
+    wchar_t* wstr;
     int wlen = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
     if (!wlen)
-      return (char*)str;
-
-    toUnicode = (wchar_t*)calloc((wlen+1), sizeof(wchar_t));
-    MultiByteToWideChar(CP_ACP, 0, str, len, toUnicode, wlen);
-    toUnicode[wlen] = 0;
-
-    len = WideCharToMultiByte(CP_UTF8, 0, toUnicode, wlen, NULL, 0, NULL, NULL);
-    if (!len)
     {
-      free(toUnicode);
-      return (char*)str;
+      cdglCheckUtf8Buffer(ctxcanvas, 1);
+      ctxcanvas->utf8_buffer[0] = 0;
+      return;
     }
 
-    ctxcanvas->utf8_buffer = (char*)calloc((len+1), sizeof(char));
-    WideCharToMultiByte(CP_UTF8, 0, toUnicode, wlen, ctxcanvas->utf8_buffer, len, NULL, NULL);
+    wstr = (wchar_t*)calloc((wlen+1), sizeof(wchar_t));
+    MultiByteToWideChar(CP_ACP, 0, str, len, wstr, wlen);
+    wstr[wlen] = 0;
+
+    len = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
+    if (!len)
+    {
+      cdglCheckUtf8Buffer(ctxcanvas, 1);
+      ctxcanvas->utf8_buffer[0] = 0;
+      return;
+    }
+
+    cdglCheckUtf8Buffer(ctxcanvas, len);
+    WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, ctxcanvas->utf8_buffer, len, NULL, NULL);
     ctxcanvas->utf8_buffer[len] = 0;
 
-    free(toUnicode);
+    free(wstr);
   }
 #else
   {
-	  /* Based on http://www.lemoda.net/c/iconv-example/iconv-example.html
-		   Last access: June 15th, 2010. */
-    iconv_t cd;
-    size_t ulen = (size_t)len;
-    size_t utf8len = ulen*2;
-    char* utf8 = calloc(utf8len, 1);
-
-    cd = iconv_open("UTF-8", "ISO-8859-1");
-    if (cd == (iconv_t)-1)
+    if (cdgl_iconv == (iconv_t)-1)
     {
-      free(utf8);
-      return (char*)str;
+      cdglCheckUtf8Buffer(ctxcanvas, 1);
+      ctxcanvas->utf8_buffer[0] = 0;
+      return;
     }
 
-    ctxcanvas->utf8_buffer = utf8;
-		iconv(cd, (char**)&str, &ulen, &utf8, &utf8len);
+    size_t ulen = (size_t)len;
+    size_t utf8len = ulen*2;
+    cdglCheckUtf8Buffer(ctxcanvas, utf8len);
+    char* utf8 = ctxcanvas->utf8_buffer;
 
-		iconv_close(cd);
+    iconv(cdgl_iconv, (char**)&str, &ulen, &utf8, &utf8len);
   }
 #endif
-
-  return ctxcanvas->utf8_buffer;
 }
 
 /******************************************************/
 
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
+  gl_canvas_count--;
+  if (gl_canvas_count == 0) /* last canvas */
+  {
+    if (cdgl_fonts)
+    {
+      int i;
+      for (i=0; i<cdgl_fonts_count; i++)
+        ftglDestroyFont(cdgl_fonts[i].font);
+
+      cdgl_fonts_max = 0;
+      cdgl_fonts_count = 0;
+      free(cdgl_fonts);
+    }
+#ifndef WIN32
+    if (cdgl_iconv != (iconv_t)-1)
+      iconv_close(cdgl_iconv);
+    cdgl_iconv = (iconv_t)-1;
+#endif
+  }
+
+  /* do NOT destroy the font anymore, 
+     now leave it in the cache 
   if(ctxcanvas->font)
-    ftglDestroyFont(ctxcanvas->font);
+    ftglDestroyFont(ctxcanvas->font);  */
 
   if (ctxcanvas->utf8_buffer)
     free(ctxcanvas->utf8_buffer);
@@ -365,6 +444,8 @@ static int cdlinewidth(cdCtxCanvas *ctxcanvas, int width)
 static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int size)
 {
   char filename[10240];
+  FTGLfont* font;
+  int res;
 
   /* try the pre-defined names and pre-defined style suffix */
   if (!cdGetFontFileNameDefault(type_face, style, filename))
@@ -378,22 +459,21 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
     }
   }
 
-  if (ctxcanvas->font)
-    ftglDestroyFont(ctxcanvas->font);
-
-  ctxcanvas->font = ftglCreateTextureFont(filename);
-  if (!ctxcanvas->font)
-    return 0;
-
   if (size < 0)
     size = cdGetFontSizePoints(ctxcanvas->canvas, size);
 
-  /* FTGL: One point in pixel space maps to 1 unit in opengl space, 
-     so a glyph that is 18 points high should be 18.0 units high. */
+  /* FTGL: One point in pixel space maps to 1 unit in opengl space,
+  so a glyph that is 18 points high should be 18.0 units high. */
   /* CD: that means 1 point is actually being mapped to 1 pixel */
   size = cdGetFontSizePixels(ctxcanvas->canvas, size);
-  ftglSetFontFaceSize(ctxcanvas->font, size, (int)(ctxcanvas->canvas->xres*25.4));
 
+  res = (int)(ctxcanvas->canvas->xres*25.4);
+
+  font = cdglGetFont(filename, size, res);
+  if (!font)
+    return 0;
+
+  ctxcanvas->font = font;
   return 1;
 }
 
@@ -521,8 +601,8 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
   if (!ctxcanvas->font)
     return;
 
-  s = cdglStrConvertToUTF8(ctxcanvas, s, len);
-  w = (int)ftglGetFontAdvance(ctxcanvas->font, s);
+  cdglStrConvertToUTF8(ctxcanvas, s, len);
+  w = (int)ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer);
   h = (int)ftglGetFontLineHeight(ctxcanvas->font);
 
   descent = (int)ftglGetFontDescender(ctxcanvas->font);
@@ -591,7 +671,7 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
   glPushMatrix();
     glTranslated(x, y, 0.0);
     glRotated(ctxcanvas->canvas->text_orientation, 0, 0, 1);
-    ftglRenderFont(ctxcanvas->font, s, FTGL_RENDER_ALL);
+    ftglRenderFont(ctxcanvas->font, ctxcanvas->utf8_buffer, FTGL_RENDER_ALL);
   glPopMatrix();
 
   if(stipple)
@@ -608,9 +688,9 @@ static void cdgettextsize(cdCtxCanvas *ctxcanvas, const char *s, int len, int *w
   if (!ctxcanvas->font)
     return;
 
-  s = cdglStrConvertToUTF8(ctxcanvas, s, len);
+  cdglStrConvertToUTF8(ctxcanvas, s, len);
 
-  if (width)  *width = (int)ftglGetFontAdvance(ctxcanvas->font, s);
+  if (width)  *width = (int)ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer);
   if (height) *height = (int)ftglGetFontLineHeight(ctxcanvas->font);
 }
 
@@ -1302,6 +1382,15 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
+
+  gl_canvas_count++;
+  if (gl_canvas_count == 1) /* first canvas */
+  {
+#ifndef WIN32
+    if (cdgl_iconv == (iconv_t)-1)
+      cdgl_iconv = iconv_open("UTF-8", "ISO-8859-1");
+#endif
+  }
 
   canvas->w = w;
   canvas->h = h;
