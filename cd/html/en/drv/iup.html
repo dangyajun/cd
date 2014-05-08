@@ -10,7 +10,9 @@
 
 <body>
 
-<h2 style="text-align: left">CD_IUP - IUP Driver (cdiup.h)</h2>
+<h2 style="text-align: left">CD_IUP - IUP Driver (cdiup.h)<br>CD_IUPDBUFFER - 
+IUP driver using double buffer (since 5.8)<br>CD_IUPDBUFFERRGB - IUP driver 
+using image rgb double buffer (since 5.8)</h2>
 
   <p>This driver provides access to an interface element of a IUP canvas. IUP is a portable user-interface library used 
   to create portable user-interface applications. See
@@ -27,7 +29,11 @@
   to note that a call to function <a href="../func/init.html#cdKillCanvas">
   <font face="Courier"><strong>cdKillCanvas</strong></font></a> is required to <b>close</b> the file properly.</p>
   <p>The CD canvas is automatically stored in the IUP canvas as the <strong>&quot;<font face="Courier">_CD_CANVAS</font>&quot;</strong> 
-  attribute.</p>
+  attribute. </p>
+<p>For the double buffer versions two canvas will be created. The returned 
+canvas is the back buffer canvas. This canvas is stored as the <strong>&quot;<font face="Courier">_CD_CANVAS_DBUFFER</font>&quot;</strong> 
+  attribute and the front buffer canvas will still be stored as the <strong>&quot;<font face="Courier">_CD_CANVAS</font>&quot;</strong> 
+  attribute. </p>
   
 
 
@@ -40,29 +46,10 @@
 
 <h3>Behavior of Functions</h3>
 
-  <p>This driver is very platform-dependent, although little dependent on the IUP library.</p>
-
-  <p>For further detail, see the <b>
-  Behavior of Functions</b> in each base driver: <a href="win32.html">GDI</a>, 
-	<a href="gdk.html">GDK</a> and <a href="xwin.html">X-Win</a>. To use this driver 
-	with a context plus base driver is necessary to call 
-  <font face="Courier"><strong>
-  cdUseContextPlus</strong></font><strong><font face="Courier">(1)</font></strong> 
-  before creating the canvas, see the <a href="../drv/gdiplus.html">GDI+</a>,&nbsp;<a href="../drv/cairo.html">Cairo</a> 
-and <a href="../drv/xrender.html">XRender</a> base drivers.</p>
-<p>However, it should be noted that some functions behave differently from the 
-basic functions of each platform.</p>
-
-<h4>Control&nbsp;</h4>
-<ul>
-  <li><a href="../func/init.html#cdActivate"><font face="Courier"><strong>
-  cdCanvasActivate</strong></font></a>: updates the canvas size; the IUP canvas might have been resized.</li>
-</ul>
-<h4>Exclusive Attributes</h4>
-<ul>
-  <li>&quot;<b><font face="Courier">WINDOWRGN</font></b>&quot;: set the shape of a window to the current complex clipping region 
-  (set only). If data is NULL the region is reset.</li>
-</ul>
+  <p>This driver depends on the <a href="native.html">Native Window</a> driver. </p>
+<p>When using the double buffer versions see the <a href="dbuf.html">Double 
+Buffer</a> and <a href="dbufrgb.html">Double Buffer using a RGB image</a> 
+drivers documentation.</p>
 
 </body>
 
