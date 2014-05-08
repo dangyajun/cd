@@ -16,7 +16,10 @@ static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
   
   if (ctxcanvas->bitmap_dbuffer) delete ctxcanvas->bitmap_dbuffer;
   delete ctxcanvas->bitmap;
- 
+
+  if (ctxcanvas->kill_dbuffer)
+    cdKillCanvas(ctxcanvas->canvas_dbuffer);
+
   delete ctxcanvas;
 }
 
@@ -99,6 +102,29 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
   return CD_OK;
 }
 
+static void set_killdbuffer_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (!data || data[0] == '0')
+    ctxcanvas->kill_dbuffer = 0;
+  else
+    ctxcanvas->kill_dbuffer = 1;
+}
+
+static char* get_killdbuffer_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->kill_dbuffer)
+    return "1";
+  else
+    return "0";
+}
+
+static cdAttribute killdbuffer_attrib =
+{
+  "KILLDBUFFER",
+  set_killdbuffer_attrib,
+  get_killdbuffer_attrib
+};
+
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
   int w, h;
@@ -136,6 +162,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
     if (utf8mode)
       cdCanvasSetAttribute(canvas, "UTF8MODE", "1");
   }
+
+  cdRegisterAttribute(canvas, &killdbuffer_attrib);
 }
 
 static void cdinittable(cdCanvas* canvas)

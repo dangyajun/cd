@@ -87,6 +87,7 @@ struct _cdCtxCanvas
   int dirty;             // Used by the double buffer driver
   CachedBitmap* bitmap_dbuffer; /* not the image_dbuffer, just a cache */
   cdCanvas* canvas_dbuffer;
+  int kill_dbuffer;
 
   int utf8mode;
 };

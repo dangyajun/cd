@@ -70,6 +70,7 @@ struct _cdCtxCanvas
 
   cdImage* image_dbuffer;       /* Used in double buffer driver */
   cdCanvas* canvas_dbuffer;
+  int kill_dbuffer;
 
   GtkPrintJob* job;    /* used in Printer (UNIX) */
   char* printername;   /* used in Printer (Win32) */

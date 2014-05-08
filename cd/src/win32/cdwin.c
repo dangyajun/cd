@@ -141,7 +141,7 @@ void cdwKillCanvas(cdCtxCanvas* ctxcanvas)
   
   DeleteObject(ctxcanvas->hNullPen);   /* Pen para tirar borda */
   DeleteObject(ctxcanvas->hBkBrush);     /* Brush para o background */
-  
+
   /* ctxcanvas e ctxcanvas->hDC sao liberados em cada driver */
 }
 

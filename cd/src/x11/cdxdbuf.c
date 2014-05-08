@@ -13,6 +13,8 @@
 static void cdkillcanvas (cdCtxCanvas* ctxcanvas)
 {
   cdKillImage(ctxcanvas->image_dbuffer);
+  if (ctxcanvas->kill_dbuffer)
+    cdKillCanvas(ctxcanvas->canvas_dbuffer);
   cdxKillCanvas(ctxcanvas);
 }
 
@@ -38,6 +40,29 @@ static void cdflush(cdCtxCanvas* ctxcanvas)
   cdCanvasPutImageRect(canvas_dbuffer, image_dbuffer, 0, 0, 0, 0, 0, 0);
   cdCanvasWriteMode(canvas_dbuffer, old_writemode);
 }
+
+static void set_killdbuffer_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (!data || data[0] == '0')
+    ctxcanvas->kill_dbuffer = 0;
+  else
+    ctxcanvas->kill_dbuffer = 1;
+}
+
+static char* get_killdbuffer_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->kill_dbuffer)
+    return "1";
+  else
+    return "0";
+}
+
+static cdAttribute killdbuffer_attrib =
+{
+  "KILLDBUFFER",
+  set_killdbuffer_attrib,
+  get_killdbuffer_attrib
+};
 
 static void cdcreatecanvas(cdCanvas* canvas, cdCanvas* canvas_dbuffer)
 {
@@ -66,6 +91,8 @@ static void cdcreatecanvas(cdCanvas* canvas, cdCanvas* canvas_dbuffer)
 
   ctxcanvas->image_dbuffer = image_dbuffer;
   ctxcanvas->canvas_dbuffer = canvas_dbuffer;
+
+  cdRegisterAttribute(canvas, &killdbuffer_attrib);
 }
 
 static int cdactivate(cdCtxCanvas* ctxcanvas)

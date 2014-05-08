@@ -47,6 +47,7 @@ struct _cdCtxCanvas
          rotate_center_y;
 
   cdCanvas* canvas_dbuffer; /* used by the CD_DBUFFERRGB driver */
+  int kill_dbuffer;
 };
 
 /*******************/
@@ -380,6 +381,9 @@ static void irgbHatchLine(cdCanvas* canvas, int xmin, int xmax, int y, unsigned 
 
 static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
 {
+  if (ctxcanvas->kill_dbuffer && ctxcanvas->canvas_dbuffer)
+    cdKillCanvas(ctxcanvas->canvas_dbuffer);
+
   if (!ctxcanvas->user_image)
     free(ctxcanvas->red);
 
@@ -1735,6 +1739,29 @@ static cdAttribute rotate_attrib =
   get_rotate_attrib
 }; 
 
+static void set_killdbuffer_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (!data || data[0] == '0')
+    ctxcanvas->kill_dbuffer = 0;
+  else
+    ctxcanvas->kill_dbuffer = 1;
+}
+
+static char* get_killdbuffer_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->kill_dbuffer)
+    return "1";
+  else
+    return "0";
+}
+
+static cdAttribute killdbuffer_attrib =
+{
+  "KILLDBUFFER",
+  set_killdbuffer_attrib,
+  get_killdbuffer_attrib
+};
+
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
   cdCtxCanvas* ctxcanvas;
@@ -1833,6 +1860,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdRegisterAttribute(canvas, &aa_attrib);
   cdRegisterAttribute(canvas, &txtaa_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
+  cdRegisterAttribute(canvas, &killdbuffer_attrib);
 }
 
 static void cdinittable(cdCanvas* canvas)
@@ -1927,7 +1955,15 @@ static void cdflushDB(cdCtxCanvas *ctxcanvas)
 static void cdcreatecanvasDB(cdCanvas* canvas, cdCanvas* canvas_dbuffer)
 {
   char rgbdata[100];
-  sprintf(rgbdata, "%dx%d -r%g", canvas_dbuffer->w, canvas_dbuffer->h, canvas_dbuffer->xres);
+  int w, h;
+
+  cdCanvasActivate(canvas_dbuffer);
+  w = canvas_dbuffer->w;
+  h = canvas_dbuffer->h;
+  if (w == 0) w = 1;
+  if (h == 0) h = 1;
+
+  sprintf(rgbdata, "%dx%d -r%g", w, h, canvas_dbuffer->xres);
   cdcreatecanvas(canvas, rgbdata);  /* the double buffer image will be internally allocated as the canvas RGB image itself */
   if (canvas->ctxcanvas)
     canvas->ctxcanvas->canvas_dbuffer = canvas_dbuffer;
@@ -1936,23 +1972,30 @@ static void cdcreatecanvasDB(cdCanvas* canvas, cdCanvas* canvas_dbuffer)
 static int cdactivateDB(cdCtxCanvas *ctxcanvas)
 {
   cdCanvas* canvas_dbuffer = ctxcanvas->canvas_dbuffer;
+  int w, h;
 
   /* this is done in the canvas_dbuffer context */
   /* this will update canvas size */
   cdCanvasActivate(canvas_dbuffer);
+  w = canvas_dbuffer->w;
+  h = canvas_dbuffer->h;
+  if (w == 0) w = 1;
+  if (h == 0) h = 1;
 
   /* check if the size changed */
-  if (canvas_dbuffer->w != ctxcanvas->canvas->w ||
-      canvas_dbuffer->h != ctxcanvas->canvas->h)
+  if (w != ctxcanvas->canvas->w ||
+      h != ctxcanvas->canvas->h)
   {
     cdCanvas* canvas = ctxcanvas->canvas;
     /* save the current, if the rebuild fail */
     cdCtxCanvas* old_ctxcanvas = ctxcanvas;
+    int kill_dbuffer = ctxcanvas->kill_dbuffer;
 
     /* if the image is rebuild, the canvas that uses the image must be also rebuild */
 
     /* rebuild the image and the canvas */
     canvas->ctxcanvas = NULL;
+    ctxcanvas->kill_dbuffer = 0;
     cdcreatecanvasDB(canvas, canvas_dbuffer);
     if (!canvas->ctxcanvas)
     {
@@ -1964,6 +2007,7 @@ static int cdactivateDB(cdCtxCanvas *ctxcanvas)
     cdkillcanvas(old_ctxcanvas);  /* the double buffer image is the canvas itself */
 
     ctxcanvas = canvas->ctxcanvas;
+    ctxcanvas->kill_dbuffer = kill_dbuffer;
 
     /* update canvas attributes */
     cdUpdateAttributes(canvas);
