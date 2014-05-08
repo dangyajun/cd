@@ -101,6 +101,7 @@ struct _cdCtxCanvas
   
   cdImage* image_dbuffer; /* utilizado pelo driver de Double buffer */
   cdCanvas* canvas_dbuffer;
+  int kill_dbuffer;
 
   HBITMAP img_mask;  /* used by PutImage with mask and rotation and transparency */
 

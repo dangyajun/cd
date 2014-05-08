@@ -11,9 +11,16 @@
 extern "C" {
 #endif
 
-cdContext* cdContextIup(void);
+/* NOTICE: implemented done in IUP at the IUPCD library. 
+   Only this files is at the CD files. */
 
-#define CD_IUP cdContextIup()
+cdContext* cdContextIup(void);
+cdContext* cdContextIupDBuffer(void);
+cdContext* cdContextIupDBufferRGB(void);
+
+#define CD_IUP           cdContextIup()
+#define CD_IUPDBUFFER    cdContextIupDBuffer()
+#define CD_IUPDBUFFERRGB cdContextIupDBufferRGB()
 
 #ifdef __cplusplus
 }
