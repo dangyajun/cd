@@ -19,7 +19,7 @@
   in other platforms without the risk of compilation error. If you attempt to 
   create a canvas in another platform, function <font face="Courier"><strong>
   cdCreateCanvas</strong></font> will return NULL.</p>
-<p><span style="color: #FF0000"><strong>It is recomended to use EMF instead of WMF whenever is possible.</strong></span> </p>
+<p><span style="color: #FF0000"><strong>It is recommended to use EMF instead of WMF whenever is possible.</strong></span> </p>
 
 <h3>Use</h3>
 
@@ -45,15 +45,16 @@
   <p>In fact the driver uses a slightly different format, called Aldus Placeable 
   Metafile (APM). It attaches a small header to the beginning of the file, 
   allowing other applications to import better the metafile contents.</p>
-  <p>This 
-  driver is NOT available for the GDI+ base driver.</p>
 
 <h3>Behavior of Functions</h3>
 
-  <p>This driver is greatly platform-dependent. For further detail, see the <b>
+  <p>This driver is very platform-dependent and depends on the base driver used. 
+  But the functions bellow behave differently.</p>
+
+  <p>For further detail, see the <b>
   Behavior of Functions</b> of the <a href="drv/win32.html">Microsoft Windows 
-  (GDI)</a> platform. However, it should be noted that some functions behave 
-  differently from the basic functions of each platform.</p>
+  (GDI)</a> platform. This 
+  driver is NOT available for the other base drivers, including the GDI+ base driver.</p>
 
 <h4>Control&nbsp;</h4>
 <ul>
