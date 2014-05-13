@@ -434,17 +434,17 @@ static char* winRegReadStringKey(HKEY hBaseKey, const char* key_name, const char
 	DWORD size;
   char* str;
 
-	if (RegOpenKeyEx(hBaseKey, key_name, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+	if (RegOpenKeyExA(hBaseKey, key_name, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
 		return NULL;
 
-  if (RegQueryValueEx(hKey, value_name, NULL, NULL, NULL, &size) != ERROR_SUCCESS)
+  if (RegQueryValueExA(hKey, value_name, NULL, NULL, NULL, &size) != ERROR_SUCCESS)
   {
     RegCloseKey(hKey);
 		return NULL;
   }
 
   str = malloc(size);
-  RegQueryValueEx(hKey, value_name, NULL, NULL, (LPBYTE)str, &size);
+  RegQueryValueExA(hKey, value_name, NULL, NULL, (LPBYTE)str, &size);
 
 	RegCloseKey(hKey);
 	return str;
@@ -456,7 +456,7 @@ static int winRegGetValueCount(HKEY hKey, int *count, int *max_name_size, int *m
   DWORD cMaxValueNameLen;
   DWORD cMaxValueLen;
 
-  if (RegQueryInfoKey(hKey, NULL, NULL, NULL, NULL, NULL, NULL,
+  if (RegQueryInfoKeyA(hKey, NULL, NULL, NULL, NULL, NULL, NULL,
       &cValues,             // number of values for this hKey 
       &cMaxValueNameLen,    // longest value name 
       &cMaxValueLen,        // longest value data 
@@ -481,7 +481,7 @@ static char* winRegFindValue(HKEY hBaseKey, const char* key_name, const char* va
   char *ValueName, *lpData; 
   DWORD cchValueName, cbData;
 
-	if (RegOpenKeyEx(hBaseKey, key_name, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+	if (RegOpenKeyExA(hBaseKey, key_name, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
 		return NULL;
 
   if (!winRegGetValueCount(hKey, &count, &max_name_size, &max_value_size))
@@ -496,7 +496,7 @@ static char* winRegFindValue(HKEY hBaseKey, const char* key_name, const char* va
     cchValueName = max_name_size; 
     cbData = max_value_size;
 
-    if (RegEnumValue(hKey, i, 
+    if (RegEnumValueA(hKey, i, 
         ValueName, &cchValueName, 
         NULL, NULL, (LPBYTE)lpData, &cbData) == ERROR_SUCCESS)
     {
@@ -754,9 +754,9 @@ int cdStrTmpFileName(char* filename)
 {
 #ifdef WIN32
   char tmpPath[10240];
-  if (GetTempPath(10240, tmpPath)==0)
+  if (GetTempPathA(10240, tmpPath)==0)
     return 0;
-  if (GetTempFileName(tmpPath, "~cd", 0, filename)==0)
+  if (GetTempFileNameA(tmpPath, "~cd", 0, filename)==0)
     return 0;
   return 1;
 #else
