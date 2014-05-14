@@ -15,7 +15,7 @@
 
 
   
-    <pre>cdCanvas* canvas = cdCreateCanvas(CD_NATIVEWINDOW, IupGetAttribute(IupCanvas,&quot;CONID&quot;)); <br>cdCanvasLineStyle(canvas, CD_DASHED);<br>cdCanvasLine(canvas, 0, 0, 100, 100);<br>cdKillCanvas(canvas);</pre>
+    <pre>cdCanvas* canvas = cdCreateCanvas(CD_NATIVEWINDOW, IupGetAttribute(IupCanvas,&quot;WID&quot;)); <br>cdCanvasLineStyle(canvas, CD_DASHED);<br>cdCanvasLine(canvas, 0, 0, 100, 100);<br>cdKillCanvas(canvas);</pre>
   
 
 
@@ -23,7 +23,7 @@
 
 
   
-    <pre>cdCanvas* canvas = cdCreateCanvas(CD_NATIVEWINDOW, IupGetAttribute(IupCanvas,&quot;CONID&quot;)); <br>wdCanvasViewport(canvas, 0, 100, 0, 100); <br>wdCanvasWindow(canvas, -1.5, 1.5, -3000, 3000); <br>cdCanvasLineStyle(canvas, CD_DASHED); <br>wdCanvasLine(canvas, -0.5, -500, 1.0, 1000); <br>cdKillCanvas(canvas);<code> </code></pre>
+    <pre>cdCanvas* canvas = cdCreateCanvas(CD_NATIVEWINDOW, IupGetAttribute(IupCanvas,&quot;WID&quot;)); <br>wdCanvasViewport(canvas, 0, 100, 0, 100); <br>wdCanvasWindow(canvas, -1.5, 1.5, -3000, 3000); <br>cdCanvasLineStyle(canvas, CD_DASHED); <br>wdCanvasLine(canvas, -0.5, -500, 1.0, 1000); <br>cdKillCanvas(canvas);<code> </code></pre>
   
 
 <h3><a name="Off Screen Drawing">Off Screen Drawing</a> (Double Buffering) </h3>
@@ -32,7 +32,7 @@
 
 
   
-    <pre>cdCanvas* canvas = cdCreateCanvas(CD_NATIVEWINDOW, IupGetAttribute(IupCanvas,&quot;CONID&quot;)); <br>cdCanvas* db_canvas = cdCreateCanvas(CD_DBUFFER, canvas); cdCanvasActivate(db_canvas); // update canvas size, window could be resized<br>cdCanvasLineStyle(db_canvas, CD_DASHED); <br>cdCanvasLine(db_canvas, 10, 10, 50, 50); <br>cdCanvasFlush(db_canvas);  // swap to the window canvas <br>cdKillCanvas(db_canvas); <br>cdKillCanvas(canvas); </pre>
+    <pre>cdCanvas* canvas = cdCreateCanvas(CD_NATIVEWINDOW, IupGetAttribute(IupCanvas,&quot;WID&quot;)); <br>cdCanvas* db_canvas = cdCreateCanvas(CD_DBUFFER, canvas); cdCanvasActivate(db_canvas); // update canvas size, window could be resized<br>cdCanvasLineStyle(db_canvas, CD_DASHED); <br>cdCanvasLine(db_canvas, 10, 10, 50, 50); <br>cdCanvasFlush(db_canvas);  // swap to the window canvas <br>cdKillCanvas(db_canvas); <br>cdKillCanvas(canvas); </pre>
   
   <p>To draw in a RGB image, use:</p>
   
