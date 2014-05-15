@@ -1642,10 +1642,10 @@ static void cdgetfontdim(cdCtxCanvas* ctxcanvas, int *max_width, int *line_heigh
   if (max_width)  
   {
     RectF boundingBox;
-    ctxcanvas->graphics->MeasureString(L"W", 2, 
+    ctxcanvas->graphics->MeasureString(L"W", 1, 
                                        ctxcanvas->font, PointF(0,0),
                                        &boundingBox);
-    *max_width = (int)(boundingBox.Width/2);
+    *max_width = (int)boundingBox.Width;
   }
   
   if (line_height) 

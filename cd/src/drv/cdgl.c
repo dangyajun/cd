@@ -180,6 +180,7 @@ static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int le
     {
       cdglCheckUtf8Buffer(ctxcanvas, 1);
       ctxcanvas->utf8_buffer[0] = 0;
+      free(wstr);
       return;
     }
 
@@ -459,12 +460,10 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
     }
   }
 
-  if (size < 0)
-    size = cdGetFontSizePoints(ctxcanvas->canvas, size);
-
   /* FTGL: One point in pixel space maps to 1 unit in opengl space,
   so a glyph that is 18 points high should be 18.0 units high. */
-  /* CD: that means 1 point is actually being mapped to 1 pixel */
+  /* CD: that means 1 point is actually being mapped to 1 pixel. (???) */
+  /* size = cdGetFontSizePoints(ctxcanvas->canvas, size); */
   size = cdGetFontSizePixels(ctxcanvas->canvas, size);
 
   res = (int)(ctxcanvas->canvas->xres*25.4);
