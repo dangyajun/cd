@@ -13,7 +13,6 @@
 #endif
 
 #include <GL/gl.h>
-#include <GL/glu.h>
 #endif
 
 int cmdExit(void)
@@ -39,9 +38,11 @@ void SimpleUpdateSize(cdCanvas* cnv)
   int h = IupGetInt2(canvas, "RASTERSIZE");
   IupGLMakeCurrent(canvas);
 
+  glViewport(0, 0, w, h);
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluOrtho2D(0, w, 0, h);
+  glOrtho(0, w, 0, h, -1, 1);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -78,6 +79,7 @@ int main(int argc, char** argv)
     Ihandle* canvas = IupGetHandle("SimpleCanvas");
     IupDestroy(canvas);
     canvas = IupGLCanvas("SimpleRepaint");
+    IupSetAttribute(canvas, "BUFFER", "DOUBLE");
     IupSetHandle("SimpleCanvas", canvas);
     IupAppend(dialog, canvas);
   }

@@ -553,6 +553,9 @@ void SimpleDrawTest(cdCanvas* canvas);
 
 void SimpleDraw(cdCanvas* canvas)
 {
+  if (!canvas)
+    return;
+
 #ifdef USE_OPENGL
   if (use_opengl)
     SimpleUpdateSize(canvas);
@@ -971,9 +974,9 @@ void SimpleDrawAll(cdCanvas* canvas)
     }
   }
 
-  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
+    cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
 //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
-//  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
+//  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
 //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
 
   cdCanvasSetAttribute(canvas, "ROTATE", NULL);

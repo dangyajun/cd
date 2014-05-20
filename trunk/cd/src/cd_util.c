@@ -474,12 +474,21 @@ static int winRegGetValueCount(HKEY hKey, int *count, int *max_name_size, int *m
     return 0;
 }
 
+typedef char regName[MAX_PATH];
+
+static int iCompareStr(const void *a, const void *b)
+{
+  const regName*aa = a;
+  const regName*bb = b;
+  return strcmp(*aa, *bb);
+}
+
 static char* winRegFindValue(HKEY hBaseKey, const char* key_name, const char* value_name)
 {
 	HKEY hKey;
   int i, count, max_name_size, max_value_size;
-  char *ValueName, *lpData; 
-  DWORD cchValueName, cbData;
+  DWORD cchValueName;
+  regName* ValueNames;
 
 	if (RegOpenKeyExA(hBaseKey, key_name, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
 		return NULL;
@@ -487,32 +496,35 @@ static char* winRegFindValue(HKEY hBaseKey, const char* key_name, const char* va
   if (!winRegGetValueCount(hKey, &count, &max_name_size, &max_value_size))
     return NULL;
 
-  ValueName = malloc(max_name_size);
-  lpData = malloc(max_value_size);
+  ValueNames = malloc(sizeof(regName)*count);
 
   for (i=0; i<count; i++)
   {
-    ValueName[0] = '\0';
-    cchValueName = max_name_size; 
-    cbData = max_value_size;
+    cchValueName = MAX_PATH-1;
 
     if (RegEnumValueA(hKey, i, 
-        ValueName, &cchValueName, 
-        NULL, NULL, (LPBYTE)lpData, &cbData) == ERROR_SUCCESS)
-    {
-      if (cdStrEqualNoCasePartial(ValueName, value_name))
-      {
-        free(ValueName);
-	      RegCloseKey(hKey);
-        return lpData;
-      }
+        ValueNames[i], &cchValueName, 
+        NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+      break;
+  }
+  count = i;
 
+  /* must sort to be able to do a partial compare */
+  qsort(ValueNames, count, sizeof(regName), iCompareStr);
+
+  RegCloseKey(hKey);
+
+  for (i = 0; i<count; i++)
+  {
+    if (cdStrEqualNoCasePartial(ValueNames[i], value_name))
+    {
+      char* lpData = winRegReadStringKey(hBaseKey, key_name, ValueNames[i]);
+      free(ValueNames);
+      return lpData;
     }
   }
 
-  free(ValueName);
-  free(lpData);
-	RegCloseKey(hKey);
+  free(ValueNames);
 	return NULL;
 }
 

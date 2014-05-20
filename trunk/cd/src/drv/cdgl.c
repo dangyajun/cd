@@ -1391,6 +1391,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   canvas->h = h;
   canvas->xres = res;
   canvas->yres = res;
+  canvas->bpp = 24;
 
   canvas->w_mm = ((double)canvas->w) / canvas->xres;
   canvas->h_mm = ((double)canvas->h) / canvas->yres;
