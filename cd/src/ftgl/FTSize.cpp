@@ -46,7 +46,8 @@ bool FTSize::CharSize(FT_Face* face, unsigned int pointSize, unsigned int xRes, 
 {
     if(size != pointSize || xResolution != xRes || yResolution != yRes)
     {
-        err = FT_Set_Char_Size(*face, 0L, pointSize * 64, xResolution, yResolution);
+      /* char_height is 1/64th of points */
+      err = FT_Set_Char_Size(*face, 0L, pointSize * 64, xRes, yRes);  /* FIXED IUP */
 
         if(!err)
         {

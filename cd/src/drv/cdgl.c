@@ -225,6 +225,7 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
       cdgl_fonts_max = 0;
       cdgl_fonts_count = 0;
       free(cdgl_fonts);
+      cdgl_fonts = NULL;
     }
 #ifndef WIN32
     if (cdgl_iconv != (iconv_t)-1)
@@ -460,12 +461,7 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
     }
   }
 
-  /* FTGL: One point in pixel space maps to 1 unit in opengl space,
-  so a glyph that is 18 points high should be 18.0 units high. */
-  /* CD: that means 1 point is actually being mapped to 1 pixel. (???) */
-  /* size = cdGetFontSizePoints(ctxcanvas->canvas, size); */
-  size = cdGetFontSizePixels(ctxcanvas->canvas, size);
-
+  size = cdGetFontSizePoints(ctxcanvas->canvas, size);
   res = (int)(ctxcanvas->canvas->xres*25.4);
 
   font = cdglGetFont(filename, size, res);
