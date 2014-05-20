@@ -58,9 +58,6 @@ typedef struct _cdglFontCache
   FTGLfont *font;
 } cdglFontCache;
 
-static cdglFontCache* cdgl_fonts = NULL;
-static int cdgl_fonts_count = 0;
-static int cdgl_fonts_max = 0;
 
 static int gl_canvas_count = 0;
 #ifndef WIN32
@@ -88,28 +85,32 @@ struct _cdCtxCanvas
 
   char* utf8_buffer;
   int utf8mode, utf8_buffer_len;
+
+  cdglFontCache* gl_fonts;
+  int gl_fonts_count;
+  int gl_fonts_max;
 };
 
 /******************************************************/
 
-static FTGLfont* cdglGetFont(const char* filename, int size, int res)
+static FTGLfont* cdglGetFont(cdCtxCanvas *ctxcanvas, const char* filename, int size, int res)
 {
   int i;
   FTGLfont* font;
 
-  if (!cdgl_fonts)
+  if (!ctxcanvas->gl_fonts)
   {
-    cdgl_fonts_max = 10;
-    cdgl_fonts_count = 0;
-    cdgl_fonts = malloc(sizeof(cdglFontCache)*cdgl_fonts_max);
+    ctxcanvas->gl_fonts_max = 10;
+    ctxcanvas->gl_fonts_count = 0;
+    ctxcanvas->gl_fonts = malloc(sizeof(cdglFontCache)*ctxcanvas->gl_fonts_max);
   }
 
   /* search for an existent font */
-  for (i = 0; i < cdgl_fonts_count; i++)
+  for (i = 0; i < ctxcanvas->gl_fonts_count; i++)
   {
-    if (cdStrEqualNoCase(cdgl_fonts[i].filename, filename) &&
-        cdgl_fonts[i].size == size)
-      return cdgl_fonts[i].font;
+    if (cdStrEqualNoCase(ctxcanvas->gl_fonts[i].filename, filename) &&
+        ctxcanvas->gl_fonts[i].size == size)
+      return ctxcanvas->gl_fonts[i].font;
   }
 
   /* not found, create a new font and add it to the cache */
@@ -120,17 +121,17 @@ static FTGLfont* cdglGetFont(const char* filename, int size, int res)
 
   ftglSetFontFaceSize(font, size, res);
 
-  if (cdgl_fonts_count == cdgl_fonts_max)
+  if (ctxcanvas->gl_fonts_count == ctxcanvas->gl_fonts_max)
   {
-    cdgl_fonts_max += 10;
-    cdgl_fonts = realloc(cdgl_fonts, sizeof(cdglFontCache)*cdgl_fonts_max);
+    ctxcanvas->gl_fonts_max += 10;
+    ctxcanvas->gl_fonts = realloc(ctxcanvas->gl_fonts, sizeof(cdglFontCache)*ctxcanvas->gl_fonts_max);
   }
 
-  cdgl_fonts[cdgl_fonts_count].font = font;
-  strcpy(cdgl_fonts[cdgl_fonts_count].filename, filename);
-  cdgl_fonts[cdgl_fonts_count].size = size;
+  ctxcanvas->gl_fonts[ctxcanvas->gl_fonts_count].font = font;
+  strcpy(ctxcanvas->gl_fonts[ctxcanvas->gl_fonts_count].filename, filename);
+  ctxcanvas->gl_fonts[ctxcanvas->gl_fonts_count].size = size;
 
-  cdgl_fonts_count++;
+  ctxcanvas->gl_fonts_count++;
   return font;
 }
 
@@ -216,17 +217,6 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
   gl_canvas_count--;
   if (gl_canvas_count == 0) /* last canvas */
   {
-    if (cdgl_fonts)
-    {
-      int i;
-      for (i=0; i<cdgl_fonts_count; i++)
-        ftglDestroyFont(cdgl_fonts[i].font);
-
-      cdgl_fonts_max = 0;
-      cdgl_fonts_count = 0;
-      free(cdgl_fonts);
-      cdgl_fonts = NULL;
-    }
 #ifndef WIN32
     if (cdgl_iconv != (iconv_t)-1)
       iconv_close(cdgl_iconv);
@@ -234,10 +224,17 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 #endif
   }
 
-  /* do NOT destroy the font anymore, 
-     now leave it in the cache 
-  if(ctxcanvas->font)
-    ftglDestroyFont(ctxcanvas->font);  */
+  if (ctxcanvas->gl_fonts)
+  {
+    int i;
+    for (i = 0; i<ctxcanvas->gl_fonts_count; i++)
+      ftglDestroyFont(ctxcanvas->gl_fonts[i].font);
+
+    ctxcanvas->gl_fonts_max = 0;
+    ctxcanvas->gl_fonts_count = 0;
+    free(ctxcanvas->gl_fonts);
+    ctxcanvas->gl_fonts = NULL;
+  }
 
   if (ctxcanvas->utf8_buffer)
     free(ctxcanvas->utf8_buffer);
@@ -464,7 +461,7 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
   size = cdGetFontSizePoints(ctxcanvas->canvas, size);
   res = (int)(ctxcanvas->canvas->xres*25.4);
 
-  font = cdglGetFont(filename, size, res);
+  font = cdglGetFont(ctxcanvas, filename, size, res);
   if (!font)
     return 0;
 
