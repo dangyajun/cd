@@ -56,7 +56,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype6.lib;cd.lib;iupcd.lib;iup.lib;comctl32.lib;cdcontextplus.lib;gdiplus.lib;cdpdf.lib;pdflib.lib;iupcontrols.lib;iupgl.lib;glu32.lib;opengl32.lib;cdgl.lib;ftgl.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype6.lib;cd.lib;iupcd.lib;iup.lib;comctl32.lib;cdcontextplus.lib;gdiplus.lib;cdpdf.lib;pdflib.lib;iupgl.lib;opengl32.lib;glu32.lib;cdgl.lib;ftgl.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\lib;..\..\iup\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
