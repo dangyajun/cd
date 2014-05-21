@@ -67,6 +67,8 @@ class FTFontImpl
 
         virtual float LineHeight() const;
 
+        virtual float MaxWidth() const;
+
         virtual bool FaceSize(const unsigned int size,
                               const unsigned int res);
 

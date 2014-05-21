@@ -474,10 +474,10 @@ static void cdgetfontdim(cdCtxCanvas *ctxcanvas, int *max_width, int *height, in
   if(!ctxcanvas->font)
     return;
 
-  if (max_width) *max_width = (int)ftglGetFontAdvance(ctxcanvas->font, "W");
-  if (height)    *height    = (int)ftglGetFontLineHeight(ctxcanvas->font);
-  if (ascent)    *ascent    = (int)ftglGetFontAscender(ctxcanvas->font);
-  if (descent)   *descent   = (int)-ftglGetFontDescender(ctxcanvas->font);
+  if (max_width) *max_width = cdRound(ftglGetFontMaxWidth(ctxcanvas->font));
+  if (height)    *height = cdRound(ftglGetFontLineHeight(ctxcanvas->font));
+  if (ascent)    *ascent = cdRound(ftglGetFontAscender(ctxcanvas->font));
+  if (descent)   *descent = cdRound(-ftglGetFontDescender(ctxcanvas->font));
 }
 
 static long int cdforeground(cdCtxCanvas *ctxcanvas, long int color)
@@ -594,9 +594,9 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
     return;
 
   cdglStrConvertToUTF8(ctxcanvas, s, len);
-  w = (int)ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer);
-  h = (int)ftglGetFontLineHeight(ctxcanvas->font);
-  baseline = h - (int)ftglGetFontAscender(ctxcanvas->font);
+  w = cdRound(ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer));
+  h = cdRound(ftglGetFontLineHeight(ctxcanvas->font));
+  baseline = h - cdRound(ftglGetFontAscender(ctxcanvas->font));
 
   switch (ctxcanvas->canvas->text_alignment)
   {
@@ -680,8 +680,8 @@ static void cdgettextsize(cdCtxCanvas *ctxcanvas, const char *s, int len, int *w
 
   cdglStrConvertToUTF8(ctxcanvas, s, len);
 
-  if (width)  *width = (int)ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer);
-  if (height) *height = (int)ftglGetFontLineHeight(ctxcanvas->font);
+  if (width)  *width = cdRound(ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer));
+  if (height) *height = cdRound(ftglGetFontLineHeight(ctxcanvas->font));
 }
 
 static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)

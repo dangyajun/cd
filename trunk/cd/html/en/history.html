@@ -31,7 +31,7 @@
 <body>
 
 <h2>History of Changes</h2>
-<h3>CVS (20/May/2014)</h3>
+<h3>CVS (21/May/2014)</h3>
 <ul>
 	<li><span class="hist_new">New:</span> documentation and header for the CD_IUPDBUFFER 
 	and CD_IUPDBUFFERRGB drivers implemented in IUP 3.11.</li>
@@ -40,6 +40,9 @@
 	is destroyed.</li>
 	<li><span class="hist_changed">Changed:</span> 
     attribute TEXTANTIALIAS removed from CD_GL driver. It was useless.</li>
+	<li><span class="hist_changed">Changed:</span> 
+    FTGL code to include an additional function to return the font maximum 
+	width. </li>
 	<li><span class="hist_fixed">Fixed:</span> <strong>cdCanvasGetTextSize</strong> 
 	for the CD_GL driver.</li>
 	<li><span class="hist_fixed">Fixed:</span> improved text performance with 
@@ -49,6 +52,9 @@
 	<li><span class="hist_fixed">Fixed:</span> system font name search in 
 	Windows for CD_IRGB and CD_GL drivers.</li>
 	<li><span class="hist_fixed">Fixed:</span> bpp value for the CD_GL driver.</li>
+	<li><span class="hist_fixed">Fixed:</span> FTGL to return the text height 
+	coherent with the FreeType use in the Simulation driver and to obtain better 
+	results for regular size computation.</li>
 </ul>
 <h3><a href="http://sourceforge.net/projects/canvasdraw/files/5.7/">Version 
 5.7</a> (22/Nov/2013)</h3>
