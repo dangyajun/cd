@@ -477,7 +477,7 @@ static void cdgetfontdim(cdCtxCanvas *ctxcanvas, int *max_width, int *height, in
   if (max_width) *max_width = (int)ftglGetFontAdvance(ctxcanvas->font, "W");
   if (height)    *height    = (int)ftglGetFontLineHeight(ctxcanvas->font);
   if (ascent)    *ascent    = (int)ftglGetFontAscender(ctxcanvas->font);
-  if (descent)   *descent   = (int)ftglGetFontDescender(ctxcanvas->font);
+  if (descent)   *descent   = (int)-ftglGetFontDescender(ctxcanvas->font);
 }
 
 static long int cdforeground(cdCtxCanvas *ctxcanvas, long int color)
