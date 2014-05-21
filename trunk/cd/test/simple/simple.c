@@ -1195,7 +1195,7 @@ void SimpleDrawTextFonts(cdCanvas* canvas)
   yoff = 150;
   size = -30;
 
-  cdCanvasTextAlignment(canvas, CD_CENTER);
+  cdCanvasTextAlignment(canvas, CD_BASE_CENTER);
 
   DrawTextFont(canvas, "Courier", size, xoff, yoff, "Courier");
   DrawTextFont(canvas, "Times", size, xoff, 2*yoff, "Times Roman");
