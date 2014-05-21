@@ -1622,7 +1622,7 @@ static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int 
   
   GetTextMetrics (ctxcanvas->hDC, &tm);
   ctxcanvas->font.max_width  = tm.tmMaxCharWidth;
-  ctxcanvas->font.height     = tm.tmHeight + tm.tmExternalLeading;
+  ctxcanvas->font.height     = tm.tmHeight;
   ctxcanvas->font.ascent     = tm.tmAscent;
   ctxcanvas->font.descent    = tm.tmDescent;
 
@@ -1726,7 +1726,7 @@ static int cdnativefont (cdCtxCanvas* ctxcanvas, const char* nativefont)
   
   GetTextMetrics(ctxcanvas->hDC, &tm);
   ctxcanvas->font.max_width  = tm.tmMaxCharWidth;
-  ctxcanvas->font.height     = tm.tmHeight + tm.tmExternalLeading;
+  ctxcanvas->font.height     = tm.tmHeight;
   ctxcanvas->font.ascent     = tm.tmAscent;
   ctxcanvas->font.descent    = tm.tmDescent;
 
