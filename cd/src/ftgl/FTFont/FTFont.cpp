@@ -161,6 +161,12 @@ float FTFont::LineHeight() const
 }
 
 
+float FTFont::MaxWidth() const
+{
+  return impl->MaxWidth();
+}
+
+
 FTPoint FTFont::Render(const char * string, const int len,
                        FTPoint position, FTPoint spacing, int renderMode)
 {
@@ -371,6 +377,12 @@ float FTFontImpl::Descender() const
 float FTFontImpl::LineHeight() const
 {
     return charSize.Height();
+}
+
+
+float FTFontImpl::MaxWidth() const
+{
+  return charSize.Width();
 }
 
 

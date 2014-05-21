@@ -189,6 +189,9 @@ C_FUN(float, ftglGetFontDescender, (FTGLfont *f), return 0.f, Descender, ());
 // float FTFont::LineHeight() const;
 C_FUN(float, ftglGetFontLineHeight, (FTGLfont *f), return 0.f, LineHeight, ());
 
+// float FTFont::MaxWidth() const;
+C_FUN(float, ftglGetFontMaxWidth, (FTGLfont *f), return 0.f, MaxWidth, ());
+
 // void FTFont::BBox(const char* string, float& llx, float& lly, float& llz,
 //                   float& urx, float& ury, float& urz);
 extern "C++" {

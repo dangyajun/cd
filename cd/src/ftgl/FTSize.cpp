@@ -47,7 +47,7 @@ bool FTSize::CharSize(FT_Face* face, unsigned int pointSize, unsigned int xRes, 
     if(size != pointSize || xResolution != xRes || yResolution != yRes)
     {
       /* char_height is 1/64th of points */
-      err = FT_Set_Char_Size(*face, 0L, pointSize * 64, xRes, yRes);  /* FIXED IUP */
+      err = FT_Set_Char_Size(*face, 0L, pointSize * 64, xRes, yRes);  /* CDLIB fixed resolution parameter */
 
         if(!err)
         {
@@ -88,11 +88,13 @@ float FTSize::Height() const
         return 0.0f;
     }
 
-    if(FT_IS_SCALABLE((*ftFace)))
-    {
-        return ((*ftFace)->bbox.yMax - (*ftFace)->bbox.yMin) * ((float)ftSize->metrics.y_ppem / (float)(*ftFace)->units_per_EM);
-    }
-    else
+    // CDLIB to ensure compatibility with FreeType usage, 
+    // and better results for regular size computation.
+    //if(FT_IS_SCALABLE((*ftFace)))
+    //{
+    //    return ((*ftFace)->bbox.yMax - (*ftFace)->bbox.yMin) * ((float)ftSize->metrics.y_ppem / (float)(*ftFace)->units_per_EM);
+    //}
+    //else
     {
         return static_cast<float>(ftSize->metrics.height) / 64.0f;
     }
@@ -106,11 +108,13 @@ float FTSize::Width() const
         return 0.0f;
     }
 
-    if(FT_IS_SCALABLE((*ftFace)))
-    {
-        return ((*ftFace)->bbox.xMax - (*ftFace)->bbox.xMin) * (static_cast<float>(ftSize->metrics.x_ppem) / static_cast<float>((*ftFace)->units_per_EM));
-    }
-    else
+    // CDLIB to ensure compatibility with FreeType usage, 
+    // and better results for regular size computation.
+    //if(FT_IS_SCALABLE((*ftFace)))
+    //{
+    //    return ((*ftFace)->bbox.xMax - (*ftFace)->bbox.xMin) * (static_cast<float>(ftSize->metrics.x_ppem) / static_cast<float>((*ftFace)->units_per_EM));
+    //}
+    //else
     {
         return static_cast<float>(ftSize->metrics.max_advance) / 64.0f;
     }
