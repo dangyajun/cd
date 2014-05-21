@@ -586,7 +586,7 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, int len)
 {
   int stipple = 0;
-  int w, h, descent, baseline;
+  int w, h, baseline;
   double x_origin = x;
   double y_origin = y;
 
@@ -596,9 +596,7 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
   cdglStrConvertToUTF8(ctxcanvas, s, len);
   w = (int)ftglGetFontAdvance(ctxcanvas->font, ctxcanvas->utf8_buffer);
   h = (int)ftglGetFontLineHeight(ctxcanvas->font);
-
-  descent = (int)ftglGetFontDescender(ctxcanvas->font);
-  baseline = (int)ftglGetFontLineHeight(ctxcanvas->font) - (int)ftglGetFontAscender(ctxcanvas->font);
+  baseline = h - (int)ftglGetFontAscender(ctxcanvas->font);
 
   switch (ctxcanvas->canvas->text_alignment)
   {
@@ -632,17 +630,17 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
     case CD_SOUTH_EAST:
     case CD_SOUTH_WEST:
     case CD_SOUTH:
-      y = y - descent;
+      y = y + baseline;
       break;
     case CD_NORTH_EAST:
     case CD_NORTH:
     case CD_NORTH_WEST:
-      y = y - h/2 - baseline;
+      y = y - h + baseline;
       break;
     case CD_CENTER:
     case CD_EAST:
     case CD_WEST:
-      y = y - baseline;
+      y = y - h/2 + baseline;
       break;
   }
 
