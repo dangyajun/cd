@@ -580,7 +580,7 @@ static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
-  cdfbox(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+  cdfbox(ctxcanvas, (double)xmin, (double)xmax+1, (double)ymin, (double)ymax+1);
 }
 
 static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, int len)
