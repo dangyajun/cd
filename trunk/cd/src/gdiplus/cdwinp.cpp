@@ -1477,7 +1477,7 @@ static void cdtext(cdCtxCanvas* ctxcanvas, int x, int y, const char *s, int len)
 
 static int sDesign2Pixel(int x, REAL size, int height)
 {
-  return (int)((x * size) / height);
+  return cdRound((x * size) / (REAL)height);
 }
 
 static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int size)
@@ -1645,7 +1645,7 @@ static void cdgetfontdim(cdCtxCanvas* ctxcanvas, int *max_width, int *line_heigh
     ctxcanvas->graphics->MeasureString(L"W", 1, 
                                        ctxcanvas->font, PointF(0,0),
                                        &boundingBox);
-    *max_width = (int)boundingBox.Width;
+    *max_width = cdRound(boundingBox.Width);
   }
   
   if (line_height) 

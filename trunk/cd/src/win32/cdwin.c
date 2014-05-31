@@ -1580,7 +1580,7 @@ static int cdtextalignment(cdCtxCanvas* ctxcanvas, int text_align)
 
 static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int size)
 {
-  TEXTMETRIC   tm;
+  TEXTMETRIC tm;
   DWORD bold, italic = 0, underline = 0, strikeout = 0;
   int angle, size_pixel;
   HFONT hFont;
@@ -1621,10 +1621,10 @@ static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int 
   ctxcanvas->hOldFont = SelectObject(ctxcanvas->hDC, ctxcanvas->hFont);
   
   GetTextMetrics (ctxcanvas->hDC, &tm);
-  ctxcanvas->font.max_width  = tm.tmMaxCharWidth;
-  ctxcanvas->font.height     = tm.tmHeight;
-  ctxcanvas->font.ascent     = tm.tmAscent;
-  ctxcanvas->font.descent    = tm.tmDescent;
+  ctxcanvas->font.max_width = tm.tmMaxCharWidth;
+  ctxcanvas->font.height    = tm.tmHeight;
+  ctxcanvas->font.ascent    = tm.tmAscent;
+  ctxcanvas->font.descent   = tm.tmDescent;
 
   return 1;
 }
@@ -1725,10 +1725,10 @@ static int cdnativefont (cdCtxCanvas* ctxcanvas, const char* nativefont)
   ctxcanvas->hOldFont = SelectObject(ctxcanvas->hDC, ctxcanvas->hFont);
   
   GetTextMetrics(ctxcanvas->hDC, &tm);
-  ctxcanvas->font.max_width  = tm.tmMaxCharWidth;
-  ctxcanvas->font.height     = tm.tmHeight;
-  ctxcanvas->font.ascent     = tm.tmAscent;
-  ctxcanvas->font.descent    = tm.tmDescent;
+  ctxcanvas->font.max_width = tm.tmMaxCharWidth;
+  ctxcanvas->font.height    = tm.tmHeight;
+  ctxcanvas->font.ascent    = tm.tmAscent;
+  ctxcanvas->font.descent   = tm.tmDescent;
 
   /* update cdfont parameters */
   ctxcanvas->canvas->font_style = style;
