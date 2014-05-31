@@ -715,12 +715,12 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasTextAlignment(canvas, CD_CENTER);
   cdCanvasTextOrientation(canvas, 70);
   cdCanvasFont(canvas, "Times", CD_BOLD, 24);
-//  cdCanvasSetAttribute(canvas, "ADDFONTMAP", "MyWingDings=wingxing");
-//  cdCanvasFont(canvas, "MyWingDings", CD_PLAIN, 24);
-//  cdCanvasFont(canvas, "wingxing", CD_PLAIN, 24); // Current folder
-//  cdCanvasFont(canvas, "WingDings", CD_PLAIN, 24); // Native System - Windows
-//  cdCanvasFont(canvas, "Purisa", CD_PLAIN, 24); // Native System - Linux
-//  cdCanvasFont(canvas, "../../test/simple/wingxing.ttf", CD_PLAIN, 24); // Full path
+  //  cdCanvasSetAttribute(canvas, "ADDFONTMAP", "MyWingDings=wingxing");
+  //  cdCanvasFont(canvas, "MyWingDings", CD_PLAIN, 24);
+  //  cdCanvasFont(canvas, "wingxing", CD_PLAIN, 24); // Current folder
+  //  cdCanvasFont(canvas, "WingDings", CD_PLAIN, 24); // Native System - Windows
+  //  cdCanvasFont(canvas, "Purisa", CD_PLAIN, 24); // Native System - Linux
+  //  cdCanvasFont(canvas, "../../test/simple/wingxing.ttf", CD_PLAIN, 24); // Full path
 
 //  cdCanvasSetAttribute(canvas, "UTF8MODE", "1");
   /* Draw text at center, with orientation, 
