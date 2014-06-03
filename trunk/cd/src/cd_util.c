@@ -560,7 +560,11 @@ int cdGetFontFileNameSystem(const char *type_face, int style, char* filename)
   font_title = winRegFindValue(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", win_font_name);
   if (font_title)
   {
-    sprintf(filename, "%s\\%s", font_dir, font_title);  /* font_title already includes file extension */
+    /* font_title already includes file extension, but may also contains a path */
+    if (strchr(font_title, ':'))
+      strcpy(filename, font_title);
+    else
+      sprintf(filename, "%s\\%s", font_dir, font_title);  
     free(font_title);
     free(font_dir);
     return 1;
