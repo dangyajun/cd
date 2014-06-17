@@ -98,6 +98,12 @@ ifdef USE_GDK
       endif 
 #    endif
     LIBS += freetype
+    ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
+      LIBS += fontconfig
+    endif
+    ifneq ($(findstring Linux3, $(TEC_UNAME)), )
+      LIBS += fontconfig
+    endif
     ifneq ($(findstring cygw, $(TEC_UNAME)), )
       LIBS += fontconfig
     endif
@@ -106,6 +112,12 @@ else
   ifdef USE_X11
     SRC += $(SRCX11) $(SRCNULL)
     LIBS += freetype
+    ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
+      LIBS += fontconfig
+    endif
+    ifneq ($(findstring Linux3, $(TEC_UNAME)), )
+      LIBS += fontconfig
+    endif
     ifneq ($(findstring cygw, $(TEC_UNAME)), )
       LIBS += fontconfig
     endif
@@ -115,10 +127,15 @@ else
   else
     SRC += $(SRCWIN32)
     DEFINES += UNICODE
+    LIBS += freetype6
+    ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
+      LIBS += fontconfig
+    endif
+    ifneq ($(findstring Linux3, $(TEC_UNAME)), )
+      LIBS += fontconfig
+    endif
     ifneq ($(findstring cygw, $(TEC_UNAME)), )
-      LIBS += freetype-6 fontconfig
-    else
-      LIBS += freetype6
+      LIBS += fontconfig
     endif
   endif
 endif
