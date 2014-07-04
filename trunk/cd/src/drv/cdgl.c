@@ -264,8 +264,8 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int clip_mode)
     {
       glEnable(GL_SCISSOR_TEST);
       glScissor(ctxcanvas->canvas->clip_rect.xmin, ctxcanvas->canvas->clip_rect.ymin,
-                (ctxcanvas->canvas->clip_rect.xmax - ctxcanvas->canvas->clip_rect.xmin),
-                (ctxcanvas->canvas->clip_rect.ymax - ctxcanvas->canvas->clip_rect.ymin));
+                ctxcanvas->canvas->clip_rect.xmax - ctxcanvas->canvas->clip_rect.xmin+1,
+                ctxcanvas->canvas->clip_rect.ymax - ctxcanvas->canvas->clip_rect.ymin+1);
       break;
     }
   case CD_CLIPPOLYGON:
