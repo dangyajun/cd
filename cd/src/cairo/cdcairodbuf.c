@@ -138,7 +138,7 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
 
     /* rebuild the image and the canvas */
     canvas->ctxcanvas = NULL;
-    canvas->context->cxCreateCanvas(canvas, canvas_dbuffer);
+    cdcreatecanvas(canvas, canvas_dbuffer);
     if (!canvas->ctxcanvas)
     {
       canvas->ctxcanvas = old_ctxcanvas;
