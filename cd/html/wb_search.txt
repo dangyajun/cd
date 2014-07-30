@@ -6,7 +6,6 @@ en/func/client.html
 en/drv/native.html
 en/func/control.html
 en/func/vectortext.html
-en/cvs.html
 en/func/init.html
 en/func/attributes.html
 en/drv/mf.html
@@ -24,7 +23,7 @@ en/drv/dbuf.html
 en/func/other.html
 en/download_tips.html
 en/canvas.html
-en/func/clipping.html
+en/download.html
 en/drv/emf.html
 en/drv/pdf.html
 en/drv/gdiplus.html
@@ -35,9 +34,10 @@ en/screenshots_src_lua.html
 en/drv/cgm.html
 en/drv/picture.html
 en/drv/dbufrgb.html
+en/svn.html
 en/prod.html
 en/samples.html
-en/drv/printer.html
+en/to_do.html
 en/drv.html
 en/drv/dxf.html
 en/func/color.html
@@ -55,11 +55,11 @@ en/drv/clipbd.html
 en/func/region.html
 en/drv/gdk.html
 en/func/polygon.html
-en/func/text.html
-en/to_do.html
-en/toolkits.html
-en/download.html
-en/func/marks.html
-en/drv/gl.html
-en/func/coordinates.html
 en/home.html
+en/drv/printer.html
+en/toolkits.html
+en/func/text.html
+en/drv/gl.html
+en/func/clipping.html
+en/func/marks.html
+en/func/coordinates.html
