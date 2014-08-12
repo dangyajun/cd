@@ -2,6 +2,15 @@ PROJNAME = cd
 LIBNAME = ftgl
 OPT = YES
 
+ifdef DBG
+  DEFINES += IUP_ASSERT
+  ifndef DBG_DIR
+    ifneq ($(findstring Win, $(TEC_SYSNAME)), )
+      LIBNAME := $(LIBNAME)_debug
+    endif
+  endif  
+endif  
+
 DEF_FILE = ftgl/ftgl.def
 
 ftglyph_sources = \
