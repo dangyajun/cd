@@ -189,6 +189,7 @@ C_FUN(float, ftglGetFontDescender, (FTGLfont *f), return 0.f, Descender, ());
 // float FTFont::LineHeight() const;
 C_FUN(float, ftglGetFontLineHeight, (FTGLfont *f), return 0.f, LineHeight, ());
 
+//TECGRAF
 // float FTFont::MaxWidth() const;
 C_FUN(float, ftglGetFontMaxWidth, (FTGLfont *f), return 0.f, MaxWidth, ());
 
