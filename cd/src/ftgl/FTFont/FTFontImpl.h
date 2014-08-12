@@ -67,6 +67,7 @@ class FTFontImpl
 
         virtual float LineHeight() const;
 
+        //TECGRAF
         virtual float MaxWidth() const;
 
         virtual bool FaceSize(const unsigned int size,
@@ -93,6 +94,11 @@ class FTFontImpl
 
         virtual FTPoint Render(const wchar_t *s, const int len,
                                FTPoint, FTPoint, int);
+
+        //TECGRAF
+        const char* GetFamilyName () const;
+        bool IsBold () const;
+        bool IsItalic () const;
 
         /**
          * Current face object

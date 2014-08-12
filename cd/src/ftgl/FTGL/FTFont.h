@@ -221,7 +221,7 @@ class FTGL_EXPORT FTFont
          */
         virtual float LineHeight() const;
 
-        /**
+        /**  TECGRAF
         * Gets the maximum character width for the font.
         *
         * @return  Maximum width
@@ -369,6 +369,10 @@ class FTGL_EXPORT FTFont
          */
         virtual FT_Error Error() const;
 
+        //TECGRAF
+        const char* GetFamilyName () const;
+        bool IsBold () const;
+        bool IsItalic () const;
     protected:
         /* Allow impl to access MakeGlyph */
         friend class FTFontImpl;
@@ -546,7 +550,7 @@ FTGL_EXPORT float ftglGetFontDescender(FTGLfont* font);
  */
 FTGL_EXPORT float ftglGetFontLineHeight(FTGLfont* font);
 
-/**
+/** TECGRAF
 * Gets the maximum character width for the font.
 *
 * @param font  An FTGLfont* object.

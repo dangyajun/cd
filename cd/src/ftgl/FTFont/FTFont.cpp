@@ -161,6 +161,7 @@ float FTFont::LineHeight() const
 }
 
 
+//TECGRAF
 float FTFont::MaxWidth() const
 {
   return impl->MaxWidth();
@@ -206,12 +207,28 @@ FTBBox FTFont::BBox(const wchar_t *string, const int len,
     return impl->BBox(string, len, position, spacing);
 }
 
-
 FT_Error FTFont::Error() const
 {
     return impl->err;
 }
 
+//TECGRAF
+const char* FTFont::GetFamilyName () const
+{
+  return impl->GetFamilyName();
+}
+
+//TECGRAF
+bool FTFont::IsBold () const
+{
+  return impl->IsBold();
+}
+
+//TECGRAF
+bool FTFont::IsItalic () const
+{
+  return impl->IsItalic();
+}
 
 //
 //  FTFontImpl
@@ -380,6 +397,7 @@ float FTFontImpl::LineHeight() const
 }
 
 
+//TECGRAF
 float FTFontImpl::MaxWidth() const
 {
   return charSize.Width();
@@ -562,3 +580,20 @@ bool FTFontImpl::CheckGlyph(const unsigned int characterCode)
     return true;
 }
 
+//TECGRAF
+const char* FTFontImpl::GetFamilyName () const
+{
+  return face.GetFamilyName();
+}
+
+//TECGRAF
+bool FTFontImpl::IsBold () const
+{
+  return face.IsBold();
+}
+
+//TECGRAF
+bool FTFontImpl::IsItalic () const
+{
+  return face.IsItalic();
+}

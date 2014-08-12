@@ -46,8 +46,10 @@ bool FTSize::CharSize(FT_Face* face, unsigned int pointSize, unsigned int xRes, 
 {
     if(size != pointSize || xResolution != xRes || yResolution != yRes)
     {
+      //TECGRAF
       /* char_height is 1/64th of points */
-      err = FT_Set_Char_Size(*face, 0L, pointSize * 64, xRes, yRes);  /* CDLIB fixed resolution parameter */
+      /* fixed resolution parameter */
+      err = FT_Set_Char_Size(*face, 0L, pointSize * 64, xRes, yRes);  
 
         if(!err)
         {
@@ -88,7 +90,8 @@ float FTSize::Height() const
         return 0.0f;
     }
 
-    // CDLIB to ensure compatibility with FreeType usage, 
+    //TECGRAF
+    // Commented to ensure compatibility with FreeType usage, 
     // and better results for regular size computation.
     //if(FT_IS_SCALABLE((*ftFace)))
     //{
@@ -108,7 +111,8 @@ float FTSize::Width() const
         return 0.0f;
     }
 
-    // CDLIB to ensure compatibility with FreeType usage, 
+    //TECGRAF
+    // Commented to ensure compatibility with FreeType usage, 
     // and better results for regular size computation.
     //if(FT_IS_SCALABLE((*ftFace)))
     //{

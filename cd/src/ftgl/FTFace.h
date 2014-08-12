@@ -141,6 +141,24 @@ class FTFace
          */
         FT_Error Error() const { return err; }
 
+        //TECGRAF
+        const char* GetFamilyName () const
+        {
+          return (*ftFace)->family_name;
+        }
+
+        //TECGRAF
+        bool IsBold () const
+        {
+          return (*ftFace)->style_flags & FT_STYLE_FLAG_BOLD;
+        }
+
+        //TECGRAF
+        bool IsItalic () const
+        {
+          return (*ftFace)->style_flags & FT_STYLE_FLAG_ITALIC;
+        }
+
     private:
         /**
          * The Freetype face
