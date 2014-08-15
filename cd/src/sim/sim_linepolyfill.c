@@ -589,12 +589,11 @@ void simPolyFill(cdSimulation* simulation, cdPoint* poly, int n)
      if a change is made here, must be reflected there, and vice-versa */
   simIntervalList* line_int_list, *line_il;
   int y_max, y_min, i, y, i1, fill_mode, num_lines,
-      xx_count, width, height, *xx, *hh, max_hh, n_seg;
+      xx_count, height, *xx, *hh, max_hh, n_seg;
 
   /* alloc maximum number of segments */
   simLineSegment *segments = (simLineSegment *)malloc(n*sizeof(simLineSegment));
 
-  width = simulation->canvas->w;
   height = simulation->canvas->h;
   fill_mode = simulation->canvas->fill_mode;
   

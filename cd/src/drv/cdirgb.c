@@ -568,7 +568,7 @@ static void irgbClipPoly(cdCtxCanvas* ctxcanvas, unsigned char* clip_region, cdP
   cdCanvas* canvas = ctxcanvas->canvas;
   unsigned char* clip_line;
   cdPoint* t_poly = NULL;
-  int y_max, y_min, i, y, fill_mode, num_lines, 
+  int y_max, y_min, i, y, fill_mode,  
       xx_count, width, height, *xx, *hh, max_hh, n_seg;
   
   /* alloc maximum number of segments */
@@ -598,12 +598,6 @@ static void irgbClipPoly(cdCtxCanvas* ctxcanvas, unsigned char* clip_region, cdP
   
   if (y_min < 0) 
     y_min = 0;
-
-  /* number of horizontal lines */
-  if (y_max > height-1)
-    num_lines = height-y_min;
-  else
-    num_lines = y_max-y_min+1;
 
   /* buffer to store the current horizontal intervals during the fill of an horizontal line */
   xx = (int*)malloc((n+1)*sizeof(int));    /* allocated to the maximum number of possible intervals in one line */
@@ -681,7 +675,7 @@ static void irgbClipBox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, in
 static void irgbClipArea(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
   unsigned char* clip_line = ctxcanvas->clip; /* set directly to clip */
-  int y, xsize, ysize, height, width, xrigth;
+  int y, xsize, height, width, xrigth;
 
   if (ctxcanvas->canvas->use_matrix)
   {
@@ -700,7 +694,6 @@ static void irgbClipArea(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, i
   xmax = _sNormX(ctxcanvas, xmax);
   ymax = _sNormY(ctxcanvas, ymax);
   xsize = xmax-xmin+1;
-  ysize = ymax-ymin+1;
   height = ctxcanvas->canvas->h;
   width = ctxcanvas->canvas->w;
   xrigth = width-(xmax+1);
@@ -1460,12 +1453,11 @@ static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage* ctximage, int x, int 
 
 static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage* ctximage, int x, int y, int xmin, int xmax, int ymin, int ymax)
 {
-  int iw, ih, w, h;
+  int iw, w, h;
   unsigned char *r, *g, *b, *a;
   int l, xsize, ysize, xpos, ypos, src_offset, dst_offset;
 
   iw = ctximage->w;
-  ih = ctximage->h;
 
   r = ctximage->red;
   g = ctximage->green;
