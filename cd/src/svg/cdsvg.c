@@ -996,7 +996,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   int i, j, d, rw, rh, rgb_size, target_size;
   unsigned char* rgb_data, *rgb_buffer;
   size_t buffer_size;
-  LodePNG_Encoder encoder;
+		LodePNGState state;
   char* rgb_target;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;
@@ -1020,8 +1020,8 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
     }
   }
 
-  LodePNG_Encoder_init(&encoder);
-  LodePNG_encode(&encoder, &rgb_buffer, &buffer_size, rgb_data, rw, rh);
+  lodepng_state_init(&state);
+  lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
 
   target_size = (buffer_size+2)/3*4+1;
   rgb_target = (char*)malloc(target_size);
@@ -1037,7 +1037,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   free(rgb_data);
   free(rgb_buffer);
   free(rgb_target);
-  LodePNG_Encoder_cleanup(&encoder);
+  lodepng_state_cleanup(&state);
 }
 
 static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
@@ -1045,7 +1045,7 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   int i, j, d, rw, rh, rgb_size, target_size;
   size_t buffer_size;
   unsigned char* rgb_data, *rgb_buffer;
-  LodePNG_Encoder encoder;
+  LodePNGState state;
   char* rgb_target;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;
@@ -1069,8 +1069,8 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
     }
   }
 
-  LodePNG_Encoder_init(&encoder);
-  LodePNG_encode(&encoder, &rgb_buffer, &buffer_size, rgb_data, rw, rh);
+  lodepng_state_init(&state);
+  lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
 
   target_size = (buffer_size+2)/3*4+1;
   rgb_target = (char*)malloc(target_size);
@@ -1086,7 +1086,7 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   free(rgb_data);
   free(rgb_buffer);
   free(rgb_target);
-  LodePNG_Encoder_cleanup(&encoder);
+  lodepng_state_cleanup(&state);
 }
 
 static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
@@ -1094,7 +1094,7 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   int i, j, d, rw, rh, rgb_size, target_size;
   unsigned char* rgb_data, *rgb_buffer;
   size_t buffer_size;
-  LodePNG_Encoder encoder;
+  LodePNGState state;
   char* rgb_target;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;
@@ -1120,8 +1120,8 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
     }
   }
 
-  LodePNG_Encoder_init(&encoder);
-  LodePNG_encode(&encoder, &rgb_buffer, &buffer_size, rgb_data, rw, rh);
+  lodepng_state_init(&state);
+  lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
 
   target_size = (buffer_size+2)/3*4+1;
   rgb_target = (char*)malloc(target_size);
@@ -1137,7 +1137,7 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   free(rgb_data);
   free(rgb_buffer);
   free(rgb_target);
-  LodePNG_Encoder_cleanup(&encoder);
+  lodepng_state_cleanup(&state);
 }
 
 static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
