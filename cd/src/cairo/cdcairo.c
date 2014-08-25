@@ -2163,6 +2163,18 @@ static cdAttribute cairodc_attrib =
   get_cairodc_attrib
 }; 
 
+static char* get_status_attrib(cdCtxCanvas *ctxcanvas)
+{
+  return (char*)cairo_status_to_string(cairo_status(ctxcanvas->cr));
+}
+
+static cdAttribute status_attrib =
+{
+  "STATUS",
+  NULL,
+  get_status_attrib
+};
+
 static cdAttribute gc_attrib =
 {
   "GC",
@@ -2216,6 +2228,7 @@ cdCtxCanvas *cdcairoCreateCanvas(cdCanvas* canvas, cairo_t* cr)
   cdRegisterAttribute(canvas, &hatchboxsize_attrib);
   cdRegisterAttribute(canvas, &pattern_image_attrib);
   cdRegisterAttribute(canvas, &utf8mode_attrib);
+  cdRegisterAttribute(canvas, &status_attrib);
 
   cairo_save(ctxcanvas->cr);
   cairo_set_operator(ctxcanvas->cr, CAIRO_OPERATOR_OVER);
