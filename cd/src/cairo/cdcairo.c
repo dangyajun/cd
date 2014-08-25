@@ -2151,18 +2151,6 @@ static cdAttribute interp_attrib =
   get_interp_attrib
 };
 
-static char* get_cairodc_attrib(cdCtxCanvas *ctxcanvas)
-{
-  return (char*)ctxcanvas->cr;
-}
-
-static cdAttribute cairodc_attrib =
-{
-  "CAIRODC",
-  NULL,
-  get_cairodc_attrib
-}; 
-
 static char* get_status_attrib(cdCtxCanvas *ctxcanvas)
 {
   return (char*)cairo_status_to_string(cairo_status(ctxcanvas->cr));
@@ -2174,6 +2162,18 @@ static cdAttribute status_attrib =
   NULL,
   get_status_attrib
 };
+
+static char* get_cairodc_attrib(cdCtxCanvas *ctxcanvas)
+{
+  return (char*)ctxcanvas->cr;
+}
+
+static cdAttribute cairodc_attrib =
+{
+  "CAIRODC",
+  NULL,
+  get_cairodc_attrib
+}; 
 
 static cdAttribute gc_attrib =
 {
