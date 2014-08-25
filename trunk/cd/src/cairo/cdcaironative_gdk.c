@@ -86,9 +86,9 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
   /* initial clip extents controls size */
   HRGN clip_hrgn = CreateRectRgn(0, 0, canvas->w, canvas->h);
   SelectClipRgn(hDC, clip_hrgn);
-  DeleteObject(clip_hrgn);
   surface = cairo_win32_surface_create(hDC);
-/* TODO: HDC cairo_win32_surface_get_dc(cairo_surface_t *surface);
+  DeleteObject(clip_hrgn);
+  /* TODO: HDC cairo_win32_surface_get_dc(cairo_surface_t *surface);
    ReleaseDC(GDK_WINDOW_HWND(window), ctxcanvas->hDC);  */
 #else
   XWindowAttributes wa;
@@ -110,8 +110,10 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
 int cdactivate(cdCtxCanvas *ctxcanvas)
 {
   cdCanvas* canvas = ctxcanvas->canvas;
+#if !GTK_CHECK_VERSION(3, 0, 0)
   int old_w = canvas->w;
   int old_h = canvas->h;
+#endif
 
 #if GTK_CHECK_VERSION(3, 0, 0)
   canvas->w = gdk_window_get_width(ctxcanvas->window);
@@ -123,7 +125,9 @@ int cdactivate(cdCtxCanvas *ctxcanvas)
   ctxcanvas->canvas->w_mm = ((double)canvas->w) / canvas->xres;
   ctxcanvas->canvas->h_mm = ((double)canvas->h) / canvas->yres;
 
- if (old_w != canvas->w || old_h != canvas->h)
+#if !GTK_CHECK_VERSION(3, 0, 0)  /* always recreate in GTK3 */
+  if (old_w != canvas->w || old_h != canvas->h)
+#endif
   {
     /* Re-create the context so internal size is updated. */
     cairo_destroy(ctxcanvas->cr);

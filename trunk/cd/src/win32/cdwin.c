@@ -2483,7 +2483,14 @@ static cdAttribute hdc_attrib =
   get_hdc_attrib
 }; 
 
-/* 
+static cdAttribute gc_attrib =
+{
+  "GC",
+  NULL,
+  get_hdc_attrib
+};
+
+/*
 %F Cria o canvas para o driver Windows. 
 */
 cdCtxCanvas *cdwCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDC, int wtype)
@@ -2529,6 +2536,7 @@ cdCtxCanvas *cdwCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDC, int wtype)
   ctxcanvas->fill_attrib[1] = 0;
 
   cdRegisterAttribute(canvas, &hdc_attrib);
+  cdRegisterAttribute(canvas, &gc_attrib);
   cdRegisterAttribute(canvas, &fill_attrib);
   cdRegisterAttribute(canvas, &img_points_attrib);
   cdRegisterAttribute(canvas, &img_mask_attrib);

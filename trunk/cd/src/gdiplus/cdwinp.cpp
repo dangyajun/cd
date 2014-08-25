@@ -2765,6 +2765,13 @@ static cdAttribute hdc_attrib =
   get_hdc_attrib
 }; 
 
+static cdAttribute gc_attrib =
+{
+  "GC",
+  NULL,
+  get_hdc_attrib
+};
+
 static char* get_gdiplus_attrib(cdCtxCanvas* ctxcanvas)
 {
   (void)ctxcanvas;
@@ -2859,6 +2866,7 @@ cdCtxCanvas *cdwpCreateCanvas(cdCanvas* canvas, Graphics* graphics, int wtype)
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &linecap_attrib);
   cdRegisterAttribute(canvas, &hdc_attrib);
+  cdRegisterAttribute(canvas, &gc_attrib);
   cdRegisterAttribute(canvas, &window_rgn_attrib);
   cdRegisterAttribute(canvas, &gdiplus_attrib);
   cdRegisterAttribute(canvas, &utf8mode_attrib);
