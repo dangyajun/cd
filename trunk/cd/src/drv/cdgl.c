@@ -969,10 +969,13 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   }
 
   if (w != rw || h != rh)
-    glPixelZoom((GLfloat)w/rw, (GLfloat)h/rh);
+    glPixelZoom((GLfloat)w / (GLfloat)rw, (GLfloat)h / (GLfloat)rh);
 
   glRasterPos2i(x, y);
   glDrawPixels(rw, rh, GL_RGB, GL_UNSIGNED_BYTE, glImage);
+
+  if (w != rw || h != rh)
+    glPixelZoom(1.0f, 1.0f);
 
   (void)ih;
   (void)ctxcanvas;
@@ -1008,7 +1011,7 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   }
 
   if (w != rw || h != rh)
-    glPixelZoom((GLfloat)w/rw, (GLfloat)h/rh);
+    glPixelZoom((GLfloat)w / (GLfloat)rw, (GLfloat)h / (GLfloat)rh);
 
   if (!glIsEnabled(GL_BLEND))
   {
@@ -1022,6 +1025,9 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 
   if (!blend)
     glDisable(GL_BLEND);
+
+  if (w != rw || h != rh)
+    glPixelZoom(1.0f, 1.0f);
 
   (void)ih;
   (void)ctxcanvas;
@@ -1056,10 +1062,13 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   }
 
   if (w != rw || h != rh)
-    glPixelZoom((GLfloat)w/rw, (GLfloat)h/rh);
+    glPixelZoom((GLfloat)w / (GLfloat)rw, (GLfloat)h / (GLfloat)rh);
 
   glRasterPos2i(x, y);
   glDrawPixels(rw, rh, GL_RGB, GL_UNSIGNED_BYTE, glImage);
+
+  if (w != rw || h != rh)
+    glPixelZoom(1.0f, 1.0f);
 
   (void)ih;
   (void)ctxcanvas;
