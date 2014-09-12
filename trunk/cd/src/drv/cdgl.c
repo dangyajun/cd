@@ -968,7 +968,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
     y = 0;
   }
 
-  if (w != rw || w != rh)
+  if (w != rw || h != rh)
     glPixelZoom((GLfloat)w/rw, (GLfloat)h/rh);
 
   glRasterPos2i(x, y);
