@@ -208,7 +208,14 @@ void cdwDIBReference(cdwDIB* dib, BYTE* bmi, BYTE* bits)
   dib->bmi = (BITMAPINFO*)bmi;
   dib->bmih = &dib->bmi->bmiHeader;
   dib->bmic = dib->bmi->bmiColors;
-  
+
+  /* sanity check */
+  if (dib->bmih->biCompression != BI_RGB && dib->bmih->biCompression != BI_BITFIELDS)
+  {
+    dib->type = -1;
+    return;
+  }
+
   if (dib->bmih->biBitCount > 8)
   {
     dib->type = 0;
