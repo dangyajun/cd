@@ -1123,9 +1123,20 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int 
     }
   }
 
+  /* TODO: PDF_set_parameter(ctxcanvas->pdf, "textformat", "utf8"); */
+
   newfont = PDF_load_font(ctxcanvas->pdf, nativefontname, 0, "auto", options);
-  if (newfont<0) 
-    return 0;
+  if (newfont < 0)
+  {
+    if (cdStrEqualNoCase(type_face, "Monospace") || cdStrEqualNoCase(type_face, "Courier New"))
+      return cdfont(ctxcanvas, "Courier", style, size);
+    else if (cdStrEqualNoCase(type_face, "Serif") || cdStrEqualNoCase(type_face, "Times New Roman"))
+      return cdfont(ctxcanvas, "Times", style, size);
+    else if (cdStrEqualNoCase(type_face, "Sans") || cdStrEqualNoCase(type_face, "Arial"))
+      return cdfont(ctxcanvas, "Helvetica", style, size);
+    else
+      return 0;
+  }
 
   ctxcanvas->font = newfont;
 
@@ -1748,3 +1759,4 @@ cdContext* cdContextPDF(void)
 {
   return &cdPDFContext;
 }
+

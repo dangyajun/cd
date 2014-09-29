@@ -371,7 +371,7 @@ void primUpdateAttrib_Fill(tPrimNode *prim, cdCanvas *canvas)
   cdCanvasInteriorStyle(canvas, prim->attrib.fill.interior_style);
 }
 
-void primUpdateAttrib_Text(tPrimNode *prim, cdCanvas *canvas)
+void primUpdateAttrib_Text(tPrimNode *prim, cdCanvas *canvas, int size)
 {
   cdCanvasSetForeground(canvas, prim->attrib.text.foreground);
   cdCanvasTextAlignment(canvas, prim->attrib.text.text_alignment);
@@ -380,7 +380,10 @@ void primUpdateAttrib_Text(tPrimNode *prim, cdCanvas *canvas)
   if (canvas->native_font[0])
     cdCanvasNativeFont(canvas, prim->attrib.text.native_font);
   else
-    cdCanvasFont(canvas, prim->attrib.text.font_type_face, prim->attrib.text.font_style, prim->attrib.text.font_size);
+  {
+    if (size == 0) size = prim->attrib.text.font_size;
+    cdCanvasFont(canvas, prim->attrib.text.font_type_face, prim->attrib.text.font_style, size);
+  }
 }
 
 static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int size)
@@ -1060,13 +1063,23 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
       cdfCanvasChord(canvas, sfScaleX(prim->param.arcsectorchordf.xc), sfScaleY(prim->param.arcsectorchordf.yc), sfScaleW(prim->param.arcsectorchordf.w), sfScaleH(prim->param.arcsectorchordf.h), prim->param.arcsectorchord.angle1, prim->param.arcsectorchord.angle2);
       break;
     case CDPIC_TEXT:
-      primUpdateAttrib_Text(prim, canvas);
+    {
+      int size = 0;
+      if (scale && !canvas->native_font[0])
+        size = sScaleH(prim->attrib.text.font_size);
+      primUpdateAttrib_Text(prim, canvas, size);
       cdCanvasText(canvas, sScaleX(prim->param.text.x), sScaleY(prim->param.text.y), prim->param.text.s);
       break;
+    }
     case CDPIC_FTEXT:
-      primUpdateAttrib_Text(prim, canvas);
+    {
+      int size = 0;
+      if (scale && !canvas->native_font[0])
+        size = sScaleH(prim->attrib.text.font_size);
+      primUpdateAttrib_Text(prim, canvas, size);
       cdfCanvasText(canvas, sfScaleX(prim->param.textf.x), sfScaleY(prim->param.textf.y), prim->param.text.s);
       break;
+    }
     case CDPIC_POLY:
       if (prim->param.poly.mode == CD_FILL)
         primUpdateAttrib_Fill(prim, canvas);

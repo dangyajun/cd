@@ -774,7 +774,7 @@ static void cdbox (cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int yma
   else
   {
     SelectObject(ctxcanvas->hDC, ctxcanvas->hNullPen);  /* tira o desenho da borda */
-    Rectangle(ctxcanvas->hDC, xmin, ymin, xmax+2, ymax+2);     /* +2 porque a pena e' NULL NULL e o nao inclue right/bottom */
+    Rectangle(ctxcanvas->hDC, xmin, ymin, xmax+2, ymax+2);     /* +2 porque a pena e' NULL e o nao inclue right/bottom */
     SelectObject(ctxcanvas->hDC, ctxcanvas->hPen);      /* restaura a Pen corrente */
   }
 }

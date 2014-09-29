@@ -345,13 +345,13 @@ pdc_getenv_filename(pdc_core *pdc, const char *envname)
     char *envvalue = NULL;
     int flags = PDC_CONV_TMPALLOC;
 
-#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)  /* CDLIB */
+#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)  /* CDPDF */
 
     size_t len = strlen(envname), wlen;
     const wchar_t *wenvvalue;
     wchar_t *wenvname;
 
-/*    DWORD nSize = PDC_FILENAMELEN; CDLIB */
+/*    DWORD nSize = PDC_FILENAMELEN; CDPDF */
 
     wlen = 2 * (len + 1);
     wenvname = (wchar_t *) pdc_calloc(pdc, wlen, fn);
