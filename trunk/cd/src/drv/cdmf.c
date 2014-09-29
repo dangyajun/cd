@@ -914,31 +914,11 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
     case CDMF_OLDFONT:
       fscanf(file, "%d %d %d", &iparam1, &iparam2, &iparam3);
       if (iparam1 < 0 || iparam1 > 3) break;
-      if (iparam3 < 0)
-      {
-        iparam3 = -sScaleH(abs(iparam3));
-        if (iparam3 > -5) iparam3 = -5;
-      }
-      else
-      {
-        iparam3 = sScaleH(abs(iparam3));
-        if (iparam3 < 5) iparam3 = 5;
-      }
-      cdCanvasFont(canvas, font_family[iparam1], iparam2, iparam3);
+      cdCanvasFont(canvas, font_family[iparam1], iparam2, sScaleH(iparam3));
       break;
     case CDMF_FONT:
       fscanf(file, "%d %d %[^\n\r]", &iparam2, &iparam3, TextBuffer);
-      if (iparam3 < 0)
-      {
-        iparam3 = -sScaleH(abs(iparam3));
-        if (iparam3 > -5) iparam3 = -5;
-      }
-      else
-      {
-        iparam3 = sScaleH(abs(iparam3));
-        if (iparam3 < 5) iparam3 = 5;
-      }
-      cdCanvasFont(canvas, TextBuffer, iparam2, iparam3);
+      cdCanvasFont(canvas, TextBuffer, iparam2, sScaleH(iparam3));
       break;
     case CDMF_NATIVEFONT:
       fscanf(file, "%[^\n\r]", TextBuffer);
@@ -1142,7 +1122,7 @@ void cdcreatecanvasMF(cdCanvas *canvas, void *data)
   ctxcanvas->canvas = canvas;
   canvas->ctxcanvas = ctxcanvas;
 
-  size = strlen(filename);
+  size = (int)strlen(filename);
   ctxcanvas->filename = malloc(size+1);
   memcpy(ctxcanvas->filename, filename, size+1);
 

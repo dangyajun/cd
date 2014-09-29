@@ -53,7 +53,7 @@
 #include <ssdef.h>
 #endif
 
-#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)  /* CDLIB */
+#if defined(WIN32) && !defined(__BORLANDC__) && !defined(__CYGWIN__)  /* CDPDF */
 
 #ifndef _IOB_ENTRIES
 #define _IOB_ENTRIES 20

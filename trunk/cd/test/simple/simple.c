@@ -167,7 +167,8 @@ void PlayCanvasDriver(cdContext* ctx, char* StrData)
   cdCanvasBackground(curCanvas, CD_WHITE);
   cdCanvasClear(curCanvas);
   cdCanvasGetSize(curCanvas, &w, &h, 0, 0);
-  cdCanvasPlay(curCanvas, ctx, 100, w-100, 100, h-100, StrData);
+//  cdCanvasPlay(curCanvas, ctx, 100, w-100, 100, h-100, StrData);
+  cdCanvasPlay(curCanvas, ctx, 0, w - 1, 0, h - 1, StrData);
 //  cdCanvasPlay(curCanvas, ctx, 0, 0, 0, 0, StrData);
 }
 

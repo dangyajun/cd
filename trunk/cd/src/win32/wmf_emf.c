@@ -486,6 +486,7 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
 {
   static int curx = 0, cury = 0;
   static int upd_xy = 0;
+  static int last_pen_null = 0;
   cdDataEMF* data_emf = (cdDataEMF*)lpData;
   cdCanvas* canvas = data_emf->canvas;
 
@@ -716,6 +717,8 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
     {
       EMRCREATEPEN* data = (EMRCREATEPEN*)lpEMFR;
       int style;
+
+      last_pen_null = 0;
       
       switch (data->lopn.lopnStyle)
       {
@@ -736,6 +739,7 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         break;
       case PS_NULL:
         style = -1;
+        last_pen_null = 1;
         break;
       default:
         style = CD_CONTINUOUS;
@@ -754,6 +758,8 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
     {
       EMREXTCREATEPEN* data = (EMREXTCREATEPEN*)lpEMFR;
       int style;
+
+      last_pen_null = 0;
       
       switch (data->elp.elpPenStyle & PS_STYLE_MASK)
       {
@@ -774,6 +780,7 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         break;
       case PS_NULL:
         style = -1;
+        last_pen_null = 1;
         break;
       case PS_USERSTYLE:
         style = CD_CUSTOM;
@@ -866,6 +873,36 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
       }
       break;
     }
+  case EMR_RECTANGLE:
+    {
+      EMRRECTANGLE* data = (EMRRECTANGLE*)lpEMFR;
+      /* The rectangle that is drawn excludes the bottom and right edges. CD includes xmax and ymax. */
+      int bottom = data->rclBox.bottom - 1;
+      int right = data->rclBox.right - 1;
+      /* If a PS_NULL pen is used, the dimensions of the rectangle are 1 pixel less in height and 1 pixel less in width. */
+      if (last_pen_null)
+      {
+        bottom--;
+        right--;
+      }
+      cdCanvasBox(canvas, sScaleX(data->rclBox.left), sScaleX(right), sScaleY(bottom), sScaleY(data->rclBox.top));
+      break;
+    }
+  case EMR_ROUNDRECT:
+    {
+      EMRROUNDRECT* data = (EMRROUNDRECT*)lpEMFR;
+      /* The rectangle that is drawn excludes the bottom and right edges. CD includes xmax and ymax. */
+      int bottom = data->rclBox.bottom - 1;
+      int right = data->rclBox.right - 1;
+      /* If a PS_NULL pen is used, the dimensions of the rectangle are 1 pixel less in height and 1 pixel less in width. */
+      if (last_pen_null)
+      {
+        bottom--;
+        right--;
+      }
+      cdCanvasBox(canvas, sScaleX(data->rclBox.left), sScaleX(right), sScaleY(bottom), sScaleY(data->rclBox.top));
+      break;
+    }
   case EMR_ANGLEARC:
     {
       EMRANGLEARC* data = (EMRANGLEARC*)lpEMFR;
@@ -884,23 +921,12 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
       int xc, yc, w, h;
       
       xc = sScaleX((data->rclBox.left + data->rclBox.right - 1) / 2);
-      w = sScaleW(data->rclBox.right - data->rclBox.left - 1);
       yc = sScaleY((data->rclBox.top + data->rclBox.bottom - 1) / 2);
+
+      w = sScaleW(data->rclBox.right - data->rclBox.left - 1);
       h = sScaleH(data->rclBox.bottom - data->rclBox.top - 1);
       
       cdCanvasSector(canvas, xc, yc, w, h, 0, 360);
-      break;
-    }
-  case EMR_RECTANGLE:
-    {
-      EMRRECTANGLE* data = (EMRRECTANGLE*)lpEMFR;
-      cdCanvasBox (canvas, sScaleX(data->rclBox.left), sScaleX(data->rclBox.right-2), sScaleY(data->rclBox.bottom-2), sScaleY(data->rclBox.top));
-      break;
-    }
-  case EMR_ROUNDRECT:
-    {
-      EMRROUNDRECT* data = (EMRROUNDRECT*)lpEMFR;
-      cdCanvasBox (canvas, sScaleX(data->rclBox.left), sScaleX(data->rclBox.right-2), sScaleY(data->rclBox.bottom-2), sScaleY(data->rclBox.top));
       break;
     }
   case EMR_ARC:
@@ -981,6 +1007,35 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
       cdCanvasSector(canvas, xc, yc, w, h, angle1, angle2);
       break;
     }
+  case EMR_ARCTO:
+    {
+      EMRARCTO* data = (EMRARCTO*)lpEMFR;
+      int xc, yc, w, h;
+      double angle1, angle2;
+
+      xc = (data->rclBox.left + data->rclBox.right - 1) / 2;
+      yc = (data->rclBox.top + data->rclBox.bottom - 1) / 2;
+
+      w = data->rclBox.right - data->rclBox.left - 1;
+      h = data->rclBox.bottom - data->rclBox.top - 1;
+
+      angle1 = atan2((yc - data->ptlStart.y)*w, (data->ptlStart.x - xc)*h) * CD_RAD2DEG;
+      angle2 = atan2((yc - data->ptlEnd.y)*w, (data->ptlEnd.x - xc)*h) * CD_RAD2DEG;
+
+      if (angle1 == angle2)
+        angle2 += 360;
+
+      xc = sScaleX(xc);
+      yc = sScaleY(yc);
+      w = sScaleW(w);
+      h = sScaleH(h);
+
+      cdCanvasArc(canvas, xc, yc, w, h, angle1, angle2);
+
+      curx = data->ptlEnd.x; /* isto nao esta' certo mas e' a minha melhor aproximacao */
+      cury = data->ptlEnd.y;
+      break;
+    }
   case EMR_CREATEPALETTE:
     {
       int k;
@@ -999,35 +1054,6 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
       cdCanvasLine(canvas, sScaleX(curx), sScaleY(cury), sScaleX(data->ptl.x), sScaleY(data->ptl.y));
       curx = data->ptl.x;
       cury = data->ptl.y;
-      break;
-    }
-  case EMR_ARCTO:
-    {
-      EMRARCTO* data = (EMRARCTO*)lpEMFR;
-      int xc, yc, w, h;
-      double angle1, angle2;
-      
-      xc = (data->rclBox.left + data->rclBox.right - 1) / 2;
-      yc = (data->rclBox.top + data->rclBox.bottom - 1) / 2;
-      
-      w = data->rclBox.right - data->rclBox.left - 1;
-      h = data->rclBox.bottom - data->rclBox.top - 1;
-      
-      angle1 = atan2((yc - data->ptlStart.y)*w, (data->ptlStart.x - xc)*h) * CD_RAD2DEG;
-      angle2 = atan2((yc - data->ptlEnd.y)*w, (data->ptlEnd.x - xc)*h) * CD_RAD2DEG;
-
-      if (angle1 == angle2)
-        angle2+=360;
-      
-      xc = sScaleX(xc);
-      yc = sScaleY(yc);
-      w = sScaleW(w);
-      h = sScaleH(h);
-      
-      cdCanvasArc(canvas, xc, yc, w, h, angle1, angle2);
-      
-      curx = data->ptlEnd.x; /* isto nao esta' certo mas e' a minha melhor aproximacao */
-      cury = data->ptlEnd.y;
       break;
     }
   case EMR_POLYDRAW:
@@ -1085,7 +1111,9 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeRGB(&dib, r, g, b);
         
-        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), dib.w, dib.h, 0, 0, 0, 0);
+        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), 
+                                                                    sScaleY(data->yDest + abs(dib.h) - 1), 
+                                                                    dib.w, dib.h, 0, 0, 0, 0);
         
         free(r);
         free(g);
@@ -1101,7 +1129,9 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeMap(&dib, index, colors);
         
-        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), dib.w, dib.h, 0, 0, 0, 0);
+        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), 
+                                                                          sScaleY(data->yDest + abs(dib.h) - 1), 
+                                                                          dib.w, dib.h, 0, 0, 0, 0);
         
         free(index);
         free(colors);
@@ -1139,7 +1169,10 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeRGB(&dib, r, g, b);
         
-        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), sScaleW(data->cxDest), sScaleH(data->cyDest), 0, 0, 0, 0);
+        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), 
+                                                                    sScaleY(data->yDest + abs(data->cyDest) - 1), 
+                                                                    sScaleW(data->cxDest), sScaleH(data->cyDest), 
+                                                                    0, 0, 0, 0);
         
         free(r);
         free(g);
@@ -1155,7 +1188,10 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeMap(&dib, index, colors);
         
-        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), sScaleW(data->cxDest), sScaleH(data->cyDest), 0, 0, 0, 0);
+        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), 
+                                                                          sScaleY(data->yDest + abs(data->cyDest) - 1), 
+                                                                          sScaleW(data->cxDest), sScaleH(data->cyDest), 
+                                                                          0, 0, 0, 0);
         
         free(index);
         free(colors);
@@ -1193,7 +1229,9 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeRGB(&dib, r, g, b);
         
-        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), dib.w, dib.h, 0, 0, 0, 0);
+        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), 
+                                                                    sScaleY(data->yDest + abs(dib.h) - 1), 
+                                                                    dib.w, dib.h, 0, 0, 0, 0);
         
         free(r);
         free(g);
@@ -1209,7 +1247,9 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeMap(&dib, index, colors);
         
-        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), dib.w, dib.h, 0, 0, 0, 0);
+        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), 
+                                                                          sScaleY(data->yDest + abs(dib.h) - 1), 
+                                                                          dib.w, dib.h, 0, 0, 0, 0);
         
         free(index);
         free(colors);
@@ -1241,7 +1281,9 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeRGB(&dib, r, g, b);
         
-        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), dib.w, dib.h, 0, 0, 0, 0);
+        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), 
+                                                                    sScaleY(data->yDest + abs(dib.h) - 1), 
+                                                                    dib.w, dib.h, 0, 0, 0, 0);
         
         free(r);
         free(g);
@@ -1257,7 +1299,9 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeMap(&dib, index, colors);
         
-        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), dib.w, dib.h, 0, 0, 0, 0);
+        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), 
+                                                                          sScaleY(data->yDest + abs(dib.h) - 1), 
+                                                                          dib.w, dib.h, 0, 0, 0, 0);
         
         free(index);
         free(colors);
@@ -1287,7 +1331,10 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeRGB(&dib, r, g, b);
         
-        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), sScaleW(data->cxDest), sScaleH(data->cyDest), 0, 0, 0, 0);
+        cdCanvasPutImageRectRGB(canvas, dib.w, abs(dib.h), r, g, b, sScaleX(data->xDest), 
+                                                                    sScaleY(data->yDest + abs(data->cyDest) - 1),
+                                                                    sScaleW(data->cxDest), sScaleH(data->cyDest), 
+                                                                    0, 0, 0, 0);
         
         free(r);
         free(g);
@@ -1303,7 +1350,10 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         
         cdwDIBDecodeMap(&dib, index, colors);
         
-        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), sScaleY(data->yDest + abs(dib.h)), sScaleW(data->cxDest), sScaleH(data->cyDest), 0, 0, 0, 0);
+        cdCanvasPutImageRectMap(canvas, dib.w, abs(dib.h), index, colors, sScaleX(data->xDest), 
+                                                                          sScaleY(data->yDest + abs(data->cyDest) - 1), 
+                                                                          sScaleW(data->cxDest), sScaleH(data->cyDest), 
+                                                                          0, 0, 0, 0);
         
         free(index);
         free(colors);
@@ -1328,14 +1378,13 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
       
       if (data->elfw.elfLogFont.lfStrikeOut)
         style |= CD_STRIKEOUT;
-      
-      size = sScaleH(abs(data->elfw.elfLogFont.lfHeight));
-      if (size < 5) size = 5;
+                 
+      size = sScaleH(data->elfw.elfLogFont.lfHeight);
 
       if (data->elfw.elfLogFont.lfOrientation)
         cdCanvasTextOrientation(canvas, data->elfw.elfLogFont.lfOrientation/10);
 
-      cdCanvasFont(canvas, cdwStringFromUnicode(data->elfw.elfLogFont.lfFaceName, lstrlenW(data->elfw.elfLogFont.lfFaceName), utf8mode), style, -size);
+      cdCanvasFont(canvas, cdwStringFromUnicode(data->elfw.elfLogFont.lfFaceName, lstrlenW(data->elfw.elfLogFont.lfFaceName), utf8mode), style, size);
       break;
     }
   case EMR_EXTTEXTOUTA:
@@ -1673,7 +1722,8 @@ static int CALLBACK EMFEnumProc(HDC hDC, HANDLETABLE *lpHTable,	const ENHMETAREC
         memcpy(str, ((unsigned char*)data) + data->aemrtext[t].offString, data->aemrtext[t].nChars + 1);
         str[data->aemrtext[t].nChars] = 0;
         
-        cdCanvasText(canvas, sScaleX(data->aemrtext[t].ptlReference.x), sScaleY(data->aemrtext[t].ptlReference.y), str);
+        cdCanvasText(canvas, sScaleX(data->aemrtext[t].ptlReference.x), 
+                             sScaleY(data->aemrtext[t].ptlReference.y), str);
         
         free(str);
       }
@@ -1733,12 +1783,12 @@ static HANDLE GetPlaceableMetaFile(FILE* file)
   fseek(file, 0, SEEK_SET);
   
   /* read the placeable header */
-  wBytesRead = fread((void*)&aldusMFHeader, sizeof(APMFILEHEADER), 1, file);
+  wBytesRead = (int)fread((void*)&aldusMFHeader, sizeof(APMFILEHEADER), 1, file);
   if(wBytesRead == 0)	
     return NULL;
   
   /* read the metafile header */
-  wBytesRead = fread((void*)&mfHeader, sizeof(METAHEADER), 1, file);
+  wBytesRead = (int)fread((void*)&mfHeader, sizeof(METAHEADER), 1, file);
   if( wBytesRead == 0)  
     return NULL;
   
@@ -1759,7 +1809,7 @@ static HANDLE GetPlaceableMetaFile(FILE* file)
   fseek(file, sizeof(APMFILEHEADER), SEEK_SET);
   
   /* read metafile bits */
-  wBytesRead = fread((void*)lpMem, (WORD)(mfHeader.mtSize * 2L), 1, file);
+  wBytesRead = (int)fread((void*)lpMem, (WORD)(mfHeader.mtSize * 2L), 1, file);
   if (wBytesRead == 0)  
   {
     GlobalUnlock(hMem);
@@ -1801,7 +1851,7 @@ int cdplayWMF(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void *da
     return CD_ERROR;
   
   /* read the first dword of the file to see if it is a placeable wmf */
-  wBytesRead = fread((void*)&dwIsAldus, 4, 1, file);
+  wBytesRead = (int)fread((void*)&dwIsAldus, 4, 1, file);
   if (wBytesRead == 0)  
   {
     fclose(file);
@@ -1817,7 +1867,7 @@ int cdplayWMF(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void *da
     fseek(file, 0, SEEK_SET);
     
     /* read the wmf header */
-    wBytesRead = fread((void*)&mfHeader, sizeof(METAHEADER), 1, file);
+    wBytesRead = (int)fread((void*)&mfHeader, sizeof(METAHEADER), 1, file);
     
     /* done with file so close it */
     fclose(file);
@@ -1862,7 +1912,7 @@ int cdplayWMF(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void *da
   if (yres<=0) yres=1;
   
   data_emf.canvas = canvas;
-  
+
   if ((xmax-xmin+1)>1 && (ymax-ymin+1)>1) /* always update data_emf.rect when scaling */
   {
     data_emf.bottom = -0xFFFFFF;
