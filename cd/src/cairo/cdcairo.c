@@ -71,7 +71,7 @@ static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
           g_free(ctxcanvas->utf8_buffer);
         ctxcanvas->utf8_buffer = gtkStrToUTF8(str, *len, "ISO8859-1");   /* if string is not UTF-8, assume ISO8859-1 */
         if (!ctxcanvas->utf8_buffer) return (char*)str;
-        *len = strlen(ctxcanvas->utf8_buffer);
+        *len = (int)strlen(ctxcanvas->utf8_buffer);
         return ctxcanvas->utf8_buffer;
       }
     }
@@ -85,7 +85,7 @@ static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
           g_free(ctxcanvas->utf8_buffer);
         ctxcanvas->utf8_buffer = gtkStrToUTF8(str, *len, charset);
         if (!ctxcanvas->utf8_buffer) return (char*)str;
-        *len = strlen(ctxcanvas->utf8_buffer);
+        *len = (int)strlen(ctxcanvas->utf8_buffer);
         return ctxcanvas->utf8_buffer;
       }
     }
@@ -133,11 +133,6 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
   cairo_reset_clip(ctxcanvas->cr);
   cairo_rectangle(ctxcanvas->cr, xmin, ymin, xmax-xmin+1, ymax-ymin+1);
   cairo_clip(ctxcanvas->cr);
-}
-
-static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
-{
-  cdfcliparea(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
 }
 
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
@@ -2262,7 +2257,6 @@ void cdcairoInitTable(cdCanvas* canvas)
   canvas->cxFText = cdftext;
 
   canvas->cxClip = cdclip;
-  canvas->cxClipArea = cdcliparea;
   canvas->cxFClipArea = cdfcliparea;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineWidth = cdlinewidth;
