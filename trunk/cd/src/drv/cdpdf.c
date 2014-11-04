@@ -207,11 +207,6 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
   setcliprect(ctxcanvas, xmin, ymin, xmax, ymax);
 }
 
-static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
-{
-  cdfcliparea(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
-}
-
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
 {
   if (mode == CD_CLIPAREA)
@@ -1728,7 +1723,6 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
 
   canvas->cxClip = cdclip;
-  canvas->cxClipArea = cdcliparea;
   canvas->cxFClipArea = cdfcliparea;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineWidth = cdlinewidth;

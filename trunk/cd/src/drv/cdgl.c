@@ -264,8 +264,8 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int clip_mode)
     {
       glEnable(GL_SCISSOR_TEST);
       glScissor(ctxcanvas->canvas->clip_rect.xmin, ctxcanvas->canvas->clip_rect.ymin,
-                ctxcanvas->canvas->clip_rect.xmax - ctxcanvas->canvas->clip_rect.xmin+1,
-                ctxcanvas->canvas->clip_rect.ymax - ctxcanvas->canvas->clip_rect.ymin+1);
+                ctxcanvas->canvas->clip_rect.xmax - ctxcanvas->canvas->clip_rect.xmin + 1,
+                ctxcanvas->canvas->clip_rect.ymax - ctxcanvas->canvas->clip_rect.ymin + 1);
       break;
     }
   case CD_CLIPPOLYGON:
@@ -277,22 +277,18 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int clip_mode)
   return clip_mode;
 }
 
-static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
+static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
-  if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA) 
+  if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA)
   {
-    ctxcanvas->canvas->clip_rect.xmin = (int)xmin;
-    ctxcanvas->canvas->clip_rect.ymin = (int)ymin;
-    ctxcanvas->canvas->clip_rect.xmax = (int)xmax;
-    ctxcanvas->canvas->clip_rect.ymax = (int)ymax;
+    ctxcanvas->canvas->clip_rect.xmin = xmin;
+    ctxcanvas->canvas->clip_rect.ymin = ymin;
+    ctxcanvas->canvas->clip_rect.xmax = xmax;
+    ctxcanvas->canvas->clip_rect.ymax = ymax;
     cdclip(ctxcanvas, CD_CLIPAREA);
   }
 }
 
-static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
-{
-  cdfcliparea(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
-}
 
 /******************************************************/
 
@@ -522,7 +518,12 @@ static void cdfline(cdCtxCanvas *ctxcanvas, double x1, double y1, double x2, dou
 
 static void cdline(cdCtxCanvas *ctxcanvas, int x1, int y1, int x2, int y2)
 {
-  cdfline(ctxcanvas, (double)x1, (double)y1, (double)x2, (double)y2);
+  glBegin(GL_LINES);
+  glVertex2i(x1, y1);
+  glVertex2i(x2, y2);
+  glEnd();
+
+  (void)ctxcanvas;
 }
 
 static void cdfrect(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
@@ -539,7 +540,14 @@ static void cdfrect(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymi
 
 static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
-  cdfrect(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+  glBegin(GL_LINE_LOOP);
+  glVertex2i(xmin, ymin);
+  glVertex2i(xmax, ymin);
+  glVertex2i(xmax, ymax);
+  glVertex2i(xmin, ymax);
+  glEnd();
+
+  (void)ctxcanvas;
 }
 
 static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
@@ -1456,7 +1464,6 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxFSector = cdfSimSector;
   canvas->cxFChord = cdfSimChord;
   canvas->cxFText = cdftext;
-  canvas->cxFClipArea = cdfcliparea;
 
   canvas->cxScrollArea = cdscrollarea;
   canvas->cxCreateImage = cdcreateimage;

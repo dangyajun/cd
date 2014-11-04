@@ -141,11 +141,6 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
     cdclip(ctxcanvas, CD_CLIPAREA);
 }
 
-static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
-{
-  cdfcliparea(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
-}
-
 static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
 {
   if (ctxcanvas->transform_control)
@@ -1307,7 +1302,6 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxChord = cdchord;
   canvas->cxText = cdtext;
   canvas->cxClip = cdclip;
-  canvas->cxClipArea = cdcliparea;
   canvas->cxFont = cdfont;
   
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
