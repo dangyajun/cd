@@ -1194,14 +1194,16 @@ void SimpleDrawTextFonts(cdCanvas* canvas)
 
   xoff = 470;
   yoff = 150;
-  size = -30;
+//  size = -30;
+  xoff = 270;
+  size = 10;
 
   cdCanvasTextAlignment(canvas, CD_BASE_CENTER);
 
   DrawTextFont(canvas, "Courier", size, xoff, yoff, "Courier");
   DrawTextFont(canvas, "Times", size, xoff, 2*yoff, "Times Roman");
   DrawTextFont(canvas, "Helvetica", size, xoff, 3*yoff, "Helvetica");
-  DrawTextFont(canvas, "System", size, xoff, 4*yoff, "System");
+//  DrawTextFont(canvas, "System", size, xoff, 4*yoff, "System");
 
   {
 //    static char native[50] = "Tecmedia, -60";
