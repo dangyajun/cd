@@ -46,13 +46,10 @@ void SimpleUpdateSize(cdCanvas* cnv)
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+  glTranslatef(0.375, 0.375, 0.0);  /* render all primitives at integer positions */
 
   if (cnv)
-  {
-    char StrData[100];
-    sprintf(StrData, "%dx%d", w, h);  /* no need to update resolution */
-    cdCanvasSetAttribute(cnv, "SIZE", StrData);
-  }
+    cdCanvasSetfAttribute(cnv, "SIZE", "%dx%d", w, h);  /* no need to update resolution */
 }
 
 void SimpleFlush(void)
