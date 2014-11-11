@@ -7,13 +7,6 @@
 
 #include "simple.h"
 
-#ifdef USE_OPENGL
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#include <GL/gl.h>
-#endif
 
 int cmdExit(void)
 {
@@ -34,22 +27,16 @@ opengl32
 void SimpleUpdateSize(cdCanvas* cnv)
 {
   Ihandle* canvas = IupGetHandle("SimpleCanvas");
-  int w = IupGetInt(canvas, "RASTERSIZE");
-  int h = IupGetInt2(canvas, "RASTERSIZE");
   IupGLMakeCurrent(canvas);
 
-  glViewport(0, 0, w, h);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w, 0, h, -1, 1);
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslatef(0.375, 0.375, 0.0);  /* render all primitives at integer positions */
-
   if (cnv)
-    cdCanvasSetfAttribute(cnv, "SIZE", "%dx%d", w, h);  /* no need to update resolution */
+  {
+    int w, h;
+    double res = IupGetDouble(NULL, "SCREENDPI") / 25.4;
+    IupGetIntInt(canvas, "DRAWSIZE", &w, &h);
+
+    cdCanvasSetfAttribute(cnv, "SIZE", "%dx%d %g", w, h, res);  /* no need to update resolution */
+  }
 }
 
 void SimpleFlush(void)

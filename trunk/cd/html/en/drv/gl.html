@@ -13,6 +13,9 @@
 .style2 {
 	font-family: Courier;
 }
+.auto-style1 {
+	color: #FF0000;
+}
 </style>
 </head>
 
@@ -34,7 +37,7 @@
   ftgl.txt</a>. FTGL is copyright to Henry Maddocks.</p>
 <p>The driver is not dependent of system functions. It uses only the OpenGL 
 portable functions. So if the window canvas changes its size the attribute &quot;SIZE&quot; 
-must be set with the new size or <strong>cdCanvasGetSize</strong> will return an incorrect value.</p>
+<span class="auto-style1"><strong>must</strong></span> be set with the new size.</p>
 
 <h3>Use</h3>
 
@@ -62,8 +65,12 @@ must be set with the new size or <strong>cdCanvasGetSize</strong> will return an
 <h3>Behavior of Functions</h3>
 <h4>Control&nbsp; </h4>
 <ul>
-  <li><a href="../func/other.html#cdPlay">
-  <font face="Courier"><strong>Play</strong></font></a>: does nothing, returns
+  <li><a href="../func/init.html#cdActivate"><font face="Courier"><strong>
+  Activate</strong></font></a>: updates the OpenGL viewport and default 
+  transformation. The SIZE attribute <strong>must</strong> be updated before 
+  activating the canvas.&nbsp; </li>
+	<li><a href="../func/other.html#cdPlay">
+    <font face="Courier"><strong>Play</strong></font></a>: does nothing, returns
   <font face="Courier">CD_ERROR</font>. </li>
 </ul>
 <h4>Coordinate System and Clipping </h4>
@@ -149,10 +156,12 @@ must be set with the new size or <strong>cdCanvasGetSize</strong> will return an
 </ul>
 
 <ul>
-  <li>&quot;<strong><span class="style2">SIZE</span></strong>&quot;: sets the canvas size. 
+    <li>&quot;<strong><span class="style2">SIZE</span></strong>&quot;: sets the canvas size. 
 	Must be used after the window is resized. The format is the same of the data 
 	parameter in cdCreateCanvas, <em>&quot;width<strong>x</strong>height [resolution]&quot;</em>      
-	or in C &quot;<em><strong><tt>%dx%d %g&quot;.</tt></strong></em></li>
+	or in C &quot;<strong><em><tt>%dx%d %g&quot;.</tt></em></strong> 
+	<span class="auto-style1"><strong>IMPORTANT</strong></span>: this attribute 
+	must be updated when the canvas window size is changed.</li>
 </ul>
 
 <ul>

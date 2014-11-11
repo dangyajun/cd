@@ -212,6 +212,23 @@ static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int le
 
 /******************************************************/
 
+static int cdactivate(cdCtxCanvas *ctxcanvas)
+{
+  /* SIZE attribute MUST be updated when the canvas window is resized */
+  cdCanvas* canvas = ctxcanvas->canvas;
+  glViewport(0, 0, canvas->w, canvas->h);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, canvas->w, 0, canvas->h, -1, 1);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glTranslatef(0.375, 0.375, 0.0);  /* render all primitives at integer positions */
+
+  return CD_OK;
+}
+
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
   gl_canvas_count--;
@@ -1476,6 +1493,7 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxPutImageRectMap = cdputimagerectmap;
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
 
+  canvas->cxActivate = cdactivate;
   canvas->cxKillCanvas = cdkillcanvas;
 }
 
