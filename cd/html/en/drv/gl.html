@@ -50,6 +50,9 @@ portable functions. So if the window canvas changes its size the attribute &quot
   <p>It must include the initial canvas' dimensions.<font face="Courier"> Width</font> and <font face="Courier">height</font> 
   are provided in pixels (note the lowercase &quot;x&quot; between them). The 
 	resolution is optional, its default value is &quot;3.78 pixels/mm&quot; (96 DPI).</p>
+<p><span class="auto-style1"><strong>IMPORTANT</strong></span>: When the canvas 
+is created the OpenGL rendering context must already be set with the *<strong>MakeCurrent</strong> 
+native system function.</p>
   
 
 
@@ -92,7 +95,10 @@ portable functions. So if the window canvas changes its size the attribute &quot
 </ul>
 <h4>Client Images</h4>
 <ul>
-    <li>Images are bitmaps, and cannot be directly rotated or scaled.</li>
+    <li>When OpenGL version is greater than 1.x, images are handled with 
+	textures and follow transformation and clipping. When OpenGL version is 1.x 
+	images are bitmaps, and do NOT follow transformation and can not be 
+	positioned outside the clipping region.</li>
 </ul>
 <h4>Attributes </h4>
 <ul>
