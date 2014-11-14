@@ -68,6 +68,7 @@ struct _cdCtxImage
 {
   unsigned int w, h;
   GLubyte* img;     /* always RGBA 32bpp */
+  GLuint texture;
 };
 
 struct _cdCtxCanvas
@@ -1012,6 +1013,41 @@ static int iGLIsOpenGL2orMore(void)
     return 0;
 }
 
+static GLuint cdglCreateTexture(void)
+{
+  GLuint texture;
+  glGenTextures(1, &texture);
+
+  glBindTexture(GL_TEXTURE_2D, texture);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  return texture;
+}
+
+static void cdglDrawTexture(GLuint texture, int x, int y, int w, int h)
+{
+  int x2 = x + w - 1;
+  int y2 = y + h - 1;
+
+  glDisable(GL_POLYGON_SMOOTH);
+  glEnable(GL_TEXTURE_2D);
+
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+  glBegin(GL_QUADS);
+  glTexCoord2d(0.0, 0.0); glVertex2d(x, y);
+  glTexCoord2d(1.0, 0.0); glVertex2d(x2 + 0.375, y);
+  glTexCoord2d(1.0, 1.0); glVertex2d(x2 + 0.375, y2 + 0.375);
+  glTexCoord2d(0.0, 1.0); glVertex2d(x, y2 + 0.375);
+  glEnd();
+
+  glDisable(GL_TEXTURE_2D);
+  glEnable(GL_POLYGON_SMOOTH);
+}
+
 static void cdglPutImage(int rw, int rh, const unsigned char* glImage, int format, int x, int y, int w, int h)
 {
   if (iGLIsOpenGL2orMore())
@@ -1021,39 +1057,13 @@ static void cdglPutImage(int rw, int rh, const unsigned char* glImage, int forma
        Its maximum size is 3379 (GL_MAX_TEXTURE_SIZE).
        In OpenGL 1.x its size must be a power of two.
        */
-    GLuint texture;
-    glGenTextures(1, &texture);
-
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    GLuint texture = cdglCreateTexture();
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, rw, rh, 0, format, GL_UNSIGNED_BYTE, glImage);
 
-    if (texture)
-    {
-      int x2 = x + w - 1;
-      int y2 = y + h - 1;
+    cdglDrawTexture(texture, x, y, w, h);
 
-      glDisable(GL_POLYGON_SMOOTH);
-      glEnable(GL_TEXTURE_2D);
-
-      glBindTexture(GL_TEXTURE_2D, texture);
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, 0.0); glVertex2d(x, y);
-      glTexCoord2d(1.0, 0.0); glVertex2d(x2 + 0.375, y);
-      glTexCoord2d(1.0, 1.0); glVertex2d(x2 + 0.375, y2 + 0.375);
-      glTexCoord2d(0.0, 1.0); glVertex2d(x, y2 + 0.375);
-      glEnd();
-
-      glDisable(GL_TEXTURE_2D);
-      glEnable(GL_POLYGON_SMOOTH);
-
-      glDeleteTextures(1, &texture);
-    }
+    glDeleteTextures(1, &texture);
   }
   else
   {
@@ -1190,6 +1200,10 @@ static cdCtxImage *cdcreateimage (cdCtxCanvas *ctxcanvas, int w, int h)
   ctximage->h = h;
 
   ctximage->img = (GLubyte*)malloc(w*h*4);  /* each pixel uses 4 bytes (RGBA) */
+  if (iGLIsOpenGL2orMore())
+    ctximage->texture = cdglCreateTexture();
+  else
+    ctximage->texture = 0;
 
   if (!ctximage->img)
   {
@@ -1204,7 +1218,13 @@ static cdCtxImage *cdcreateimage (cdCtxCanvas *ctxcanvas, int w, int h)
 static void cdgetimage (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x, int y)
 {
   glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-  glReadPixels(x, y - ctximage->h+1, ctximage->w, ctximage->h, GL_RGBA, GL_UNSIGNED_BYTE, ctximage->img);
+  glReadPixels(x, y - ctximage->h + 1, ctximage->w, ctximage->h, GL_RGBA, GL_UNSIGNED_BYTE, ctximage->img);
+
+  if (ctximage->texture)
+  {
+    glBindTexture(GL_TEXTURE_2D, ctximage->texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ctximage->w, ctximage->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, ctximage->img);
+  }
 
   (void)ctxcanvas;
 }
@@ -1218,7 +1238,13 @@ static void cdputimagerect (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x,
 
   if (rw == (int)ctximage->w && rh == (int)ctximage->h)
   {
-    cdglPutImage(rw, rh, ctximage->img, GL_RGBA, x, y, rw, rh);
+    if (ctximage->texture)
+      cdglDrawTexture(ctximage->texture, x, y, ctximage->w, ctximage->h);
+    else
+    {
+      glRasterPos2i(x, y);
+      glDrawPixels(ctximage->w, ctximage->h, GL_RGBA, GL_UNSIGNED_BYTE, ctximage->img);
+    }
   }
   else
   {
@@ -1236,6 +1262,9 @@ static void cdputimagerect (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x,
 
 static void cdkillimage (cdCtxImage *ctximage)
 {
+  if (ctximage->texture)
+    glDeleteTextures(1, &(ctximage->texture));
+
   free(ctximage->img);
   free(ctximage);
 }
