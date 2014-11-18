@@ -1,7 +1,8 @@
-/***************************************************************************\
-* $Id: cdlua5ctx.c,v 1.9 2013-08-05 19:20:05 scuri Exp $
-*                                                                           *
-\***************************************************************************/
+/** \file
+ * \brief Lua Binding for cdContext related methods
+ *
+ * See Copyright Notice in cd.h
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
