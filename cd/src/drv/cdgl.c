@@ -81,9 +81,6 @@ struct _cdCtxCanvas
   int rotate_center_x;
   int rotate_center_y;
 
-  int poly_holes[500];
-  int holes;
-
   char* utf8_buffer;
   int utf8mode, utf8_buffer_len;
 
@@ -1392,35 +1389,6 @@ static cdAttribute utf8mode_attrib =
   get_utf8mode_attrib
 }; 
 
-static void set_poly_attrib(cdCtxCanvas *ctxcanvas, char* data)
-{
-  int hole;
-
-  if (data == NULL)
-  {
-    ctxcanvas->holes = 0;
-    return;
-  }
-
-  sscanf(data, "%d", &hole);
-  ctxcanvas->poly_holes[ctxcanvas->holes] = hole;
-  ctxcanvas->holes++;
-}
-
-static char* get_poly_attrib(cdCtxCanvas *ctxcanvas)
-{
-  static char holes[10];
-  sprintf(holes, "%d", ctxcanvas->holes);
-  return holes;
-}
-
-static cdAttribute poly_attrib =
-{
-  "POLYHOLE",
-  set_poly_attrib,
-  get_poly_attrib
-}; 
-
 static void set_rotate_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
@@ -1536,7 +1504,6 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &version_attrib);
-  cdRegisterAttribute(canvas, &poly_attrib);
   cdRegisterAttribute(canvas, &size_attrib);
   cdRegisterAttribute(canvas, &alpha_attrib);
   cdRegisterAttribute(canvas, &aa_attrib);
