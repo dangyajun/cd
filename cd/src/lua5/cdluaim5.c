@@ -143,10 +143,10 @@ static int imlua_wdCanvasPutImageRect(lua_State *L)
   double y = luaL_checknumber(L, 4);
   double w = luaL_checknumber(L, 5);
   double h = luaL_checknumber(L, 6);
-  int xmin = luaL_optint(L, 7, 0);
-  int xmax = luaL_optint(L, 8, 0);
-  int ymin = luaL_optint(L, 9, 0);
-  int ymax = luaL_optint(L, 10, 0);
+  int xmin = luaL_optinteger(L, 7, 0);
+  int xmax = luaL_optinteger(L, 8, 0);
+  int ymin = luaL_optinteger(L, 9, 0);
+  int ymax = luaL_optinteger(L, 10, 0);
 
   if (!imImageIsBitmap(image))
     luaL_argerror(L, 1, "image is not a bitmap");
@@ -165,14 +165,14 @@ static int imlua_cdCanvasPutImageRect(lua_State *L)
 {
   imImage *image = imlua_checkimage(L, 1);
   cdCanvas* canvas = cdlua_checkcanvas(L, 2);
-  int x = luaL_checkint(L, 3);
-  int y = luaL_checkint(L, 4);
-  int w = luaL_checkint(L, 5);
-  int h = luaL_checkint(L, 6);
-  int xmin = luaL_optint(L, 7, 0);
-  int xmax = luaL_optint(L, 8, 0);
-  int ymin = luaL_optint(L, 9, 0);
-  int ymax = luaL_optint(L, 10, 0);
+  int x = luaL_checkinteger(L, 3);
+  int y = luaL_checkinteger(L, 4);
+  int w = luaL_checkinteger(L, 5);
+  int h = luaL_checkinteger(L, 6);
+  int xmin = luaL_optinteger(L, 7, 0);
+  int xmax = luaL_optinteger(L, 8, 0);
+  int ymin = luaL_optinteger(L, 9, 0);
+  int ymax = luaL_optinteger(L, 10, 0);
 
   if (!imImageIsBitmap(image))
     luaL_argerror(L, 1, "image is not a bitmap");
@@ -188,8 +188,8 @@ static int imlua_cdCanvasGetImage(lua_State *L)
 {
   imImage *image = imlua_checkimage(L, 1);
   cdCanvas* canvas = cdlua_checkcanvas(L, 2);
-  int x = luaL_optint(L, 3, 0);
-  int y = luaL_optint(L, 4, 0);
+  int x = luaL_optinteger(L, 3, 0);
+  int y = luaL_optinteger(L, 4, 0);
 
   if (image->color_space != IM_RGB || image->data_type != IM_BYTE)
     luaL_argerror(L, 1, "image is not RGB/byte");

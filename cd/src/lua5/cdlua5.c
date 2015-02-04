@@ -48,7 +48,7 @@ cdluaContext* cdlua_getcontext(lua_State * L, int param)
 {
   cdluaLuaState* cdL = cdlua_getstate(L);
 
-  int driver = luaL_checkint(L, param);
+  int driver = luaL_checkinteger(L, param);
   if ((driver < 0) || (driver >= cdL->numdrivers))
     luaL_argerror(L, param, "unknown driver");
 
@@ -364,8 +364,8 @@ static int cdlua5_createstipple(lua_State *L)
   int size;
   unsigned char* stipple;
 
-  int width = luaL_checkint(L, 1);
-  int height = luaL_checkint(L, 2);
+  int width = luaL_checkinteger(L, 1);
+  int height = luaL_checkinteger(L, 2);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "stipple dimensions should be positive integers");
@@ -398,7 +398,7 @@ static int cdlua5_indexstipple(lua_State *L)
 {
   cdluaStipple* stipple_p = cdlua_checkstipple(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= stipple_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
@@ -415,11 +415,11 @@ static int cdlua5_newindexstipple(lua_State *L)
 
   cdluaStipple* stipple_p = cdlua_checkstipple(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= stipple_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
-  value = (unsigned char)luaL_checkint(L, 3);
+  value = (unsigned char)luaL_checkinteger(L, 3);
   if ((value != 0 && value != 1)) 
     luaL_argerror(L, 3, "value must be 0 or 1");
 
@@ -432,8 +432,8 @@ static int cdlua5_createpattern(lua_State *L)
   int size;
   long int *pattern;
 
-  int width = luaL_checkint(L, 1);
-  int height = luaL_checkint(L, 2);
+  int width = luaL_checkinteger(L, 1);
+  int height = luaL_checkinteger(L, 2);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "pattern dimensions should be positive integers");
@@ -466,7 +466,7 @@ static int cdlua5_indexpattern(lua_State *L)
 {
   cdluaPattern* pattern_p = cdlua_checkpattern(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= pattern_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
@@ -483,7 +483,7 @@ static int cdlua5_newindexpattern(lua_State *L)
 
   cdluaPattern* pattern_p = cdlua_checkpattern(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= pattern_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
@@ -508,9 +508,9 @@ static int cdlua5_createbitmap(lua_State *L)
 {
   cdBitmap *bitmap;
 
-  int width = luaL_checkint(L, 1);
-  int height = luaL_checkint(L, 2);
-  int type = luaL_checkint(L, 3);
+  int width = luaL_checkinteger(L, 1);
+  int height = luaL_checkinteger(L, 2);
+  int type = luaL_checkinteger(L, 3);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "bitmap dimensions should be positive integers");
@@ -539,7 +539,7 @@ static int cdlua5_killbitmap(lua_State *L)
 static int cdlua5_bitmapgetdata(lua_State *L)
 {
   cdBitmap* bitmap = cdlua_checkbitmap(L, 1);
-  int dataptr = luaL_checkint(L, 2);
+  int dataptr = luaL_checkinteger(L, 2);
 
   unsigned char *data = cdBitmapGetData(bitmap, dataptr);
   if (data)
@@ -574,10 +574,10 @@ static int cdlua5_BitmapType(lua_State *L)
 static int cdlua5_bitmapsetrect(lua_State *L)
 {
   cdBitmap* bitmap = cdlua_checkbitmap(L, 1);
-  int xmin = (int) luaL_checkint(L, 2);
-  int xmax = (int) luaL_checkint(L, 3);
-  int ymin = (int) luaL_checkint(L, 4);
-  int ymax = (int) luaL_checkint(L, 5);
+  int xmin = (int) luaL_checkinteger(L, 2);
+  int xmax = (int) luaL_checkinteger(L, 3);
+  int ymin = (int) luaL_checkinteger(L, 4);
+  int ymax = (int) luaL_checkinteger(L, 5);
 
   cdBitmapSetRect(bitmap, xmin, xmax, ymin, ymax);
   return 0;
@@ -601,8 +601,8 @@ static int cdlua5_createimagergb(lua_State * L)
 {  
   unsigned char *red, *green, *blue;
   int size;
-  int width = luaL_checkint(L,1);
-  int height = luaL_checkint(L,2);
+  int width = luaL_checkinteger(L,1);
+  int height = luaL_checkinteger(L,2);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "image dimensions should be positive integers");
@@ -641,8 +641,8 @@ static int cdlua5_createimagergba(lua_State * L)
 {  
   unsigned char *red, *green, *blue, *alpha;
   int size;
-  int width = luaL_checkint(L,1);
-  int height = luaL_checkint(L,2);
+  int width = luaL_checkinteger(L,1);
+  int height = luaL_checkinteger(L,2);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "image dimensions should be positive integers");
@@ -684,8 +684,8 @@ static int cdlua5_createimagemap(lua_State *L)
 {
   int size;
   unsigned char *index;
-  int width = luaL_checkint(L,1);
-  int height = luaL_checkint(L,2);
+  int width = luaL_checkinteger(L,1);
+  int height = luaL_checkinteger(L,2);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "imagemap dimensions should be positive integers");
@@ -723,7 +723,7 @@ static int cdlua5_indeximagemap(lua_State *L)
 {
   cdluaImageMap* imagemap_p = cdlua_checkimagemap(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= imagemap_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
@@ -740,11 +740,11 @@ static int cdlua5_newindeximagemap(lua_State *L)
 
   cdluaImageMap* imagemap_p = cdlua_checkimagemap(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= imagemap_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
-  value = luaL_checkint(L, 3);
+  value = luaL_checkinteger(L, 3);
   if ((value < 0 || value > 255)) 
     luaL_argerror(L, 3, "value should be in range [0, 255]");
 
@@ -762,7 +762,7 @@ static int cdlua5_indexchannel(lua_State *L)
 {
   cdluaImageChannel* channel_p = cdlua_checkchannel(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || 
       (channel_p->size > 0 && index >= channel_p->size) || 
       (channel_p->size == -1 && index >= 256)) {
@@ -789,7 +789,7 @@ static int cdlua5_newindexchannel(lua_State *L)
 
   cdluaImageChannel* channel_p = cdlua_checkchannel(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || 
       (channel_p->size > 0 && index >= channel_p->size) || 
       (channel_p->size == -1 && index >= 256)) {
@@ -798,7 +798,7 @@ static int cdlua5_newindexchannel(lua_State *L)
   
   if (channel_p->size > 0)
   {
-    value = luaL_checkint(L, 3);
+    value = luaL_checkinteger(L, 3);
     if ((value < 0 || value > 255))
       luaL_argerror(L, 3, "value should be in range [0, 255]");
     channel_p->channel[index] = (unsigned char) value;
@@ -959,7 +959,7 @@ static int cdlua5_registercallback(lua_State *L)
 
   cdlua_ctx = cdlua_getcontext(L, 1);
 
-  cb_i = luaL_checkint(L, 2);
+  cb_i = luaL_checkinteger(L, 2);
   if (cb_i >= cdlua_ctx->cb_n)
     luaL_argerror(L, 2, "invalid callback parameter");
  
@@ -1011,9 +1011,9 @@ static int cdlua5_encodecolor(lua_State *L)
   unsigned char red_i, green_i, blue_i;
   long int color;
 
-  red_f = luaL_checkint(L, 1);
-  green_f = luaL_checkint(L, 2);
-  blue_f = luaL_checkint(L, 3);
+  red_f = luaL_checkinteger(L, 1);
+  green_f = luaL_checkinteger(L, 2);
+  blue_f = luaL_checkinteger(L, 3);
 
   if (red_f < 0 || red_f > 255)
     luaL_argerror(L, 1, "color components values should be in range [0, 255]");
@@ -1127,7 +1127,7 @@ static int cdlua5_createpalette(lua_State *L)
   int size_i;
   long int *palette;
 
-  size_i = luaL_checkint(L, 1);
+  size_i = luaL_checkinteger(L, 1);
   if (size_i < 1)
     luaL_argerror(L, 1, "palette size should be a positive integer");
 
@@ -1158,7 +1158,7 @@ static int cdlua5_indexpalette(lua_State *L)
 {
   cdluaPalette* pal = cdlua_checkpalette(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= pal->count)
     luaL_argerror(L, 2, "index is out of bounds");
 
@@ -1174,7 +1174,7 @@ static int cdlua5_newindexpalette(lua_State *L)
   long int color;
   cdluaPalette* pal = cdlua_checkpalette(L, 1);
 
-  int index = luaL_checkint(L, 2);
+  int index = luaL_checkinteger(L, 2);
   if (index < 0 || index >= pal->count)
     luaL_argerror(L, 2, "index is out of bounds");
 

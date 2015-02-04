@@ -43,18 +43,24 @@ cdluagl3:
 cdlua5:
 	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA51=Yes
 	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA53=Yes
 cdluapdf5:
 	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA51=Yes
 	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluapdf5 USE_LUA53=Yes
 cdluagl5:
 	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA51=Yes
 	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluagl5 USE_LUA53=Yes
 cdluacontextplus5:
 	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA51=Yes
 	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA53=Yes
 cdluacairo5:
 	@$(TECMAKE_CMD) MF=cdluacairo5 USE_LUA51=Yes
 	@$(TECMAKE_CMD) MF=cdluacairo5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluacairo5 USE_LUA53=Yes
 cdluaim5:
 	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA51=Yes
 	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA52=Yes
+	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA53=Yes

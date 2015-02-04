@@ -54,7 +54,7 @@ static int cdlua5_sizecb(cdCanvas *canvas, int w, int h, double mm_w, double mm_
   if (!lua_isnumber(L,-1))
     luaL_error(L, "invalid return value");
 
-  return luaL_checkint(L,-1);
+  return luaL_checkinteger(L,-1);
 }
 
 
@@ -140,7 +140,7 @@ static int cgm_countercb(cdCanvas *canvas, double percent)
   if (!lua_isnumber(L,-1))
     luaL_error(L, "invalid return value");
 
-  return luaL_checkint(L,-1);
+  return luaL_checkinteger(L,-1);
 }
 
 /***************************************************************************\
@@ -161,7 +161,7 @@ static int cgm_begpictcb(cdCanvas *canvas, char *pict)
   if (!lua_isnumber(L,-1))
     luaL_error(L,"invalid return value");
 
-  return luaL_checkint(L,-1);
+  return luaL_checkinteger(L,-1);
 }
 
 static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx)
@@ -179,25 +179,25 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
   if (!lua_isnumber(L, -5))
     luaL_error(L, "invalid return value");
   
-  result_i = luaL_checkint(L, -5);
+  result_i = luaL_checkinteger(L, -5);
   if (result_i == 1)
     return 1;
 
   if (!lua_isnumber(L, -4))
     luaL_error(L, "invalid xmn return value");
-  *xmn = luaL_checkint(L, -4);
+  *xmn = luaL_checkinteger(L, -4);
 
   if (!lua_isnumber(L, -3))
     luaL_error(L, "invalid ymn return value");
-  *ymn = luaL_checkint(L, -3);
+  *ymn = luaL_checkinteger(L, -3);
 
   if (!lua_isnumber(L, -2))
     luaL_error(L, "invalid xmx return value");
-  *xmx = luaL_checkint(L, -2);
+  *xmx = luaL_checkinteger(L, -2);
 
   if (!lua_isnumber(L, -1))
     luaL_error(L, "invalid ymx return value");
-  *ymx = luaL_checkint(L, -1);
+  *ymx = luaL_checkinteger(L, -1);
 
   return result_i;
 }
@@ -219,7 +219,7 @@ static int cgm_begpictbcb(cdCanvas *canvas)
   if (!lua_isnumber(L, -1))
     luaL_error(L, "invalid return value");
     
-  return luaL_checkint(L,-1);
+  return luaL_checkinteger(L,-1);
 }
 
 /***************************************************************************\
@@ -249,7 +249,7 @@ static int cgm_sclmdecb(cdCanvas *canvas, short scl_mde, short *draw_mode_i, dou
   if (!lua_isnumber(L, -3))
     luaL_error(L, "invalid return value");
 
-  result_i = luaL_checkint(L, -3);
+  result_i = luaL_checkinteger(L, -3);
 
   if (result_i == 1)
     return 1;
@@ -283,29 +283,29 @@ static int cgm_vdcextcb(cdCanvas *canvas, short type, void *xmn, void *ymn, void
 
   if (!lua_isnumber(L, -5))
     luaL_error(L, "invalid return value");
-  result_i = luaL_checkint(L,-5);
+  result_i = luaL_checkinteger(L,-5);
   if (result_i == 1)
     return 1;
 
   if (!lua_isnumber(L, -4))
     luaL_error(L, "invalid xmn return value");
   if (type == 1) *((double *) xmn) = lua_tonumber(L, -4);
-  else *((int *) xmn) = luaL_checkint(L, -4);
+  else *((int *) xmn) = luaL_checkinteger(L, -4);
 
   if (!lua_isnumber(L, -3))
     luaL_error(L, "invalid ymn return value");
   if (type == 1) *((double *) ymn) = lua_tonumber(L, -3);
-  else *((int *) ymn) = luaL_checkint(L, -3);
+  else *((int *) ymn) = luaL_checkinteger(L, -3);
 
   if (!lua_isnumber(L, -2))
     luaL_error(L,"invalid xmx return value");
   if (type == 1) *((double *) xmx) = lua_tonumber(L, -2);
-  else *((int *) xmx) = luaL_checkint(L, -2);
+  else *((int *) xmx) = luaL_checkinteger(L, -2);
 
   if (!lua_isnumber(L, -1))
     luaL_error(L,"invalid ymx return value");
   if (type == 1) *((double *) ymx) = lua_tonumber(L, -1);
-  else *((int *) ymx) = (int) luaL_checkint(L, -1);
+  else *((int *) ymx) = (int) luaL_checkinteger(L, -1);
 
   return result_i;
 }
