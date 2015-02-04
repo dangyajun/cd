@@ -88,6 +88,7 @@ ifdef USE_GDK
     SRC += cairo/cdcairoprn_win32.c cairo/cdcairoemf.c
     LIBS += freetype6
   else
+     USE_X11 = Yes
 #    ifeq ($(findstring MacOS, $(TEC_UNAME)), )     (TODO: handle GTK using Darwin)
       SRC += cairo/cdcairoprn_unix.c
       ifdef USE_GTK3
