@@ -82,7 +82,7 @@ static int cdlua5_activecanvas(lua_State* L)
 \***************************************************************************/
 static int cdlua5_simulate(lua_State *L)
 {
-  lua_pushnumber(L, cdSimulate(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdSimulate(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -207,7 +207,7 @@ static int cdlua5_getcanvassize(lua_State *L)
 \***************************************************************************/
 static int cdlua5_updateyaxis(lua_State *L)
 {
-  int y = luaL_checkint(L, 1);
+  int y = luaL_checkinteger(L, 1);
   cdUpdateYAxis(&y);
   lua_pushnumber(L, y);
   return 1;
@@ -238,8 +238,8 @@ static int cdlua5_pixel2mm(lua_State *L)
   double mm_dx_d, mm_dy_d;
   int dx, dy;
 
-  dx = luaL_checkint(L,1);
-  dy = luaL_checkint(L,2);
+  dx = luaL_checkinteger(L,1);
+  dy = luaL_checkinteger(L,2);
 
   cdPixel2MM(dx, dy, &mm_dx_d, &mm_dy_d);
   lua_pushnumber(L, mm_dx_d);
@@ -252,7 +252,7 @@ static int cdlua5_pixel2mm(lua_State *L)
 \***************************************************************************/
 static int cdlua5_origin(lua_State *L)
 {
-  cdOrigin(luaL_checkint(L,1), luaL_checkint(L,2));
+  cdOrigin(luaL_checkinteger(L,1), luaL_checkinteger(L,2));
   return 0;
 }
 
@@ -295,10 +295,10 @@ static int wdlua5_getwindow(lua_State *L)
 \***************************************************************************/
 static int wdlua5_viewport(lua_State *L)
 {
-  int xmin = luaL_checkint(L, 1);
-  int xmax = luaL_checkint(L, 2);
-  int ymin = luaL_checkint(L, 3);
-  int ymax = luaL_checkint(L, 4);
+  int xmin = luaL_checkinteger(L, 1);
+  int xmax = luaL_checkinteger(L, 2);
+  int ymin = luaL_checkinteger(L, 3);
+  int ymax = luaL_checkinteger(L, 4);
   wdViewport(xmin, xmax, ymin, ymax);
   return 0;
 }
@@ -343,8 +343,8 @@ static int wdlua5_canvas2world(lua_State *L)
   int xv_i, yv_i;
   double xw_d, yw_d;
 
-  xv_i = luaL_checkint(L, 1);
-  yv_i = luaL_checkint(L, 2);
+  xv_i = luaL_checkinteger(L, 1);
+  yv_i = luaL_checkinteger(L, 2);
 
   wdCanvas2World(xv_i, yv_i, &xw_d, &yw_d);
   lua_pushnumber(L, xw_d);
@@ -385,7 +385,7 @@ static int cdlua5_background(lua_State *L)
 \***************************************************************************/
 static int cdlua5_writemode(lua_State *L)
 {
-  lua_pushnumber(L, cdWriteMode(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdWriteMode(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -400,7 +400,7 @@ static int cdlua5_writemode(lua_State *L)
 \***************************************************************************/
 static int cdlua5_clip(lua_State *L)
 {
-  lua_pushnumber(L, cdClip(luaL_checkint(L,1)));
+  lua_pushnumber(L, cdClip(luaL_checkinteger(L,1)));
   return 1;
 }
 
@@ -409,10 +409,10 @@ static int cdlua5_clip(lua_State *L)
 \***************************************************************************/
 static int cdlua5_cliparea(lua_State *L)
 {
-  int xmin = luaL_checkint(L, 1);
-  int xmax = luaL_checkint(L, 2);
-  int ymin = luaL_checkint(L, 3);
-  int ymax = luaL_checkint(L, 4);
+  int xmin = luaL_checkinteger(L, 1);
+  int xmax = luaL_checkinteger(L, 2);
+  int ymin = luaL_checkinteger(L, 3);
+  int ymax = luaL_checkinteger(L, 4);
 
   cdClipArea(xmin, xmax, ymin, ymax);
   return 0;
@@ -536,7 +536,7 @@ static int wdlua5_getclippoly(lua_State *L)
 \***************************************************************************/
 static int cdlua5_regioncombinemode(lua_State *L)
 {
-  lua_pushnumber(L, cdRegionCombineMode(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdRegionCombineMode(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -545,7 +545,7 @@ static int cdlua5_regioncombinemode(lua_State *L)
 \***************************************************************************/
 static int  cdlua5_pointinregion(lua_State *L)
 {
-  lua_pushnumber(L, cdPointInRegion(luaL_checkint(L, 1),luaL_checkint(L, 2)));
+  lua_pushnumber(L, cdPointInRegion(luaL_checkinteger(L, 1),luaL_checkinteger(L, 2)));
   return 1;
 }
 
@@ -563,7 +563,7 @@ static int wdlua5_pointinregion(lua_State *L)
 \***************************************************************************/
 static int cdlua5_offsetregion(lua_State *L)
 {
-  cdOffsetRegion(luaL_checkint(L, 1), luaL_checkint(L, 2));
+  cdOffsetRegion(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2));
   return 0;
 }
 
@@ -623,7 +623,7 @@ static int wdlua5_regionbox(lua_State *L)
 \***************************************************************************/
 static int cdlua5_pixel (lua_State *L)
 {
-  cdPixel(luaL_checkint(L, 1), luaL_checkint(L, 2), cdlua_checkcolor(L, 3));
+  cdPixel(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2), cdlua_checkcolor(L, 3));
   return 0 ;
 }
 
@@ -641,7 +641,7 @@ static int wdlua5_pixel (lua_State *L)
 \***************************************************************************/
 static int cdlua5_mark(lua_State *L)
 {
-  cdMark(luaL_checkint(L,1), luaL_checkint(L,2));
+  cdMark(luaL_checkinteger(L,1), luaL_checkinteger(L,2));
   return 0;
 }
 
@@ -659,7 +659,7 @@ static int wdlua5_mark(lua_State *L)
 \***************************************************************************/
 static int cdlua5_marktype(lua_State *L)
 {
-  lua_pushnumber(L, cdMarkType(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdMarkType(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -668,7 +668,7 @@ static int cdlua5_marktype(lua_State *L)
 \***************************************************************************/
 static int cdlua5_marksize(lua_State *L)
 {
-  lua_pushnumber(L, cdMarkSize(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdMarkSize(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -692,10 +692,10 @@ static int wdlua5_marksize(lua_State *L)
 \***************************************************************************/
 static int cdlua5_line(lua_State *L)
 {
-  int x1 = luaL_checkint(L,1);
-  int y1 = luaL_checkint(L,2);
-  int x2 = luaL_checkint(L,3);
-  int y2 = luaL_checkint(L,4);
+  int x1 = luaL_checkinteger(L,1);
+  int y1 = luaL_checkinteger(L,2);
+  int x2 = luaL_checkinteger(L,3);
+  int y2 = luaL_checkinteger(L,4);
   cdLine(x1, y1, x2, y2);
   return 0;
 }
@@ -718,10 +718,10 @@ static int wdlua5_line(lua_State *L)
 \***************************************************************************/
 static int cdlua5_rect(lua_State *L)
 {
-  int xmin = luaL_checkint(L,1);
-  int xmax = luaL_checkint(L,2);
-  int ymin = luaL_checkint(L,3);
-  int ymax = luaL_checkint(L,4);
+  int xmin = luaL_checkinteger(L,1);
+  int xmax = luaL_checkinteger(L,2);
+  int ymin = luaL_checkinteger(L,3);
+  int ymax = luaL_checkinteger(L,4);
   cdRect(xmin, xmax, ymin, ymax);
   return 0;
 }
@@ -744,10 +744,10 @@ static int wdlua5_rect(lua_State *L)
 \***************************************************************************/
 static int cdlua5_arc(lua_State *L)
 {
-  int xc = luaL_checkint(L,1);
-  int yc = luaL_checkint(L,2);
-  int w = luaL_checkint(L,3);
-  int h = luaL_checkint(L,4);
+  int xc = luaL_checkinteger(L,1);
+  int yc = luaL_checkinteger(L,2);
+  int w = luaL_checkinteger(L,3);
+  int h = luaL_checkinteger(L,4);
   double angle1 = luaL_checknumber(L,5);
   double angle2 = luaL_checknumber(L,6);
   cdArc(xc, yc, w, h, angle1, angle2);
@@ -774,7 +774,7 @@ static int wdlua5_arc(lua_State *L)
 \***************************************************************************/
 static int cdlua5_linestyle(lua_State *L)
 {
-  lua_pushnumber(L, cdLineStyle(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdLineStyle(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -788,7 +788,7 @@ static int cdlua5_linestyledashes(lua_State *L)
   if (!lua_istable(L, 1))
     luaL_argerror(L, 1, "invalid dashes, must be a table");
 
-  dashes_count = luaL_checkint(L, 2);
+  dashes_count = luaL_checkinteger(L, 2);
   dashes_int = (int*) malloc(dashes_count * sizeof(int));
 
   for (i=0; i < dashes_count; i++)
@@ -796,7 +796,7 @@ static int cdlua5_linestyledashes(lua_State *L)
     lua_pushnumber(L, i+1);
     lua_gettable(L,1);
 
-    dashes_int[i] = luaL_checkint(L,-1);
+    dashes_int[i] = luaL_checkinteger(L,-1);
   }
 
   cdLineStyleDashes(dashes_int, dashes_count);
@@ -810,7 +810,7 @@ static int cdlua5_linestyledashes(lua_State *L)
 \***************************************************************************/
 static int cdlua5_linewidth(lua_State *L)
 {
-  lua_pushnumber(L, cdLineWidth(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdLineWidth(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -828,7 +828,7 @@ static int wdlua5_linewidth(lua_State *L)
 \***************************************************************************/
 static int cdlua5_linejoin(lua_State *L)
 {
-  lua_pushnumber(L, cdLineJoin(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdLineJoin(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -837,7 +837,7 @@ static int cdlua5_linejoin(lua_State *L)
 \***************************************************************************/
 static int cdlua5_linecap(lua_State *L)
 {
-  lua_pushnumber(L, cdLineCap(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdLineCap(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -852,10 +852,10 @@ static int cdlua5_linecap(lua_State *L)
 \***************************************************************************/
 static int cdlua5_box(lua_State *L)
 {
-  int xmin = luaL_checkint(L, 1);
-  int xmax = luaL_checkint(L, 2);
-  int ymin = luaL_checkint(L, 3);
-  int ymax = luaL_checkint(L, 4);
+  int xmin = luaL_checkinteger(L, 1);
+  int xmax = luaL_checkinteger(L, 2);
+  int ymin = luaL_checkinteger(L, 3);
+  int ymax = luaL_checkinteger(L, 4);
   cdBox(xmin, xmax, ymin, ymax);
   return 0;
 }
@@ -878,10 +878,10 @@ static int wdlua5_box(lua_State *L)
 \***************************************************************************/
 static int cdlua5_sector(lua_State *L)
 {
-  int xc = luaL_checkint(L,1);
-  int yc = luaL_checkint(L,2);
-  int w = luaL_checkint(L,3);
-  int h = luaL_checkint(L,4);
+  int xc = luaL_checkinteger(L,1);
+  int yc = luaL_checkinteger(L,2);
+  int w = luaL_checkinteger(L,3);
+  int h = luaL_checkinteger(L,4);
   double angle1 = luaL_checknumber(L,5);
   double angle2 = luaL_checknumber(L,6);
   cdSector(xc, yc, w, h, angle1, angle2);
@@ -908,10 +908,10 @@ static int wdlua5_sector(lua_State *L)
 \***************************************************************************/
 static int cdlua5_chord(lua_State *L)
 {
-  int xc = luaL_checkint(L,1);
-  int yc = luaL_checkint(L,2);
-  int w = luaL_checkint(L,3);
-  int h = luaL_checkint(L,4);
+  int xc = luaL_checkinteger(L,1);
+  int yc = luaL_checkinteger(L,2);
+  int w = luaL_checkinteger(L,3);
+  int h = luaL_checkinteger(L,4);
   double angle1 = luaL_checknumber(L,5);
   double angle2 = luaL_checknumber(L,6);
   cdChord(xc, yc, w, h, angle1, angle2);
@@ -938,7 +938,7 @@ static int wdlua5_chord(lua_State *L)
 \***************************************************************************/
 static int cdlua5_backopacity(lua_State *L)
 {
-  lua_pushnumber(L, cdBackOpacity(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdBackOpacity(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -947,7 +947,7 @@ static int cdlua5_backopacity(lua_State *L)
 \***************************************************************************/
 static int cdlua5_fillmode(lua_State *L)
 {
-  lua_pushnumber(L, cdFillMode(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdFillMode(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -956,7 +956,7 @@ static int cdlua5_fillmode(lua_State *L)
 \***************************************************************************/
 static int cdlua5_interiorstyle(lua_State *L)
 {
-  lua_pushnumber(L, cdInteriorStyle(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdInteriorStyle(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -965,7 +965,7 @@ static int cdlua5_interiorstyle(lua_State *L)
 \***************************************************************************/
 static int cdlua5_hatch(lua_State *L)
 {
-  lua_pushnumber(L, cdHatch(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdHatch(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -1057,7 +1057,7 @@ static int cdlua5_getpattern(lua_State *L)
 static int cdlua5_text(lua_State *L)
 {
   const char* s = luaL_checkstring(L, 3);
-  cdText(luaL_checkint(L, 1), luaL_checkint(L, 2), s);
+  cdText(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2), s);
   return 0;
 }
 
@@ -1076,7 +1076,7 @@ static int wdlua5_text(lua_State *L)
 \***************************************************************************/
 static int cdlua5_font(lua_State *L)
 {
-  cdFont(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3));
+  cdFont(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2), luaL_checkinteger(L, 3));
   return 0;
 }
 
@@ -1085,7 +1085,7 @@ static int cdlua5_font(lua_State *L)
 \***************************************************************************/
 static int wdlua5_font(lua_State *L)
 {
-  wdFont(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checknumber(L, 3));
+  wdFont(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2), luaL_checknumber(L, 3));
   return 0;
 }
 
@@ -1133,7 +1133,7 @@ static int cdlua5_nativefont(lua_State *L)
 \***************************************************************************/
 static int cdlua5_textalignment(lua_State *L)
 {
-  lua_pushnumber(L, cdTextAlignment(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdTextAlignment(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -1220,8 +1220,8 @@ static int wdlua5_textsize(lua_State *L)
 static int cdlua5_textbox(lua_State *L)
 {
   int xmin, xmax, ymin, ymax;
-  int x = luaL_checkint(L, 1);
-  int y = luaL_checkint(L, 2);
+  int x = luaL_checkinteger(L, 1);
+  int y = luaL_checkinteger(L, 2);
   const char* s = luaL_checkstring(L, 3);
 
   cdTextBox(x, y, s, &xmin, &xmax, &ymin, &ymax);
@@ -1256,8 +1256,8 @@ static int wdlua5_textbox(lua_State *L)
 static int cdlua5_textbounds(lua_State *L)
 {
   int rect[8];
-  int x = luaL_checkint(L, 1);
-  int y = luaL_checkint(L, 2);
+  int x = luaL_checkinteger(L, 1);
+  int y = luaL_checkinteger(L, 2);
   const char* s = luaL_checkstring(L, 3);
 
   cdTextBounds(x, y, s, rect);
@@ -1306,7 +1306,7 @@ static int wdlua5_textbounds(lua_State *L)
 static int cdlua5_vectortext(lua_State *L)
 {
   const char* s = luaL_checkstring(L,3);
-  cdVectorText(luaL_checkint(L, 1), luaL_checkint(L, 2), s);
+  cdVectorText(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2), s);
   return 0;
 }
 
@@ -1326,7 +1326,7 @@ static int wdlua5_vectortext(lua_State *L)
 static int cdlua5_multilinevectortext(lua_State *L)
 {
   const char* s = luaL_checkstring(L, 3);
-  cdMultiLineVectorText(luaL_checkint(L, 1), luaL_checkint(L, 2), s);
+  cdMultiLineVectorText(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2), s);
   return 0;
 }
 
@@ -1345,10 +1345,10 @@ static int wdlua5_multilinevectortext(lua_State *L)
 \***************************************************************************/
 static int cdlua5_vectortextdirection(lua_State *L)
 {
-  int x1 = luaL_checkint(L,1);
-  int y1 = luaL_checkint(L,2);
-  int x2 = luaL_checkint(L,3);
-  int y2 = luaL_checkint(L,4);
+  int x1 = luaL_checkinteger(L,1);
+  int y1 = luaL_checkinteger(L,2);
+  int x2 = luaL_checkinteger(L,3);
+  int y2 = luaL_checkinteger(L,4);
   cdVectorTextDirection(x1, y1, x2, y2);
   return 0;
 }
@@ -1405,7 +1405,7 @@ static int cdlua5_vectortexttransform(lua_State *L)
 static int cdlua5_vectortextsize(lua_State *L)
 {
   const char* s = luaL_checkstring(L, 3);
-  cdVectorTextSize(luaL_checkint(L,1), luaL_checkint(L,2), s);
+  cdVectorTextSize(luaL_checkinteger(L,1), luaL_checkinteger(L,2), s);
   return 0;
 }
 
@@ -1424,7 +1424,7 @@ static int wdlua5_vectortextsize(lua_State *L)
 \***************************************************************************/
 static int cdlua5_vectorcharsize(lua_State *L)
 {
-  lua_pushnumber(L, cdVectorCharSize(luaL_checkint(L, 1)));
+  lua_pushnumber(L, cdVectorCharSize(luaL_checkinteger(L, 1)));
   return 1;
 }
 
@@ -1484,8 +1484,8 @@ static int wdlua5_getvectortextsize(lua_State *L)
 static int cdlua5_vectortextbounds(lua_State *L)
 {
   const char* s = luaL_checkstring(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
   int rect[8], i;
 
   cdGetVectorTextBounds(s, x, y, rect);
@@ -1528,8 +1528,8 @@ static int wdlua5_vectortextbounds(lua_State *L)
 static int cdlua5_getimagergb(lua_State *L)
 {
   cdluaImageRGB* imagergb_p = cdlua_checkimagergb(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
 
   cdGetImageRGB(imagergb_p->red, imagergb_p->green, imagergb_p->blue,
                 x, y, imagergb_p->width, imagergb_p->height);
@@ -1539,14 +1539,14 @@ static int cdlua5_getimagergb(lua_State *L)
 static int cdlua5_putimagerectrgb(lua_State *L)
 {
   cdluaImageRGB* imagergb_p = cdlua_checkimagergb(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
-  int w = luaL_checkint(L, 4);
-  int h = luaL_checkint(L, 5);
-  int xmin = luaL_checkint(L, 6);
-  int xmax = luaL_checkint(L, 7);
-  int ymin = luaL_checkint(L, 8);
-  int ymax = luaL_checkint(L, 9);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
+  int w = luaL_checkinteger(L, 4);
+  int h = luaL_checkinteger(L, 5);
+  int xmin = luaL_checkinteger(L, 6);
+  int xmax = luaL_checkinteger(L, 7);
+  int ymin = luaL_checkinteger(L, 8);
+  int ymax = luaL_checkinteger(L, 9);
 
   if (w < 0 || h < 0)
     luaL_argerror(L, 4, "target region dimensions should be positive integers");
@@ -1563,10 +1563,10 @@ static int wdlua5_putimagerectrgb(lua_State *L)
   double y = luaL_checknumber(L, 3);
   double w = luaL_checknumber(L, 4);
   double h = luaL_checknumber(L, 5);
-  int xmin = luaL_checkint(L, 6);
-  int xmax = luaL_checkint(L, 7);
-  int ymin = luaL_checkint(L, 8);
-  int ymax = luaL_checkint(L, 9);
+  int xmin = luaL_checkinteger(L, 6);
+  int xmax = luaL_checkinteger(L, 7);
+  int ymin = luaL_checkinteger(L, 8);
+  int ymax = luaL_checkinteger(L, 9);
 
   if (w < 0 || h < 0)
     luaL_argerror(L, 4, "target region dimensions should be positive integers");
@@ -1579,14 +1579,14 @@ static int wdlua5_putimagerectrgb(lua_State *L)
 static int cdlua5_putimagerectrgba(lua_State *L)
 {
   cdluaImageRGBA* imagergba_p = cdlua_checkimagergba(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
-  int w = luaL_checkint(L, 4);
-  int h = luaL_checkint(L, 5);
-  int xmin = luaL_checkint(L, 6);
-  int xmax = luaL_checkint(L, 7);
-  int ymin = luaL_checkint(L, 8);
-  int ymax = luaL_checkint(L, 9);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
+  int w = luaL_checkinteger(L, 4);
+  int h = luaL_checkinteger(L, 5);
+  int xmin = luaL_checkinteger(L, 6);
+  int xmax = luaL_checkinteger(L, 7);
+  int ymin = luaL_checkinteger(L, 8);
+  int ymax = luaL_checkinteger(L, 9);
 
   if (w < 0 || h < 0)
     luaL_argerror(L, 4, "target region dimensions should be positive integers");
@@ -1603,10 +1603,10 @@ static int wdlua5_putimagerectrgba(lua_State *L)
   double y = luaL_checknumber(L, 3);
   double w = luaL_checknumber(L, 4);
   double h = luaL_checknumber(L, 5);
-  int xmin = luaL_checkint(L, 6);
-  int xmax = luaL_checkint(L, 7);
-  int ymin = luaL_checkint(L, 8);
-  int ymax = luaL_checkint(L, 9);
+  int xmin = luaL_checkinteger(L, 6);
+  int xmax = luaL_checkinteger(L, 7);
+  int ymin = luaL_checkinteger(L, 8);
+  int ymax = luaL_checkinteger(L, 9);
 
   if (w < 0 || h < 0)
     luaL_argerror(L, 4, "target region dimensions should be positive integers");
@@ -1620,14 +1620,14 @@ static int cdlua5_putimagerectmap(lua_State *L)
 {
   cdluaImageMap* imagemap_p = cdlua_checkimagemap(L, 1);
   cdluaPalette *pal = cdlua_checkpalette(L, 2);
-  int x = luaL_checkint(L, 3);
-  int y = luaL_checkint(L, 4);
-  int w = luaL_checkint(L, 5);
-  int h = luaL_checkint(L, 6);
-  int xmin = luaL_checkint(L, 7);
-  int xmax = luaL_checkint(L, 8);
-  int ymin = luaL_checkint(L, 9);
-  int ymax = luaL_checkint(L, 10);
+  int x = luaL_checkinteger(L, 3);
+  int y = luaL_checkinteger(L, 4);
+  int w = luaL_checkinteger(L, 5);
+  int h = luaL_checkinteger(L, 6);
+  int xmin = luaL_checkinteger(L, 7);
+  int xmax = luaL_checkinteger(L, 8);
+  int ymin = luaL_checkinteger(L, 9);
+  int ymax = luaL_checkinteger(L, 10);
 
   if (w < 0 || h < 0)
     luaL_argerror(L, 5, "target region dimensions should be positive integers");
@@ -1645,10 +1645,10 @@ static int wdlua5_putimagerectmap(lua_State *L)
   double y = luaL_checknumber(L, 4);
   double w = luaL_checknumber(L, 5);
   double h = luaL_checknumber(L, 6);
-  int xmin = luaL_checkint(L, 7);
-  int xmax = luaL_checkint(L, 8);
-  int ymin = luaL_checkint(L, 9);
-  int ymax = luaL_checkint(L, 10);
+  int xmin = luaL_checkinteger(L, 7);
+  int xmax = luaL_checkinteger(L, 8);
+  int ymin = luaL_checkinteger(L, 9);
+  int ymax = luaL_checkinteger(L, 10);
 
   if (w < 0 || h < 0)
     luaL_argerror(L, 5, "target region dimensions should be positive integers");
@@ -1661,10 +1661,10 @@ static int wdlua5_putimagerectmap(lua_State *L)
 static int cdlua5_putbitmap(lua_State *L)
 {
   cdBitmap *bitmap = cdlua_checkbitmap(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
-  int w = luaL_checkint(L, 4);
-  int h = luaL_checkint(L, 5);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
+  int w = luaL_checkinteger(L, 4);
+  int h = luaL_checkinteger(L, 5);
   
   if (w < 0 || h < 0)
     luaL_argerror(L, 4, "target region dimensions should be positive integers");
@@ -1691,8 +1691,8 @@ static int wdlua5_putbitmap(lua_State *L)
 static int cdlua5_getbitmap(lua_State *L)
 {
   cdBitmap *bitmap = cdlua_checkbitmap(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
   cdGetBitmap(bitmap, x, y);
   return 0;
 }
@@ -1704,8 +1704,8 @@ static int cdlua5_getbitmap(lua_State *L)
 static int cdlua5_createimage(lua_State *L)
 {
   cdImage *image;
-  int width = luaL_checkint(L, 1);
-  int height = luaL_checkint(L, 2);
+  int width = luaL_checkinteger(L, 1);
+  int height = luaL_checkinteger(L, 2);
 
   if (width < 1 || height < 1)
     luaL_argerror(L, 1, "image dimensions should be positive integers");
@@ -1722,8 +1722,8 @@ static int cdlua5_createimage(lua_State *L)
 static int cdlua5_getimage(lua_State *L)
 {
   cdImage* image = cdlua_checkimage(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
   cdGetImage(image, x, y);
   return 0;
 }
@@ -1731,12 +1731,12 @@ static int cdlua5_getimage(lua_State *L)
 static int cdlua5_putimagerect(lua_State *L)
 {
   cdImage* image = cdlua_checkimage(L, 1);
-  int x = luaL_checkint(L, 2);
-  int y = luaL_checkint(L, 3);
-  int xmin = luaL_checkint(L, 4);
-  int xmax = luaL_checkint(L, 5);
-  int ymin = luaL_checkint(L, 6);
-  int ymax = luaL_checkint(L, 7);
+  int x = luaL_checkinteger(L, 2);
+  int y = luaL_checkinteger(L, 3);
+  int xmin = luaL_checkinteger(L, 4);
+  int xmax = luaL_checkinteger(L, 5);
+  int ymin = luaL_checkinteger(L, 6);
+  int ymax = luaL_checkinteger(L, 7);
   cdPutImageRect(image, x, y, xmin, xmax, ymin, ymax);
   return 0;
 }
@@ -1746,10 +1746,10 @@ static int wdlua5_putimagerect(lua_State *L)
   cdImage* image = cdlua_checkimage(L, 1);
   double x = luaL_checknumber(L, 2);
   double y = luaL_checknumber(L, 3);
-  int xmin = luaL_checkint(L, 4);
-  int xmax = luaL_checkint(L, 5);
-  int ymin = luaL_checkint(L, 6);
-  int ymax = luaL_checkint(L, 7);
+  int xmin = luaL_checkinteger(L, 4);
+  int xmax = luaL_checkinteger(L, 5);
+  int ymin = luaL_checkinteger(L, 6);
+  int ymax = luaL_checkinteger(L, 7);
   wdPutImageRect(image, x, y, xmin, xmax, ymin, ymax);
   return 0;
 }
@@ -1759,12 +1759,12 @@ static int wdlua5_putimagerect(lua_State *L)
 \***************************************************************************/
 static int cdlua5_scrollarea(lua_State *L)
 {
-  int xmin = luaL_checkint(L, 1);
-  int xmax = luaL_checkint(L, 2);
-  int ymin = luaL_checkint(L, 3);
-  int ymax = luaL_checkint(L, 4);
-  int dx = luaL_checkint(L, 5);
-  int dy = luaL_checkint(L, 6);
+  int xmin = luaL_checkinteger(L, 1);
+  int xmax = luaL_checkinteger(L, 2);
+  int ymin = luaL_checkinteger(L, 3);
+  int ymax = luaL_checkinteger(L, 4);
+  int dx = luaL_checkinteger(L, 5);
+  int dy = luaL_checkinteger(L, 6);
   cdScrollArea(xmin, xmax, ymin, ymax, dx, dy);
   return 0;
 }
@@ -1782,10 +1782,10 @@ static int cdlua5_scrollarea(lua_State *L)
 static int cdlua5_play(lua_State *L)
 {
   cdluaContext* cdlua_ctx = cdlua_getcontext(L, 1);
-  int xmin = luaL_checkint(L,2);
-  int xmax = luaL_checkint(L,3);
-  int ymin = luaL_checkint(L,4);
-  int ymax = luaL_checkint(L,5);
+  int xmin = luaL_checkinteger(L,2);
+  int xmax = luaL_checkinteger(L,3);
+  int ymin = luaL_checkinteger(L,4);
+  int ymax = luaL_checkinteger(L,5);
   const char *data_s = luaL_checkstring(L,6);
 
   cdlua_setplaystate(L);
@@ -1806,7 +1806,7 @@ static int cdlua5_getcolorplanes(lua_State *L)
 static int cdlua5_palette(lua_State *L)
 {
   cdluaPalette *pal = cdlua_checkpalette(L, 1);
-  int mode_i = luaL_checkint(L, 2);
+  int mode_i = luaL_checkinteger(L, 2);
   cdPalette(pal->count, pal->color, mode_i);
   return 0;
 }
@@ -1907,7 +1907,7 @@ static int wdlua5_hardcopy(lua_State *L)
 \***************************************************************************/
 static int cdlua5_begin(lua_State *L)
 { 
-  cdBegin(luaL_checkint(L, 1));
+  cdBegin(luaL_checkinteger(L, 1));
   return 0;
 }
 
@@ -1916,7 +1916,7 @@ static int cdlua5_begin(lua_State *L)
 \***************************************************************************/
 static int cdlua5_vertex(lua_State *L)
 {
-  cdVertex(luaL_checkint(L, 1), luaL_checkint(L, 2));
+  cdVertex(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2));
   return 0;
 }
 
