@@ -89,8 +89,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   sscanf(str_data, "%dx%d %p", &w, &h, &rgb);
 #endif
 
-  if (w == 0 || h == 0)
-    return;
+  if (w == 0) w = 1;
+  if (h == 0) h = 1;
 
   canvas->w = w;
   canvas->h = h;

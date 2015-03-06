@@ -1783,8 +1783,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
     sscanf(str_data, "%dx%d %p %p %p", &w, &h, &r, &g, &b);
 #endif
 
-  if (w == 0 || h == 0)
-    return;
+  if (w == 0) w = 1;
+  if (h == 0) h = 1;
 
   ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
