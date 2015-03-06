@@ -30,7 +30,8 @@ or
 </tt></strong>&quot;width<strong>x</strong>height [r g b a] -<strong>r</strong>[resolution] -<strong>a</strong>&quot;</em>    in C &quot;<em><strong><tt>%dx%d %p %p %p %p -r%g -a&quot;</tt></strong></em></pre>
   
   <p>It must include the canvas' dimensions.<font face="Courier"> Width</font> and <font face="Courier">height</font> 
-  are provided in pixels (note the lowercase &quot;x&quot; between them). As an option, you can specify the buffers to be used by 
+  are provided in pixels (note the lowercase &quot;x&quot; between them). If 
+  width or height are 0 then 1 will be used. As an option, you can specify the buffers to be used by 
   the driver, so that you can draw over an existing image, [r g b] or [r g b a] 
 	are pointers to the component buffer, just like PutImageRectRGB/A. The resolution can be defined with parameter
   <font face="Courier">-r</font>; its default value is &quot;3.78 pixels/mm&quot; (96 DPI).&nbsp;</p>
