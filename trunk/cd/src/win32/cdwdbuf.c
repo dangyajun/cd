@@ -146,12 +146,12 @@ static int cdactivate(cdCtxCanvas *ctxcanvas)
       return CD_ERROR;
     }
 
+    canvas->ctxcanvas->kill_dbuffer = old_ctxcanvas->kill_dbuffer;
+
     /* remove the old image and canvas */
     cdwKillCanvas(old_ctxcanvas);  /* ctxcanvas e ctxcanvas->hDC released in each driver */
     cdKillImage(old_image_dbuffer); /* the ctxcanvas->hDC is released here, so do it after the cdwKillCanvas */
     free(old_ctxcanvas);
-
-    ctxcanvas = canvas->ctxcanvas;
 
     /* update canvas attributes */
     cdUpdateAttributes(canvas);

@@ -145,12 +145,12 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
       return CD_ERROR;
     }
 
+    canvas->ctxcanvas->kill_dbuffer = old_ctxcanvas->kill_dbuffer;
+
     /* remove the old image and canvas */
     cdKillImage(old_image_dbuffer);
     old_ctxcanvas->cr = NULL; /* avoid to destroy it twice */
     cdcairoKillCanvas(old_ctxcanvas);
-
-    ctxcanvas = canvas->ctxcanvas;
 
     /* update canvas attributes */
     cdUpdateAttributes(canvas);

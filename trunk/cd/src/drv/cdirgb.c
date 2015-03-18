@@ -1981,13 +1981,13 @@ static int cdactivateDB(cdCtxCanvas *ctxcanvas)
     cdCanvas* canvas = ctxcanvas->canvas;
     /* save the current, if the rebuild fail */
     cdCtxCanvas* old_ctxcanvas = ctxcanvas;
-    int kill_dbuffer = ctxcanvas->kill_dbuffer;
+    int old_kill_dbuffer = old_ctxcanvas->kill_dbuffer;
 
     /* if the image is rebuild, the canvas that uses the image must be also rebuild */
 
     /* rebuild the image and the canvas */
     canvas->ctxcanvas = NULL;
-    ctxcanvas->kill_dbuffer = 0;
+    old_ctxcanvas->kill_dbuffer = 0;
     cdcreatecanvasDB(canvas, canvas_dbuffer);
     if (!canvas->ctxcanvas)
     {
@@ -1995,11 +1995,10 @@ static int cdactivateDB(cdCtxCanvas *ctxcanvas)
       return CD_ERROR;
     }
 
+    canvas->ctxcanvas->kill_dbuffer = old_kill_dbuffer;
+
     /* remove the old image and canvas */
     cdkillcanvas(old_ctxcanvas);  /* the double buffer image is the canvas itself */
-
-    ctxcanvas = canvas->ctxcanvas;
-    ctxcanvas->kill_dbuffer = kill_dbuffer;
 
     /* update canvas attributes */
     cdUpdateAttributes(canvas);
