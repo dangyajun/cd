@@ -1319,6 +1319,7 @@ static int cdlua5_usecontextplus(lua_State *L)
 static const struct luaL_Reg cdlib[] = {
 
   /* Initialization */
+  {"Close"         , cdlua_close},
   {"ContextCaps"   , cdlua5_contextcaps},
   {"ContextType"   , cdlua5_contexttype},
   {"ContextIsPlus" , cdlua5_contextisplus},
