@@ -230,7 +230,8 @@ CD_SIM_FILLS - Combination of CD_SIM_BOX, CD_SIM_SECTOR, CD_SIM_CHORD and CD_SIM
   <p>Initializes the CDLua binding. In Lua 5 the binding is lua state safe, this means that several states can be 
   initialized any time.</p>
 
-</div><div class="function"><pre class="function">int <strong><span style="font-size: 110%"><a name="cdlua_close">cdlua_close</a></span></strong>(lua_State* L); [for Lua 5]</pre>
+</div><div class="function"><pre class="function">int <strong><span style="font-size: 110%"><a name="cdlua_close">cdlua_close</a></span></strong>(lua_State* L); [for Lua 5]
+cd.Close()  [in Lua]</pre>
 
   <p>Releases the memory allocated by the CDLua binding.</p>
 
