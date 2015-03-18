@@ -5,6 +5,11 @@
 <title>Lua Binding</title>
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
 <link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+.auto-style1 {
+	color: #FF0000;
+}
+</style>
 </head>
 
 <body>
@@ -24,7 +29,7 @@
 		destroy objects that do not exist in C. For instance functions were 
 		developed to create and destroy images, pattern, stipple and 
 		palette.&nbsp;All the metatables have the &quot;tostring&quot; metamethod implemented 
-		to help debuging. Some functions were modified to receive those objects 
+		to help debugging. Some functions were modified to receive those objects 
 		as parameters.</p>
     <p>
         Also the functions which receive values by reference in C were modified. 
@@ -88,6 +93,8 @@ names used by <b>require</b> during search.</p>
 <b>  <font color="#FF0000">cdlua_open(L);</font>
 </b>
   lua_dofile(&quot;myprog.lua&quot;);
+
+  <span class="auto-style1"><strong>cdlua_close(L);</strong></span>
   
   lua_close(L);
 }</pre>
@@ -97,6 +104,8 @@ names used by <b>require</b> during search.</p>
       </center>
     </div>
 
+<p>Calling <strong>cdlua_close</strong> is optional. In Lua it can be called 
+using &quot;cd.Close()&quot;. It can be used to avoid a small memory leak. (since 5.8.2)</p>
 <h3>Exchanging Values between C and Lua</h3>
 
   <p>Because of some applications that interchange the use of CD canvases in Lua 
