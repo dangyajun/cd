@@ -130,7 +130,7 @@ typedef struct {
   int write_mode;
   int font_size;
   int font_style;
-  int font_typeface;
+  int font_type_face;
   int back_opacity;
   double text_orientation;
   int text_alignment;
@@ -203,7 +203,7 @@ typedef struct {
   int line_style;
   int line_width;
   int fill_mode;
-  int font_typeface;
+  int font_type_face;
   int font_style;
   int font_size;
   int text_alignment;

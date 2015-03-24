@@ -1328,7 +1328,7 @@ static int cdlua5_ftext(lua_State *L)
 }
 
 /***************************************************************************\
-* cd.Font(typeface, style, size: number)                                    *
+* cd.Font(type_face, style, size: number)                                    *
 \***************************************************************************/
 static int cdlua5_font(lua_State *L)
 {
@@ -1337,7 +1337,7 @@ static int cdlua5_font(lua_State *L)
 }
 
 /***************************************************************************\
-* cd.wFont(typeface, style, size: number)                                   *
+* cd.wFont(type_face, style, size: number)                                   *
 \***************************************************************************/
 static int wdlua5_font(lua_State *L)
 {
@@ -1347,7 +1347,7 @@ static int wdlua5_font(lua_State *L)
 
 
 /***************************************************************************\
-* cd.GetFont() -> (typeface, style, size: number)                           *
+* cd.GetFont() -> (type_face, style, size: number)                           *
 \***************************************************************************/
 static int cdlua5_getfont(lua_State *L)
 {
@@ -1362,7 +1362,7 @@ static int cdlua5_getfont(lua_State *L)
 }
 
 /***************************************************************************\
-* cd.wGetFont() -> (typeface, style, size: number)                          *
+* cd.wGetFont() -> (type_face, style, size: number)                          *
 \***************************************************************************/
 static int wdlua5_getfont(lua_State *L)
 {

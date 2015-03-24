@@ -132,7 +132,7 @@ struct _cdCtxCanvas
   short color, style;                 
 
   short alignment;
-  short typeface_index;
+  short type_face_index;
   short symbology;
   long tl;
   short is_base;                               /* setado se texto e' do tipo CD_BASE_...   */
@@ -228,11 +228,11 @@ static long gettextwidth(cdCtxCanvas* ctxcanvas, const char *s, int len, int siz
     }  
   };
 
-  if (ctxcanvas->typeface_index == 1)
+  if (ctxcanvas->type_face_index == 1)
     default_size=2;
-  else if (ctxcanvas->typeface_index == 2)
+  else if (ctxcanvas->type_face_index == 2)
     default_size=5;
-  else if (ctxcanvas->typeface_index == 3)
+  else if (ctxcanvas->type_face_index == 3)
     default_size=4;
   else
     default_size=4;
@@ -249,9 +249,9 @@ static long gettextwidth(cdCtxCanvas* ctxcanvas, const char *s, int len, int siz
       
     for(size_number=0;size_number < 8;size_number++)
     {
-      if(strchr(fontchars[ctxcanvas->typeface_index][size_number], letter))
+      if(strchr(fontchars[ctxcanvas->type_face_index][size_number], letter))
       {
-        width+=(ctxcanvas->tl*fontsizes[ctxcanvas->typeface_index][size_number])/6;
+        width+=(ctxcanvas->tl*fontsizes[ctxcanvas->type_face_index][size_number])/6;
         break;
       }
     }
@@ -879,7 +879,7 @@ static void cdtext (cdCtxCanvas* ctxcanvas, int x, int y, const char *s, int len
 
   putDisplayHeader(ctxcanvas, &dhdr);
 
-  put_word(ctxcanvas, (ctxcanvas->alignment << 8) | ctxcanvas->typeface_index);
+  put_word(ctxcanvas, (ctxcanvas->alignment << 8) | ctxcanvas->type_face_index);
 
   put_long(ctxcanvas, (long)((1000 * ctxcanvas->tl) / 6) | (1 << 7));
   put_long(ctxcanvas, (long)((1000 * size_pixel) / 6) | (1 << 7));
@@ -1235,13 +1235,13 @@ static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int 
   ctxcanvas->tl = (long)(cdGetFontSizePoints(ctxcanvas->canvas, size)/4)*3;
 
   if (cdStrEqualNoCase(type_face, "Courier"))
-    ctxcanvas->typeface_index=1;
+    ctxcanvas->type_face_index=1;
   else if (cdStrEqualNoCase(type_face, "Times"))
-    ctxcanvas->typeface_index=2;
+    ctxcanvas->type_face_index=2;
   else if (cdStrEqualNoCase(type_face, "Helvetica"))
-    ctxcanvas->typeface_index=3;
+    ctxcanvas->type_face_index=3;
   else if (cdStrEqualNoCase(type_face, "System"))
-    ctxcanvas->typeface_index=0;
+    ctxcanvas->type_face_index=0;
   else
     return 0;
 
@@ -1257,10 +1257,10 @@ static void cdgetfontdim (cdCtxCanvas* ctxcanvas, int *max_width, int *height, i
     int a=0;
     *max_width=0;
 
-    while(fontsizes[ctxcanvas->typeface_index][a])
+    while(fontsizes[ctxcanvas->type_face_index][a])
     {
-      if(fontsizes[ctxcanvas->typeface_index][a] > *max_width)
-        *max_width = fontsizes[ctxcanvas->typeface_index][a];
+      if(fontsizes[ctxcanvas->type_face_index][a] > *max_width)
+        *max_width = fontsizes[ctxcanvas->type_face_index][a];
       a++;
     }
   }
@@ -1574,7 +1574,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   /* texto */
   ctxcanvas->alignment = 12; 
   ctxcanvas->is_base = 1;
-  ctxcanvas->typeface_index = 0;
+  ctxcanvas->type_face_index = 0;
   ctxcanvas->tl=12;
 
   /* cores */
