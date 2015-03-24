@@ -580,6 +580,7 @@ Style can be a free combination of some names separated by spaces.
 Font name can be a list of font family names separated by comma.
 */
 
+/* this code is shared between CD and IUP, must be updated on both libraries */
 static int cd_find_style_name(const char *name, int len, int *style)
 {
 #define CD_STYLE_NUM_NAMES 21
@@ -639,7 +640,7 @@ static const char * cd_getword(const char *str, const char *last, int *wordlen)
   return result;
 }
 
-/* this code is partially shared between CD and IUP, must be updated on both libraries */
+/* this code is shared between CD and IUP, must be updated on both libraries */
 int cdParsePangoFont(const char *nativefont, char *type_face, int *style, int *size)
 {
   const char *p, *last;
@@ -664,6 +665,7 @@ int cdParsePangoFont(const char *nativefont, char *type_face, int *style, int *s
   }
 
   /* Now parse style words */
+  *style = 0;
   p = cd_getword(nativefont, last, &wordlen);
   while (wordlen != 0)
   {
@@ -701,27 +703,41 @@ int cdParsePangoFont(const char *nativefont, char *type_face, int *style, int *s
     return 0;
 }
 
+/* this code is shared between CD and IUP, must be updated on both libraries */
 int cdParseIupWinFont(const char *nativefont, char *type_face, int *style, int *size)
 {
   int c;
 
-  if (strstr(nativefont, ":") == NULL)
+  if (nativefont[0] == '-')  /* X font, abort */
     return 0;
 
-  c = strcspn(nativefont, ":");      /* extract type_face */
-  if (c == 0) return 0;
-  strncpy(type_face, nativefont, c);
-  type_face[c]='\0';
-  nativefont += c+1;
+  if (strstr(nativefont, ":") == NULL)  /* check for the first separator */
+    return 0;
 
-  if(nativefont[0] == ':')  /* check for attributes */
+  if (nativefont[0] == ':')  /* check for NO type_face */
+    nativefont++;       /* skip separator */
+  else
+  {
+    c = strcspn(nativefont, ":");      /* extract type_face */
+    if (c == 0) return 0;
+    strncpy(type_face, nativefont, c);
+    type_face[c] = '\0';
+    nativefont += c + 1;
+  }
+
+  if (strstr(nativefont, ":") == NULL)  /* check for the second separator */
+    return 0;
+
+  /* init style to none */
+  *style = 0;
+
+  if(nativefont[0] == ':')  /* check for NO style list */
     nativefont++;
   else
   {
-    *style = 0;
     while(strlen(nativefont)) /* extract style (bold/italic etc) */
     {
-      char style_str[20];
+      char style_str[30];
 
       c = strcspn(nativefont, ":,");
       if (c == 0)
@@ -739,9 +755,9 @@ int cdParseIupWinFont(const char *nativefont, char *type_face, int *style, int *
       else if(!strcmp(style_str,"STRIKEOUT"))
         *style |= CD_STRIKEOUT;
 
-      nativefont += c;
+      nativefont += c;  /* skip only the style */
 
-      if(nativefont[0] == ':')  /* end attribute list */
+      if(nativefont[0] == ':')  /* end of style list */
       {
         nativefont++;
         break;
@@ -761,6 +777,7 @@ int cdParseIupWinFont(const char *nativefont, char *type_face, int *style, int *
   return 1;
 }
 
+/* this code is shared between CD and IUP, must be updated on both libraries */
 int cdParseXWinFont(const char *nativefont, char *type_face, int *style, int *size)
 {
   char style1[10], style2[10];

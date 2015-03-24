@@ -198,7 +198,7 @@ int newtext(int x, int y, char *s)
   newnode->par.textpar.foreground = ctgc.foreground;
   newnode->par.textpar.background = ctgc.background;
   newnode->par.textpar.font_style = ctgc.font_style;
-  newnode->par.textpar.font_typeface = ctgc.font_typeface;
+  newnode->par.textpar.font_type_face = ctgc.font_type_face;
   newnode->par.textpar.font_size = ctgc.font_size;
   newnode->par.textpar.write_mode = ctgc.write_mode;
   newnode->par.textpar.back_opacity = ctgc.back_opacity;

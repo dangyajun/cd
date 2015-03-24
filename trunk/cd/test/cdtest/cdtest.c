@@ -269,7 +269,7 @@ void CDTestInit(void)
   ctgc.fill_mode = CD_EVENODD;
   ctgc.line_width = 1;
   ctgc.font_style = CD_PLAIN;
-  ctgc.font_typeface = CD_SYSTEM;
+  ctgc.font_type_face = CD_SYSTEM;
   ctgc.font_size = CD_STANDARD;
   ctgc.text_alignment = CD_BASE_LEFT;
   ctgc.text_orientation = 0;
@@ -299,7 +299,7 @@ void CDTestInit(void)
   
   /* inicializaccao do Canvas do IUP */
   cdActivate(ctgc.iup_canvas);
-  cdFont(ctgc.font_typeface,ctgc.font_style,ctgc.font_size);
+  cdFont(ctgc.font_type_face,ctgc.font_style,ctgc.font_size);
   cdBackground(ctgc.background);
   cdClear();
   cdGetCanvasSize(&(ctgc.w),&(ctgc.h),NULL,NULL);
@@ -578,7 +578,7 @@ void putlist(cdCanvas *target)
         cdBackOpacity(temp->par.textpar.back_opacity);
         cdTextAlignment(temp->par.textpar.text_alignment);
         cdTextOrientation(temp->par.textpar.text_orientation);
-        cdFont(temp->par.textpar.font_typeface,
+        cdFont(temp->par.textpar.font_type_face,
           temp->par.textpar.font_style,
           temp->par.textpar.font_size);
         if (wd)
@@ -1322,7 +1322,7 @@ int fFontStyle(Ihandle *self, char *t, int o, int v)
       break;
   }
   ctgc.font_size = IupGetInt(IupGetHandle("txtFontSize"), IUP_VALUE);
-  sprintf(ctgc.status_line, "cdFont(%s, %s, %d)", font_face[ctgc.font_typeface], font_style[ctgc.font_style], ctgc.font_size);
+  sprintf(ctgc.status_line, "cdFont(%s, %s, %d)", font_face[ctgc.font_type_face], font_style[ctgc.font_style], ctgc.font_size);
   set_status();
   return IUP_DEFAULT;
 }
@@ -1335,20 +1335,20 @@ int fFontTypeFace(Ihandle *self, char *t, int o, int v)
   if (v == 0) return IUP_DEFAULT;
   switch (o) {
     case 1:
-      ctgc.font_typeface = CD_SYSTEM;
+      ctgc.font_type_face = CD_SYSTEM;
       break;
     case 2:
-      ctgc.font_typeface = CD_COURIER;
+      ctgc.font_type_face = CD_COURIER;
       break;
     case 3:
-      ctgc.font_typeface = CD_TIMES_ROMAN;
+      ctgc.font_type_face = CD_TIMES_ROMAN;
       break;
     case 4:
-      ctgc.font_typeface = CD_HELVETICA;
+      ctgc.font_type_face = CD_HELVETICA;
       break;
   }
   ctgc.font_size = IupGetInt(IupGetHandle("txtFontSize"), IUP_VALUE);
-  sprintf(ctgc.status_line, "cdFont(%s, %s, %d)", font_face[ctgc.font_typeface], font_style[ctgc.font_style], ctgc.font_size);
+  sprintf(ctgc.status_line, "cdFont(%s, %s, %d)", font_face[ctgc.font_type_face], font_style[ctgc.font_style], ctgc.font_size);
   set_status();
   return IUP_DEFAULT;
 }
@@ -2075,7 +2075,7 @@ int fAttributes(void)
 int fAttributesHide(void)
 {
   ctgc.font_size = IupGetInt(IupGetHandle("txtFontSize"), IUP_VALUE);
-  cdFont(ctgc.font_typeface,ctgc.font_style,ctgc.font_size);
+  cdFont(ctgc.font_type_face,ctgc.font_style,ctgc.font_size);
   IupHide(IupGetHandle("dlgAttributes"));
   return IUP_DEFAULT;
 }
@@ -2263,7 +2263,7 @@ void draw(void)
         set_status();
         ctgc.text_orientation = IupGetInt(IupGetHandle("txtTextOrientation"),IUP_VALUE);
         newtext(a,b,IupGetAttribute(IupGetHandle("txtTextS"),IUP_VALUE));
-        cdFont(ctgc.font_typeface,ctgc.font_style,ctgc.font_size);
+        cdFont(ctgc.font_type_face,ctgc.font_style,ctgc.font_size);
         cdTextAlignment(ctgc.text_alignment);
         cdTextOrientation(ctgc.text_orientation);
         cdText(a,b,IupGetAttribute(IupGetHandle("txtTextS"),IUP_VALUE));

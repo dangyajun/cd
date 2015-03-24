@@ -496,19 +496,19 @@ static int cdlinecap(cdCtxCanvas *ctxcanvas, int cap)
   return cap;
 }
 
-static int cdfont(cdCtxCanvas *ctxcanvas, const char *typeface, int style, int size)
+static int cdfont(cdCtxCanvas *ctxcanvas, const char *type_face, int style, int size)
 {
   int is_italic = 0, is_bold = 0;   /* default is CD_PLAIN */
   int is_strikeout = 0, is_underline = 0;
   char font[256];
   PangoAttrList *attrs;
 
-  if (cdStrEqualNoCase(typeface, "Courier") || cdStrEqualNoCase(typeface, "Courier New"))
-    typeface = "Monospace";
-  else if (cdStrEqualNoCase(typeface, "Times") || cdStrEqualNoCase(typeface, "Times New Roman"))
-    typeface = "Serif";
-  else if (cdStrEqualNoCase(typeface, "Helvetica") || cdStrEqualNoCase(typeface, "Arial"))
-    typeface = "Sans";
+  if (cdStrEqualNoCase(type_face, "Courier") || cdStrEqualNoCase(type_face, "Courier New"))
+    type_face = "Monospace";
+  else if (cdStrEqualNoCase(type_face, "Times") || cdStrEqualNoCase(type_face, "Times New Roman"))
+    type_face = "Serif";
+  else if (cdStrEqualNoCase(type_face, "Helvetica") || cdStrEqualNoCase(type_face, "Arial"))
+    type_face = "Sans";
 
   if (style & CD_BOLD)
     is_bold = 1;
@@ -524,7 +524,7 @@ static int cdfont(cdCtxCanvas *ctxcanvas, const char *typeface, int style, int s
 
   size = cdGetFontSizePoints(ctxcanvas->canvas, size);
 
-  sprintf(font, "%s, %s%s%d", typeface, is_bold?"Bold ":"", is_italic?"Italic ":"", size);
+  sprintf(font, "%s, %s%s%d", type_face, is_bold?"Bold ":"", is_italic?"Italic ":"", size);
 
   if (ctxcanvas->fontdesc) 
     pango_font_description_free(ctxcanvas->fontdesc);
