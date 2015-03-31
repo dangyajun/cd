@@ -284,8 +284,10 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int clip_mode)
       break;
     }
   case CD_CLIPPOLYGON:
+    clip_mode = ctxcanvas->canvas->clip_mode;
     break;
   case CD_CLIPREGION:
+    clip_mode = ctxcanvas->canvas->clip_mode;
     break;
   }
 
@@ -510,6 +512,9 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
   GLclampf b = (GLclampf)cdBlue(ctxcanvas->canvas->background)/255.0f;
   GLclampf a = (GLclampf)cdAlpha(ctxcanvas->canvas->background)/255.0f;
 
+  if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA)
+    cdclip(ctxcanvas, CD_CLIPOFF);
+
   glClearColor(r, g, b, a);
 
   glClear(GL_COLOR_BUFFER_BIT);
@@ -519,6 +524,9 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
              cdGreen(ctxcanvas->canvas->foreground), 
              cdBlue(ctxcanvas->canvas->foreground), 
              cdAlpha(ctxcanvas->canvas->foreground));
+
+  if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA)
+    cdclip(ctxcanvas, CD_CLIPAREA);
 }
 
 static void cdfline(cdCtxCanvas *ctxcanvas, double x1, double y1, double x2, double y2)
