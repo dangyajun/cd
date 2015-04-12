@@ -22,7 +22,7 @@ cd.CreateCanvas(ctx: number, data: string or userdata) -&gt; (canvas: cdCanvas) 
   parameter. Even though it is possible to create more than one canvas with the same <tt>
   <b>driver/data</b></tt> pair, 
   this is not recommended, and its behavior is not specified. Each canvas maintains its own features. </p>
-  <p>In case of failure, a&nbsp; <b>NULL</b> value is returned. The following predefined drivers are available:</p>
+  <p>In case of failure, a <b>NULL</b> value is returned. The following predefined drivers are available:</p>
 
 
   <p><b>Window-Base Drivers</b></p>
@@ -142,7 +142,7 @@ canvas:GetContext(canvas: cdCanvas) -&gt; (ctx: number) [in Lua]</pre>
 cd.ContextCaps(ctx: number) -&gt; (caps: number) [in Lua]</pre>
 
   <p>Returns the resources available for that context. To verify if a given resource is available, perform a binary AND 
-  ('&amp;.html with the following values:</p>
+   with the following values:</p>
   
 <pre>CD_CAP_FLUSH
 CD_CAP_CLEAR 
