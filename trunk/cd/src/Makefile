@@ -4,8 +4,8 @@ else
   TECMAKE_CMD = $(MAKE) --no-print-directory -f ../tecmake.mak
 endif
 
-.PHONY: do_all cd_zlib cd_freetype cd_ftgl cd cdx11 cdgdk cd_pdflib cdpdf cdgl cdcontextplus cdcairo cdlua3 cdluapdf3 cdluagl3 cdlua5 cdluapdf5 cdluagl5 cdluacontextplus5 cdluacairo5 cdluaim5
-do_all:        cd_zlib cd_freetype cd_ftgl cd             cd_pdflib cdpdf cdgl cdcontextplus                                   cdlua5 cdluapdf5 cdluagl5 cdluacontextplus5             cdluaim5
+.PHONY: do_all cd_zlib cd_freetype cd_ftgl cd cd_pdflib cdpdf cdgl cdcontextplus cdcairo cdlua5 cdluapdf5 cdluagl5 cdluacontextplus5 cdluacairo5 cdluaim5
+do_all:        cd_zlib cd_freetype cd_ftgl cd cd_pdflib cdpdf cdgl cdcontextplus         cdlua5 cdluapdf5 cdluagl5 cdluacontextplus5             cdluaim5
 
 cd_zlib:
 	@$(TECMAKE_CMD) MF=cd_zlib
@@ -18,10 +18,6 @@ cd_pdflib:
   
 cd:
 	@$(TECMAKE_CMD)
-cdx11:
-	@$(TECMAKE_CMD) USE_X11=Yes
-cdgdk:
-	@$(TECMAKE_CMD) USE_GDK=Yes
   
 cdpdf:
 	@$(TECMAKE_CMD) MF=cdpdf
@@ -32,13 +28,6 @@ cdcontextplus:
 	@$(TECMAKE_CMD) MF=cdcontextplus
 cdcairo:
 	@$(TECMAKE_CMD) MF=cdcairo
-  
-cdlua3:
-	@$(TECMAKE_CMD) MF=cdlua3
-cdluapdf3:
-	@$(TECMAKE_CMD) MF=cdluapdf3
-cdluagl3:
-	@$(TECMAKE_CMD) MF=cdluagl3
   
 cdlua5:
 	@$(TECMAKE_CMD) MF=cdlua5 USE_LUA51=Yes
