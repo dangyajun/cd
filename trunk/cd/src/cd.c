@@ -18,9 +18,9 @@
 #include "cdirgb.h"
 
 /* This appears only here to avoid changing the cd.h header fo bug fixes */
-#define CD_VERSION_FIX ".1"
-#define CD_VERSION_FIX_NUMBER 1
-#define CD_VERSION_FIX_DATE "2014/11/18"
+#define CD_VERSION_FIX ".2"
+#define CD_VERSION_FIX_NUMBER 2
+#define CD_VERSION_FIX_DATE "2015/04/27"
 
 const char cd_ident[] =
   "$CD: " CD_VERSION CD_VERSION_FIX " " CD_COPYRIGHT " $\n"
