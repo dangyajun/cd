@@ -139,11 +139,15 @@ LUA_LIB and LUA_BIN before using Tecmake.</p>
 <p>To build the driver with GTK 3.x support define USE_GTK3=Yes before calling 
 make in the &quot;cd/src&quot; folder. Just the main library must be rebuilt. </p>
 <p>In Ubuntu you will need to install the following packages:</p>
-<pre>libx11-dev
-libxpm-dev
-libxmu-dev
-libxft-dev (for the XRender driver)
-libgtk2.0-dev (for the GDK driver)</pre>
+<pre>libfreetype6-dev
+libgl1-mesa-dev and libglu1-mesa-dev (for the ftgl library used by CD_GL)
+libgtk2.0-dev (for the GDK driver)
+or
+libgtk3.0-dev (for the GTK driver)
+  libx11-dev (for the X11 driver, OPTIONAL)
+  libxpm-dev (&quot;)
+  libxmu-dev (&quot;) 
+  libxft-dev (for the XRender driver, OPTIONAL)</pre>
 
 <h3><a name="Environment">Environment Variables</a></h3>
 
