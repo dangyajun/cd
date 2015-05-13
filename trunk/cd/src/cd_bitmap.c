@@ -151,6 +151,8 @@ cdBitmap* cdInitBitmap(int w, int h, int type, ...)
     data->colors = va_arg(arglist, long*);
   }
 
+  va_end(arglist);
+
   data->xmin = 0;
   data->ymin = 0;
   data->xmax = bitmap->w-1;
