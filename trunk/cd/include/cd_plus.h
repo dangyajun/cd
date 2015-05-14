@@ -36,12 +36,9 @@ namespace cd
   int cdContextIsPlus(cdContext *context);
   int cdContextType(cdContext *context);
 
-  cdBitmap* cdCreateBitmap(int w, int h, int type);
-  cdBitmap* cdInitBitmap(int w, int h, int type, ...);
-  void cdKillBitmap(cdBitmap* bitmap);
-  unsigned char* cdBitmapGetData(cdBitmap* bitmap, int dataptr);
-  void cdBitmapSetRect(cdBitmap* bitmap, int xmin, int xmax, int ymin, int ymax);
-  void cdBitmapRGB2Map(cdBitmap* bitmap_rgb, cdBitmap* bitmap_map);
+  NativeBitmap(const im:Image& image);
+  ~NativeBitmap();
+  PutBitmap
 
    cdfCanvasPlay
    wdCanvasPlay 
