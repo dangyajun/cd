@@ -7,10 +7,12 @@
 #ifndef __CD_PLUS_H
 #define __CD_PLUS_H
 
-#include <stdarg.h>
+
+#include <im_plus.h>
 
 #include "cd.h"
 #include "wd.h"
+#include "cdiup.h"
 
 
 /** \brief Name space for C++ high level API
@@ -114,13 +116,13 @@ namespace cd
     }
     void SetfAttribute(const char* name, const char* format, ...)
     {
-      char data[10240];
-      va_list arglist;
-      va_start(arglist, format);
-      vsnprintf(data, 10240, format, arglist);
-      va_end(arglist);
+      //char data[10240];
+      //va_list arglist;
+      //va_start(arglist, format);
+      //vsnprintf(data, 10240, format, arglist);
+      //va_end(arglist);
 
-      cdCanvasSetAttribute(canvas, name, data);
+      //cdCanvasSetAttribute(canvas, name, data);
     }
     char* GetAttribute(const char* name)
     {
@@ -746,9 +748,9 @@ namespace cd
     }
 
     /* client images */
-    void GetImageRGB(unsigned char* r, unsigned char* g, unsigned char* b, int x, int y, int w, int h)
+    void GetImageRGB(im::Image& image, int x, int y)
     {
-      cdCanvasGetImageRGB(canvas, r, g, b, x, y, w, h);
+//      cdCanvasGetImageRGB(canvas, r, g, b, x, y, w, h);
     }
     void PutImageRectRGB(int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
     {
@@ -773,28 +775,6 @@ namespace cd
     void wPutImageRectMap(int iw, int ih, const unsigned char* index, const long* colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
     {
       wdCanvasPutImageRectMap(canvas, iw, ih, index, colors, x, y, w, h, xmin, xmax, ymin, ymax);
-    }
-
-    /* server images */
-    cdImage* CreateImage(int w, int h)
-    {
-      return cdCanvasCreateImage(canvas, w, h);
-    }
-    void GetImage(cdImage* image, int x, int y)
-    {
-      cdCanvasGetImage(canvas, image, x, y);
-    }
-    void PutImageRect(cdImage* image, int x, int y, int xmin, int xmax, int ymin, int ymax)
-    {
-      cdCanvasPutImageRect(canvas, image, x, y, xmin, xmax, ymin, ymax);
-    }
-    void wPutImageRect(cdImage* image, double x, double y, int xmin, int xmax, int ymin, int ymax)
-    {
-      wdCanvasPutImageRect(canvas, image, x, y, xmin, xmax, ymin, ymax);
-    }
-    void ScrollArea(int xmin, int xmax, int ymin, int ymax, int dx, int dy)
-    {
-      cdCanvasScrollArea(canvas, xmin, xmax, ymin, ymax, dx, dy);
     }
 
     void PutBitmap(cdBitmap* bitmap, int x, int y, int w, int h)
