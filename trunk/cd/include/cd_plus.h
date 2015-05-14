@@ -36,10 +36,6 @@ namespace cd
   int cdContextIsPlus(cdContext *context);
   int cdContextType(cdContext *context);
 
-  cdImage; // Remover???
-
-  imImage
-
   cdBitmap* cdCreateBitmap(int w, int h, int type);
   cdBitmap* cdInitBitmap(int w, int h, int type, ...);
   void cdKillBitmap(cdBitmap* bitmap);
@@ -47,7 +43,20 @@ namespace cd
   void cdBitmapSetRect(cdBitmap* bitmap, int xmin, int xmax, int ymin, int ymax);
   void cdBitmapRGB2Map(cdBitmap* bitmap_rgb, cdBitmap* bitmap_map);
 
-  missing cdf*(double)
+   cdfCanvasPlay
+   wdCanvasPlay 
+   cdfCanvasIsPointInRegion 
+   cdfCanvasOffsetRegion 
+   cdfCanvasGetRegionBox 
+   cdfCanvasPixel 
+   cdfCanvasMark 
+   cdfCanvasGetTextBox 
+   cdfCanvasGetTextBounds 
+   cdfCanvasPutImageRectRGBA 
+   cdfCanvasPutImageRectRGB 
+   cdfCanvasPutImageRectMap 
+   cdfCanvasGetImageRGB 
+   wdCanvasGetImageRGB 
 #endif
 
   class Canvas
@@ -64,7 +73,6 @@ namespace cd
     {
       canvas = ref_canvas;
     }
-
     ~Canvas()
     {
       if (canvas) cdKillCanvas(canvas);
@@ -114,16 +122,6 @@ namespace cd
     {
       cdCanvasSetAttribute(canvas, name, data);
     }
-    void SetfAttribute(const char* name, const char* format, ...)
-    {
-      //char data[10240];
-      //va_list arglist;
-      //va_start(arglist, format);
-      //vsnprintf(data, 10240, format, arglist);
-      //va_end(arglist);
-
-      //cdCanvasSetAttribute(canvas, name, data);
-    }
     char* GetAttribute(const char* name)
     {
       return cdCanvasGetAttribute(canvas, name);
@@ -133,6 +131,14 @@ namespace cd
     int Play(cdContext *context, int xmin, int xmax, int ymin, int ymax, void *data)
     {
       return cdCanvasPlay(canvas, context, xmin, xmax, ymin, ymax, data);
+    }
+    int Play(cdContext *context, double xmin, double xmax, double ymin, double ymax, void *data)
+    {
+      return cdfCanvasPlay(canvas, context, xmin, xmax, ymin, ymax, data);
+    } 
+    int wPlay(cdContext *context, double xmin, double xmax, double ymin, double ymax, void *data)
+    {
+      return wdCanvasPlay(canvas, context, xmin, xmax, ymin, ymax, data);
     }
 
     /* coordinates utilities */
@@ -305,6 +311,10 @@ namespace cd
     {
       return cdCanvasIsPointInRegion(canvas, x, y);
     }
+    int IsPointInRegion(double x, double y)
+    {
+      return cdfCanvasIsPointInRegion(canvas, x, y);
+    }
     int wIsPointInRegion(double x, double y)
     {
       return wdCanvasIsPointInRegion(canvas, x, y);
@@ -313,6 +323,10 @@ namespace cd
     {
       cdCanvasOffsetRegion(canvas, x, y);
     }
+    void OffsetRegion(double x, double y)
+    {
+      cdfCanvasOffsetRegion(canvas, x, y);
+    }
     void wOffsetRegion(double x, double y)
     {
       wdCanvasOffsetRegion(canvas, x, y);
@@ -320,6 +334,10 @@ namespace cd
     void GetRegionBox(int &xmin, int &xmax, int &ymin, int &ymax)
     {
       cdCanvasGetRegionBox(canvas, &xmin, &xmax, &ymin, &ymax);
+    }
+    void GetRegionBox(double &xmin, double &xmax, double &ymin, double &ymax)
+    {
+      cdfCanvasGetRegionBox(canvas, &xmin, &xmax, &ymin, &ymax);
     }
     void wGetRegionBox(double &xmin, double &xmax, double &ymin, double &ymax)
     {
@@ -335,6 +353,10 @@ namespace cd
     {
       cdCanvasPixel(canvas, x, y, color);
     }
+    void Pixel(double x, double y, long color)
+    {
+      cdfCanvasPixel(canvas, x, y, color);
+    }
     void wPixel(double x, double y, long color)
     {
       wdCanvasPixel(canvas, x, y, color);
@@ -342,6 +364,10 @@ namespace cd
     void Mark(int x, int y)
     {
       cdCanvasMark(canvas, x, y);
+    }
+    void Mark(double x, double y)
+    {
+      cdfCanvasMark(canvas, x, y);
     }
     void wMark(double x, double y)
     {
@@ -724,6 +750,10 @@ namespace cd
     {
       cdCanvasGetTextBox(canvas, x, y, s, &xmin, &xmax, &ymin, &ymax);
     }
+    void GetTextBox(double x, double y, const char* s, double &xmin, double &xmax, double &ymin, double &ymax)
+    {
+      cdfCanvasGetTextBox(canvas, x, y, s, &xmin, &xmax, &ymin, &ymax);
+    }
     void wGetTextBox(double x, double y, const char* s, double &xmin, double &xmax, double &ymin, double &ymax)
     {
       wdCanvasGetTextBox(canvas, x, y, s, &xmin, &xmax, &ymin, &ymax);
@@ -731,6 +761,10 @@ namespace cd
     void GetTextBounds(int x, int y, const char* s, int *rect)
     {
       cdCanvasGetTextBounds(canvas, x, y, s, rect);
+    }
+    void GetTextBounds(double x, double y, const char* s, double *rect)
+    {
+      cdfCanvasGetTextBounds(canvas, x, y, s, rect);
     }
     void wGetTextBounds(double x, double y, const char* s, double *rect)
     {
@@ -741,53 +775,106 @@ namespace cd
       return cdCanvasGetColorPlanes(canvas);
     }
 
-    /* color */
-    void Palette(int n, const long *palette, int mode)
-    {
-      cdCanvasPalette(canvas, n, palette, mode);
-    }
 
     /* client images */
-    void GetImageRGB(im::Image& image, int x, int y)
+    void PutImage(const im::Image& image, int x, int y, int w, int h)
     {
-//      cdCanvasGetImageRGB(canvas, r, g, b, x, y, w, h);
+      const imImage* im_image = image.im_image;
+      if (im_image->color_space == IM_RGB)
+      {
+        if (im_image->has_alpha)
+          cdCanvasPutImageRectRGBA(canvas, im_image->width, im_image->height,
+                                   (unsigned char*)im_image->data[0],
+                                   (unsigned char*)im_image->data[1],
+                                   (unsigned char*)im_image->data[2],
+                                   (unsigned char*)im_image->data[3],
+                                   x, y, w, h, 0, 0, 0, 0);
+        else
+          cdCanvasPutImageRectRGB(canvas, im_image->width, im_image->height,
+                                  (unsigned char*)im_image->data[0],
+                                  (unsigned char*)im_image->data[1],
+                                  (unsigned char*)im_image->data[2],
+                                  x, y, w, h, 0, 0, 0, 0);
+      }
+      else
+        cdCanvasPutImageRectMap(canvas, im_image->width, im_image->height,
+                                (unsigned char*)im_image->data[0], im_image->palette,
+                                x, y, w, h, 0, 0, 0, 0);
     }
-    void PutImageRectRGB(int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+    void PutImage(const im::Image& image, double x, double y, double w, double h)
     {
-      cdCanvasPutImageRectRGB(canvas, iw, ih, r, g, b, x, y, w, h, xmin, xmax, ymin, ymax);
+      const imImage* im_image = image.im_image;
+      if (im_image->color_space == IM_RGB)
+      {
+        if (im_image->has_alpha)
+          cdfCanvasPutImageRectRGBA(canvas, im_image->width, im_image->height,
+                                    (unsigned char*)im_image->data[0],
+                                    (unsigned char*)im_image->data[1],
+                                    (unsigned char*)im_image->data[2],
+                                    (unsigned char*)im_image->data[3],
+                                    x, y, w, h, 0, 0, 0, 0);
+        else
+          cdfCanvasPutImageRectRGB(canvas, im_image->width, im_image->height,
+                                   (unsigned char*)im_image->data[0],
+                                   (unsigned char*)im_image->data[1],
+                                   (unsigned char*)im_image->data[2],
+                                   x, y, w, h, 0, 0, 0, 0);
+      }
+      else
+        cdfCanvasPutImageRectMap(canvas, im_image->width, im_image->height,
+                                 (unsigned char*)im_image->data[0], im_image->palette,
+                                 x, y, w, h, 0, 0, 0, 0);
     }
-    void wPutImageRectRGB(int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+    void wPutImage(const im::Image& image, double x, double y, double w, double h)
     {
-      wdCanvasPutImageRectRGB(canvas, iw, ih, r, g, b, x, y, w, h, xmin, xmax, ymin, ymax);
+      const imImage* im_image = image.im_image;
+      if (im_image->color_space == IM_RGB)
+      {
+        if (im_image->has_alpha)
+          wdCanvasPutImageRectRGBA(canvas, im_image->width, im_image->height,
+                                   (unsigned char*)im_image->data[0],
+                                   (unsigned char*)im_image->data[1],
+                                   (unsigned char*)im_image->data[2],
+                                   (unsigned char*)im_image->data[3],
+                                   x, y, w, h, 0, 0, 0, 0);
+        else
+          wdCanvasPutImageRectRGB(canvas, im_image->width, im_image->height,
+                                  (unsigned char*)im_image->data[0],
+                                  (unsigned char*)im_image->data[1],
+                                  (unsigned char*)im_image->data[2],
+                                  x, y, w, h, 0, 0, 0, 0);
+      }
+      else
+        wdCanvasPutImageRectMap(canvas, im_image->width, im_image->height,
+                                (unsigned char*)im_image->data[0], im_image->palette,
+                                x, y, w, h, 0, 0, 0, 0);
     }
-    void PutImageRectRGBA(int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+    void GetImage(im::Image& image, int x, int y)
     {
-      cdCanvasPutImageRectRGBA(canvas, iw, ih, r, g, b, a, x, y, w, h, xmin, xmax, ymin, ymax);
+      const imImage* im_image = image.im_image;
+      cdCanvasGetImageRGB(canvas,
+                          (unsigned char*)im_image->data[0],
+                          (unsigned char*)im_image->data[1],
+                          (unsigned char*)im_image->data[2],
+                          x, y, im_image->width, im_image->height);
     }
-    void wPutImageRectRGBA(int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+    void GetImage(im::Image& image, double x, double y)
     {
-      wdCanvasPutImageRectRGBA(canvas, iw, ih, r, g, b, a, x, y, w, h, xmin, xmax, ymin, ymax);
+      const imImage* im_image = image.im_image;
+      cdfCanvasGetImageRGB(canvas,
+                           (unsigned char*)im_image->data[0],
+                           (unsigned char*)im_image->data[1],
+                           (unsigned char*)im_image->data[2],
+                           x, y, im_image->width, im_image->height);
     }
-    void PutImageRectMap(int iw, int ih, const unsigned char* index, const long* colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+    void wGetImage(im::Image& image, double x, double y)
     {
-      cdCanvasPutImageRectMap(canvas, iw, ih, index, colors, x, y, w, h, xmin, xmax, ymin, ymax);
-    }
-    void wPutImageRectMap(int iw, int ih, const unsigned char* index, const long* colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
-    {
-      wdCanvasPutImageRectMap(canvas, iw, ih, index, colors, x, y, w, h, xmin, xmax, ymin, ymax);
-    }
-
-    void PutBitmap(cdBitmap* bitmap, int x, int y, int w, int h)
-    {
-      cdCanvasPutBitmap(canvas, bitmap, x, y, w, h);
-    }
-    void wPutBitmap(cdBitmap* bitmap, double x, double y, double w, double h)
-    {
-      wdCanvasPutBitmap(canvas, bitmap, x, y, w, h);
-    }
-    void GetBitmap(cdBitmap* bitmap, int x, int y)
-    {
-      cdCanvasGetBitmap(canvas, bitmap, x, y);
+      const imImage* im_image = image.im_image;
+      wdCanvasGetImageRGB(canvas,
+                          (unsigned char*)im_image->data[0],
+                          (unsigned char*)im_image->data[1],
+                          (unsigned char*)im_image->data[2],
+                          x, y, im_image->width, im_image->height);
     }
   };
 }
