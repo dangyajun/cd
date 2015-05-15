@@ -56,6 +56,62 @@ namespace cd
    wdCanvasGetImageRGB 
 #endif
 
+  char* Version()
+  {
+    return cdVersion();
+  }
+  char* VersionDate()
+  {
+    return cdVersionDate();
+  }
+  int VersionNumber()
+  {
+    return cdVersionNumber();
+  }
+
+
+
+  long ColorEncode(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255)
+  {
+    alpha = ~alpha;
+    return (((long)alpha) << 24) | (((long)red) << 16) | (((long)green) << 8) | ((long)blue);
+  }
+  unsigned char ColorAlpha(long color)
+  {
+    unsigned char alpha = (unsigned char)(color >> 24);
+    alpha = ~alpha;
+    return alpha;
+  }
+  unsigned char ColorRed(long color)
+  {
+    return (unsigned char)(color >> 16);
+  }
+  unsigned char ColorGreen(long color)
+  {
+    return (unsigned char)(color >> 8);
+  }
+  unsigned char ColorBlue(long color)
+  {
+    return (unsigned char)color;
+  }
+
+
+  class Context
+  {
+    cdContext* cd_context;
+
+    friend class Canvas;
+
+  public:
+    Context(cdContext* ref_context)
+    {
+      cd_context = ref_context;
+    }
+
+
+  };
+
+
   class Canvas
   {
     cdCanvas* canvas;
@@ -76,7 +132,7 @@ namespace cd
         cdKillCanvas(canvas);
     }
 
-    cdContext* GetContext()
+    Context GetContext()
     {
       return cdCanvasGetContext(canvas);
     }
@@ -126,17 +182,17 @@ namespace cd
     }
 
     /* interpretation */
-    int Play(cdContext *context, int xmin, int xmax, int ymin, int ymax, void *data)
+    int Play(const Context& context, int xmin, int xmax, int ymin, int ymax, void *data)
     {
-      return cdCanvasPlay(canvas, context, xmin, xmax, ymin, ymax, data);
+      return cdCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     }
-    int Play(cdContext *context, double xmin, double xmax, double ymin, double ymax, void *data)
+    int Play(const Context& context, double xmin, double xmax, double ymin, double ymax, void *data)
     {
-      return cdfCanvasPlay(canvas, context, xmin, xmax, ymin, ymax, data);
+      return cdfCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     } 
-    int wPlay(cdContext *context, double xmin, double xmax, double ymin, double ymax, void *data)
+    int wPlay(const Context& context, double xmin, double xmax, double ymin, double ymax, void *data)
     {
-      return wdCanvasPlay(canvas, context, xmin, xmax, ymin, ymax, data);
+      return wdCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     }
 
     /* coordinates utilities */
