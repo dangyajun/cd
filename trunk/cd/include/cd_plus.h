@@ -72,7 +72,8 @@ namespace cd
     }
     ~Canvas()
     {
-      if (canvas) cdKillCanvas(canvas);
+      if (canvas) 
+        cdKillCanvas(canvas);
     }
 
     cdContext* GetContext()
