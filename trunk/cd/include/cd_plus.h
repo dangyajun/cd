@@ -12,7 +12,27 @@
 
 #include "cd.h"
 #include "wd.h"
+
 #include "cdiup.h"
+#include "cddbuf.h"
+#include "cdprint.h"
+#include "cdnative.h"
+#include "cdgdiplus.h"
+#include "cdcgm.h"
+#include "cddgn.h"
+#include "cddxf.h"
+#include "cdclipbd.h"
+#include "cdemf.h"
+#include "cdirgb.h"
+#include "cdmf.h"
+#include "cdps.h"
+#include "cdpdf.h"
+#include "cdsvg.h"
+#include "cdwmf.h"
+#include "cddebug.h"
+#include "cdgl.h"
+#include "cdpicture.h"
+
 
 
 /** \brief Name space for C++ high level API
@@ -25,17 +45,6 @@
 namespace cd
 {
 #if 0
-  int         cdUseContextPlus(int use);
-  void        cdInitContextPlus(void);   /* need an external library */
-  void        cdFinishContextPlus(void);   /* need an external library */
-
-  /* context */
-  typedef int(*cdCallback)(cdCanvas* canvas, ...);
-  int cdContextRegisterCallback(cdContext *context, int cb, cdCallback func);
-  unsigned long cdContextCaps(cdContext *context);
-  int cdContextIsPlus(cdContext *context);
-  int cdContextType(cdContext *context);
-
   NativeBitmap(const im:Image& image);
   ~NativeBitmap();
   PutBitmap
@@ -54,6 +63,8 @@ namespace cd
    cdfCanvasPutImageRectMap 
    cdfCanvasGetImageRGB 
    wdCanvasGetImageRGB 
+
+   defines
 #endif
 
   char* Version()
@@ -108,7 +119,161 @@ namespace cd
       cd_context = ref_context;
     }
 
+    unsigned long Caps()
+    {
+      return cdContextCaps(cd_context);
+    }
+    bool IsPlus()
+    {
+      return cdContextIsPlus(cd_context) != 0;
+    }
+    int Type()
+    {
+      return cdContextType(cd_context);
+    }
 
+    static void UsePlus(bool use)
+    {
+      cdUseContextPlus(use);
+    }
+    static void InitPlus()
+    {
+      cdInitContextPlus();
+    }
+    static void FinishPlus()
+    {
+      cdFinishContextPlus();
+    }
+
+    enum ExtraPolyModes
+    {
+      SPLINE = CD_SPLINE,
+      FILLSPLINE = CD_FILLSPLINE,
+      FILLGRADIENT = CD_FILLGRADIENT
+    };
+
+
+    static void GetScreenSize(int &width, int &height, double &width_mm, double &height_mm)
+    {
+      cdGetScreenSize(&width, &height, &width_mm, &height_mm);
+    }
+    static int GetScreenColorPlanes()
+    {
+      return cdGetScreenColorPlanes();
+    }
+
+    static Context NativeWindow()
+    {
+      return Context(cdContextNativeWindow());
+    }
+    static Context NativeWindowDubleBuffer()
+    {
+      return Context(cdContextDBuffer());
+    }
+    static Context NativePrinter()
+    {
+      return Context(cdContextPrinter());
+    }
+    static Context NativeClipboard()
+    {
+      return Context(cdContextClipboard());
+    }
+    static Context IupDoubleBufferImageRGB()
+    {
+      return Context(cdContextIupDBufferRGB());
+    }
+    static Context IupDoubleBuffer()
+    {
+      return Context(cdContextIupDBuffer());
+    }
+    static Context IupNativeWindow()
+    {
+      return Context(cdContextIup());
+    }
+    static Context ImageRGB()
+    {
+      return Context(cdContextImageRGB());
+    }
+    static Context DoubleBufferImageRGB()
+    {
+      return Context(cdContextDBufferRGB());
+    }
+    static Context Picture()
+    {
+      return Context(cdContextPicture());
+    }
+    static Context Debug()
+    {
+      return Context(cdContextDebug());
+    }
+    static Context MetafileWMF()
+    {
+      return Context(cdContextWMF());
+    }
+    static Context MetafileEMF()
+    {
+      return Context(cdContextEMF());
+    }
+    static Context MetafilePDF()
+    {
+      return Context(cdContextPDF());
+    }
+    static Context MetafileMF()
+    {
+      return Context(cdContextMetafile());
+    }
+    static Context MetafileDGN()
+    {
+      return Context(cdContextDGN());
+    }
+    static Context MetafileDXF()
+    {
+      return Context(cdContextDXF());
+    }
+    static Context MetafileSVG()
+    {
+      return Context(cdContextSVG());
+    }
+    static Context NativeWindowGL()
+    {
+      return Context(cdContextGL());
+    }
+    static Context MetafilePS()
+    {
+      return Context(cdContextPS());
+    }
+    static Context MetafileCGM()
+    {
+      return Context(cdContextCGM());
+    }
+
+#if 0
+#define CD_SIZECB 0        /* size callback */
+    typedef int(*cdSizeCB)(cdCanvas *canvas, int w, int h, double w_mm, double h_mm);
+#define CD_ABORT 1
+#define CD_CONTINUE 0
+
+#define CD_CGMCOUNTERCB 1
+#define CD_CGMSCLMDECB 2
+#define CD_CGMVDCEXTCB 3
+#define CD_CGMBEGPICTCB 4
+#define CD_CGMBEGPICTBCB 5
+#define CD_CGMBEGMTFCB 6
+CD_COUNTERCB - int(*cdcgmcountercb)(cdContext *driver, double percent)
+CD_SCLMDECB - int(*cdcgmsclmdecb)(cdContext *driver, short scl_mde, short *drw_mode, double *factor)
+CD_VDCEXTCB - int(*cdcgmvdcextcb)(cdContext *driver, short type, double *first_x, double *first_y, double *second_x, double *second_y)
+CD_BEGPICTCB - int(*cdcgmbegpictcb)(cdContext *driver, char *pict)
+CD_BEGPICTBCB - int(*cdcgmbegpictbcb)(cdContext *driver)
+CD_CGMBEGMTFCB - int (*cdcgmbegmtfcb)(cdContext *driver, int *xmin, int *ymin, int *xmax, int *ymax)
+
+    typedef int(*cdCallback)(cdCanvas* canvas, ...);
+    int cdContextRegisterCallback(cdContext *context, int cb, cdCallback func);
+
+    unsigned char* cdRedImage(cdCanvas* cnv);
+    unsigned char* cdGreenImage(cdCanvas* cnv);
+    unsigned char* cdBlueImage(cdCanvas* cnv);
+    unsigned char* cdAlphaImage(cdCanvas* cnv);
+#endif
   };
 
 
