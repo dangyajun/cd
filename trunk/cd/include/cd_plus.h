@@ -162,13 +162,21 @@ namespace cd
       return cdGetScreenColorPlanes();
     }
 
-    static Context NativeWindow()
+    static Context NativeWindowImageRGBDoubleBufferIup()
     {
-      return Context(cdContextNativeWindow());
+      return Context(cdContextIupDBufferRGB());
     }
-    static Context NativeWindowDubleBuffer()
+    static Context NativeWindowDoubleBufferIup()
     {
-      return Context(cdContextDBuffer());
+      return Context(cdContextIupDBuffer());
+    }
+    static Context NativeWindowIup()
+    {
+      return Context(cdContextIup());
+    }
+    static Context NativeOpenGL()
+    {
+      return Context(cdContextGL());
     }
     static Context NativePrinter()
     {
@@ -178,23 +186,11 @@ namespace cd
     {
       return Context(cdContextClipboard());
     }
-    static Context IupDoubleBufferImageRGB()
-    {
-      return Context(cdContextIupDBufferRGB());
-    }
-    static Context IupDoubleBuffer()
-    {
-      return Context(cdContextIupDBuffer());
-    }
-    static Context IupNativeWindow()
-    {
-      return Context(cdContextIup());
-    }
     static Context ImageRGB()
     {
       return Context(cdContextImageRGB());
     }
-    static Context DoubleBufferImageRGB()
+    static Context ImageRGBDoubleBuffer()
     {
       return Context(cdContextDBufferRGB());
     }
@@ -202,7 +198,7 @@ namespace cd
     {
       return Context(cdContextPicture());
     }
-    static Context Debug()
+    static Context MetafileDebug()
     {
       return Context(cdContextDebug());
     }
@@ -234,10 +230,6 @@ namespace cd
     {
       return Context(cdContextSVG());
     }
-    static Context NativeWindowGL()
-    {
-      return Context(cdContextGL());
-    }
     static Context MetafilePS()
     {
       return Context(cdContextPS());
@@ -248,7 +240,7 @@ namespace cd
     }
 
 #if 0
-#define CD_SIZECB 0        /* size callback */
+#define CD_SIZECB 0
     typedef int(*cdSizeCB)(cdCanvas *canvas, int w, int h, double w_mm, double h_mm);
 #define CD_ABORT 1
 #define CD_CONTINUE 0
@@ -259,12 +251,12 @@ namespace cd
 #define CD_CGMBEGPICTCB 4
 #define CD_CGMBEGPICTBCB 5
 #define CD_CGMBEGMTFCB 6
-CD_COUNTERCB - int(*cdcgmcountercb)(cdContext *driver, double percent)
-CD_SCLMDECB - int(*cdcgmsclmdecb)(cdContext *driver, short scl_mde, short *drw_mode, double *factor)
-CD_VDCEXTCB - int(*cdcgmvdcextcb)(cdContext *driver, short type, double *first_x, double *first_y, double *second_x, double *second_y)
-CD_BEGPICTCB - int(*cdcgmbegpictcb)(cdContext *driver, char *pict)
-CD_BEGPICTBCB - int(*cdcgmbegpictbcb)(cdContext *driver)
-CD_CGMBEGMTFCB - int (*cdcgmbegmtfcb)(cdContext *driver, int *xmin, int *ymin, int *xmax, int *ymax)
+static int cgm_countercb(cdCanvas *canvas, double percent);
+static int cgm_sclmdecb(cdCanvas *canvas, short scl_mde, short *draw_mode_i, double *factor_f);
+static int cgm_vdcextcb(cdCanvas *canvas, short type, void *xmn, void *ymn, void *xmx, void *ymx);
+static int cgm_begpictcb(cdCanvas *canvas, char *pict);
+static int cgm_begpictbcb(cdCanvas *canvas);
+static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx);
 
     typedef int(*cdCallback)(cdCanvas* canvas, ...);
     int cdContextRegisterCallback(cdContext *context, int cb, cdCallback func);
@@ -281,12 +273,13 @@ CD_CGMBEGMTFCB - int (*cdcgmbegmtfcb)(cdContext *driver, int *xmin, int *ymin, i
   {
     cdCanvas* canvas;
 
-    Canvas() {};
+    /* forbidden */
+    Canvas() {}
+    Canvas(const Canvas&) {}
 
   public:
 //    cdCanvas*   cdCreateCanvas(cdContext *context, void *data);
 
-    /* canvas init */
     Canvas(cdCanvas* ref_canvas)
     {
       canvas = ref_canvas;
@@ -1096,6 +1089,55 @@ CD_CGMBEGMTFCB - int (*cdcgmbegmtfcb)(cdContext *driver, int *xmin, int *ymin, i
                           x, y, im_image->width, im_image->height);
     }
   };
+
+  class MetafileCanvas : public Canvas
+  {
+  public:
+    MetafileCanvas(const char* filename) 
+    {
+    }
+  };
+
+#if 0
+
+static Context NativeWindowImageRGBDoubleBufferIup()
+static Context NativeWindowDoubleBufferIup()
+static Context NativeWindowIup()
+  Ihandle*
+static Context NativePrinter()
+  "document -d"
+static Context NativeClipboard()
+  "widthxheight [resolution] -b" //or in C "%dx%d %g -b",
+  "-m"
+static Context NativeOpenGL()
+  "widthxheight [resolution]"
+static Context ImageRGB()
+  "widthxheight [r g b a] -r[resolution] -a"    //in C "%dx%d %p %p %p %p -r%g -a"
+  im::Image
+static Context Picture()
+  "[resolution]" //or in C use "%lg"
+static Context MetafileDebug()
+  "filename [widthxheight] [resolution]" //or in C use "%s %gx%g %g"
+static Context MetafileWMF()
+  "filename widthxheight [resolution]"     //or in C "%s %dx%d %g"
+static Context MetafileEMF()
+  "filename widthxheight"     //or in C "%s %dx%d"
+static Context MetafileMF()
+  "filename [widthxheight] [resolution]" //or in C use "%s %gx%g %g"
+static Context MetafileDGN()
+  "filename [widthxheight] [resolution] [-f] [-sseedfile]"   //or in C "%s %gx%g %g %s"
+static Context MetafileDXF()
+  "filename [widthxheight] [resolution] [-ac2000] [-limits xmin ymin xmax ymax]"    //or in C "%s %gx%g %g %s %s %g %g %g %g"
+static Context MetafileSVG()
+  "filename [widthxheight] [resolution]" //or in C "%s %gx%g %g"
+static Context MetafileCGM()
+  "filename [widthxheight] [resolution] [-t] [-pprec] -d[description]" //or in C style "%s %gx%g %g %s"
+static Context MetafilePDF()
+  "filename -p[paper] -w[width] -h[height] -s[resolution] [-o]" //or in C "%s -p%d -w%g -h%g -s%d -o"
+static Context MetafilePS()
+  "filename -p[paper] -w[width] -h[height] -l[left] -r[right] -b[bottom] -t[top] -s[resolution] [-e] [-g] [-o] [-1] d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
+
+#endif
 }
 
 #endif
