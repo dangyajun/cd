@@ -80,25 +80,25 @@ O DC pode ser um WMF ou um BITMAP.
 */
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
-  char* strsize = (char*)data;
+  char* str_data = (char*)data;
   int w = 0, h = 0, wtype = CDW_EMF; /* default clipboard type */
-  double res = 0; /* used only for BMP */
+  double res = 0;
   Metafile* metafile = NULL;
   Bitmap* bitmap = NULL;
-  Graphics* graphics;
+  Graphics* graphics = NULL;
   
   /* Inicializa parametros */
-  if (strsize == NULL) 
+  if (str_data == NULL) 
     return;
   
-  if (strstr(strsize, "-b") != NULL)
+  if (strstr(str_data, "-b") != NULL)
     wtype = CDW_BMP;
-  else if (strstr(strsize, "-m") != NULL)
+  else if (strstr(str_data, "-m") != NULL)
     wtype = -1; /* CD METAFILE */
   
   if (wtype != -1)
   {
-    sscanf(strsize,"%dx%d %lg",&w, &h, &res); 
+    sscanf(str_data,"%dx%d %lg",&w, &h, &res); 
     if (w == 0 || h == 0)
       return;
   }
@@ -106,9 +106,17 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   if (wtype == CDW_EMF)
   {
     HDC ScreenDC = GetDC(NULL);
-    /* LOGPIXELS can not be used for EMF */
-    canvas->xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
-    canvas->yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+    if (res)
+    {
+      canvas->xres = res;
+      canvas->yres = res;
+    }
+    else
+    {
+      /* LOGPIXELS can not be used for EMF */
+      canvas->xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
+      canvas->yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+    }
 
     Rect frameRect(0, 0, (int)(100 * w / canvas->xres), (int)(100 * h / canvas->yres));
 
@@ -122,17 +130,17 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   }
   else if (wtype == CDW_BMP)
   {
-    if (!res)
+    if (res)
+    {
+      canvas->xres = res;
+      canvas->yres = res;
+    }
+    else
     {
       HDC ScreenDC = GetDC(NULL);
       canvas->xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
       canvas->yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
       ReleaseDC(NULL, ScreenDC);
-    }
-    else
-    {
-      canvas->xres = res;
-      canvas->yres = res;
     }
     
     bitmap = new Bitmap(w, h, PixelFormat24bppRGB);
@@ -146,14 +154,15 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   
   if (wtype == -1)
   {
-    char filename[10240]; 
-    char str[10240];
+    char tmpPath[10240];
     
-    if (!cdStrTmpFileName(filename))
+    if (!cdStrTmpFileName(tmpPath))
       return;
-    
-    sprintf(str, "%s %s", filename, strsize);
-    cdcreatecanvasMF(canvas, str);
+
+    strcat(tmpPath, " ");
+    strcat(tmpPath, str_data);
+
+    cdcreatecanvasMF(canvas, tmpPath);
   }                    
   else
   {
