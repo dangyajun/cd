@@ -33,6 +33,11 @@
 #include "cdgl.h"
 #include "cdpicture.h"
 
+namespace iup
+{
+  class Canvas;
+  Ihandle* CanvasGetHandle(const Canvas&);
+}
 
 
 /** \brief Name space for C++ high level API
@@ -1089,6 +1094,34 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     }
   };
 
+
+  class CanvasIup : public Canvas
+  {
+  public:
+    CanvasIup(iup::Canvas& iup_canvas)
+      : Canvas()
+    {
+      canvas = cdCreateCanvas(CD_IUP, CanvasGetHandle(iup_canvas));
+    }
+  };
+  class CanvasIupDoubleBuffer : public Canvas
+  {
+  public:
+    CanvasIupDoubleBuffer(iup::Canvas& iup_canvas)
+      : Canvas()
+    {
+      canvas = cdCreateCanvas(CD_IUPDBUFFER, CanvasGetHandle(iup_canvas));
+    }
+  };
+  class CanvasIupDoubleBufferRGB : public Canvas
+  {
+  public:
+    CanvasIupDoubleBufferRGB(iup::Canvas& iup_canvas)
+      : Canvas()
+    {
+      canvas = cdCreateCanvas(CD_IUPDBUFFERRGB, CanvasGetHandle(iup_canvas));
+    }
+  };
   class CanvasImageRGB : public Canvas
   {
   public:
@@ -1121,9 +1154,7 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
           if (xres)
           {
             /* to DPM */
-            if (res_unit[0] == 'D' &&
-                res_unit[1] == 'P' &&
-                res_unit[2] == 'I')
+            if (res_unit[0] == 'D' && res_unit[1] == 'P' && res_unit[2] == 'I')
               res = xres / (10. * 2.54);
             else  /* DPC */
               res = xres / 10.0;
@@ -1235,10 +1266,10 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
         canvas = cdCreateCanvasf(CD_DEBUG, "\"%s\" %gx%g", filename, width_mm, height_mm);
     }
   };
-  class NativePrinter : public Canvas
+  class CanvasNativePrinter : public Canvas
   {
   public:
-    NativePrinter(const char* name, bool show_dialog = false)
+    CanvasNativePrinter(const char* name, bool show_dialog = false)
       : Canvas()
     {
       if (show_dialog)
@@ -1272,10 +1303,6 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     }
   };
 #if 0
-static Context NativeWindowImageRGBDoubleBufferIup()
-static Context NativeWindowDoubleBufferIup()
-static Context NativeWindowIup()
-  Ihandle*
 static Context NativeClipboardIup()
   "widthxheight [resolution] [-b]" //or in C "%dx%d %g -b"
   "[width_mmxheight_mm] [resolution] -m"  //or in C "%gx%g %g"
