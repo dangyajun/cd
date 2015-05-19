@@ -25,10 +25,10 @@
   Data)</font>. The <font face="Courier">Data</font> parameter is a string that must contain the filename and the canvas 
   dimensions, in the following format:</p>
   
-    <pre>&quot;<i>filename </i>[widthxheight] [resolution]&quot; or in <em>C use &quot;<strong><tt>%s %gx%g %g</tt></strong>&quot;</em></pre>
+    <pre>&quot;<i>filename </i>[width_mmxheight_mm] [resolution]&quot; or in <em>C use &quot;<strong><tt>%s %gx%g %g</tt></strong>&quot;</em></pre>
   
   <p>Only the parameter <font face="Courier">filename</font> is required. The filename must be inside double quotes (&quot;) 
-  if it has spaces.<font face="Courier"> Width</font> and <font face="Courier">height</font> are provided in millimeters 
+  if it has spaces.<font face="Courier"> width_mm</font> and <font face="Courier">height_mm</font> are provided in millimeters 
   (note the lowercase &quot;x&quot; between them), and their default value in pixels is <font face="Courier">INT_MAX</font> for 
   both dimensions. <font face="Courier">Resolution </font>is the number of pixels per millimeter; its default value is 
   &quot;3.78 pixels/mm&quot; (96 DPI). <font face="Courier">Width</font>, <font face="Courier">height</font> and

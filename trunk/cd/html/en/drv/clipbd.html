@@ -27,6 +27,15 @@
   <font face="Courier">Data</font> parameter string is platform-dependent and 
   varies according to the metafile created. See each metafile's documentation, 
   but remember to exclude parameter <font face="Courier">&quot;filename&quot;.</font></p>
+  
+    <pre><em>&quot;widthxheight [resolution] [-b]&quot;     </em>or in C <em>&quot;<strong><tt>%dx%d %g</tt></strong>&quot;   (Windows Only)  (internally EMF or BMP)
+or
+[width_mmxheight_mm] [resolution] -m&quot;  or in C &quot;<strong><tt>%gx%g %g</tt></strong>&quot; (Windows Only)  (internally CD_METAFILE)
+or
+&quot;display [width_mmxheight_mm] [resolution]&quot;               (X-Windows Only)(internally CD_METAFILE)
+or
+&quot;gtk_clipboard [width_mmxheight_mm] [resolution]&quot;         (GDK)           (internally CD_METAFILE)</em></pre>
+  
   <p>In the Windows environment, if the string &quot;<font face="Courier">-b</font>&quot; 
   is present at the end, it means that a <b>Bitmap</b> must be created instead of a 
   metafile, and, if the string <font face="Courier">&quot;-m&quot;</font> is 
