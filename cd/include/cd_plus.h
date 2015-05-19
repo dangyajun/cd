@@ -271,15 +271,14 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
 
   class Canvas
   {
+  protected:
     cdCanvas* canvas;
 
     /* forbidden */
-    Canvas() {}
+    Canvas() { canvas = 0; }
     Canvas(const Canvas&) {}
 
   public:
-//    cdCanvas*   cdCreateCanvas(cdContext *context, void *data);
-
     Canvas(cdCanvas* ref_canvas)
     {
       canvas = ref_canvas;
@@ -1090,53 +1089,206 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     }
   };
 
-  class MetafileCanvas : public Canvas
+  class CanvasImageRGB : public Canvas
   {
   public:
-    MetafileCanvas(const char* filename) 
+    CanvasImageRGB(int width, int height, bool has_alpha = false, double res = 0)
+      : Canvas()
     {
+      const char *alpha = "";
+      if (has_alpha)
+        alpha = "-a";
+
+      if (res)
+        canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %g %s", width, height, res, alpha);
+      else
+        canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %s", width, height, alpha);
+    }
+    CanvasImageRGB(im::Image& image, double res = 0)
+      : Canvas()
+    {
+      imImage* im_image = image.im_image;
+
+      if (im_image->color_space != IM_RGB || im_image->data_type != IM_BYTE)
+        return;
+
+      if (!res)
+      {
+        const char* res_unit = image.GetAttribString("ResolutionUnit");
+        if (res_unit)
+        {
+          double xres = image.GetAttribReal("XResolution");
+          if (xres)
+          {
+            /* to DPM */
+            if (res_unit[0] == 'D' &&
+                res_unit[1] == 'P' &&
+                res_unit[2] == 'I')
+              res = xres / (10. * 2.54);
+            else  /* DPC */
+              res = xres / 10.0;
+          }
+        }
+      }
+
+      if (res)
+      {
+        if (im_image->has_alpha)
+          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p %p -a", im_image->width, im_image->height,
+                                   im_image->data[0], im_image->data[1], im_image->data[2], im_image->data[3]);
+        else
+          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p", im_image->width, im_image->height,
+                                   im_image->data[0], im_image->data[1], im_image->data[2]);
+      }
+      else
+      {
+        if (im_image->has_alpha)
+          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p %p -r%g -a", im_image->width, im_image->height,
+                                                 im_image->data[0], im_image->data[1], im_image->data[2], im_image->data[3], res);
+        else
+          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p -r%g", im_image->width, im_image->height,
+                                                 im_image->data[0], im_image->data[1], im_image->data[2], res);
+      }
     }
   };
-
+  class CanvasMetafileEMF : public Canvas
+  {
+  public:
+    CanvasMetafileEMF(const char* filename, int width, int height, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_EMF, "\"%s\" %dx%d %g", filename, width, height, res);
+      else
+        canvas = cdCreateCanvasf(CD_EMF, "\"%s\" %dx%d", filename, width, height);
+    }
+  };
+  class CanvasMetafileWMF : public Canvas
+  {
+  public:
+    CanvasMetafileWMF(const char* filename, int width, int height, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_WMF, "\"%s\" %dx%d %g", filename, width, height, res);
+      else
+        canvas = cdCreateCanvasf(CD_WMF, "\"%s\" %dx%d", filename, width, height);
+    }
+  };
+  class CanvasMetafileMF : public Canvas
+  {
+  public:
+    CanvasMetafileMF(const char* filename, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_METAFILE, "\"%s\" %g", filename, res);
+      else
+        canvas = cdCreateCanvasf(CD_METAFILE, "\"%s\"", filename);
+    }
+    CanvasMetafileMF(const char* filename, double width_mm, double height_mm, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_METAFILE, "\"%s\" %gx%g %g", filename, width_mm, height_mm, res);
+      else
+        canvas = cdCreateCanvasf(CD_METAFILE, "\"%s\" %gx%g", filename, width_mm, height_mm);
+    }
+  };
+  class CanvasMetafileSVG : public Canvas
+  {
+  public:
+    CanvasMetafileSVG(const char* filename, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_SVG, "\"%s\" %g", filename, res);
+      else
+        canvas = cdCreateCanvasf(CD_SVG, "\"%s\"", filename);
+    }
+    CanvasMetafileSVG(const char* filename, double width_mm, double height_mm, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_SVG, "\"%s\" %gx%g %g", filename, width_mm, height_mm, res);
+      else
+        canvas = cdCreateCanvasf(CD_SVG, "\"%s\" %gx%g", filename, width_mm, height_mm);
+    }
+  };
+  class CanvasMetafileDebug : public Canvas
+  {
+  public:
+    CanvasMetafileDebug(const char* filename, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_DEBUG, "\"%s\" %g", filename, res);
+      else
+        canvas = cdCreateCanvasf(CD_DEBUG, "\"%s\"", filename);
+    }
+    CanvasMetafileDebug(const char* filename, double width_mm, double height_mm, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_DEBUG, "\"%s\" %gx%g %g", filename, width_mm, height_mm, res);
+      else
+        canvas = cdCreateCanvasf(CD_DEBUG, "\"%s\" %gx%g", filename, width_mm, height_mm);
+    }
+  };
+  class NativePrinter : public Canvas
+  {
+  public:
+    NativePrinter(const char* name, bool show_dialog = false)
+      : Canvas()
+    {
+      if (show_dialog)
+        canvas = cdCreateCanvasf(CD_PRINTER, "%s -d", name);
+      else
+        canvas = cdCreateCanvasf(CD_PRINTER, "%s", name);
+    }
+  };
+  class CanvasOpenGL : public Canvas
+  {
+  public:
+    CanvasOpenGL(int width, int height, double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_GL, "%dx%d %g", width, height, res);
+      else
+        canvas = cdCreateCanvasf(CD_GL, "%dx%d", width, height);
+    }
+  };
+  class CanvasPicture : public Canvas
+  {
+  public:
+    CanvasPicture(double res = 0)
+      : Canvas()
+    {
+      if (res)
+        canvas = cdCreateCanvasf(CD_PICTURE, "%g", res);
+      else
+        canvas = cdCreateCanvas(CD_PICTURE, "");
+    }
+  };
 #if 0
-
 static Context NativeWindowImageRGBDoubleBufferIup()
 static Context NativeWindowDoubleBufferIup()
 static Context NativeWindowIup()
   Ihandle*
-static Context NativePrinter()
-  "document -d"
-static Context NativeClipboard()
-  "widthxheight [resolution] -b" //or in C "%dx%d %g -b",
-  "-m"
-static Context NativeOpenGL()
-  "widthxheight [resolution]"
-static Context ImageRGB()
-  "widthxheight [r g b a] -r[resolution] -a"    //in C "%dx%d %p %p %p %p -r%g -a"
-  im::Image
-static Context Picture()
-  "[resolution]" //or in C use "%lg"
-static Context MetafileDebug()
-  "filename [widthxheight] [resolution]" //or in C use "%s %gx%g %g"
-static Context MetafileWMF()
-  "filename widthxheight [resolution]"     //or in C "%s %dx%d %g"
-static Context MetafileEMF()
-  "filename widthxheight"     //or in C "%s %dx%d"
-static Context MetafileMF()
-  "filename [widthxheight] [resolution]" //or in C use "%s %gx%g %g"
+static Context NativeClipboardIup()
+  "widthxheight [resolution] [-b]" //or in C "%dx%d %g -b"
+  "[width_mmxheight_mm] [resolution] -m"  //or in C "%gx%g %g"
 static Context MetafileDGN()
   "filename [widthxheight] [resolution] [-f] [-sseedfile]"   //or in C "%s %gx%g %g %s"
 static Context MetafileDXF()
   "filename [widthxheight] [resolution] [-ac2000] [-limits xmin ymin xmax ymax]"    //or in C "%s %gx%g %g %s %s %g %g %g %g"
-static Context MetafileSVG()
-  "filename [widthxheight] [resolution]" //or in C "%s %gx%g %g"
 static Context MetafileCGM()
   "filename [widthxheight] [resolution] [-t] [-pprec] -d[description]" //or in C style "%s %gx%g %g %s"
 static Context MetafilePDF()
   "filename -p[paper] -w[width] -h[height] -s[resolution] [-o]" //or in C "%s -p%d -w%g -h%g -s%d -o"
 static Context MetafilePS()
   "filename -p[paper] -w[width] -h[height] -l[left] -r[right] -b[bottom] -t[top] -s[resolution] [-e] [-g] [-o] [-1] d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
-
 #endif
 }
 

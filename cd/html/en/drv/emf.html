@@ -28,13 +28,13 @@
   functions can be called as usual. Parameter <font face="Courier">Data</font> 
   has the following format:</p>
   
-    <pre><em>&quot;filename widthxheight&quot;     </em>or in C <em>&quot;<strong><tt>%s %dx%d</tt></strong>&quot;</em></pre>
+    <pre><em>&quot;filename widthxheight [resolution]&quot;     </em>or in C <em>&quot;<strong><tt>%s %dx%d %g</tt></strong>&quot;</em></pre>
   
   <p>It must include the filename and the canvas' dimensions.<font face="Courier">
   </font>The filename must be inside double quotes (&quot;) if it has spaces.<font face="Courier"> 
   Width</font> and <font face="Courier">height</font> are provided in pixels 
-  (note the lowercase &quot;x&quot; between them). Resolution (the number of pixels per 
-  millimeter) is always the screen resolution.</p>
+  (note the lowercase &quot;x&quot; between them). <font face="Courier">Resolution</font> is the 
+  number of pixels per millimeter; its default value is the screen resolution.</p>
   <p>Any amount of such canvases may exist simultaneously. Function
   <font face="Courier"><strong>cdCreateCanvas</strong></font> <b>opens</b> the 
   file, and a call to function
