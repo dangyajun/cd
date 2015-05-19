@@ -204,15 +204,39 @@ static int imlua_cdCanvasGetImage(lua_State *L)
 static int imlua_cdCreateCanvas(lua_State * L) 
 {
   cdCanvas**canvas_p, *canvas;
-  char data_s[100];  
+  char data_s[100];
+  double res = 0;
 
   imImage *image = imlua_checkimage(L, 1);
 
   if (image->color_space != IM_RGB || image->data_type != IM_BYTE)
     luaL_argerror(L, 1, "image is not RGB/byte");
 
-  if (lua_isnoneornil(L, 2))
+  if (!lua_isnoneornil(L, 2))
+    res = luaL_checknumber(L, 2);
+
+  if (!res)
   {
+    const char* res_unit = imImageGetAttribString(image, "ResolutionUnit");
+    if (res_unit)
+    {
+      double xres = imImageGetAttribReal(image, "XResolution", 0);
+      if (xres)
+      {
+        /* to DPM */
+        if (res_unit[0] == 'D' &&
+            res_unit[1] == 'P' &&
+            res_unit[2] == 'I')
+            res = xres / (10. * 2.54);
+        else  /* DPC */
+          res = xres / 10.0;
+      }
+    }
+  }
+
+  if (!res)
+  {
+
     if (image->has_alpha)
       sprintf(data_s, "%dx%d %p %p %p %p -a", image->width, image->height,
                                               image->data[0], image->data[1], image->data[2], image->data[3]);
@@ -222,13 +246,12 @@ static int imlua_cdCreateCanvas(lua_State * L)
   }
   else
   {
-    double res_f = luaL_checknumber(L, 2);
     if (image->has_alpha)
       sprintf(data_s, "%dx%d %p %p %p %p -r%g -a", image->width, image->height,
-                                                   image->data[0], image->data[1], image->data[2], image->data[3], res_f);
+                                                   image->data[0], image->data[1], image->data[2], image->data[3], res);
     else
       sprintf(data_s, "%dx%d %p %p %p -r%g", image->width, image->height,
-                                             image->data[0], image->data[1], image->data[2], res_f);
+                                             image->data[0], image->data[1], image->data[2], res);
   }
 
   canvas = cdCreateCanvas(CD_IMAGERGB, data_s);
