@@ -77,34 +77,34 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
   char tmpPath[10240];
-  char* str = (char*)data;
+  char* str_data = (char*)data;
   Display* dpy = NULL;
 
   /* Inicializa parametros */
-  if (str == NULL) 
+  if (str_data == NULL) 
     return;
 
 #ifdef SunOS_OLD
-  sscanf(str, "%d", &dpy); 
+  sscanf(str_data, "%d", &dpy); 
 #else
-  sscanf(str, "%p", &dpy); 
+  sscanf(str_data, "%p", &dpy); 
 #endif
 
   if (!dpy)
     return;
 
-  str = strstr(str, " ");
-  if (!str)
+  str_data = strstr(str_data, " ");
+  if (!str_data)
     return;
 
-  str++;
+  str_data++;
   if (!cdStrTmpFileName(tmpPath))
     return;
 
   strcat(tmpPath, " ");
-  strcat(tmpPath, str);
+  strcat(tmpPath, str_data);
 
-  cdcreatecanvasMF(canvas, str);
+  cdcreatecanvasMF(canvas, tmpPath);
   if (!canvas->ctxcanvas)
     return;
 

@@ -410,26 +410,26 @@ static void cdkillcanvas (cdCtxCanvas *ctxcanvas)
 
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
-  char* strsize = (char*)data;
+  char* str_data = (char*)data;
   int w = 0, h = 0, wtype = CDW_EMF; /* default clipboard type */
-  double xres=0, yres=0;
+  double res = 0, xres=0, yres=0;
   HDC hDC;
   BITMAPINFO bmi;
-  BYTE* bits;
-  HBITMAP hBitmapClip, hOldBitmapClip;
+  BYTE* bits = NULL;
+  HBITMAP hBitmapClip = NULL, hOldBitmapClip = NULL;
   
   /* Inicializa parametros */
-  if (strsize == NULL) 
+  if (str_data == NULL) 
     return;
   
-  if (strstr(strsize, "-b") != NULL)
+  if (strstr(str_data, "-b") != NULL)
     wtype = CDW_BMP;
-  else if (strstr(strsize, "-m") != NULL)
+  else if (strstr(str_data, "-m") != NULL)
     wtype = -1; /* CD METAFILE */
   
   if (wtype != -1)
   {
-    sscanf(strsize,"%dx%d",&w, &h); 
+    sscanf(str_data,"%dx%d %lg",&w, &h, &res); 
     if (w == 0 || h == 0)
       return;
   }
@@ -438,9 +438,17 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   {
     HDC ScreenDC = GetDC(NULL);
     RECT rect;
-    /* LOGPIXELS can not be used for EMF */
-    xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
-    yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+    if (res)
+    {
+      xres = res;
+      yres = res;
+    }
+    else
+    {
+      /* LOGPIXELS can not be used for EMF */
+      xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
+      yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+    }
     rect.left = 0;
     rect.top = 0;
     rect.right = (int)(100. * w / xres);
@@ -452,8 +460,16 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   {
     HDC ScreenDC = GetDC(NULL);
     hDC = CreateCompatibleDC(ScreenDC);
-    xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
-    yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+    if (res)
+    {
+      xres = res;
+      yres = res;
+    }
+    else
+    {
+      xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
+      yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+    }
     
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = w;
@@ -462,8 +478,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
     bmi.bmiHeader.biBitCount = 24;
     bmi.bmiHeader.biCompression = BI_RGB;
     bmi.bmiHeader.biSizeImage = 0;
-    bmi.bmiHeader.biXPelsPerMeter = (long)(GetDeviceCaps(ScreenDC, LOGPIXELSX) / 0.0254);
-    bmi.bmiHeader.biYPelsPerMeter = (long)(GetDeviceCaps(ScreenDC, LOGPIXELSY) / 0.0254);
+    bmi.bmiHeader.biXPelsPerMeter = (LONG)(xres * 1000);
+    bmi.bmiHeader.biYPelsPerMeter = (LONG)(yres * 1000);
     bmi.bmiHeader.biClrUsed = 0;
     bmi.bmiHeader.biClrImportant = 0;
     
@@ -479,14 +495,15 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   
   if (wtype == -1)
   {
-    char filename[10240]; 
-    char str[10240];
+    char tmpPath[10240];
     
-    if (!cdStrTmpFileName(filename))
+    if (!cdStrTmpFileName(tmpPath))
       return;
-    
-    sprintf(str, "%s %s", filename, strsize);
-    cdcreatecanvasMF(canvas, str);
+
+    strcat(tmpPath, " ");
+    strcat(tmpPath, str_data);
+
+    cdcreatecanvasMF(canvas, tmpPath);
   }                    
   else
   {
