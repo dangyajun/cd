@@ -33,7 +33,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   cdCtxCanvas* ctxcanvas;
   char* strdata = (char*)data;
   int w = 0, h = 0;
-  double xres, yres;
+  double res = 0, xres, yres;
   FILE* file;
   char filename[10240] = "";
   HDC ScreenDC, hDC;
@@ -47,7 +47,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   if (filename[0] == 0)
     return;
  
-  sscanf(strdata,"%dx%d", &w, &h); 
+  sscanf(strdata, "%dx%d %lg", &w, &h, &res);
   if (w == 0 || h == 0)
     return;
   
@@ -57,9 +57,19 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   fclose(file);
   
   ScreenDC = GetDC(NULL);
-  /* LOGPIXELS can not be used for EMF */
-  xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
-  yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+
+  if (res)
+  {
+    xres = res;
+    yres = res;
+  }
+  else
+  {
+    /* LOGPIXELS can not be used for EMF */
+    xres = (double)GetDeviceCaps(ScreenDC, HORZRES) / (double)GetDeviceCaps(ScreenDC, HORZSIZE);
+    yres = (double)GetDeviceCaps(ScreenDC, VERTRES) / (double)GetDeviceCaps(ScreenDC, VERTSIZE);
+  }
+
   rect.left = 0;
   rect.top = 0;
   rect.right = (int)(100. * w / xres);
