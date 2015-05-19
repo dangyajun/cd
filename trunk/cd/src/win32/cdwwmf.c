@@ -34,8 +34,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   cdCtxCanvas* ctxcanvas;
   char* strdata = (char*)data;
   int w = 0, h = 0;
-  double res;
-  HDC ScreenDC;
+  double res = 0, xres, yres;
   FILE* fh;
   char filename[10240] = "";
   
@@ -43,9 +42,6 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   if (strdata == NULL) 
     return;
 
-  ScreenDC = GetDC(NULL);
-  res = ((double)GetDeviceCaps(ScreenDC, LOGPIXELSX)) / 25.4;
-  ReleaseDC(NULL, ScreenDC);
 
   strdata += cdGetFileName(strdata, filename);
   if (filename[0] == 0)
@@ -54,6 +50,19 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
   sscanf(strdata,"%dx%d %lg", &w, &h, &res); 
   if (w == 0 || h == 0)
     return;
+
+  if (res)
+  {
+    xres = res;
+    yres = res;
+  }
+  else
+  {
+    HDC ScreenDC = GetDC(NULL);
+    xres = ((double)GetDeviceCaps(ScreenDC, LOGPIXELSX)) / 25.4;
+    yres = ((double)GetDeviceCaps(ScreenDC, LOGPIXELSY)) / 25.4;
+    ReleaseDC(NULL, ScreenDC);
+  }
   
   /* Verifica se o arquivo pode ser aberto para escrita */
   fh = fopen(filename, "w");
@@ -67,8 +76,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void* data)
 
   canvas->w = w;
   canvas->h = h;
-  canvas->xres = res;
-  canvas->yres = res;
+  canvas->xres = xres;
+  canvas->yres = yres;
   canvas->w_mm = ((double)w) / res;
   canvas->h_mm = ((double)h) / res;
   canvas->bpp = 24;
