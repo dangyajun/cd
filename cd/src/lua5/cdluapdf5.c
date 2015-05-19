@@ -33,10 +33,14 @@ static cdluaContext cdluapdfctx =
   0
 };
 
+struct luaL_Reg funcs[] = {
+  { NULL, NULL },
+};
+
 int cdluapdf_open (lua_State *L)
 {
   cdluaLuaState* cdL = cdlua_getstate(L);
-  luaL_register(L, "cd", NULL);  /* leave "cd" table at the top of the stack */
+  luaL_register(L, "cd", funcs);  /* leave "cd" table at the top of the stack */
   cdlua_addcontext(L, cdL, &cdluapdfctx);
   return 1;
 }
