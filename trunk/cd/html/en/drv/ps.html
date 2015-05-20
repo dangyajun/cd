@@ -26,12 +26,12 @@
   opens the file and writes its header. Then, other functions in the CD library can be called as usual. The
   <font face="Courier">Data</font> parameter string has the following format:</p>
   
-    <pre>&quot;<em>filename -p[paper] -w[width] -h[height] -l[left] -r[right] -b[bottom] -t[top] -s[resolution] [-e]</em> <em>[-g] [-o] [-1] d[margin]</em>&quot;<em><br>
+    <pre>&quot;<em>filename -p[paper] -w[width_mm] -h[height_mm] -l[left_mm] -r[right_mm] -b[bottom_mm] -t[top_mm] -s[resolution_dpi] [-e]</em> <em>[-g] [-o] [-1] -d[margin_mm]</em>&quot;<em><br>
 </em>or in C<em><br>
 &quot;<strong><tt>%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g</tt></strong>&quot;</em></pre>
   
   <p>The filename must be inside double quotes (&quot;) if it has spaces. Any amount of such canvases may exist 
-  simultaneously. It is important to note that a call to function
+  simultaneously. It is important to notice that a call to function
   <a href="../func/init.html#cdKillCanvas"><font face="Courier"><strong>
   cdKillCanvas</strong></font></a> is required to <b>close</b> the file properly.</p>
   <p><b>Paper Size - </b>The default paper size is A4. It is possible to change it by using one of the predefined sizes 
@@ -95,7 +95,7 @@
 </div>
 
   <p><b>Margins -</b> The margins are controlled by parameters &quot;<font face="Courier">-l</font>&quot; &quot;<font face="Courier">-r</font>&quot; 
-  &quot;<font face="Courier">-t</font>&quot; and &quot;<font face="Courier">-b</font>&quot; (<em>left, right, top, bottom</em>). Values are 
+  &quot;<font face="Courier">-t</font>&quot; and &quot;<font face="Courier">-b</font>&quot; (<em>left_mm, right_mm, top_mm, bottom_mm</em>). Values are 
   provided in millimeters. Default margins are 25.4 mm to all parameters. You can draw only inside the margins.</p>
   <p><b>Resolution -</b> Resolution is used to convert values from millimeters to pixels (the same as points, but the 
   number of points is per inch - DPI). Use parameter &quot;<font face="Courier">-s</font>&quot; to configure the resolution. The 

@@ -1302,20 +1302,206 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
         canvas = cdCreateCanvas(CD_PICTURE, "");
     }
   };
+  class CanvasMetafileDGN : public Canvas
+  {
+  public:
+    CanvasMetafileDGN(const char* filename, double res = 0, bool polygon_filling = true, const char* seed_file = 0)
+      : Canvas()
+    {
+      char* polygon_filling_str = "";
+      if (!polygon_filling)
+        polygon_filling_str = "-f";
+
+      char* seed_file_str = "";
+      if (seed_file)
+        seed_file_str = "-s";
+      else
+        seed_file = "";
+
+      if (res)
+        canvas = cdCreateCanvasf(CD_DGN, "\"%s\" %g %s %s%s", filename, res, polygon_filling_str, seed_file_str, seed_file);
+      else
+        canvas = cdCreateCanvasf(CD_DGN, "\"%s\" %s %s%s", filename, polygon_filling_str, seed_file_str, seed_file);
+    }
+    CanvasMetafileDGN(const char* filename, double width_mm, double height_mm, double res = 0, bool polygon_filling = true, const char* seed_file = 0)
+      : Canvas()
+    {
+      char* polygon_filling_str = "";
+      if (!polygon_filling)
+        polygon_filling_str = "-f";
+
+      char* seed_file_str = "";
+      if (seed_file)
+        seed_file_str = "-s";
+      else
+        seed_file = "";
+
+      if (res)
+        canvas = cdCreateCanvasf(CD_DGN, "\"%s\" %gx%g %g %s %s%s", filename, width_mm, height_mm, res, polygon_filling_str, seed_file_str, seed_file);
+      else
+        canvas = cdCreateCanvasf(CD_DGN, "\"%s\" %gx%g %s %s%s", filename, width_mm, height_mm, polygon_filling_str, seed_file_str, seed_file);
+    }
+  };
+  class CanvasMetafileDXF : public Canvas
+  {
+  public:
+    CanvasMetafileDXF(const char* filename, double res = 0, bool acad2000 = true, double xmin = 0, double ymin = 0, double xmax = 0, double ymax = 0)
+      : Canvas()
+    {
+      char* acad2000_str = "";
+      if (acad2000)
+        acad2000_str = "-ac2000";
+
+      if (xmin || ymin || xmax || ymax)
+      {
+        if (res)
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %g %s -limits %g %g %g %g", filename, res, acad2000_str, xmin, ymin, xmax, ymax);
+        else
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %s -limits %g %g %g %g", filename, acad2000_str, xmin, ymin, xmax, ymax);
+      }
+      else
+      {
+        if (res)
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %g %s", filename, res, acad2000_str);
+        else
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %s", filename, acad2000_str);
+      }
+    }
+    CanvasMetafileDXF(const char* filename, double width_mm, double height_mm, double res = 0, bool acad2000 = true, double xmin = 0, double ymin = 0, double xmax = 0, double ymax = 0)
+      : Canvas()
+    {
+      char* acad2000_str = "";
+      if (acad2000)
+        acad2000_str = "-ac2000";
+
+      if (xmin || ymin || xmax || ymax)
+      {
+        if (res)
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %gx%g %g %s -limits %g %g %g %g", filename, width_mm, height_mm, res, acad2000_str, xmin, ymin, xmax, ymax);
+        else
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %gx%g %s -limits %g %g %g %g", filename, width_mm, height_mm, acad2000_str, xmin, ymin, xmax, ymax);
+      }
+      else
+      {
+        if (res)
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %gx%g %g %s %s%s", filename, width_mm, height_mm, res, acad2000_str);
+        else
+          canvas = cdCreateCanvasf(CD_DXF, "\"%s\" %gx%g %s %s%s", filename, width_mm, height_mm, acad2000_str);
+      }
+    }
+  };
+  class CanvasMetafileCGM : public Canvas
+  {
+  public:
+    CanvasMetafileCGM(const char* filename, double res = 0, bool text_encoding = false, const char* precision = 0, const char* description = 0)
+      : Canvas()
+    {
+      char* text_encoding_str = "";
+      if (text_encoding)
+        text_encoding_str = "-d";
+
+      if (!precision)   /* can be "16" (short), "32" (int), "F" (float), "D" (double) */
+        precision = "16";
+
+      char* description_str = "";
+      if (description)
+        description_str = "-s";
+      else
+        description = "";
+
+      if (res)
+        canvas = cdCreateCanvasf(CD_CGM, "\"%s\" %g %s -p%s %s%s", filename, res, text_encoding_str, precision, description_str, description);
+      else
+        canvas = cdCreateCanvasf(CD_CGM, "\"%s\" %s -p%s %s%s", filename, text_encoding_str, precision, description_str, description);
+    }
+    CanvasMetafileCGM(const char* filename, double width_mm, double height_mm, double res = 0, bool text_encoding = false, const char* precision = 0, const char* description = 0)
+      : Canvas()
+    {
+      char* text_encoding_str = "";
+      if (text_encoding)
+        text_encoding_str = "-t";
+
+      if (!precision)   /* can be "16" (short), "32" (int), "F" (float), "D" (double) */
+        precision = "16";
+
+      char* description_str = "";
+      if (description)
+        description_str = "-d";
+      else
+        description = "";
+
+      if (res)
+        canvas = cdCreateCanvasf(CD_CGM, "\"%s\" %gx%g %g %s -p%s %s%s", filename, width_mm, height_mm, res, text_encoding_str, precision, description_str, description);
+      else
+        canvas = cdCreateCanvasf(CD_CGM, "\"%s\" %gx%g %s -p%s %s%s", filename, width_mm, height_mm, text_encoding_str, precision, description_str, description);
+    }
+  };
+  class CanvasMetafilePDF : public Canvas
+  {
+  public:
+    CanvasMetafilePDF(const char* filename, int paper, int res_dpi = 0, bool landscape = false)
+      : Canvas()
+    {
+      char* landscape_str = "";
+      if (landscape)
+        landscape_str = "-o";
+
+      char* res_dpi_str = "";
+      if (res_dpi)
+        res_dpi_str = "-s";
+
+      canvas = cdCreateCanvasf(CD_PDF, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
+    }
+    CanvasMetafilePDF(const char* filename, double width_mm, double height_mm, int res_dpi = 0, bool landscape = false)
+      : Canvas()
+    {
+      char* landscape_str = "";
+      if (landscape)
+        landscape_str = "-o";
+
+      char* res_dpi_str = "";
+      if (res_dpi)
+        res_dpi_str = "-s";
+
+      canvas = cdCreateCanvasf(CD_PDF, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
+    }
+  };
+  class CanvasMetafilePS : public Canvas
+  {
+  public:
+    CanvasMetafilePS(const char* filename, int paper, int res_dpi = 0, bool landscape = false)
+      : Canvas()
+    {
+      char* landscape_str = "";
+      if (landscape)
+        landscape_str = "-o";
+
+      char* res_dpi_str = "";
+      if (res_dpi)
+        res_dpi_str = "-s";
+
+      canvas = cdCreateCanvasf(CD_PS, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
+    }
+    CanvasMetafilePS(const char* filename, double width_mm, double height_mm, int res_dpi = 0, bool landscape = false)
+      : Canvas()
+    {
+      char* landscape_str = "";
+      if (landscape)
+        landscape_str = "-o";
+
+      char* res_dpi_str = "";
+      if (res_dpi)
+        res_dpi_str = "-s";
+
+      canvas = cdCreateCanvasf(CD_PS, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
+    }
+  };
 #if 0
 static Context NativeClipboardIup()
   "widthxheight [resolution] [-b]" //or in C "%dx%d %g -b"
   "[width_mmxheight_mm] [resolution] -m"  //or in C "%gx%g %g"
-static Context MetafileDGN()
-  "filename [widthxheight] [resolution] [-f] [-sseedfile]"   //or in C "%s %gx%g %g %s"
-static Context MetafileDXF()
-  "filename [widthxheight] [resolution] [-ac2000] [-limits xmin ymin xmax ymax]"    //or in C "%s %gx%g %g %s %s %g %g %g %g"
-static Context MetafileCGM()
-  "filename [widthxheight] [resolution] [-t] [-pprec] -d[description]" //or in C style "%s %gx%g %g %s"
-static Context MetafilePDF()
-  "filename -p[paper] -w[width] -h[height] -s[resolution] [-o]" //or in C "%s -p%d -w%g -h%g -s%d -o"
 static Context MetafilePS()
-  "filename -p[paper] -w[width] -h[height] -l[left] -r[right] -b[bottom] -t[top] -s[resolution] [-e] [-g] [-o] [-1] d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
+  "-l[left] -r[right] -b[bottom] -t[top] [-e] [-g] [-1] -d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
 #endif
 }
 
