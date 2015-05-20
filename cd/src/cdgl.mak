@@ -28,6 +28,8 @@ ifneq ($(findstring MacOS, $(TEC_UNAME)), )
   ifneq ($(TEC_SYSMINOR), 4)
     BUILD_DYLIB=Yes
   endif
+  LIBS += iconv
+  LDIR += $(GTK)/lib
 endif
 
 ifneq ($(findstring cygw, $(TEC_UNAME)), )
