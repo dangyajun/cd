@@ -1889,7 +1889,7 @@ static int wdlua5_hardcopy(lua_State *L)
   cdluaContext* cdlua_ctx = cdlua_getcontext(L, 1);
   void *data_p = cdlua_ctx->checkdata(L, 2);
   cdCanvas* canvas = cdlua_checkcanvas(L, 3);
-  luaL_argcheck(L, !lua_isfunction(L, 4), 4, "invalid draw function");
+  luaL_argcheck(L, lua_isfunction(L, 4), 4, "invalid draw function");
 
   wdlua5_hardcopy_luaState = L;
   wdHardcopy(cdlua_ctx->ctx(), data_p, canvas, wdlua5_hardcopy_func);
