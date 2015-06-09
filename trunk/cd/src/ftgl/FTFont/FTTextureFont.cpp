@@ -99,7 +99,7 @@ FTTextureFontImpl::FTTextureFontImpl(FTFont *ftFont, const char* fontFilePath)
     xOffset(0),
     yOffset(0)
 {
-  load_flags = FT_LOAD_DEFAULT;  //TECGRAF - FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+  load_flags = FT_LOAD_DEFAULT;  //TECGRAF - was FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
     remGlyphs = numGlyphs = face.GlyphCount();
 }
 
@@ -117,7 +117,7 @@ FTTextureFontImpl::FTTextureFontImpl(FTFont *ftFont,
     xOffset(0),
     yOffset(0)
 {
-  load_flags = FT_LOAD_DEFAULT; //TECGRAF - FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+  load_flags = FT_LOAD_DEFAULT; //TECGRAF - was FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
     remGlyphs = numGlyphs = face.GlyphCount();
 }
 
@@ -201,8 +201,8 @@ GLuint FTTextureFontImpl::CreateTexture()
     glBindTexture(GL_TEXTURE_2D, textID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);//TECGRAF - GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//TECGRAF - GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //TECGRAF - was GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //TECGRAF - was GL_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, textureWidth, textureHeight,
                  0, GL_ALPHA, GL_UNSIGNED_BYTE, textureMemory);
