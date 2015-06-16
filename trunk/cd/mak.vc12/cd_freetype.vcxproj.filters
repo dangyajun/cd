@@ -147,6 +147,12 @@
     <ClCompile Include="..\src\freetype2\base\ftxf86.c">
       <Filter>FreeType2\base</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\freetype2\base\md5.c">
+      <Filter>FreeType2\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\freetype2\base\ftfntfmt.c">
+      <Filter>FreeType2\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\freetype2\autofit\afangles.h">
