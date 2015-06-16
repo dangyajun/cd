@@ -55,7 +55,7 @@ libftgl_la_SOURCES = \
     $(ftlayout_sources)
 SRC := $(addprefix ftgl/, $(libftgl_la_SOURCES))
     
-INCLUDES := ftgl freetype2
+INCLUDES := ftgl freetype2 freetype2/include
 LDIR = ../lib/$(TEC_UNAME)
 
 DEFINES = FTGL_LIBRARY_STATIC
