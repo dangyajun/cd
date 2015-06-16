@@ -166,8 +166,12 @@ void cdSimGetTextSizeFT(cdCtxCanvas* ctxcanvas, const char *s, int len, int *wid
   while(i < len)
   {
     /* load glyph image into the slot (erase previous one) */
-    error = FT_Load_Char( face, (unsigned char)s[i], FT_LOAD_DEFAULT );
-    if (error) {i++; continue;}  /* ignore errors */
+    error = FT_Load_Char( face, (unsigned char)s[i], FT_LOAD_DEFAULT);
+    if (error) 
+    {
+      i++; 
+      continue; /* ignore errors */
+    }  
 
     w += slot->advance.x; 
 
@@ -416,7 +420,11 @@ void cdSimTextFT(cdCtxCanvas* ctxcanvas, int x, int y, const char* s, int len)
 
     /* load glyph image into the slot (erase previous one) */
     error = FT_Load_Char(face, (unsigned char)s[i], FT_LOAD_RENDER);
-    if (error) {i++; continue;}  /* ignore errors */
+    if (error) 
+    {
+      i++; 
+      continue;  /* ignore errors */
+    }  
 
     x = slot->bitmap_left;
     y = slot->bitmap_top-slot->bitmap.rows; /* CD image reference point is at bottom-left */
