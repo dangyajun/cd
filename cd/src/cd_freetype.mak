@@ -3,7 +3,7 @@ LIBNAME = freetype
 OPT = YES   
 
 # Changes to freetype search for "CDLIB"
-FREETYPE := freetype2
+FREETYPE := freetype2_4
 
 SRC  := \
   autofit/autofit.c bdf/bdf.c cff/cff.c cache/ftcache.c \
@@ -15,7 +15,7 @@ SRC  := \
   base/ftgasp.c base/ftglyph.c base/ftgxval.c base/ftinit.c base/ftlcdfil.c \
   base/ftmm.c base/ftotval.c base/ftpatent.c base/ftpfr.c base/ftstroke.c \
   base/ftsynth.c base/ftsystem.c base/fttype1.c base/ftwinfnt.c \
-  base/ftbase.c base/ftcid.c base/ftfstype.c base/md5.c base/ftfntfmt.c
+  base/ftbase.c base/ftcid.c base/ftfstype.c base/ftxf86.c
 SRC := $(addprefix $(FREETYPE)/, $(SRC))
 
 DEFINES += FT2_BUILD_LIBRARY FT_CONFIG_OPTION_SYSTEM_ZLIB
