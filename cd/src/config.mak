@@ -67,7 +67,7 @@ SRCCOMM = cd.c wd.c wdhdcpy.c rgb2map.c cd_vectortext.c cd_active.c \
           cd_attributes.c cd_bitmap.c cd_image.c cd_primitives.c cd_text.c cd_util.c
       
 SRC = $(SRCCOMM) $(SRCSVG) $(SRCINTCGM) $(SRCDRV) $(SRCSIM)
-INCLUDES = . drv x11 win32 intcgm freetype2 sim cairo ../include
+INCLUDES = . drv x11 win32 intcgm freetype2 freetype2/include sim cairo ../include
 
 ifdef USE_GDK
   USE_GTK = Yes
