@@ -142,6 +142,11 @@ void FTFont::UseDisplayList(bool useList)
     return impl->UseDisplayList(useList);
 }
 
+//TECGRAF
+void FTFont::SetEnableBlend(bool enable)
+{
+  impl->SetEnableBlend(enable);
+}
 
 float FTFont::Ascender() const
 {
@@ -378,6 +383,12 @@ void FTFontImpl::UseDisplayList(bool useList)
     useDisplayLists = useList;
 }
 
+
+//TECGRAF
+void FTFontImpl::SetEnableBlend(bool enable)
+{
+    useBlending = enable;
+}
 
 float FTFontImpl::Ascender() const
 {

@@ -61,6 +61,9 @@ class FTFontImpl
 
         virtual void UseDisplayList(bool useList);
 
+        //TECGRAF
+        virtual void SetEnableBlend(bool enable);
+
         virtual float Ascender() const;
 
         virtual float Descender() const;
@@ -116,6 +119,13 @@ class FTFontImpl
          * <code>false</code> turns OFF display lists.
          */
         bool useDisplayLists;
+
+        /**
+        * Flag to enable or disable the use of blending inside FTGL
+        * <code>true</code> turns ON blending.
+        * <code>false</code> turns OFF blending.
+        */
+        bool useBlending;
 
         /**
          * The default glyph loading flags.

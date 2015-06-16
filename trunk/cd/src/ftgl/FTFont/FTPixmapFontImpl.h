@@ -49,11 +49,17 @@ class FTPixmapFontImpl : public FTFontImpl
                                FTPoint position, FTPoint spacing,
                                int renderMode);
 
+        //TECGRAF
+        virtual void SetEnableBlend(bool enable);
+
     private:
         /* Internal generic Render() implementation */
         template <typename T>
         inline FTPoint RenderI(const T *s, const int len,
                                FTPoint position, FTPoint spacing, int mode);
+
+    private:
+        bool m_enable_blend; //TECGRAF
 };
 
 #endif  //  __FTPixmapFontImpl__

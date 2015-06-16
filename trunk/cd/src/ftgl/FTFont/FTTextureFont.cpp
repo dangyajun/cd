@@ -117,7 +117,7 @@ FTTextureFontImpl::FTTextureFontImpl(FTFont *ftFont,
     xOffset(0),
     yOffset(0)
 {
-  load_flags = FT_LOAD_DEFAULT; //TECGRAF - was FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+    load_flags = FT_LOAD_DEFAULT; //TECGRAF - was FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
     remGlyphs = numGlyphs = face.GlyphCount();
 }
 
