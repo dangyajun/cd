@@ -65,8 +65,9 @@ FTGlyph* FTPixmapFont::MakeGlyph(FT_GlyphSlot ftGlyph)
 
 FTPixmapFontImpl::FTPixmapFontImpl(FTFont *ftFont, const char* fontFilePath)
 : FTFontImpl(ftFont, fontFilePath)
+, m_enable_blend(true) //TECGRAF
 {
-    load_flags = FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+    load_flags = FT_LOAD_DEFAULT; //TECGRAF - was FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
 }
 
 
@@ -74,8 +75,9 @@ FTPixmapFontImpl::FTPixmapFontImpl(FTFont *ftFont,
                                    const unsigned char *pBufferBytes,
                                    size_t bufferSizeInBytes)
 : FTFontImpl(ftFont, pBufferBytes, bufferSizeInBytes)
+, m_enable_blend(true) //TECGRAF
 {
-    load_flags = FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+    load_flags = FT_LOAD_DEFAULT; //TECGRAF - was FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
 }
 
 
@@ -90,9 +92,13 @@ inline FTPoint FTPixmapFontImpl::RenderI(const T* string, const int len,
 
     // Protect glPixelStorei() calls (made by FTPixmapGlyphImpl::RenderImpl).
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    //TECGRAF
+    if (m_enable_blend) 
+    {
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+    }
 
     glDisable(GL_TEXTURE_2D);
 
@@ -128,4 +134,12 @@ FTPoint FTPixmapFontImpl::Render(const wchar_t * string, const int len,
 {
     return RenderI(string, len, position, spacing, renderMode);
 }
+
+
+//TECGRAF
+void FTPixmapFontImpl::SetEnableBlend(bool enable)
+{
+    m_enable_blend = enable;
+}
+
 

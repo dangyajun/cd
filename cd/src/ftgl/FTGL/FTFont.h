@@ -200,6 +200,14 @@ class FTGL_EXPORT FTFont
          */
         virtual void UseDisplayList(bool useList);
 
+        /** TECGRAF
+        * Enable or disable the use of blending
+        *
+        * @param  useBlend <code>true</code> turns ON blending.
+        *                 <code>false</code> turns OFF blending.
+        */
+        virtual void SetEnableBlend(bool enable);
+
         /**
          * Get the global ascender height for the face.
          *
