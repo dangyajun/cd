@@ -36,7 +36,8 @@
 namespace iup
 {
   class Canvas;
-  Ihandle* CanvasGetHandle(const Canvas&);
+  class Clipboard;
+  Ihandle* GetHandle(const Canvas&);
 }
 
 
@@ -157,7 +158,6 @@ namespace cd
       FILLGRADIENT = CD_FILLGRADIENT
     };
 
-
     static void GetScreenSize(int &width, int &height, double &width_mm, double &height_mm)
     {
       cdGetScreenSize(&width, &height, &width_mm, &height_mm);
@@ -165,83 +165,6 @@ namespace cd
     static int GetScreenColorPlanes()
     {
       return cdGetScreenColorPlanes();
-    }
-
-    static Context NativeWindowImageRGBDoubleBufferIup()
-    {
-      return Context(cdContextIupDBufferRGB());
-    }
-    static Context NativeWindowDoubleBufferIup()
-    {
-      return Context(cdContextIupDBuffer());
-    }
-    static Context NativeWindowIup()
-    {
-      return Context(cdContextIup());
-    }
-    static Context NativeOpenGL()
-    {
-      return Context(cdContextGL());
-    }
-    static Context NativePrinter()
-    {
-      return Context(cdContextPrinter());
-    }
-    static Context NativeClipboard()
-    {
-      return Context(cdContextClipboard());
-    }
-    static Context ImageRGB()
-    {
-      return Context(cdContextImageRGB());
-    }
-    static Context ImageRGBDoubleBuffer()
-    {
-      return Context(cdContextDBufferRGB());
-    }
-    static Context Picture()
-    {
-      return Context(cdContextPicture());
-    }
-    static Context MetafileDebug()
-    {
-      return Context(cdContextDebug());
-    }
-    static Context MetafileWMF()
-    {
-      return Context(cdContextWMF());
-    }
-    static Context MetafileEMF()
-    {
-      return Context(cdContextEMF());
-    }
-    static Context MetafilePDF()
-    {
-      return Context(cdContextPDF());
-    }
-    static Context MetafileMF()
-    {
-      return Context(cdContextMetafile());
-    }
-    static Context MetafileDGN()
-    {
-      return Context(cdContextDGN());
-    }
-    static Context MetafileDXF()
-    {
-      return Context(cdContextDXF());
-    }
-    static Context MetafileSVG()
-    {
-      return Context(cdContextSVG());
-    }
-    static Context MetafilePS()
-    {
-      return Context(cdContextPS());
-    }
-    static Context MetafileCGM()
-    {
-      return Context(cdContextCGM());
     }
 
 #if 0
@@ -1101,7 +1024,7 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     CanvasIup(iup::Canvas& iup_canvas)
       : Canvas()
     {
-      canvas = cdCreateCanvas(CD_IUP, CanvasGetHandle(iup_canvas));
+      canvas = cdCreateCanvas(CD_IUP, iup::GetHandle(iup_canvas));
     }
   };
   class CanvasIupDoubleBuffer : public Canvas
@@ -1110,7 +1033,7 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     CanvasIupDoubleBuffer(iup::Canvas& iup_canvas)
       : Canvas()
     {
-      canvas = cdCreateCanvas(CD_IUPDBUFFER, CanvasGetHandle(iup_canvas));
+      canvas = cdCreateCanvas(CD_IUPDBUFFER, iup::GetHandle(iup_canvas));
     }
   };
   class CanvasIupDoubleBufferRGB : public Canvas
@@ -1119,7 +1042,7 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     CanvasIupDoubleBufferRGB(iup::Canvas& iup_canvas)
       : Canvas()
     {
-      canvas = cdCreateCanvas(CD_IUPDBUFFERRGB, CanvasGetHandle(iup_canvas));
+      canvas = cdCreateCanvas(CD_IUPDBUFFERRGB, iup::GetHandle(iup_canvas));
     }
   };
   class CanvasImageRGB : public Canvas
@@ -1266,16 +1189,25 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
         canvas = cdCreateCanvasf(CD_DEBUG, "\"%s\" %gx%g", filename, width_mm, height_mm);
     }
   };
-  class CanvasNativePrinter : public Canvas
+  class CanvasPrinter : public Canvas
   {
   public:
-    CanvasNativePrinter(const char* name, bool show_dialog = false)
+    CanvasPrinter(const char* name, bool show_dialog = false)
       : Canvas()
     {
       if (show_dialog)
         canvas = cdCreateCanvasf(CD_PRINTER, "%s -d", name);
       else
         canvas = cdCreateCanvasf(CD_PRINTER, "%s", name);
+    }
+  };
+  class CanvasClipboardIup : public Canvas
+  {
+  public:
+    CanvasClipboardIup(iup::Clipboard& clipboard)
+      : Canvas()
+    {
+      canvas = cdCreateCanvasf(CD_IUPCLIPBOARD, "%p ", iup::GetHandle(clipboard));
     }
   };
   class CanvasOpenGL : public Canvas
@@ -1469,6 +1401,31 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
   class CanvasMetafilePS : public Canvas
   {
   public:
+    struct OptionalParamPS
+    {
+      int paper;
+      double width_mm, height_mm;
+      double left_mm, right_mm, bottom_mm, top_mm;
+      int res_dpi;
+      bool eps;
+      bool level1;
+      bool landscape;
+      bool debug;
+      double bbox_margin;
+
+      OptionalParamPS()
+      {
+        paper = 0;
+        width_mm = 0; height_mm = 0;
+        left_mm = -1.0, right_mm = -1.0, bottom_mm = -1.0, top_mm = -1.0;
+        res_dpi = 0;
+        eps = false;
+        level1 = false;
+        landscape = false;
+        debug = false;
+        bbox_margin = -1.0;
+      }
+    };
     CanvasMetafilePS(const char* filename, int paper, int res_dpi = 0, bool landscape = false)
       : Canvas()
     {
@@ -1482,7 +1439,23 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
 
       canvas = cdCreateCanvasf(CD_PS, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
     }
-    CanvasMetafilePS(const char* filename, double width_mm, double height_mm, int res_dpi = 0, bool landscape = false)
+    CanvasMetafilePS(const char* filename, const OptionalParamPS& param)
+      : Canvas()
+    {
+      //char* landscape_str = "";
+      //if (landscape)
+      //  landscape_str = "-o";
+
+      //char* res_dpi_str = "";
+      //if (res_dpi)
+      //  res_dpi_str = "-s";
+
+      //"-l[left] -r[right] -b[bottom] -t[top] [-e] [-g] [-1] -d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
+
+      //canvas = cdCreateCanvasf(CD_PS, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
+    }
+
+    CanvasMetafilePS(const char* filename, int paper, int res_dpi = 0, bool landscape = false)
       : Canvas()
     {
       char* landscape_str = "";
@@ -1493,15 +1466,14 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
       if (res_dpi)
         res_dpi_str = "-s";
 
-      canvas = cdCreateCanvasf(CD_PS, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
+      canvas = cdCreateCanvasf(CD_PS, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
     }
   };
 #if 0
-static Context NativeClipboardIup()
+  CD_IUPCLIPBOARD
+static Context ClipboardIup()
   "widthxheight [resolution] [-b]" //or in C "%dx%d %g -b"
   "[width_mmxheight_mm] [resolution] -m"  //or in C "%gx%g %g"
-static Context MetafilePS()
-  "-l[left] -r[right] -b[bottom] -t[top] [-e] [-g] [-1] -d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
 #endif
 }
 

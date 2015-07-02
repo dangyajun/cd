@@ -575,6 +575,15 @@ bool FTFontImpl::CheckGlyph(const unsigned int characterCode)
         return false;
     }
 
+    // TECGRAF
+    if (ftSlot->format == FT_GLYPH_FORMAT_BITMAP &&
+        ftSlot->bitmap.num_grays == 0 && load_flags == FT_LOAD_DEFAULT)
+    {
+      /* workaround for ClearType fonts */
+      load_flags |= FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+      ftSlot = face.Glyph(glyphIndex, load_flags);
+    }
+
     FTGlyph* tempGlyph = intf->MakeGlyph(ftSlot);
     if(!tempGlyph)
     {

@@ -153,6 +153,7 @@ void cdSimGetTextSizeFT(cdCtxCanvas* ctxcanvas, const char *s, int len, int *wid
   FT_Face       face;
   FT_GlyphSlot  slot;
   FT_Error      error;
+  FT_Int32      flags = FT_LOAD_DEFAULT;
 
   if (!simulation->tt_text->face)
     return;
@@ -166,12 +167,18 @@ void cdSimGetTextSizeFT(cdCtxCanvas* ctxcanvas, const char *s, int len, int *wid
   while(i < len)
   {
     /* load glyph image into the slot (erase previous one) */
-    error = FT_Load_Char( face, (unsigned char)s[i], FT_LOAD_DEFAULT);
+    error = FT_Load_Char(face, (unsigned char)s[i], flags);
     if (error) 
     {
       i++; 
       continue; /* ignore errors */
     }  
+    if (slot->format == FT_GLYPH_FORMAT_BITMAP && slot->bitmap.num_grays == 0)
+    {
+      /* workaround for ClearType fonts */
+      flags |= FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+      FT_Load_Char(face, (unsigned char)s[i], flags);
+    }
 
     w += slot->advance.x; 
 
@@ -398,6 +405,7 @@ void cdSimTextFT(cdCtxCanvas* ctxcanvas, int x, int y, const char* s, int len)
   FT_Matrix     matrix;                 /* transformation matrix */
   FT_Vector     pen;                    /* untransformed origin  */
   FT_Error      error;
+  FT_Int32      flags = FT_LOAD_RENDER;
   int i = 0;
 
   if (!simulation->tt_text->face)
@@ -419,12 +427,18 @@ void cdSimTextFT(cdCtxCanvas* ctxcanvas, int x, int y, const char* s, int len)
     FT_Set_Transform(face, &matrix, &pen);
 
     /* load glyph image into the slot (erase previous one) */
-    error = FT_Load_Char(face, (unsigned char)s[i], FT_LOAD_RENDER);
+    error = FT_Load_Char(face, (unsigned char)s[i], flags);
     if (error) 
     {
       i++; 
       continue;  /* ignore errors */
-    }  
+    }
+    if (slot->format == FT_GLYPH_FORMAT_BITMAP && slot->bitmap.num_grays == 0)
+    {
+      /* workaround for ClearType fonts */
+      flags |= FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+      FT_Load_Char(face, (unsigned char)s[i], flags);
+    }
 
     x = slot->bitmap_left;
     y = slot->bitmap_top-slot->bitmap.rows; /* CD image reference point is at bottom-left */
