@@ -201,8 +201,8 @@ GLuint FTTextureFontImpl::CreateTexture()
     glBindTexture(GL_TEXTURE_2D, textID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //TECGRAF - was GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //TECGRAF - was GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, textureWidth, textureHeight,
                  0, GL_ALPHA, GL_UNSIGNED_BYTE, textureMemory);
@@ -240,6 +240,11 @@ inline FTPoint FTTextureFontImpl::RenderI(const T* string, const int len,
     glEnable(GL_TEXTURE_2D);
 
     FTTextureGlyphImpl::ResetActiveTexture();
+
+    // TECGRAF renderMode here is always RENDER_ALL,
+    // so we use it to control texture filter
+    if (useNearest)
+        renderMode |= 0x10000;
 
     FTPoint tmp = FTFontImpl::Render(string, len,
                                      position, spacing, renderMode);

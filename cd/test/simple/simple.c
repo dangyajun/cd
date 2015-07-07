@@ -1200,12 +1200,15 @@ void SimpleDrawTextFonts(cdCanvas* canvas)
 
   cdCanvasTextAlignment(canvas, CD_BASE_CENTER);
 
+  //cdCanvasTextOrientation(canvas, 45);
+
+  cdCanvasTextOrientation(canvas, 0);
   DrawTextFont(canvas, "Courier", size, xoff, yoff, "Courier");
   DrawTextFont(canvas, "Times", size, xoff, 2*yoff, "Times");
-  DrawTextFont(canvas, "Helvetica", size, xoff, 3*yoff, "Helvetica");
+  cdCanvasTextOrientation(canvas, 45);
+  DrawTextFont(canvas, "Helvetica", size, xoff, 3 * yoff, "Helvetica");
   DrawTextFont(canvas, "Calibri", size, xoff, 4 * yoff, "Calibri");
-  //DrawTextFont(canvas, "Segoe UI", size, xoff, 4 * yoff, "P05I - Segoe UI");
-  //  DrawTextFont(canvas, "System", size, xoff, 4*yoff, "System");
+  DrawTextFont(canvas, "Segoe UI", size, xoff, 5 * yoff, "Segoe UI");
 
   {
 //    static char native[50] = "Tecmedia, -60";
