@@ -148,6 +148,12 @@ void FTFont::SetEnableBlend(bool enable)
   impl->SetEnableBlend(enable);
 }
 
+//TECGRAF
+void FTFont::SetNearestFilter(bool enable)
+{
+  impl->SetNearestFilter(enable);
+}
+
 float FTFont::Ascender() const
 {
     return impl->Ascender();
@@ -245,7 +251,9 @@ FTFontImpl::FTFontImpl(FTFont *ftFont, char const *fontFilePath) :
     useDisplayLists(true),
     load_flags(FT_LOAD_DEFAULT),
     intf(ftFont),
-    glyphList(0)
+    glyphList(0),
+    useBlending(false),
+    useNearest(false)
 {
     err = face.Error();
     if(err == 0)
@@ -389,6 +397,12 @@ void FTFontImpl::SetEnableBlend(bool enable)
 {
     useBlending = enable;
 }
+
+void FTFontImpl::SetNearestFilter(bool enable)
+{
+    useNearest = enable;
+}
+
 
 float FTFontImpl::Ascender() const
 {

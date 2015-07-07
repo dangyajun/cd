@@ -64,6 +64,9 @@ class FTFontImpl
         //TECGRAF
         virtual void SetEnableBlend(bool enable);
 
+        //TECGRAF
+        virtual void SetNearestFilter(bool enable);
+
         virtual float Ascender() const;
 
         virtual float Descender() const;
@@ -120,12 +123,19 @@ class FTFontImpl
          */
         bool useDisplayLists;
 
-        /**
+        /** TECGRAF
         * Flag to enable or disable the use of blending inside FTGL
         * <code>true</code> turns ON blending.
         * <code>false</code> turns OFF blending.
         */
         bool useBlending;
+
+        /** TECGRAF
+        * Flag to enable or disable the use of nearest texture filter inside FTGL
+        * <code>true</code> turns ON nearest.
+        * <code>false</code> turns OFF nearest (linear, the default).
+        */
+        bool useNearest;
 
         /**
          * The default glyph loading flags.

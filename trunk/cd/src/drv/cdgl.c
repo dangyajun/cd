@@ -717,8 +717,9 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
   glPushMatrix();
     glTranslated(x, y, 0.0);
     glRotated(ctxcanvas->canvas->text_orientation, 0, 0, 1);
+    if (ctxcanvas->canvas->text_orientation == 0) ftglSetNearestFilter(ctxcanvas->font, 1);
     ftglRenderFont(ctxcanvas->font, ctxcanvas->utf8_buffer, FTGL_RENDER_ALL);
-  glPopMatrix();
+    glPopMatrix();
 
   if(stipple)
     glEnable(GL_POLYGON_STIPPLE);
@@ -1024,6 +1025,9 @@ static GLuint cdglCreateTexture(void)
   glGenTextures(1, &texture);
 
   glBindTexture(GL_TEXTURE_2D, texture);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

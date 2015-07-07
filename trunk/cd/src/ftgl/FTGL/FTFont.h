@@ -204,9 +204,17 @@ class FTGL_EXPORT FTFont
         * Enable or disable the use of blending
         *
         * @param  useBlend <code>true</code> turns ON blending.
-        *                 <code>false</code> turns OFF blending.
+        *                 <code>false</code> turns OFF blending (default).
         */
         virtual void SetEnableBlend(bool enable);
+
+        /** TECGRAF
+        * Enable or disable the use of the nearest filter in texture
+        *
+        * @param  useBlend <code>true</code> turns ON nearest.
+        *                 <code>false</code> turns OFF nearest (default).
+        */
+        virtual void SetNearestFilter(bool enable);
 
         /**
          * Get the global ascender height for the face.
@@ -604,6 +612,10 @@ FTGL_EXPORT void ftglRenderFont(FTGLfont* font, const char *string, int mode);
  * @return  The current error code.
  */
 FTGL_EXPORT FT_Error ftglGetFontError(FTGLfont* font);
+
+//TECGRAF
+FTGL_EXPORT void ftglSetNearestFilter(FTGLfont* font, int useNearest);
+
 
 FTGL_END_C_DECLS
 
