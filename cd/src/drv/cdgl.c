@@ -1023,15 +1023,7 @@ static GLuint cdglCreateTexture(void)
 {
   GLuint texture;
   glGenTextures(1, &texture);
-
   glBindTexture(GL_TEXTURE_2D, texture);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
   return texture;
 }
 
@@ -1040,11 +1032,25 @@ static void cdglDrawTexture(GLuint texture, int x, int y, int w, int h)
   int x2 = x + w - 1;
   int y2 = y + h - 1;
 
-  glDisable(GL_POLYGON_SMOOTH);
+  int smooth = glIsEnabled(GL_POLYGON_SMOOTH);
+  if (smooth) glDisable(GL_POLYGON_SMOOTH);
   glEnable(GL_TEXTURE_2D);
 
   glBindTexture(GL_TEXTURE_2D, texture);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+  if (smooth)
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  }
+  else
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  }
 
   glBegin(GL_QUADS);
   glTexCoord2d(0.0, 0.0); glVertex2d(x, y);
@@ -1054,7 +1060,7 @@ static void cdglDrawTexture(GLuint texture, int x, int y, int w, int h)
   glEnd();
 
   glDisable(GL_TEXTURE_2D);
-  glEnable(GL_POLYGON_SMOOTH);
+  if (smooth) glEnable(GL_POLYGON_SMOOTH);
 }
 
 static void cdglPutImage(int rw, int rh, const unsigned char* glImage, int format, int x, int y, int w, int h)
