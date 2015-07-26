@@ -53,10 +53,12 @@
   <p>All the CD functions are declared in the <tt>cd.h</tt> header file; World Coordinate functions are declared in the
   <tt>wd.h</tt> header file; and each driver has a correspondent header file that must be included to create a canvas. 
   It is important to include each driver header <u>after</u> the inclusion of the <tt>cd.h</tt> header file.</p>
-  <p>To link the application you must add the <b>cd.lib/libcd.a/libcd.so</b> and <b>
-	freetype6.lib/libfreetype.a/libfreetype.so </b> libraries to the linker options. If you use 
-  an IUP Canvas then you must also link with the <b>iupcd.lib/libiupcd.a/libiupcd.so</b> library 
-	available in the IUP distribution.</p>
+  <p>To link the application you must add the <b>&quot;cd</b>&quot; library. If statically 
+  linking then you will need at least the&nbsp; <b>
+	&quot;freetype&quot; and the &quot;zlib&quot; </b> libraries. If you use 
+  an IUP Canvas then you must also link with the <b>&quot;iupcd&quot;</b> library 
+	available in the IUP distribution. Other drivers may need additional 
+  secondary libraries.</p>
   <p>In UNIX, CD uses GDK or the Xlib (X11) libraries. To statically link an application in UNIX 
   with CD, add also the GDK or the X11 libraries.</p>
   <p>The download files list includes the <a href="download_tips.html">Tecgraf/PUC-Rio Library 
@@ -96,7 +98,7 @@ the makefiles and projects expect the following directory tree:</p>
 <p>To control that location set the TECTOOLS_HOME environment variable to the 
 folder were the IM and Lua libraries are installed.</p>
 <h4>Libraries Dependencies</h4>
-<pre>cd -&gt; <strong><span class="style2">FreeType</span></strong> (included as separate library)
+<pre>cd -&gt; <strong><span class="style2">FreeType</span></strong> -&gt; <span class="style2"><strong>zlib</strong></span> (included as separate libraries)
 <em>   cdwin*</em> -&gt; <strong><span class="style4">gdi32</span></strong> <strong><span class="style4">user32</span></strong> <strong><span class="style4">comdlg32</span></strong> (system - Windows)
 <em>   cdx11*</em> -&gt; <strong><span class="style4">X11</span></strong> (system - UNIX)
           -&gt; <span class="style4"><strong>fontconfig</strong></span> (system - Linux)
@@ -108,7 +110,7 @@ folder were the IM and Lua libraries are installed.</p>
 <em>cdxrender*</em> -&gt; cd
           -&gt; <strong><span class="style4">Xrender</span></strong> <strong><span class="style4">Xft</span></strong> (system - UNIX)
 cdcairo  -&gt; <span class="style1"><strong>pangocairo-1.0 cairo</strong></span> (system - Windows/UNIX)
-cdpdf    -&gt; <strong><span class="style2">pdflib</span></strong> (included as separate library)
+cdpdf    -&gt; <strong><span class="style2">pdflib </span></strong>-&gt;<strong><span class="style2"> zlib</span></strong> (included as separate libraries)
 <em>cd</em>gl     -&gt; <span class="style1">opengl32</span> (system - Windows)
          -&gt; <span class="style1">GL</span> (system - UNIX)
          -&gt; <strong><span class="style2">ftgl</span></strong> (included as separate library)
