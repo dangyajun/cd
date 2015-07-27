@@ -84,7 +84,8 @@ canvas:fGetOrigin() -&gt; (x, y: number) [in Lua]</pre>
 
 canvas:Transform(matrix: table) [in Lua]</pre>
 
-    <p>Defines a transformation matrix with 6 elements. If the matrix is NULL, 
+    <p>Defines a transformation matrix with 6 elements. If the matrix is NULL 
+	(nil in Lua), 
     the 
       transformation is reset to the identity. Default value: NULL.</p>
     <p>The matrix contains scale (sx,sy), rotation (angle) and translation (dx,dy) elements as follows:</p>
