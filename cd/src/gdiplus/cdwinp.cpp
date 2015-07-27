@@ -650,7 +650,13 @@ static void cdfrect(cdCtxCanvas* ctxcanvas, double xmin, double xmax, double ymi
 
 static void cdbox(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
-  Rect rect(xmin, ymin, xmax-xmin+1, ymax-ymin+1); 
+  if (ctxcanvas->canvas->use_matrix)
+  {
+    cdSimBox(ctxcanvas, xmin, xmax, ymin, ymax);
+    return;
+  }
+
+  Rect rect(xmin, ymin, xmax - xmin + 1, ymax - ymin + 1);
   if (ctxcanvas->canvas->new_region)
   {
     Region region(rect);
@@ -665,7 +671,13 @@ static void cdbox(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax
 
 static void cdfbox(cdCtxCanvas* ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
-  RectF rect((REAL)xmin, (REAL)ymin, (REAL)(xmax-xmin+1), (REAL)(ymax-ymin+1));
+  if (ctxcanvas->canvas->use_matrix)
+  {
+    cdfSimBox(ctxcanvas, xmin, xmax, ymin, ymax);
+    return;
+  }
+
+  RectF rect((REAL)xmin, (REAL)ymin, (REAL)(xmax - xmin + 1), (REAL)(ymax - ymin + 1));
   if (ctxcanvas->canvas->new_region)
   {
     Region region(rect);
@@ -1941,6 +1953,35 @@ static void sFixImageY(cdCanvas* canvas, int *topdown, int *y, int *h)
     *y -= ((*h) - 1);  // move Y to top-left corner, since it was at the bottom of the image
 }
 
+static void sDrawImageRect(cdCtxCanvas* ctxcanvas, Bitmap& image, ImageAttributes& imageAttributes, int x, int y, int w, int h)
+{
+  if (ctxcanvas->use_img_points)
+  {
+    Point pts[3];
+    pts[0] = ctxcanvas->img_points[0];
+    pts[1] = ctxcanvas->img_points[1];
+    pts[2] = ctxcanvas->img_points[2];
+    if (ctxcanvas->canvas->invert_yaxis)
+    {
+      pts[0].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[0].Y);
+      pts[1].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[1].Y);
+      pts[2].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[2].Y);
+    }
+    ctxcanvas->graphics->DrawImage(&image, pts, 3,
+                                   0, 0, image.GetWidth(), image.GetHeight(), UnitPixel,
+                                   &imageAttributes, NULL, NULL);
+  }
+  else
+  {
+    /* Do NOT keep PixelOffsetMode because some graphic objects move their position and size. */
+    ctxcanvas->graphics->SetPixelOffsetMode(PixelOffsetModeHalf);
+    ctxcanvas->graphics->DrawImage(&image, Rect(x, y, w, h),
+                                   0, 0, image.GetWidth(), image.GetHeight(), UnitPixel,
+                                   &imageAttributes, NULL, NULL);
+    ctxcanvas->graphics->SetPixelOffsetMode(PixelOffsetModeNone);
+  }
+}
+
 static void cdputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index, 
                                                       const long int *colors, 
                                int x, int y, int w, int h, 
@@ -1957,32 +1998,7 @@ static void cdputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, con
   if (ctxcanvas->use_img_transp)
     imageAttributes.SetColorKey(ctxcanvas->img_transp[0], ctxcanvas->img_transp[1], ColorAdjustTypeBitmap);
 
-  if(ctxcanvas->use_img_points)
-  {
-    Point pts[3];
-    pts[0] = ctxcanvas->img_points[0];
-    pts[1] = ctxcanvas->img_points[1];
-    pts[2] = ctxcanvas->img_points[2];
-    if (ctxcanvas->canvas->invert_yaxis)
-    {
-      pts[0].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[0].Y);
-      pts[1].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[1].Y);
-      pts[2].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[2].Y);
-    }
-    ctxcanvas->graphics->DrawImage(&image, pts, 3, 
-                                   0, 0, image.GetWidth(), image.GetHeight(), UnitPixel,
-                                   &imageAttributes, NULL, NULL);
-  }
-  else
-  {
-    REAL bw = (REAL)image.GetWidth();
-    REAL bh = (REAL)image.GetHeight();
-    if (w > bw) bw-=0.5;  // Fix the problem of not using PixelOffsetModeHalf
-    if (h > bh) bh-=0.5;
-    ctxcanvas->graphics->DrawImage(&image, RectF((REAL)x, (REAL)y, (REAL)w, (REAL)h), 
-                                   0, 0, bw, bh, UnitPixel,
-                                   &imageAttributes, NULL, NULL);
-  }
+  sDrawImageRect(ctxcanvas, image, imageAttributes, x, y, w, h);
 
   ctxcanvas->dirty = 1;
 }
@@ -2004,32 +2020,7 @@ static void cdputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, con
   if (ctxcanvas->use_img_transp)
     imageAttributes.SetColorKey(ctxcanvas->img_transp[0], ctxcanvas->img_transp[1], ColorAdjustTypeBitmap);
 
-  if(ctxcanvas->use_img_points)
-  {
-    Point pts[3];
-    pts[0] = ctxcanvas->img_points[0];
-    pts[1] = ctxcanvas->img_points[1];
-    pts[2] = ctxcanvas->img_points[2];
-    if (ctxcanvas->canvas->invert_yaxis)
-    {
-      pts[0].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[0].Y);
-      pts[1].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[1].Y);
-      pts[2].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[2].Y);
-    }
-    ctxcanvas->graphics->DrawImage(&image, pts, 3, 
-                                   0, 0, image.GetWidth(), image.GetHeight(), UnitPixel,
-                                   &imageAttributes, NULL, NULL);
-  }
-  else
-  {
-    REAL bw = (REAL)image.GetWidth();
-    REAL bh = (REAL)image.GetHeight();
-    if (w > bw) bw-=0.5;  // Fix the problem of not using PixelOffsetModeHalf
-    if (h > bh) bh-=0.5;
-    ctxcanvas->graphics->DrawImage(&image, RectF((REAL)x, (REAL)y, (REAL)w, (REAL)h), 
-                                   0, 0, bw, bh, UnitPixel,
-                                   &imageAttributes, NULL, NULL);
-  }
+  sDrawImageRect(ctxcanvas, image, imageAttributes, x, y, w, h);
 
   ctxcanvas->dirty = 1;
 }
@@ -2049,32 +2040,7 @@ static void cdputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, co
   sRGBA2Bitmap(image, width, height, red, green, blue, alpha, xmin, xmax, ymin, ymax, topdown);
 
   ImageAttributes imageAttributes;
-  if(ctxcanvas->use_img_points)
-  {
-    Point pts[3];
-    pts[0] = ctxcanvas->img_points[0];
-    pts[1] = ctxcanvas->img_points[1];
-    pts[2] = ctxcanvas->img_points[2];
-    if (ctxcanvas->canvas->invert_yaxis)
-    {
-      pts[0].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[0].Y);
-      pts[1].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[1].Y);
-      pts[2].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[2].Y);
-    }
-    ctxcanvas->graphics->DrawImage(&image, pts, 3, 
-                                   0, 0, image.GetWidth(), image.GetHeight(), UnitPixel,
-                                   &imageAttributes, NULL, NULL);
-  }
-  else
-  {
-    REAL bw = (REAL)image.GetWidth();
-    REAL bh = (REAL)image.GetHeight();
-    if (w > bw) bw-=0.5;  // Fix the problem of not using PixelOffsetModeHalf
-    if (h > bh) bh-=0.5;
-    ctxcanvas->graphics->DrawImage(&image, RectF((REAL)x, (REAL)y, (REAL)w, (REAL)h), 
-                                   0, 0, bw, bh, UnitPixel,
-                                   &imageAttributes, NULL, NULL);
-  }
+  sDrawImageRect(ctxcanvas, image, imageAttributes, x, y, w, h);
 
   ctxcanvas->dirty = 1;
 }
@@ -2651,10 +2617,6 @@ static void set_aa_attrib(cdCtxCanvas* ctxcanvas, char* data)
   else
   {
     ctxcanvas->graphics->SetSmoothingMode(SmoothingModeAntiAlias);
-
-    /* Do NOT set PixelOffsetMode because some graphic objects move their position and size.
-       ctxcanvas->graphics->SetPixelOffsetMode(PixelOffsetModeHalf); */
-
     ctxcanvas->antialias = 1;
   }
 }
