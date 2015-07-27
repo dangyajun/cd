@@ -79,7 +79,7 @@ TCHAR* cdwStrToSystem(const char* str, int utf8mode)
 #ifdef UNICODE
   if (str)
   {
-    int len = strlen(str);
+    int len = (int)strlen(str);
     return cdwStringToUnicodeLen(str, &len, utf8mode);
   }
   return NULL;
@@ -753,7 +753,13 @@ static void cdline (cdCtxCanvas* ctxcanvas, int x1, int y1, int x2, int y2)
 static void cdrect (cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
   HBRUSH oldBrush;
-  
+
+  if (ctxcanvas->canvas->use_matrix)
+  {
+    cdSimRect(ctxcanvas, xmin, xmax, ymin, ymax);
+    return;
+  }
+
   sUpdateFill(ctxcanvas, 0);
   
   oldBrush = SelectObject(ctxcanvas->hDC, GetStockObject(NULL_BRUSH));  /* tira o desenho do interior */
@@ -763,6 +769,12 @@ static void cdrect (cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ym
 
 static void cdbox (cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
+  if (ctxcanvas->canvas->use_matrix)
+  {
+    cdSimBox(ctxcanvas, xmin, xmax, ymin, ymax);
+    return;
+  }
+
   sUpdateFill(ctxcanvas, 1);
   
   if (ctxcanvas->canvas->new_region)
@@ -924,7 +936,6 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
 {
   int i, t, nc;
   POINT* pnt;
-  HPEN oldPen = NULL, Pen = NULL;
 
   if (mode == CD_PATH)
   {
@@ -1052,6 +1063,8 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
     }
     else 
     {
+      HPEN oldPen = NULL, Pen = NULL;
+
       sUpdateFill(ctxcanvas, 1);
       
       if (ctxcanvas->canvas->interior_style != CD_SOLID || ctxcanvas->fill_attrib[0] == '0') 

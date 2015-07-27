@@ -2645,13 +2645,11 @@ static void set_aa_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (!data || data[0] == '0')
   {
-    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeNearestNeighbor);
     ctxcanvas->graphics->SetSmoothingMode(SmoothingModeNone);
     ctxcanvas->antialias = 0;
   }
   else
   {
-    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeBilinear);
     ctxcanvas->graphics->SetSmoothingMode(SmoothingModeAntiAlias);
 
     /* Do NOT set PixelOffsetMode because some graphic objects move their position and size.
