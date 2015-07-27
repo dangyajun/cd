@@ -34,7 +34,7 @@
 <body>
 
 <h2>History of Changes</h2>
-<h3>SVN (26/Jul/2015)</h3>
+<h3>SVN (27/Jul/2015)</h3>
 <ul>
 	<li><strong><span class="hist_changed">Changed: </span></strong>moved 
 	interpolation control from ANTIALIAS attribute to IMGINTERP attribute on the 
@@ -49,7 +49,10 @@
 	CD_IMAGERGB and CD_GL drivers, by dynamically changing FreeType flags. 
 	Affects the FTGL library too.</li>
 	<li><span class="hist_fixed">Fixed:</span> rectangle size when drawing and 
-	filling in the Cairo base driver.</li>
+	filling when using transformations in the GDI base driver, GDI+ base driver, Cairo base driver, 
+	and CD_GL driver.</li>
+	<li><span class="hist_fixed">Fixed:</span> image position in GDI+ base 
+	driver when using transformations.</li>
 </ul>
 <h3><a href="http://sourceforge.net/projects/canvasdraw/files/5.8.2/">Version 
 5.8.2</a> (27/Apr/2015)</h3>
