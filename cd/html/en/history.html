@@ -36,6 +36,11 @@
 <h2>History of Changes</h2>
 <h3>SVN (26/Jul/2015)</h3>
 <ul>
+	<li><strong><span class="hist_changed">Changed: </span></strong>moved 
+	interpolation control from ANTIALIAS attribute to IMGINTERP attribute on the 
+	GDI+ base driver, to be in sync with the Cairo base driver.</li>
+	<li><strong><span class="hist_changed">Changed:</span></strong> texture drawing 
+	filter to follow the IMGINTERP attribute on the CD_GL driver.</li>
 	<li><span class="hist_fixed">Fixed:</span> CD Lua initialization for CD_IUP, CD_PDF 
 	and CD_GL in Lua 5.1.</li>
 	<li><span class="hist_fixed">Fixed:</span> CD_CLIPBOARD when using a 
@@ -43,8 +48,6 @@
 	<li><span class="hist_fixed">Fixed:</span> support for ClearType fonts in 
 	CD_IMAGERGB and CD_GL drivers, by dynamically changing FreeType flags. 
 	Affects the FTGL library too.</li>
-	<li><span class="hist_fixed">Fixed:</span> texture drawing to follow the 
-	ANTIALIASING attribute.</li>
 </ul>
 <h3><a href="http://sourceforge.net/projects/canvasdraw/files/5.8.2/">Version 
 5.8.2</a> (27/Apr/2015)</h3>

@@ -2712,6 +2712,42 @@ static cdAttribute txtaa_attrib =
   get_txtaa_attrib
 }; 
 
+static void set_interp_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data && cdStrEqualNoCase(data, "BEST"))
+    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeHighQuality);
+  else if (data && cdStrEqualNoCase(data, "NEAREST"))
+    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeNearestNeighbor);
+  else if (data && cdStrEqualNoCase(data, "FAST"))
+    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeLowQuality);
+  else if (data && cdStrEqualNoCase(data, "BILINEAR"))
+    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeBilinear);
+  else
+    ctxcanvas->graphics->SetInterpolationMode(InterpolationModeDefault);
+}
+
+static char* get_interp_attrib(cdCtxCanvas* ctxcanvas)
+{
+  InterpolationMode mode = ctxcanvas->graphics->GetInterpolationMode();
+  if (mode == InterpolationModeHighQuality)
+    return "BEST";
+  else if (mode == InterpolationModeNearestNeighbor)
+    return "NEAREST";
+  else if (mode == InterpolationModeLowQuality)
+    return "FAST";
+  else if (mode == InterpolationModeBilinear)
+    return "BILINEAR";
+  else
+    return "GOOD";
+}
+
+static cdAttribute interp_attrib =
+{
+  "IMGINTERP",
+  set_interp_attrib,
+  get_interp_attrib
+};
+
 static void set_utf8mode_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (!data || data[0] == '0')
@@ -2870,6 +2906,7 @@ cdCtxCanvas *cdwpCreateCanvas(cdCanvas* canvas, Graphics* graphics, int wtype)
   cdRegisterAttribute(canvas, &window_rgn_attrib);
   cdRegisterAttribute(canvas, &gdiplus_attrib);
   cdRegisterAttribute(canvas, &utf8mode_attrib);
+  cdRegisterAttribute(canvas, &interp_attrib);
 
   cdwpUpdateCanvas(ctxcanvas);
 

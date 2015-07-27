@@ -1402,6 +1402,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   int i, j, rw, rh, pos, offset, topdown, stride;
   unsigned int* data;
   cairo_surface_t* image_surface;
+  cairo_filter_t filter;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;
 
@@ -1454,7 +1455,10 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
     cairo_translate(ctxcanvas->cr, -x, -y);
   }
 
+  filter = cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr));
   cairo_set_source_surface(ctxcanvas->cr, image_surface, x, y);
+  cairo_pattern_set_filter(cairo_get_source(ctxcanvas->cr), filter);
+
   cairo_paint(ctxcanvas->cr);
 
   cairo_surface_destroy(image_surface);
@@ -1466,6 +1470,7 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   int i, j, rw, rh, pos, offset, topdown, stride;
   unsigned int* data;
   cairo_surface_t* image_surface;
+  cairo_filter_t filter;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;
 
@@ -1516,7 +1521,10 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
     cairo_translate(ctxcanvas->cr, -x, -y);
   }
 
+  filter = cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr));
   cairo_set_source_surface(ctxcanvas->cr, image_surface, x, y);
+  cairo_pattern_set_filter(cairo_get_source(ctxcanvas->cr), filter);
+
   cairo_paint(ctxcanvas->cr);
 
   cairo_surface_destroy(image_surface);
@@ -1543,6 +1551,7 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   unsigned int* data, cairo_colors[256];
   long c;
   cairo_surface_t* image_surface;
+  cairo_filter_t filter;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;
 
@@ -1602,7 +1611,10 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
     cairo_translate(ctxcanvas->cr, -x, -y);
   }
 
+  filter = cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr));
   cairo_set_source_surface(ctxcanvas->cr, image_surface, x, y);
+  cairo_pattern_set_filter(cairo_get_source(ctxcanvas->cr), filter);
+
   cairo_paint(ctxcanvas->cr);
 
   cairo_surface_destroy(image_surface);
@@ -2127,13 +2139,14 @@ static void set_interp_attrib(cdCtxCanvas* ctxcanvas, char* data)
 
 static char* get_interp_attrib(cdCtxCanvas* ctxcanvas)
 {
-  if(cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr)) == CAIRO_FILTER_BEST)
+  cairo_filter_t filter = cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr));
+  if (filter == CAIRO_FILTER_BEST)
     return "BEST";
-  else if(cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr)) == CAIRO_FILTER_NEAREST)
+  else if (filter == CAIRO_FILTER_NEAREST)
     return "NEAREST";
-  else if(cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr)) == CAIRO_FILTER_FAST)
+  else if (filter == CAIRO_FILTER_FAST)
     return "FAST";
-  else if(cairo_pattern_get_filter(cairo_get_source(ctxcanvas->cr)) == CAIRO_FILTER_BILINEAR)
+  else if (filter == CAIRO_FILTER_BILINEAR)
     return "BILINEAR";
   else
     return "GOOD";

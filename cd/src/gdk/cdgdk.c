@@ -712,8 +712,10 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
     return;
   }
 
+  /* A rectangle drawn filled is 1 pixel smaller in both dimensions than a rectangle outlined. */
+  /* in CD min and max are included, so size is actually max-min+1 */
   cdgdkCheckSolidStyle(ctxcanvas, 1);
-  gdk_draw_rectangle(ctxcanvas->wnd, ctxcanvas->gc, FALSE, xmin, ymin, xmax-xmin, ymax-ymin);  /* outlined rectangle is actually of size w+1,h+1 */
+  gdk_draw_rectangle(ctxcanvas->wnd, ctxcanvas->gc, FALSE, xmin, ymin, xmax-xmin, ymax-ymin);
   cdgdkCheckSolidStyle(ctxcanvas, 0);
 }
 
@@ -737,7 +739,10 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
     sCombineRegion(ctxcanvas, rgn);
   }
   else
-    gdk_draw_rectangle(ctxcanvas->wnd, ctxcanvas->gc, TRUE, xmin, ymin, xmax-xmin+1, ymax-ymin+1);
+  {
+    /* A rectangle drawn filled is 1 pixel smaller in both dimensions than a rectangle outlined. */
+    gdk_draw_rectangle(ctxcanvas->wnd, ctxcanvas->gc, TRUE, xmin, ymin, xmax - xmin + 1, ymax - ymin + 1);
+  }
 }
 
 static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *s, int len)

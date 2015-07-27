@@ -87,6 +87,8 @@ struct _cdCtxCanvas
   cdglFontCache* gl_fonts;
   int gl_fonts_count;
   int gl_fonts_max;
+
+  int texture_filter;
 };
 
 /******************************************************/
@@ -1027,7 +1029,7 @@ static GLuint cdglCreateTexture(void)
   return texture;
 }
 
-static void cdglDrawTexture(GLuint texture, int x, int y, int w, int h)
+static void cdglDrawTexture(cdCtxCanvas *ctxcanvas, GLuint texture, int x, int y, int w, int h)
 {
   int x2 = x + w - 1;
   int y2 = y + h - 1;
@@ -1041,16 +1043,8 @@ static void cdglDrawTexture(GLuint texture, int x, int y, int w, int h)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-  if (smooth)
-  {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  }
-  else
-  {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  }
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ctxcanvas->texture_filter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ctxcanvas->texture_filter);
 
   glBegin(GL_QUADS);
   glTexCoord2d(0.0, 0.0); glVertex2d(x, y);
@@ -1063,7 +1057,7 @@ static void cdglDrawTexture(GLuint texture, int x, int y, int w, int h)
   if (smooth) glEnable(GL_POLYGON_SMOOTH);
 }
 
-static void cdglPutImage(int rw, int rh, const unsigned char* glImage, int format, int x, int y, int w, int h)
+static void cdglPutImage(cdCtxCanvas *ctxcanvas, int rw, int rh, const unsigned char* glImage, int format, int x, int y, int w, int h)
 {
   if (iGLIsOpenGL2orMore())
   {
@@ -1076,7 +1070,7 @@ static void cdglPutImage(int rw, int rh, const unsigned char* glImage, int forma
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, rw, rh, 0, format, GL_UNSIGNED_BYTE, glImage);
 
-    cdglDrawTexture(texture, x, y, w, h);
+    cdglDrawTexture(ctxcanvas, texture, x, y, w, h);
 
     glDeleteTextures(1, &texture);
   }
@@ -1126,7 +1120,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   if (!glImage)
     return;
 
-  cdglPutImage(rw, rh, glImage, GL_RGB, x, y, w, h);
+  cdglPutImage(ctxcanvas, rw, rh, glImage, GL_RGB, x, y, w, h);
 
   free(glImage);
 
@@ -1154,7 +1148,7 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   }
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  cdglPutImage(rw, rh, glImage, GL_RGBA, x, y, w, h);
+  cdglPutImage(ctxcanvas, rw, rh, glImage, GL_RGBA, x, y, w, h);
 
   if (!blend)
     glDisable(GL_BLEND);
@@ -1177,7 +1171,7 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   if (!glImage)
     return;
 
-  cdglPutImage(rw, rh, glImage, GL_RGB, x, y, w, h);
+  cdglPutImage(ctxcanvas, rw, rh, glImage, GL_RGB, x, y, w, h);
 
   free(glImage);
 
@@ -1254,7 +1248,7 @@ static void cdputimagerect (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x,
   if (rw == (int)ctximage->w && rh == (int)ctximage->h)
   {
     if (ctximage->texture)
-      cdglDrawTexture(ctximage->texture, x, y, ctximage->w, ctximage->h);
+      cdglDrawTexture(ctxcanvas, ctximage->texture, x, y, ctximage->w, ctximage->h);
     else
     {
       glRasterPos2i(x, y);
@@ -1267,7 +1261,7 @@ static void cdputimagerect (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x,
     if (!glImage)
       return;
 
-    cdglPutImage(rw, rh, glImage, GL_RGBA, x, y, rw, rh);
+    cdglPutImage(ctxcanvas, rw, rh, glImage, GL_RGBA, x, y, rw, rh);
 
     free(glImage);
   }
@@ -1382,6 +1376,29 @@ static cdAttribute aa_attrib =
   "ANTIALIAS",
   set_aa_attrib,
   get_aa_attrib
+};
+
+static void set_interp_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data && (cdStrEqualNoCase(data, "FAST") || cdStrEqualNoCase(data, "NEAREST")))
+    ctxcanvas->texture_filter = GL_NEAREST;
+  else 
+    ctxcanvas->texture_filter = GL_LINEAR;
+}
+
+static char* get_interp_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->texture_filter == GL_LINEAR)
+    return "BILINEAR";
+  else 
+    return "NEAREST";
+}
+
+static cdAttribute interp_attrib =
+{
+  "IMGINTERP",
+  set_interp_attrib,
+  get_interp_attrib
 };
 
 static void set_utf8mode_attrib(cdCtxCanvas* ctxcanvas, char* data)
@@ -1518,6 +1535,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   canvas->ctxcanvas = ctxcanvas;
 
   ctxcanvas->utf8_buffer = NULL;
+  ctxcanvas->texture_filter = GL_LINEAR;
 
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &version_attrib);
@@ -1525,6 +1543,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdRegisterAttribute(canvas, &alpha_attrib);
   cdRegisterAttribute(canvas, &aa_attrib);
   cdRegisterAttribute(canvas, &utf8mode_attrib);
+  cdRegisterAttribute(canvas, &interp_attrib);
 
   cdCanvasSetAttribute(canvas, "ALPHA", "1");
   cdCanvasSetAttribute(canvas, "ANTIALIAS", "1");
