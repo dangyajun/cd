@@ -607,15 +607,10 @@ static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin
     glVertex2d(xmax, ymax);
     glVertex2d(xmin, ymax);
   glEnd();
-
-  (void)ctxcanvas;
 }
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
-  int smooth = glIsEnabled(GL_POLYGON_SMOOTH);
-  if (smooth) glDisable(GL_POLYGON_SMOOTH);
-
   if (ctxcanvas->canvas->back_opacity == CD_OPAQUE && glIsEnabled(GL_POLYGON_STIPPLE))
   {
     /* draw twice, one with background color only, and one with foreground color */
@@ -625,7 +620,12 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
                cdBlue(ctxcanvas->canvas->background),
                cdAlpha(ctxcanvas->canvas->background));
 
-    glRecti(xmin, ymin, xmax + 1, ymax + 1);
+    glBegin(GL_QUADS);
+    glVertex2i(xmin, ymin);
+    glVertex2i(xmax, ymin);
+    glVertex2i(xmax, ymax);
+    glVertex2i(xmin, ymax);
+    glEnd();
 
     /* restore the foreground color */
     glColor4ub(cdRed(ctxcanvas->canvas->foreground),
@@ -635,10 +635,12 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
     glEnable(GL_POLYGON_STIPPLE);
   }
 
-  glRecti(xmin, ymin, xmax + 1, ymax + 1);
-
-  if (smooth) glEnable(GL_POLYGON_SMOOTH);
-  (void)ctxcanvas;
+  glBegin(GL_QUADS);
+  glVertex2i(xmin, ymin);
+  glVertex2i(xmax, ymin);
+  glVertex2i(xmax, ymax);
+  glVertex2i(xmin, ymax);
+  glEnd();
 }
 
 static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, int len)
