@@ -1381,13 +1381,13 @@ void SimpleDrawTestImageRGB(cdCanvas* canvas)
   int size = 2048*2048;
   unsigned char *red, *green, *blue;
   cdCanvas* canvas = cdCreateCanvas(CD_IMAGERGB, "2048x2048");
-  cdActivate(canvas);
+  cdCanvasActivate(canvas);
 
   red = calloc(size, 1);
   green = calloc(size, 1);
   blue = calloc(size, 1);
 
-  cdPutImageRectRGB(2048, 2048, red, green, blue, 0, 3, 2048, 2017, 0, 2047, 3, 2020);
+  cdCanvasPutImageRectRGB(canvas, 2048, 2048, red, green, blue, 0, 3, 2048, 2017, 0, 2047, 3, 2020);
 
   free(red);
   free(green);
