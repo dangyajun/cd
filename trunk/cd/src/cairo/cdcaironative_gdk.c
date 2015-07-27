@@ -80,7 +80,7 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
 	cairo_t* cr;
 	cairo_surface_t* surface;
 #ifdef WIN32
-  /* UNTESTED */
+  /* TOD: UNTESTED */
   HWND hWnd = GDK_WINDOW_HWND(window);
   HDC hDC = GetDC(hWnd);
   /* initial clip extents controls size */
