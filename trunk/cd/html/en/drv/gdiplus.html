@@ -182,6 +182,13 @@
   In GDI+ this attribute is more complete than in GDI, because affects also client images.</li>
 </ul>
 <ul>
+  <li>&quot;<b><font face="Courier">IMGINTERP</font></b>&quot;:&nbsp;changes how 
+  interpolation is used in image scale. Can be &quot;BEST&quot; (highest-quality), 
+  &quot;BILINEAR&quot; (linear interpolation), &quot;GOOD&quot; (quality similar to BILINEAR), 
+  &quot;NEAREST&quot; (nearest-neighbor filtering) or &quot;FAST&quot; (quality similar to NEAREST). 
+  Default: &quot;GOOD&quot;. (since 5.8.3)</li>
+</ul>
+<ul>
   <li>&quot;<b><font face="Courier">ROTATE</font></b>&quot;:&nbsp; allows the usage of 1 angle and 1 coordinate (x, y), that 
   define a global rotation transformation centered in the specified coordinate. Use 1 real and 2 integer values inside a 
   string (&quot;%g %d %d&quot; = angle x y). Can not be set if a transformation 
