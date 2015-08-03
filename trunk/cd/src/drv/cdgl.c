@@ -577,6 +577,10 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
 
 static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
+  /* must disable polygon smooth or fill may get diagonal lines */
+  int smooth = glIsEnabled(GL_POLYGON_SMOOTH);
+  if (smooth) glDisable(GL_POLYGON_SMOOTH);
+
   if (ctxcanvas->canvas->back_opacity == CD_OPAQUE && glIsEnabled(GL_POLYGON_STIPPLE))
   {
     /* draw twice, one with background color only, and one with foreground color */
@@ -607,10 +611,16 @@ static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin
     glVertex2d(xmax, ymax);
     glVertex2d(xmin, ymax);
   glEnd();
+
+  if (smooth) glEnable(GL_POLYGON_SMOOTH);
 }
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
+  /* must disable polygon smooth or fill may get diagonal lines */
+  int smooth = glIsEnabled(GL_POLYGON_SMOOTH);
+  if (smooth) glDisable(GL_POLYGON_SMOOTH);
+
   if (ctxcanvas->canvas->back_opacity == CD_OPAQUE && glIsEnabled(GL_POLYGON_STIPPLE))
   {
     /* draw twice, one with background color only, and one with foreground color */
@@ -641,6 +651,8 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
   glVertex2i(xmax, ymax);
   glVertex2i(xmin, ymax);
   glEnd();
+
+  if (smooth) glEnable(GL_POLYGON_SMOOTH);
 }
 
 static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, int len)
@@ -748,6 +760,7 @@ static void cdgettextsize(cdCtxCanvas *ctxcanvas, const char *s, int len, int *w
 static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 {
   int i;
+  int smooth = 0;
   
   if (mode == CD_CLIP)
     return;
@@ -789,6 +802,10 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
     glBegin(GL_LINE_STRIP);
     break;
   case CD_FILL :
+    /* must disable polygon smooth or fill may get diagonal lines */
+    smooth = glIsEnabled(GL_POLYGON_SMOOTH);
+    if (smooth) glDisable(GL_POLYGON_SMOOTH);
+
     if(ctxcanvas->canvas->back_opacity == CD_OPAQUE && glIsEnabled(GL_POLYGON_STIPPLE))
     {
       /* draw twice, one with background color only, and one with foreground color */
@@ -819,12 +836,15 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
     glVertex2i(poly[i].x, poly[i].y);
   glEnd();
 
+  if (smooth) glEnable(GL_POLYGON_SMOOTH);
+
   (void)ctxcanvas;
 }
 
 static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 {
   int i;
+  int smooth = 0;
 
   if (mode == CD_CLIP)
     return;
@@ -866,7 +886,11 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
     glBegin(GL_LINE_STRIP);
     break;
   case CD_FILL :
-    if(ctxcanvas->canvas->back_opacity == CD_OPAQUE && glIsEnabled(GL_POLYGON_STIPPLE))
+    /* must disable polygon smooth or fill may get diagonal lines */
+    smooth = glIsEnabled(GL_POLYGON_SMOOTH);
+    if (smooth) glDisable(GL_POLYGON_SMOOTH);
+
+    if (ctxcanvas->canvas->back_opacity == CD_OPAQUE && glIsEnabled(GL_POLYGON_STIPPLE))
     {
       glDisable(GL_POLYGON_STIPPLE);
       glColor4ub(cdRed(ctxcanvas->canvas->background), 
@@ -894,6 +918,8 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
   for(i = 0; i < n; i++)
     glVertex2d(poly[i].x, poly[i].y);
   glEnd();
+
+  if (smooth) glEnable(GL_POLYGON_SMOOTH);
 
   (void)ctxcanvas;
 }
