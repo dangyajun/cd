@@ -97,6 +97,9 @@ cdluaContext* cdlua_getcontext(lua_State* L, int param);
 lua_State* cdlua_getplaystate(void);
 void cdlua_setplaystate(lua_State* L);
 
+void cdlua_register_lib(lua_State *L, const luaL_Reg* funcs);
+void cdlua_register_funcs(lua_State *L, const luaL_Reg* funcs);
+
 void cdlua_kill_active(lua_State* L, cdCanvas* canvas);
 void cdlua_open_active(lua_State* L, cdluaLuaState* cdL);
 

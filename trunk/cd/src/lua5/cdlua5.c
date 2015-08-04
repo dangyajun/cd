@@ -1690,7 +1690,7 @@ static void initcolor(lua_State *L)
 static void initmetatables(lua_State *L)
 {
   /* there is no object orientation for these metatables, 
-     only gc and optionaly array access */
+     only gc and optionally array access */
 
   luaL_newmetatable(L, "cdState");   /* create new metatable for cdState handles */
   lua_pushliteral (L, "__gc");
@@ -1864,6 +1864,38 @@ static void setinfo (lua_State *L)
 \********************************************************************************/
 
 
+/* global table */
+static const char* cd_globaltable = "cd";
+
+void cdlua_register_lib(lua_State *L, const luaL_Reg* funcs)
+{
+#if LUA_VERSION_NUM < 502
+  luaL_register(L, cd_globaltable, funcs);
+#else
+  lua_getglobal(L, cd_globaltable);
+  if (lua_istable(L, -1))
+    luaL_setfuncs(L, funcs, 0);
+  else
+  {
+    if (!lua_isnil(L, -1))
+      luaL_error(L, "name conflict for module \"%s\"", cd_globaltable);
+
+    luaL_newlib(L, funcs);
+    lua_pushvalue(L, -1);
+    lua_setglobal(L, cd_globaltable);
+  }
+#endif
+}
+
+void cdlua_register_funcs(lua_State *L, const luaL_Reg* funcs)
+{
+#if LUA_VERSION_NUM < 502
+  luaL_register(L, NULL, funcs);
+#else
+  luaL_setfuncs(L, funcs, 0);
+#endif
+}
+
 int cdlua_open (lua_State *L)
 {                                  
   cdluaLuaState* cdL = malloc(sizeof(cdluaLuaState));
@@ -1872,7 +1904,7 @@ int cdlua_open (lua_State *L)
 
   initmetatables(L);
 
-  luaL_register(L, "cd", cdlib);   /* leave "cd" table at the top of the stack */
+  cdlua_register_lib(L, cdlib);   /* leave cd table at the top of the stack */
   setinfo(L);
 
   cdlua_open_active(L, cdL);

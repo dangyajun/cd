@@ -290,11 +290,11 @@ static void createmeta (lua_State *L)
   /* add methods to already created metatables */
 
   luaL_getmetatable(L, "imImage");
-  luaL_register(L, NULL, imcd_metalib);   /* register methods */
+  cdlua_register_funcs(L, imcd_metalib);   /* register methods */
   lua_pop(L, 1);  /* removes the metatable from the top of the stack */
 
   luaL_getmetatable(L, "cdBitmap");
-  luaL_register(L, NULL, cdim_metalib);   /* register methods */
+  cdlua_register_funcs(L, cdim_metalib);   /* register methods */
   lua_pop(L, 1);  /* removes the metatable from the top of the stack */
 }
 

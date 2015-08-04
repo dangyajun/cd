@@ -2536,15 +2536,15 @@ static const struct luaL_Reg cdlib_canvas[] = {
 
 void cdlua_open_canvas (lua_State *L)
 {                                  
-  /* "cd" table is at the top of the stack */
+  /* cd table is at the top of the stack */
 
   /* Object Oriented Access */
   luaL_newmetatable(L, "cdCanvas");    /* create new metatable for cdCanvas handles */
   lua_pushliteral(L, "__index");
   lua_pushvalue(L, -2);  /* push metatable */
   lua_rawset(L, -3);     /* metatable.__index = metatable */
-  luaL_register(L, NULL, cdlib_canvas_meta);  /* register methods */
+  cdlua_register_funcs(L, cdlib_canvas_meta);  /* register methods */
   lua_pop(L, 1); /* removes the metatable from the top of the stack */
 
-  luaL_register(L, NULL, cdlib_canvas);
+  cdlua_register_funcs(L, cdlib_canvas);
 }

@@ -12,6 +12,8 @@
 #include <lua.h>
 #include <lauxlib.h>
 
+#include "cdlua5_private.h"
+
 static int cdlua5_finishcontextplus(lua_State *L)
 {
   (void)L;
@@ -36,7 +38,7 @@ static const struct luaL_Reg cdlib[] = {
 static int cdluacontextplus_open (lua_State *L)
 {
   cdInitContextPlus();
-  luaL_register(L, "cd", cdlib);   /* leave "cd" table at the top of the stack */
+  cdlua_register_lib(L, cdlib);   /* leave cd table at the top of the stack */
   return 1;
 }
 
