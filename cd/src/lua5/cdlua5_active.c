@@ -2153,8 +2153,8 @@ static void initconst(lua_State *L)
 
 void cdlua_open_active (lua_State *L, cdluaLuaState* cdL)
 {                                  
-  /* "cd" table is at the top of the stack */
-  luaL_register(L, NULL, cdlib_active);
+  /* cd table is at the top of the stack */
+  cdlua_register_funcs(L, cdlib_active);
   initconst(L);
 
   cdL->void_canvas = cdCreateCanvas(CD_VOID, NULL);

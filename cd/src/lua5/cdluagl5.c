@@ -40,7 +40,7 @@ struct luaL_Reg funcs[] = {
 int cdluagl_open (lua_State *L)
 {
   cdluaLuaState* cdL = cdlua_getstate(L);
-  luaL_register(L, "cd", funcs);  /* leave "cd" table at the top of the stack */
+  cdlua_register_lib(L, funcs);  /* leave cd table at the top of the stack */
   cdlua_addcontext(L, cdL, &cdluaglctx);
   return 1;
 }
