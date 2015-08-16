@@ -3,7 +3,7 @@ LIBNAME = freetype
 OPT = YES   
 
 # Changes to freetype search for "CDLIB"
-FREETYPE := freetype2_4
+FREETYPE := freetype2
 
 SRC  := \
   autofit/autofit.c bdf/bdf.c cff/cff.c cache/ftcache.c \

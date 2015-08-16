@@ -422,6 +422,8 @@ EXPORTS
   cdfSimSector
   cdfSimChord
   cdSimChord
+  cdfSimBox
+  cdSimBox
   
   cdwCreateCanvas
   cdwInitTable

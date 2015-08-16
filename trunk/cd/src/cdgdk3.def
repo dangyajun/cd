@@ -217,6 +217,7 @@ EXPORTS
   cdGetFontSizePixels
   cdGetFontSizePoints
   cdStrEqualNoCase
+  cdStrIsAscii
   cdSetPaperSize
   cdCanvasGetArcPath
   cdfCanvasGetArcPath
@@ -385,6 +386,15 @@ EXPORTS
   cdfCanvasSector
   cdfCanvasText
   cdfCanvasVertex
+  cdfCanvasVectorTextDirection
+  cdfCanvasVectorTextSize
+  cdfCanvasGetVectorTextSize
+  cdfCanvasVectorCharSize
+  cdfCanvasVectorText
+  cdfCanvasMultiLineVectorText
+  cdfCanvasGetVectorTextBounds
+  cdfCanvasGetVectorTextBox
+  
   cdCanvasGetTransform
   cdCanvasTransformMultiply
   cdCanvasTransformRotate
@@ -412,8 +422,17 @@ EXPORTS
   cdfSimSector
   cdfSimChord
   cdSimChord
+  cdfSimBox
+  cdSimBox
   
+
+
   cdContextCairoPS
+
+
   cdContextCairoSVG
   cdContextCairoPDF
   cdContextCairoImageRGB
+
+
+
