@@ -394,7 +394,7 @@ EXPORTS
   cdfCanvasMultiLineVectorText
   cdfCanvasGetVectorTextBounds
   cdfCanvasGetVectorTextBox
-
+  
   cdCanvasGetTransform
   cdCanvasTransformMultiply
   cdCanvasTransformRotate
@@ -408,6 +408,7 @@ EXPORTS
   cdfCanvasTransformPoint
   cdRound
   cdStrDup
+  cdStrTmpFileName
   
   cdInitContextPlusList
   cdGetContextPlus
@@ -421,6 +422,8 @@ EXPORTS
   cdfSimSector
   cdfSimChord
   cdSimChord
+  cdfSimBox
+  cdSimBox
 
   cdContextCairoImage
   cdContextCairoImageRGB
