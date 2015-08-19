@@ -9,13 +9,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef CD_NO_OLD_INTERFACE
-#undef CD_NO_OLD_INTERFACE
-#endif
-
 #include "cd.h"
 #include "wd.h"
 #include "cdirgb.h"
+#include "cd_old.h"
+#include "wd_old.h"
 
 #include <lua.h>
 #include <lauxlib.h>

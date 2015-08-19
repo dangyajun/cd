@@ -3,24 +3,24 @@ LIBNAME = cdlua
 
 OPT = YES
 
-DEFINES = CD_NO_OLD_INTERFACE
 SRCDIR = lua5
 SRC = cdlua5.c cdvoid5.c cdlua5ctx.c cdlua5_active.c cdlua5_canvas.c
 DEF_FILE = cdlua5.def
 
 ifdef USE_LUA53
   LIBNAME := $(LIBNAME)53
-  DEFINES += LUA_COMPAT_MODULE
 else
 ifdef USE_LUA52
   LIBNAME := $(LIBNAME)52
-  DEFINES += LUA_COMPAT_MODULE
 else
   USE_LUA51 = Yes
   LIBNAME := $(LIBNAME)51
 endif
 endif
 
+# To not link with the Lua dynamic library in UNIX
 NO_LUALINK = Yes
+# To use a subfolder with the Lua version for binaries
+LUAMOD_DIR = Yes
 USE_CD = YES
 CD = ..

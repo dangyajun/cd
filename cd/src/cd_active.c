@@ -10,12 +10,10 @@
 #include <assert.h>
 #include <stdarg.h>
 
-#ifdef CD_NO_OLD_INTERFACE
-#undef CD_NO_OLD_INTERFACE
-#endif
-
 #include "cd.h"
 #include "wd.h"
+#include "cd_old.h"
+#include "wd_old.h"
 
 static cdCanvas *active_canvas = NULL;
 

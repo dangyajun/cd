@@ -2,9 +2,6 @@ PROJNAME = cd
 LIBNAME = cdcontextplus
 OPT = YES
 
-DEFINES = CD_NO_OLD_INTERFACE
-
-
 ifneq ($(findstring Win, $(TEC_SYSNAME)), )
   SRCDIR = gdiplus
   SRC = cdwemfp.cpp cdwimgp.cpp cdwinp.cpp cdwnativep.cpp cdwprnp.cpp cdwdbufp.cpp cdwclpp.cpp cdwgdiplus.c
@@ -13,17 +10,18 @@ ifneq ($(findstring Win, $(TEC_SYSNAME)), )
   LIBS = gdiplus
   CHECK_GDIPLUS = Yes
 else
-  SRC = xrender/cdxrender.c xrender/cdxrplus.c
-
-  LIBS = Xrender Xft
-  USE_X11 = Yes
-  CHECK_XRENDER = Yes
+  INCLUDES = . sim freetype2
   
   ifdef GTK_DEFAULT
-    CD_SUFFIX := x11
+    CHECK_GTK = Yes
+    SRC = cairo/cdcairoplus.c 
+  else
+    CHECK_XRENDER = Yes
+    SRC = xrender/cdxrender.c xrender/cdxrplus.c
+    LIBS = Xrender Xft
+    USE_X11 = Yes
+    INCLUDES += x11
   endif
-
-  INCLUDES = . sim freetype2 x11
 endif
 
 ifneq ($(findstring MacOS, $(TEC_UNAME)), )

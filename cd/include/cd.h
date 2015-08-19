@@ -515,10 +515,6 @@ enum {
 #endif
 
 
-#ifndef CD_NO_OLD_INTERFACE
-#include "cd_old.h"
-#endif
-
 
 /******************************************************************************
 Copyright (C) 1994-2015 Tecgraf/PUC-Rio.

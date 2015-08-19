@@ -24,15 +24,12 @@
   implemented in the X-Windows and MS-Windows systems. The implementation uses the
   <a href="http://cairographics.org/">Cairo</a> and 
 	<a href="http://library.gnome.org/devel/pango/">Pango</a> functions. This driver can be 
-  compiled and used in all systems Cairo is supported. The drivers <b>Native Window</b>, 
-	<b>Image</b>, <b>EMF</b>, <b>Printer</b> and <b>Double Buffer</b> were implemented.</p>
+  compiled and used in all systems Cairo is supported. But the pre-compiled 
+  libraries will include it only in Linux. The drivers <b>Native Window</b>, 
+	<b>Image</b>, <b>EMF</b>, <b>Printer</b> and <b>Double Buffer</b> were also implemented.</p>
 <p>It can be used as the context plus driver of the GDI, GDK and X-Win based 
-drivers. But its primary focus is the GDK base driver.</p>
-<p>IMPORTANT: when using GTK 3.x the Cairo driver became the main driver (not a 
-context plus driver anymore), because there is no support for drawing primitives 
-in GDK since GTK 3.0. To build the driver with GTK 3.x support define 
-USE_GTK3=Yes before calling make in the &quot;iup/src&quot; folder. Just the main library 
-must be rebuilt. </p>
+drivers. But its primary focus is the GDK base driver, so the pre-compiled 
+libraries will be available only in Linux.</p>
 <p>The main motivation for the use of Cairo was transparency for all the 
 primitives. Beyond that we got other features like anti-aliasing, gradient 
 filling, transformations and other back-ends (support to rendering: PDF, PS, SVG and 
@@ -58,22 +55,16 @@ for complex clipping regions.</p>
   <p>Using Cairo it is allowed to create more that one canvas at the same time for the same Window. And they can co-exist 
   with a standard GDK, Win32 or X-Windows canvas.</p>
   <p>To enable the use of Cairo based drivers you must call the initialization function <font face="Courier"><strong>
-  <a href="../func/init.html#cdInitContextPlus">cdInitContextPlus</a></strong></font> once, and 
-	do not need to link with any additional library when using the GDK base 
-	driver. But when using with the GDI and X-Win base drivers you need to link to the libraries &quot;<strong>cdcairo</strong>&quot; and &quot;<strong>cairo</strong>&quot;.</p>
+  <a href="../func/init.html#cdInitContextPlus">cdInitContextPlus</a></strong></font> once, and link to the library &quot;<strong>cdcontextplus</strong>&quot;.</p>
+<p><strong>IMPORTANT</strong>: when using GTK 3.x the Cairo driver became also the main driver, 
+because there is no support for drawing primitives in GDK since GTK 3.0. The
+<strong>cdUseContextPlus</strong> function will do nothing internally.</p>
 <p>Also the Cairo library must be installed in your system.</p>
   <p>In CDLua it is not necessary any additional initialization, and <strong>require&quot;cdluacontextplus&quot;</strong> can be used when 
-	using dynamic libraries. But it is available only in Linux and only for the 
-	GDK base driver.</p>
-<p>As an alternative you can use <strong>require</strong>&quot;<strong>cdluacairo&quot;</strong>, 
-but there are some restrictions: 
-	in Windows only the GDI base driver can be used; in Linux only the GDK base 
-driver can be used; in other UNICES only the X-Win base driver 
-	can be used.</p>
+	using dynamic libraries. </p>
 
 <h3>Extra Drivers (cdcairo.h)</h3>
-<p>These are not ContextPlus drivers. In Lua, they are available only when <strong>require&quot;cdluacairo&quot;</strong> is 
-used.</p>
+<p>These are not ContextPlus drivers.</p>
 
 <h4>CD_CAIRO_PS - PostScript Driver</h4>
 

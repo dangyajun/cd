@@ -7,8 +7,6 @@
 #include <string.h>
 #include <memory.h>
 
-#define CD_NO_OLD_INTERFACE
-
 #include <im.h>
 #include <im_image.h>
 
