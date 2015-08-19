@@ -13,10 +13,6 @@
 /* from cd_private.h */
 int cdRound(double x);
 
-/* re-declared here to ignore CD_NO_OLD_INTERFACE definition */ 
-int cdActivate(cdCanvas* canvas);
-cdCanvas* cdActiveCanvas(void);
-
 /*
 **   ---------------------------------------------------------------
 **   Private functions:
@@ -24,7 +20,6 @@ cdCanvas* cdActiveCanvas(void);
 
 static void _wdHdcpyDoit(cdCanvas *canvas, cdCanvas *canvas_copy, void (*draw_func)(cdCanvas *canvas_copy))
 {
-  cdCanvas *old_active;
   double  left, right, bottom, top;   /* canvas visualization window       */
   int     canvas_hsize, canvas_vsize; /* canvas sizes in pixels            */
   int     hdcpy_hsize, hdcpy_vsize;   /* paper sizes in points             */
@@ -72,14 +67,8 @@ static void _wdHdcpyDoit(cdCanvas *canvas, cdCanvas *canvas_copy, void (*draw_fu
   cdCanvasClip(canvas_copy, CD_CLIPAREA);
   wdCanvasViewport(canvas_copy, xmin, xmax, ymin, ymax);
 
-  /* for backward compatibility */
-  old_active = cdActiveCanvas();
-  cdActivate(canvas_copy);
-
   /* Draw on hardcopy surface.  */
   draw_func(canvas_copy);
-
-  if (old_active) cdActivate(old_active);
 }
 
 /*

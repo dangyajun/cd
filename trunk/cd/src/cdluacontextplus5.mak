@@ -3,37 +3,37 @@ LIBNAME = cdluacontextplus
 
 OPT = YES
 
-DEFINES = CD_NO_OLD_INTERFACE
 SRCDIR = lua5
 SRC = cdluacontextplus5.c
 DEF_FILE = cdluacontextplus5.def
 
+LIBS = cdcontextplus
+
 ifneq ($(findstring Win, $(TEC_SYSNAME)), )
   CHECK_GDIPLUS = Yes
-  LIBS = cdcontextplus
 else
   ifdef GTK_DEFAULT
     CHECK_GTK = Yes
   else
     CHECK_XRENDER = Yes
-    LIBS = cdcontextplus
   endif
 endif
 
 ifdef USE_LUA53
   LIBNAME := $(LIBNAME)53
-  DEFINES += LUA_COMPAT_MODULE
 else
 ifdef USE_LUA52
   LIBNAME := $(LIBNAME)52
-  DEFINES += LUA_COMPAT_MODULE
 else
   USE_LUA51 = Yes
   LIBNAME := $(LIBNAME)51
 endif
 endif
 
+# To not link with the Lua dynamic library in UNIX
 NO_LUALINK = Yes
+# To use a subfolder with the Lua version for binaries
+LUAMOD_DIR = Yes
 USE_CDLUA = YES
 CD = ..
 

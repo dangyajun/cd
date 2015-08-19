@@ -34,13 +34,27 @@
 <body>
 
 <h2>History of Changes</h2>
-<h3>SVN (04/Aug/2015)</h3>
+<h3>SVN (19/Aug/2015)</h3>
 <ul>
 	<li><strong><span class="hist_changed">Changed: </span></strong>moved 
 	interpolation control from ANTIALIAS attribute to IMGINTERP attribute on the 
 	GDI+ base driver, to be in sync with the Cairo base driver.</li>
 	<li><strong><span class="hist_changed">Changed:</span></strong> texture drawing 
 	filter to follow the IMGINTERP attribute on the CD_GL driver.</li>
+	<li><strong><span class="hist_changed">Changed:</span></strong> <strong>
+	cdcontextplus</strong> library in Linux was restored. Must be used to 
+	activate the Cairo context plus driver for GTK 2.</li>
+	<li><strong><span class="hist_changed">Changed:</span></strong> removed 
+	include &quot;cd_old.h&quot; from &quot;cd.h&quot;, must be manually included by old 
+	applications. Notice that the old API will be removed in future versions.</li>
+	<li>
+<font SIZE="3">
+	<strong><span class="hist_changed">Changed:</span></strong> Lua pre-compiled 
+	binaries are now separated by folders Lua51/Lua52/Lua53.</font></li>
+	<li>
+<font SIZE="3">
+	<strong><span class="hist_changed">Changed:</span></strong> </font>removed 
+	CD_NO_OLD_INTERFACE definition.</li>
 	<li><span class="hist_fixed">Fixed:</span> CD Lua initialization for CD_IUP, CD_PDF 
 	and CD_GL in Lua 5.1.</li>
 	<li><span class="hist_fixed">Fixed:</span> CD_CLIPBOARD when using a 

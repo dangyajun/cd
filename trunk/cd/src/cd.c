@@ -201,19 +201,12 @@ cdCanvas *cdCreateCanvas(cdContext* context, void *data_str)
   return canvas;
 }
 
-/* re-declared here to ignore CD_NO_OLD_INTERFACE definition */ 
-int       cdActivate(cdCanvas* canvas);
-cdCanvas* cdActiveCanvas(void);
-
 void cdKillCanvas(cdCanvas *canvas)
 {
   assert(canvas);
   if (!_cdCheckCanvas(canvas)) return;
 
-  if (canvas == cdActiveCanvas())
-    cdActivate(NULL);
-  else
-    cdCanvasDeactivate(canvas);
+  cdCanvasDeactivate(canvas);
   
   canvas->cxKillCanvas(canvas->ctxcanvas);
 

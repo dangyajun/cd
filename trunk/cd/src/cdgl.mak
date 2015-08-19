@@ -2,7 +2,6 @@ PROJNAME = cd
 LIBNAME = cdgl
 OPT = YES
 
-DEFINES = CD_NO_OLD_INTERFACE
 SRC = drv/cdgl.c
 
 INCLUDES = . sim ftgl freetype2 freetype2/include
