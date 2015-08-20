@@ -20,6 +20,8 @@
 #include <iup.h>
 #include <cd.h>
 #include <wd.h>
+#include <cd_old.h>
+#include <wd_old.h>
 #include <cdiup.h>
 #include <cdpicture.h>
 #include <cddbuf.h>
