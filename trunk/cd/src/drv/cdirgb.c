@@ -1702,7 +1702,7 @@ static void set_rotate_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
-    /* use this configuration when there is NO native tranformation support */
+    /* use this configuration when there is NO native transformation support */
     sscanf(data, "%lg %d %d", &ctxcanvas->rotate_angle,
                               &ctxcanvas->rotate_center_x,
                               &ctxcanvas->rotate_center_y);
@@ -1741,6 +1741,35 @@ static cdAttribute rotate_attrib =
   set_rotate_attrib,
   get_rotate_attrib
 }; 
+
+static void set_res_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data)
+  {
+    double res = 0;
+    if (sscanf(data, "%lg", &res) && res != 0)
+    {
+      ctxcanvas->canvas->xres = res;
+      ctxcanvas->canvas->yres = res;
+      ctxcanvas->canvas->w_mm = ((double)ctxcanvas->canvas->w) / res;
+      ctxcanvas->canvas->h_mm = ((double)ctxcanvas->canvas->h) / res;
+    }
+  }
+}
+
+static char* get_res_attrib(cdCtxCanvas* ctxcanvas)
+{
+  static char data[100];
+  sprintf(data, "%g", ctxcanvas->canvas->xres);
+  return data;
+}
+
+static cdAttribute res_attrib =
+{
+  "RESOLUTION",
+  set_res_attrib,
+  get_res_attrib
+};
 
 static void set_killdbuffer_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
@@ -1864,6 +1893,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdRegisterAttribute(canvas, &txtaa_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &killdbuffer_attrib);
+  cdRegisterAttribute(canvas, &res_attrib);
 }
 
 static void cdinittable(cdCanvas* canvas)
