@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{01818D2C-AB15-4D5C-1790-CDD140142461}</ProjectGuid>
+    <ProjectGuid>{9bdcbc9d-18b2-4907-b2f9-4b122f46c635}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -46,12 +46,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\freetype2;..\src\intcgm;..\src\iup;..\src\sim;d:\lng\gtk3\include\atk-1.0;d:\lng\gtk3\include\cairo;d:\lng\gtk3\include\glib-2.0;d:\lng\gtk3\include\pango-1.0;d:\lng\gtk3\include\gtk-3.0;d:\lng\gtk3\include\gdk-pixbuf-2.0;d:\lng\gtk3\lib\glib-2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;GDK_DISABLE_DEPRECATED;GSEAL_ENABLE;USE_GTK3;inline=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\im\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AssemblerListingLocation>
       </AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -61,21 +62,20 @@
       <Culture>0x0416</Culture>
     </ResourceCompile>
     <Lib>
-      <AdditionalDependencies>cdcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\freetype2;..\src\intcgm;..\src\iup;..\src\sim;d:\lng\gtk3_x64\include\atk-1.0;d:\lng\gtk3_x64\include\cairo;d:\lng\gtk3_x64\include\glib-2.0;d:\lng\gtk3_x64\include\pango-1.0;d:\lng\gtk3_x64\include\gtk-3.0;d:\lng\gtk3_x64\include\gdk-pixbuf-2.0;d:\lng\gtk3_x64\lib\glib-2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;GDK_DISABLE_DEPRECATED;GSEAL_ENABLE;USE_GTK3;inline=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\im\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AssemblerListingLocation>
       </AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -85,35 +85,18 @@
       <Culture>0x0416</Culture>
     </ResourceCompile>
     <Lib>
-      <AdditionalDependencies>cdcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\cdcairo.h" />
-    <ClInclude Include="..\src\cairo\cdcairoctx.h" />
-    <ClInclude Include="..\src\gdk\cdgdk.h" />
+    <ClCompile Include="..\src\drv\cdim.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\drv\cd0wmf.c" />
-    <ClCompile Include="..\src\cairo\cdcairo.c" />
-    <ClCompile Include="..\src\cairo\cdcairodbuf.c" />
-    <ClCompile Include="..\src\cairo\cdcairoemf.c" />
-    <ClCompile Include="..\src\cairo\cdcairoimg.c" />
-    <ClCompile Include="..\src\cairo\cdcairoirgb.c" />
-    <ClCompile Include="..\src\cairo\cdcaironative_gdk.c" />
-    <ClCompile Include="..\src\cairo\cdcairopdf.c" />
-    <ClCompile Include="..\src\cairo\cdcairoplus.c" />
-    <ClCompile Include="..\src\cairo\cdcairoprn_win32.c" />
-    <ClCompile Include="..\src\cairo\cdcairops.c" />
-    <ClCompile Include="..\src\cairo\cdcairosvg.c" />
-    <ClCompile Include="..\src\gdk\cdgdkclp.c" />
+    <None Include="..\src\cdim.def" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\src\cairo\cdcairo.def" />
-    <None Include="..\src\cdgdk.def" />
+    <ClInclude Include="..\include\cdim.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

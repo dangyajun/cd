@@ -67,6 +67,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cdgdk3", "cdgdk3.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cdsimplegdk3", "cdsimplegdk3.vcxproj", "{82BC36B1-12AB-41D4-FFDD-167F12378CE6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cdim", "cdim.vcxproj", "{9BDCBC9D-18B2-4907-B2F9-4B122F46C635}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -173,6 +175,10 @@ Global
 		{82BC36B1-12AB-41D4-FFDD-167F12378CE6}.Debug|Win32.Build.0 = Debug|Win32
 		{82BC36B1-12AB-41D4-FFDD-167F12378CE6}.Debug|x64.ActiveCfg = Debug|x64
 		{82BC36B1-12AB-41D4-FFDD-167F12378CE6}.Debug|x64.Build.0 = Debug|x64
+		{9BDCBC9D-18B2-4907-B2F9-4B122F46C635}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9BDCBC9D-18B2-4907-B2F9-4B122F46C635}.Debug|Win32.Build.0 = Debug|Win32
+		{9BDCBC9D-18B2-4907-B2F9-4B122F46C635}.Debug|x64.ActiveCfg = Debug|x64
+		{9BDCBC9D-18B2-4907-B2F9-4B122F46C635}.Debug|x64.Build.0 = Debug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

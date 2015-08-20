@@ -12,6 +12,7 @@
 
 #include "cd.h"
 #include "cdirgb.h"
+#include "cdim.h"
 #include "wd.h"
 
 #include <lua.h>
@@ -45,7 +46,7 @@ static int imlua_cdInitBitmap(lua_State *L)
     bitmap = cdInitBitmap(image->width, image->height, CD_MAP, image->data[0], image->palette);
 
   if (!bitmap)
-    luaL_error(L, "insuficient memory to create bitmap");
+    luaL_error(L, "insufficient memory to create bitmap");
 
   cdlua_pushbitmap(L, bitmap);
   return 1;
@@ -73,7 +74,7 @@ static int imlua_cdCreateBitmap(lua_State *L)
     bitmap = cdCreateBitmap(image->width, image->height, CD_MAP);
 
   if (!bitmap)
-    luaL_error(L, "insuficient memory to create bitmap");
+    luaL_error(L, "insufficient memory to create bitmap");
 
   if (image->color_space == IM_RGB)
   {
@@ -108,7 +109,7 @@ static int cdlua_imImageCreate(lua_State *L)
     image = imImageCreate(bitmap->w, bitmap->h, IM_MAP, IM_BYTE);
 
   if (!image)
-    luaL_error(L, "insuficient memory to create image");
+    luaL_error(L, "insufficient memory to create image");
 
   if (bitmap->type == CD_RGB || bitmap->type == CD_RGBA)
   {

@@ -47,7 +47,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\freetype2;..\src\intcgm;..\src\iup;..\src\sim;d:\lng\gtk2\include\atk-1.0;d:\lng\gtk2\include\cairo;d:\lng\gtk2\include\glib-2.0;d:\lng\gtk2\include\pango-1.0;d:\lng\gtk2\include\gtk-2.0;d:\lng\gtk2\include\gdk-pixbuf-2.0;d:\lng\gtk2\lib\glib-2.0\include;d:\lng\gtk2\lib\gtk-2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;CD_NO_OLD_INTERFACE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\obj\cdgdk/cd.pch</PrecompiledHeaderOutputFile>
@@ -73,7 +73,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\freetype2;..\src\intcgm;..\src\iup;..\src\sim;d:\lng\gtk2_x64\include\atk-1.0;d:\lng\gtk2_x64\include\cairo;d:\lng\gtk2_x64\include\glib-2.0;d:\lng\gtk2_x64\include\pango-1.0;d:\lng\gtk2_x64\include\gtk-2.0;d:\lng\gtk2_x64\include\gdk-pixbuf-2.0;d:\lng\gtk2_x64\lib\glib-2.0\include;d:\lng\gtk2_x64\lib\gtk-2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;CD_NO_OLD_INTERFACE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\..\obj\cdgdk/cd.pch</PrecompiledHeaderOutputFile>
