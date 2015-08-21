@@ -2303,7 +2303,7 @@ static int cdlua5_end(lua_State *L)
 * Lua Exported functions                                                       *
 \********************************************************************************/
 
-static const struct luaL_Reg cdlib_canvas_meta[] = {
+static const luaL_Reg cdlib_canvas_meta[] = {
 
   /* Initialization */
   {"GetContext"    , cdlua5_getcontext},
@@ -2524,7 +2524,7 @@ static const struct luaL_Reg cdlib_canvas_meta[] = {
   {NULL, NULL},
 };
 
-static const struct luaL_Reg cdlib_canvas[] = {
+static const luaL_Reg cdlib_canvas[] = {
   /* Initialization */
   {"CreateCanvas"  , cdlua5_createcanvas},
   {"KillCanvas"    , cdlua5_killcanvas},

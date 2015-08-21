@@ -33,7 +33,7 @@ static cdluaContext cdluapdfctx =
   0
 };
 
-struct luaL_Reg funcs[] = {
+static const luaL_Reg funcs[] = {
   { NULL, NULL },
 };
 

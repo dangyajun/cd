@@ -20,7 +20,7 @@
 #include "cdim.h"
 
 
-void cdCanvasPutImImage(cdCanvas* canvas, imImage* image, int x, int y, int w, int h)
+void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, int w, int h)
 {                                                                         
   if (image->color_space == IM_RGB)                                      
   {                                                                       

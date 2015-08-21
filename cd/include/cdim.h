@@ -17,7 +17,7 @@ cdContext* cdContextImImage(void);
 
 
 #ifdef __IM_IMAGE_H
-void cdCanvasPutImImage(cdCanvas* canvas, imImage* image, int x, int y, int w, int h);
+void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, int w, int h);
 #endif
 
 #ifdef __cplusplus
