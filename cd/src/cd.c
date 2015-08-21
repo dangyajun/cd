@@ -143,7 +143,7 @@ cdCanvas *cdCreateCanvas(cdContext* context, void *data_str)
 {
   cdCanvas *canvas;
 
-  /* usefull for NULL drivers, that do nothing and exist only for portability */
+  /* useful for NULL drivers, that do nothing and exist only for portability */
   if (!context)
     return NULL;
 
@@ -157,7 +157,7 @@ cdCanvas *cdCreateCanvas(cdContext* context, void *data_str)
     }
   }
 
-  /* alocates and initialize everything with 0s */
+  /* allocates and initialize everything with 0s */
   canvas = (cdCanvas*)malloc(sizeof(cdCanvas));
   memset(canvas, 0, sizeof(cdCanvas));
 
@@ -188,7 +188,7 @@ cdCanvas *cdCreateCanvas(cdContext* context, void *data_str)
   /* initialize canvas table */
   context->cxInitTable(canvas);
 
-  /* update the default atributes, must be after InitTable */
+  /* update the default attributes, must be after InitTable */
   cdCanvasActivate(canvas);
   cdUpdateAttributes(canvas);
 

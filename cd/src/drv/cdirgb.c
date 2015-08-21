@@ -400,6 +400,10 @@ unsigned char* cdAlphaImage(cdCanvas* canvas)
 {
   cdCtxCanvas* ctxcanvas;
   assert(canvas);
+
+  if (canvas->context != cdContextImageRGB())
+    return NULL;
+
   ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
   return ctxcanvas->alpha;
 }
@@ -408,6 +412,10 @@ unsigned char* cdRedImage(cdCanvas* canvas)
 {
   cdCtxCanvas* ctxcanvas;
   assert(canvas);
+
+  if (canvas->context != cdContextImageRGB())
+    return NULL;
+
   ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
   return ctxcanvas->red;
 }
@@ -416,6 +424,10 @@ unsigned char* cdGreenImage(cdCanvas* canvas)
 {
   cdCtxCanvas* ctxcanvas;
   assert(canvas);
+
+  if (canvas->context != cdContextImageRGB())
+    return NULL;
+
   ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
   return ctxcanvas->green;
 }
@@ -424,6 +436,10 @@ unsigned char* cdBlueImage(cdCanvas* canvas)
 {
   cdCtxCanvas* ctxcanvas;
   assert(canvas);
+
+  if (canvas->context != cdContextImageRGB())
+    return NULL;
+
   ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
   return ctxcanvas->blue;
 }
