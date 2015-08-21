@@ -6,6 +6,7 @@ OPT = YES
 DEF_FILE = cdluaim5.def
 SRCDIR = lua5
 SRC = cdluaim5.c
+LIBS = cdim
 
 ifdef USE_LUA53
   LIBNAME := $(LIBNAME)53
