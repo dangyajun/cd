@@ -1017,7 +1017,11 @@ wb_usr.tree =
             {
               name= {nl= "Server Double Buffer"},
               link= "drv/dbuf.html"
-            }
+            },
+            {
+              name= {en= "imImage Client Image"},
+              link= "drv/imimage.html"
+            },
           }
         },
         {
