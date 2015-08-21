@@ -95,6 +95,19 @@ static int imlua_cdCreateBitmap(lua_State *L)
   return 1;
 }
 
+static int cdlua_CanvasPutImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  int x = luaL_checkinteger(L, 3);
+  int y = luaL_checkinteger(L, 4);
+  int w = luaL_checkinteger(L, 5);
+  int h = luaL_checkinteger(L, 6);
+  cdCanvasPutImImage(canvas, image, x, y, w, h);
+  return 0;
+}
+
+
 /*****************************************************************************\
  cd:imImageCreate(bitmap: cdBitmap) -> imImage
 \*****************************************************************************/
@@ -268,20 +281,39 @@ static int imlua_cdCreateCanvas(lua_State * L)
   return 1;
 }
 
-static const luaL_Reg cdim_metalib[] = {
+static void *cdim_checkdata(lua_State *L, int param)
+{
+  return (void *)imlua_checkimage(L, param);
+}
+
+static cdluaContext cdluaimctx =
+{
+  0,
+  "IMIMAGE",
+  cdContextImImage,
+  cdim_checkdata,
+  NULL,
+  0
+};
+
+static const luaL_Reg cdBitmap_metalib[] = {
   {"imImageCreate", cdlua_imImageCreate},
   {NULL, NULL}
 };
 
-static const luaL_Reg imcd_metalib[] = {
+static const luaL_Reg imImage_metalib[] = {
   {"cdCreateBitmap", imlua_cdCreateBitmap},
   {"cdInitBitmap", imlua_cdInitBitmap},
   {"cdCreateCanvas", imlua_cdCreateCanvas},
   {"wdCanvasPutImageRect", imlua_wdCanvasPutImageRect},
   {"cdCanvasPutImageRect", imlua_cdCanvasPutImageRect},
   {"cdCanvasGetImage", imlua_cdCanvasGetImage},
-
   {NULL, NULL}
+};
+
+static const luaL_Reg cdCanvas_metalib[] = {
+  { "PutImImage", cdlua_CanvasPutImImage },
+  { NULL, NULL }
 };
 
 static void createmeta (lua_State *L) 
@@ -289,16 +321,28 @@ static void createmeta (lua_State *L)
   /* add methods to already created metatables */
 
   luaL_getmetatable(L, "imImage");
-  cdlua_register_funcs(L, imcd_metalib);   /* register methods */
+  cdlua_register_funcs(L, imImage_metalib);   /* register methods */
   lua_pop(L, 1);  /* removes the metatable from the top of the stack */
 
   luaL_getmetatable(L, "cdBitmap");
-  cdlua_register_funcs(L, cdim_metalib);   /* register methods */
+  cdlua_register_funcs(L, cdBitmap_metalib);   /* register methods */
+  lua_pop(L, 1);  /* removes the metatable from the top of the stack */
+
+  luaL_getmetatable(L, "cdCanvas");
+  cdlua_register_funcs(L, cdCanvas_metalib);   /* register methods */
   lua_pop(L, 1);  /* removes the metatable from the top of the stack */
 }
 
+struct luaL_Reg funcs[] = {
+  { NULL, NULL },
+};
+
 int cdluaim_open(lua_State *L)
 {
+  cdluaLuaState* cdL = cdlua_getstate(L);
+  cdlua_register_lib(L, funcs);  /* leave cd table at the top of the stack */
+  cdlua_addcontext(L, cdL, &cdluaimctx);
+
   createmeta(L);
   return 0;
 }
