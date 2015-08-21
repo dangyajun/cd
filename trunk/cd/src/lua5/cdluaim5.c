@@ -333,7 +333,7 @@ static void createmeta (lua_State *L)
   lua_pop(L, 1);  /* removes the metatable from the top of the stack */
 }
 
-struct luaL_Reg funcs[] = {
+static const luaL_Reg funcs[] = {
   { NULL, NULL },
 };
 

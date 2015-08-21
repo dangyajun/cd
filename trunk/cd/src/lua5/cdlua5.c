@@ -1316,7 +1316,7 @@ static int cdlua5_usecontextplus(lua_State *L)
 /********************************************************************************\
 * CDLua Exported functions                                                       *
 \********************************************************************************/
-static const struct luaL_Reg cdlib[] = {
+static const luaL_Reg cdlib[] = {
 
   /* Initialization */
   {"Close"         , cdlua_close},
