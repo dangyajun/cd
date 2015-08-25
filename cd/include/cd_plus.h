@@ -36,7 +36,6 @@
 namespace iup
 {
   class Canvas;
-  class Clipboard;
   Ihandle* GetHandle(const Canvas&);
 }
 
@@ -51,10 +50,6 @@ namespace iup
 namespace cd
 {
 #if 0
-  NativeBitmap(const im:Image& image);
-  ~NativeBitmap();
-  PutBitmap
-
    cdfCanvasPlay
    wdCanvasPlay 
    cdfCanvasIsPointInRegion 
@@ -69,45 +64,43 @@ namespace cd
    cdfCanvasPutImageRectMap 
    cdfCanvasGetImageRGB 
    wdCanvasGetImageRGB 
-
-   defines
 #endif
 
-  char* Version()
+  inline char* Version()
   {
     return cdVersion();
   }
-  char* VersionDate()
+  inline char* VersionDate()
   {
     return cdVersionDate();
   }
-  int VersionNumber()
+  inline int VersionNumber()
   {
     return cdVersionNumber();
   }
 
 
 
-  long ColorEncode(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255)
+  inline long ColorEncode(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255)
   {
     alpha = ~alpha;
     return (((long)alpha) << 24) | (((long)red) << 16) | (((long)green) << 8) | ((long)blue);
   }
-  unsigned char ColorAlpha(long color)
+  inline unsigned char ColorAlpha(long color)
   {
     unsigned char alpha = (unsigned char)(color >> 24);
     alpha = ~alpha;
     return alpha;
   }
-  unsigned char ColorRed(long color)
+  inline unsigned char ColorRed(long color)
   {
     return (unsigned char)(color >> 16);
   }
-  unsigned char ColorGreen(long color)
+  inline unsigned char ColorGreen(long color)
   {
     return (unsigned char)(color >> 8);
   }
-  unsigned char ColorBlue(long color)
+  inline unsigned char ColorBlue(long color)
   {
     return (unsigned char)color;
   }
@@ -151,13 +144,6 @@ namespace cd
       cdFinishContextPlus();
     }
 
-    enum ExtraPolyModes
-    {
-      SPLINE = CD_SPLINE,
-      FILLSPLINE = CD_FILLSPLINE,
-      FILLGRADIENT = CD_FILLGRADIENT
-    };
-
     static void GetScreenSize(int &width, int &height, double &width_mm, double &height_mm)
     {
       cdGetScreenSize(&width, &height, &width_mm, &height_mm);
@@ -166,34 +152,6 @@ namespace cd
     {
       return cdGetScreenColorPlanes();
     }
-
-#if 0
-#define CD_SIZECB 0
-    typedef int(*cdSizeCB)(cdCanvas *canvas, int w, int h, double w_mm, double h_mm);
-#define CD_ABORT 1
-#define CD_CONTINUE 0
-
-#define CD_CGMCOUNTERCB 1
-#define CD_CGMSCLMDECB 2
-#define CD_CGMVDCEXTCB 3
-#define CD_CGMBEGPICTCB 4
-#define CD_CGMBEGPICTBCB 5
-#define CD_CGMBEGMTFCB 6
-static int cgm_countercb(cdCanvas *canvas, double percent);
-static int cgm_sclmdecb(cdCanvas *canvas, short scl_mde, short *draw_mode_i, double *factor_f);
-static int cgm_vdcextcb(cdCanvas *canvas, short type, void *xmn, void *ymn, void *xmx, void *ymx);
-static int cgm_begpictcb(cdCanvas *canvas, char *pict);
-static int cgm_begpictbcb(cdCanvas *canvas);
-static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx);
-
-    typedef int(*cdCallback)(cdCanvas* canvas, ...);
-    int cdContextRegisterCallback(cdContext *context, int cb, cdCallback func);
-
-    unsigned char* cdRedImage(cdCanvas* cnv);
-    unsigned char* cdGreenImage(cdCanvas* cnv);
-    unsigned char* cdBlueImage(cdCanvas* cnv);
-    unsigned char* cdAlphaImage(cdCanvas* cnv);
-#endif
   };
 
 
@@ -205,6 +163,12 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
     /* forbidden */
     Canvas() { canvas = 0; }
     Canvas(const Canvas&) {}
+
+    static inline int PlaySize_CB(cdCanvas *cd_canvas, int w, int h, double w_mm, double h_mm)
+    {
+      Canvas* canvas = (Canvas*)cdCanvasGetAttribute(cd_canvas, "USERDATA");
+      return canvas->PlaySizeCallback(w, h, w_mm, h_mm);
+    }
 
   public:
     Canvas(cdCanvas* ref_canvas)
@@ -266,17 +230,27 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
       return cdCanvasGetAttribute(canvas, name);
     }
 
+    virtual int PlaySizeCallback(int /* w */, int /* h */, double /* w_mm */, double /* h_mm */)
+    {
+      return CD_CONTINUE;
+    }
     /* interpretation */
     int Play(const Context& context, int xmin, int xmax, int ymin, int ymax, void *data)
     {
+      cdCanvasSetAttribute(canvas, "USERDATA", (char*)this);
+      cdContextRegisterCallback(context.cd_context, CD_SIZECB, (cdCallback)PlaySize_CB);
       return cdCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     }
     int Play(const Context& context, double xmin, double xmax, double ymin, double ymax, void *data)
     {
+      cdCanvasSetAttribute(canvas, "USERDATA", (char*)this);
+      cdContextRegisterCallback(context.cd_context, CD_SIZECB, (cdCallback)PlaySize_CB);
       return cdfCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     } 
     int wPlay(const Context& context, double xmin, double xmax, double ymin, double ymax, void *data)
     {
+      cdCanvasSetAttribute(canvas, "USERDATA", (char*)this);
+      cdContextRegisterCallback(context.cd_context, CD_SIZECB, (cdCallback)PlaySize_CB);
       return wdCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     }
 
@@ -1201,15 +1175,6 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
         canvas = cdCreateCanvasf(CD_PRINTER, "%s", name);
     }
   };
-  class CanvasClipboardIup : public Canvas
-  {
-  public:
-    CanvasClipboardIup(iup::Clipboard& clipboard)
-      : Canvas()
-    {
-      canvas = cdCreateCanvasf(CD_IUPCLIPBOARD, "%p ", iup::GetHandle(clipboard));
-    }
-  };
   class CanvasOpenGL : public Canvas
   {
   public:
@@ -1454,28 +1419,7 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
 
       //canvas = cdCreateCanvasf(CD_PS, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
     }
-
-    CanvasMetafilePS(const char* filename, int paper, int res_dpi = 0, bool landscape = false)
-      : Canvas()
-    {
-      char* landscape_str = "";
-      if (landscape)
-        landscape_str = "-o";
-
-      char* res_dpi_str = "";
-      if (res_dpi)
-        res_dpi_str = "-s";
-
-      canvas = cdCreateCanvasf(CD_PS, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
-    }
   };
-#if 0
-  CD_IUPCLIPBOARD
-static Context ClipboardIup()
-  "widthxheight [resolution] [-b]" //or in C "%dx%d %g -b"
-  "[width_mmxheight_mm] [resolution] -m"  //or in C "%gx%g %g"
-#endif
 }
 
 #endif
-

@@ -238,6 +238,8 @@ struct _cdCanvas
   cdSimulation* simulation;
   cdCtxCanvas* ctxcanvas;
   cdContext* context;
+
+  void* userdata;
 };
 
 enum{CD_BASE_WIN, CD_BASE_X, CD_BASE_GDK, CD_BASE_HAIKU};

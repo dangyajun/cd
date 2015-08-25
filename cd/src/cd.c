@@ -128,6 +128,25 @@ void cdUpdateAttributes(cdCanvas* canvas)
   if (canvas->clip_mode != CD_CLIPOFF && canvas->cxClip) canvas->cxClip(ctxcanvas, canvas->clip_mode);
 }
 
+static void set_userdata_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
+  canvas->userdata = data;
+}
+
+static char* get_userdata_attrib(cdCtxCanvas* ctxcanvas)
+{
+  cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
+  return canvas->userdata;
+}
+
+static cdAttribute userdata_attrib =
+{
+  "USERDATA",
+  set_userdata_attrib,
+  get_userdata_attrib
+};
+
 cdCanvas* cdCreateCanvasf(cdContext *context, const char* format, ...)
 {
   char data[10240];
@@ -197,6 +216,8 @@ cdCanvas *cdCreateCanvas(cdContext* context, void *data_str)
   canvas->clip_rect.ymax = canvas->h-1;
 
   wdSetDefaults(canvas);
+
+  cdRegisterAttribute(canvas, &userdata_attrib);
 
   return canvas;
 }
