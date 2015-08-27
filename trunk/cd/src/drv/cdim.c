@@ -20,8 +20,74 @@
 #include "cdim.h"
 
 
+void cdCanvasPatternImImage(cdCanvas* canvas, const imImage* image)
+{
+  long* pattern;
+  int i;
+
+  assert(canvas);
+  assert(image);
+  if (!_cdCheckCanvas(canvas)) return;
+
+  if (image->data_type != IM_BYTE)
+    return;
+
+  pattern = malloc(image->count * sizeof(long));
+  memset(pattern, 0, image->count * sizeof(long));
+
+  if (image->color_space == IM_RGB)
+  {
+    unsigned char* r = (unsigned char*)image->data[0];
+    unsigned char* g = (unsigned char*)image->data[1];
+    unsigned char* b = (unsigned char*)image->data[2];
+    unsigned char* a = NULL;
+
+    if (image->has_alpha)
+      a = (unsigned char*)image->data[3];
+
+    for (i = 0; i < image->count; i++)
+    {
+      if (image->has_alpha)
+        pattern[i] = cdEncodeColorAlpha(r[i], g[i], b[i], a[i]);
+      else
+        pattern[i] = cdEncodeColor(r[i], g[i], b[i]);
+    }
+  }
+  else if (image->color_space == IM_MAP || image->color_space == IM_GRAY || image->color_space == IM_BINARY)
+  {
+    unsigned char* map = (unsigned char*)image->data[0];
+
+    for (i = 0; i < image->count; i++)
+    {
+      pattern[i] = image->palette[map[i]];
+    }
+  }
+
+  cdCanvasPattern(canvas, image->width, image->height, pattern);
+  free(pattern);
+}
+
+void cdCanvasStippleImImage(cdCanvas* canvas, const imImage* image)
+{
+  unsigned char* stipple;
+
+  assert(canvas);
+  assert(image);
+  if (!_cdCheckCanvas(canvas)) return;
+
+  if (image->data_type != IM_BYTE || image->color_space != IM_BINARY)
+    return;
+
+  stipple = (unsigned char*)image->data[0];
+
+  cdCanvasStipple(canvas, image->width, image->height, stipple);
+}
+
 void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, int w, int h)
-{                                                                         
+{                          
+  if (image->data_type != IM_BYTE)
+    return;
+
   if (image->color_space == IM_RGB)                                      
   {                                                                       
     if (image->has_alpha)                                                
@@ -38,7 +104,7 @@ void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, in
                         (unsigned char*)image->data[2],                  
                         x, y, w, h, 0, 0, 0, 0);      
    }                                                                       
-   else                                                                    
+  else if (image->color_space == IM_MAP || image->color_space == IM_GRAY || image->color_space == IM_BINARY)
     cdCanvasPutImageRectMap(canvas, image->width, image->height,       
                         (unsigned char*)image->data[0], image->palette,   
                         x, y, w, h, 0, 0, 0, 0);        
