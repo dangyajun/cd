@@ -107,6 +107,22 @@ static int cdlua_CanvasPutImImage(lua_State *L)
   return 0;
 }
 
+static int cdlua_CanvasPatternImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  cdCanvasPatternImImage(canvas, image);
+  return 0;
+}
+
+static int cdlua_CanvasStippleImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  cdCanvasStippleImImage(canvas, image);
+  return 0;
+}
+
 
 /*****************************************************************************\
  cd:imImageCreate(bitmap: cdBitmap) -> imImage
@@ -313,6 +329,9 @@ static const luaL_Reg imImage_metalib[] = {
 
 static const luaL_Reg cdCanvas_metalib[] = {
   { "PutImImage", cdlua_CanvasPutImImage },
+  { "PatternImImage", cdlua_CanvasPatternImImage },
+  { "StippleImImage", cdlua_CanvasStippleImImage },
+
   { NULL, NULL }
 };
 

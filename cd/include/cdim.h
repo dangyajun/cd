@@ -17,6 +17,8 @@ cdContext* cdContextImImage(void);
 
 
 #ifdef __IM_IMAGE_H
+void cdCanvasPatternImImage(cdCanvas* canvas, const imImage* image);
+void cdCanvasStippleImImage(cdCanvas* canvas, const imImage* image);
 void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, int w, int h);
 #endif
 

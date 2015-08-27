@@ -1,4 +1,6 @@
 EXPORTS
   cdContextImImage
   cdCanvasPutImImage
+  cdCanvasPatternImImage
+  cdCanvasStippleImImage
   
