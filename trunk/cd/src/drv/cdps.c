@@ -16,7 +16,6 @@
 #include "cdps.h"
 
 
-#define mm2pt(x) (CD_MM2PT*(x))
 
 #ifndef min
 #define min(a, b) ((a)<(b)?(a):(b))
@@ -55,11 +54,11 @@ struct _cdCtxCanvas
   int pages;             /* Numero total de paginas */
   double width_pt;       /* Largura do papel (points) */
   double height_pt;      /* Altura do papel (points) */
-  double xmin, ymin;     /* Definem as margens esquerda e inferior (points) */
-  double xmax, ymax;     /* Definem as margens direita e superior (points) */
-  double bbxmin, bbymin; /* Definem a bounding box */
-  double bbxmax, bbymax; /* Definem a bounding box */
-  double bbmargin;       /* Define a margem para a bounding box */
+  double margin_xmin, margin_ymin;     /* Definem as margens esquerda e inferior (points) */
+  double margin_xmax, margin_ymax;     /* Definem as margens direita e superior (points) */
+  double bb_xmin, bb_ymin; /* Definem a bounding box */
+  double bb_xmax, bb_ymax; /* Definem a bounding box */
+  double bb_margin;       /* Define a margem para a bounding box */
   double scale;          /* Fator de conversao de coordenadas (pixel2points) */
   int eps;               /* Postscrip encapsulado? */
   int level1;            /* if true generates level 1 only function calls */
@@ -86,10 +85,10 @@ static void setpsdefaultvalues(cdCtxCanvas *ctxcanvas)
   /* all the other values are set to 0 */
   cdSetPaperSize(CD_A4, &ctxcanvas->width_pt, &ctxcanvas->height_pt);
 
-  ctxcanvas->xmin = 25.4; /* ainda em mm, sera' convertido para points na init_ps */
-  ctxcanvas->xmax = 25.4;
-  ctxcanvas->ymin = 25.4;
-  ctxcanvas->ymax = 25.4;
+  ctxcanvas->margin_xmin = 25.4; /* ainda em mm, sera' convertido para points na init_ps */
+  ctxcanvas->margin_xmax = 25.4;
+  ctxcanvas->margin_ymin = 25.4;
+  ctxcanvas->margin_ymax = 25.4;
   ctxcanvas->res = 300;
 }
 
@@ -99,37 +98,37 @@ Nao leva em consideracao a espessura das linhas.
 */
 static void insertpoint(cdCtxCanvas *ctxcanvas, int x, int y)
 {
-  double xmin = x*ctxcanvas->scale + ctxcanvas->xmin - ctxcanvas->bbmargin;
-  double ymin = y*ctxcanvas->scale + ctxcanvas->ymin - ctxcanvas->bbmargin;
+  double xmin = x*ctxcanvas->scale + ctxcanvas->margin_xmin - ctxcanvas->bb_margin;
+  double ymin = y*ctxcanvas->scale + ctxcanvas->margin_ymin - ctxcanvas->bb_margin;
 
-  double xmax = x*ctxcanvas->scale + ctxcanvas->xmin + ctxcanvas->bbmargin;
-  double ymax = y*ctxcanvas->scale + ctxcanvas->ymin + ctxcanvas->bbmargin;
+  double xmax = x*ctxcanvas->scale + ctxcanvas->margin_xmin + ctxcanvas->bb_margin;
+  double ymax = y*ctxcanvas->scale + ctxcanvas->margin_ymin + ctxcanvas->bb_margin;
 
-  if (!ctxcanvas->bbxmin && !ctxcanvas->bbxmax && !ctxcanvas->bbymin && !ctxcanvas->bbymax)
+  if (!ctxcanvas->bb_xmin && !ctxcanvas->bb_xmax && !ctxcanvas->bb_ymin && !ctxcanvas->bb_ymax)
   {
-    ctxcanvas->bbxmin = xmin;
-    ctxcanvas->bbymin = ymin;
+    ctxcanvas->bb_xmin = xmin;
+    ctxcanvas->bb_ymin = ymin;
 
-    ctxcanvas->bbxmax = xmax;
-    ctxcanvas->bbymax = ymax;
+    ctxcanvas->bb_xmax = xmax;
+    ctxcanvas->bb_ymax = ymax;
   }
   else
   {
     if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA)
     {
-      ctxcanvas->bbxmin = max(ctxcanvas->canvas->clip_rect.xmin*ctxcanvas->scale + ctxcanvas->xmin, min(ctxcanvas->bbxmin, xmin));
-      ctxcanvas->bbymin = max(ctxcanvas->canvas->clip_rect.ymin*ctxcanvas->scale + ctxcanvas->ymin, min(ctxcanvas->bbymin, ymin));
+      ctxcanvas->bb_xmin = max(ctxcanvas->canvas->clip_rect.xmin*ctxcanvas->scale + ctxcanvas->margin_xmin, min(ctxcanvas->bb_xmin, xmin));
+      ctxcanvas->bb_ymin = max(ctxcanvas->canvas->clip_rect.ymin*ctxcanvas->scale + ctxcanvas->margin_ymin, min(ctxcanvas->bb_ymin, ymin));
 
-      ctxcanvas->bbxmax = min(ctxcanvas->canvas->clip_rect.xmax*ctxcanvas->scale + ctxcanvas->xmax, max(ctxcanvas->bbxmax, xmax));
-      ctxcanvas->bbymax = min(ctxcanvas->canvas->clip_rect.ymax*ctxcanvas->scale + ctxcanvas->ymax, max(ctxcanvas->bbymax, ymax));
+      ctxcanvas->bb_xmax = min(ctxcanvas->canvas->clip_rect.xmax*ctxcanvas->scale + ctxcanvas->margin_xmax, max(ctxcanvas->bb_xmax, xmax));
+      ctxcanvas->bb_ymax = min(ctxcanvas->canvas->clip_rect.ymax*ctxcanvas->scale + ctxcanvas->margin_ymax, max(ctxcanvas->bb_ymax, ymax));
     }
     else
     {
-      ctxcanvas->bbxmin = max(ctxcanvas->xmin, min(ctxcanvas->bbxmin, xmin));
-      ctxcanvas->bbymin = max(ctxcanvas->ymin, min(ctxcanvas->bbymin, ymin));
+      ctxcanvas->bb_xmin = max(ctxcanvas->margin_xmin, min(ctxcanvas->bb_xmin, xmin));
+      ctxcanvas->bb_ymin = max(ctxcanvas->margin_ymin, min(ctxcanvas->bb_ymin, ymin));
 
-      ctxcanvas->bbxmax = min(ctxcanvas->xmax, max(ctxcanvas->bbxmax, xmax));
-      ctxcanvas->bbymax = min(ctxcanvas->ymax, max(ctxcanvas->bbymax, ymax));
+      ctxcanvas->bb_xmax = min(ctxcanvas->margin_xmax, max(ctxcanvas->bb_xmax, xmax));
+      ctxcanvas->bb_ymax = min(ctxcanvas->margin_ymax, max(ctxcanvas->bb_ymax, ymax));
     }
   }
 }
@@ -253,7 +252,7 @@ static void set_default_matrix(cdCtxCanvas *ctxcanvas)
   }
 
   /* margin */
-  fprintf(ctxcanvas->file, "%g %g translate\n", ctxcanvas->xmin, ctxcanvas->ymin);
+  fprintf(ctxcanvas->file, "%g %g translate\n", ctxcanvas->margin_xmin, ctxcanvas->margin_ymin);
 
   /* default coordinate system is in points, change it to pixels. */
   fprintf(ctxcanvas->file, "%g %g scale\n", ctxcanvas->scale, ctxcanvas->scale);
@@ -269,11 +268,11 @@ static void init_ps(cdCtxCanvas *ctxcanvas)
   time_t now = time(NULL);
 
   /* convert margin values to actual limits */
-  ctxcanvas->xmin = mm2pt(ctxcanvas->xmin);
-  ctxcanvas->xmax = ctxcanvas->width_pt - mm2pt(ctxcanvas->xmax);
-  ctxcanvas->ymin = mm2pt(ctxcanvas->ymin);
-  ctxcanvas->ymax = ctxcanvas->height_pt - mm2pt(ctxcanvas->ymax);
-  ctxcanvas->bbmargin = mm2pt(ctxcanvas->bbmargin);
+  ctxcanvas->margin_xmin = CD_MM2PT*ctxcanvas->margin_xmin;
+  ctxcanvas->margin_xmax = ctxcanvas->width_pt - CD_MM2PT*ctxcanvas->margin_xmax;
+  ctxcanvas->margin_ymin = CD_MM2PT*ctxcanvas->margin_ymin;
+  ctxcanvas->margin_ymax = ctxcanvas->height_pt - CD_MM2PT*ctxcanvas->margin_ymax;
+  ctxcanvas->bb_margin = CD_MM2PT*ctxcanvas->bb_margin;
 
   fprintf(ctxcanvas->file, "%%!PS-Adobe-3.0 %s\n", ctxcanvas->eps ? "EPSF-3.0":"");
   fprintf(ctxcanvas->file, "%%%%Title: CanvasDraw\n");
@@ -288,7 +287,7 @@ static void init_ps(cdCtxCanvas *ctxcanvas)
   if (ctxcanvas->eps)
   {
     fprintf(ctxcanvas->file, "%%%%BoundingBox: (atend)\n");
-    ctxcanvas->bbxmin = ctxcanvas->bbxmax = ctxcanvas->bbymin = ctxcanvas->bbymax = 0;
+    ctxcanvas->bb_xmin = ctxcanvas->bb_xmax = ctxcanvas->bb_ymin = ctxcanvas->bb_ymax = 0;
     /* BoundingBox==Empty */
   }
 
@@ -331,8 +330,8 @@ static void init_ps(cdCtxCanvas *ctxcanvas)
   ctxcanvas->canvas->xres = ctxcanvas->res/25.4;
   ctxcanvas->canvas->yres = ctxcanvas->canvas->xres;
 
-  w_pt = ctxcanvas->xmax - ctxcanvas->xmin;
-  h_pt = ctxcanvas->ymax - ctxcanvas->ymin;
+  w_pt = ctxcanvas->margin_xmax - ctxcanvas->margin_xmin;
+  h_pt = ctxcanvas->margin_ymax - ctxcanvas->margin_ymin;
 
   ctxcanvas->canvas->w_mm = w_pt/CD_MM2PT;   /* Converte p/ milimetros */
   ctxcanvas->canvas->h_mm = h_pt/CD_MM2PT; /* Converte p/ milimetros */
@@ -371,12 +370,12 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 
   if (ctxcanvas->eps)
   {
-    int xmin = (int)ctxcanvas->bbxmin;
-    int xmax = (int)ctxcanvas->bbxmax;
-    int ymin = (int)ctxcanvas->bbymin;
-    int ymax = (int)ctxcanvas->bbymax;
-    if (xmax < ctxcanvas->bbxmax) xmax++;
-    if (ymax < ctxcanvas->bbymax) ymax++;
+    int xmin = (int)ctxcanvas->bb_xmin;
+    int xmax = (int)ctxcanvas->bb_xmax;
+    int ymin = (int)ctxcanvas->bb_ymin;
+    int ymax = (int)ctxcanvas->bb_ymax;
+    if (xmax < ctxcanvas->bb_xmax) xmax++;
+    if (ymax < ctxcanvas->bb_ymax) ymax++;
     fprintf(ctxcanvas->file,"%%%%BoundingBox: %5d %5d %5d %5d\n",xmin,ymin,xmax,ymax);
   }
 
@@ -1630,7 +1629,7 @@ static void add_font_name(cdCtxCanvas *ctxcanvas, char *nativefontname)
       return;
   }
 
-  size = strlen(nativefontname)+1;
+  size = (int)strlen(nativefontname)+1;
   ctxcanvas->nativefontname[ctxcanvas->num_native_font] = (char*)malloc(size);
   memcpy(ctxcanvas->nativefontname[ctxcanvas->num_native_font], nativefontname, size);
   ctxcanvas->num_native_font++;
@@ -1863,6 +1862,84 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
 /* custom attributes                                  */
 /******************************************************/
 
+static void set_margins_attrib(cdCtxCanvas *ctxcanvas, char* data)
+{
+  double w_pt, h_pt;
+
+  if (data)
+    sscanf(data, "%lg %lg %lg %lg", &ctxcanvas->margin_xmin, &ctxcanvas->margin_xmax, &ctxcanvas->margin_ymin, &ctxcanvas->margin_ymax);
+  else
+  {
+    /* reset to default */
+    ctxcanvas->margin_xmin = 25.4;
+    ctxcanvas->margin_xmax = 25.4;
+    ctxcanvas->margin_ymin = 25.4;
+    ctxcanvas->margin_ymax = 25.4;
+  }                             
+
+  ctxcanvas->margin_xmin = CD_MM2PT*ctxcanvas->margin_xmin;   /* Convert to points */
+  ctxcanvas->margin_xmax = ctxcanvas->width_pt - CD_MM2PT*ctxcanvas->margin_xmax;
+  ctxcanvas->margin_ymin = CD_MM2PT*ctxcanvas->margin_ymin;
+  ctxcanvas->margin_ymax = ctxcanvas->height_pt - CD_MM2PT*ctxcanvas->margin_ymax;
+
+  w_pt = ctxcanvas->margin_xmax - ctxcanvas->margin_xmin;
+  h_pt = ctxcanvas->margin_ymax - ctxcanvas->margin_ymin;
+
+  ctxcanvas->canvas->w_mm = w_pt / CD_MM2PT;   /* Converte p/ milimetros */
+  ctxcanvas->canvas->h_mm = h_pt / CD_MM2PT;   /* Converte p/ milimetros */
+
+  ctxcanvas->canvas->w = cdRound(ctxcanvas->canvas->xres*ctxcanvas->canvas->w_mm);
+  ctxcanvas->canvas->h = cdRound(ctxcanvas->canvas->yres*ctxcanvas->canvas->h_mm);
+
+  set_default_matrix(ctxcanvas);
+
+  /* cliping geral para a margem */
+  setcliprect(ctxcanvas, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
+}
+
+static char* get_margins_attrib(cdCtxCanvas *ctxcanvas)
+{
+  static char margins[50];
+
+  double margin_xmin = ctxcanvas->margin_xmin / CD_MM2PT;
+  double margin_xmax = (ctxcanvas->width_pt - ctxcanvas->margin_xmax) / CD_MM2PT;
+  double margin_ymin = ctxcanvas->margin_ymin / CD_MM2PT;
+  double margin_ymax = (ctxcanvas->height_pt - ctxcanvas->margin_ymax) / CD_MM2PT;
+
+  sprintf(margins, "%d %d %d %d", margin_xmin, margin_xmax, margin_ymin, margin_ymax);
+  return margins;
+}
+
+static cdAttribute margins_attrib =
+{
+  "DEBUG",
+  set_margins_attrib,
+  get_margins_attrib
+};
+
+static void set_debug_attrib(cdCtxCanvas *ctxcanvas, char* data)
+{
+  if (data && data[0] == '1')
+    ctxcanvas->debug = 1;
+  else
+    ctxcanvas->debug = 0;
+}
+
+static char* get_debug_attrib(cdCtxCanvas *ctxcanvas)
+{
+  if (ctxcanvas->debug)
+    return "1";
+  else
+    return "0";
+}
+
+static cdAttribute debug_attrib =
+{
+  "DEBUG",
+  set_debug_attrib,
+  get_debug_attrib
+};
+
 static void set_rotate_attrib(cdCtxCanvas *ctxcanvas, char* data)
 {
   /* ignore ROTATE if transform is set, 
@@ -1991,6 +2068,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdRegisterAttribute(canvas, &poly_attrib);
   cdRegisterAttribute(canvas, &cmd_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
+  cdRegisterAttribute(canvas, &debug_attrib);
+  cdRegisterAttribute(canvas, &margins_attrib);
 
   setpsdefaultvalues(ctxcanvas);
 
@@ -2014,27 +2093,27 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
         }
       case 'w':
         sscanf(line, "%lg", &num);
-        ctxcanvas->width_pt = mm2pt(num);
+        ctxcanvas->width_pt = CD_MM2PT*num;
         break;
       case 'h':
         sscanf(line, "%lg", &num);
-        ctxcanvas->height_pt = mm2pt(num);
+        ctxcanvas->height_pt = CD_MM2PT*num;
         break;
       case 'l':
         sscanf(line, "%lg", &num);
-        ctxcanvas->xmin = num;
+        ctxcanvas->margin_xmin = num;
         break;
       case 'r':
         sscanf(line, "%lg", &num);
-        ctxcanvas->xmax = num;   /* right margin, must be converted to xmax */
+        ctxcanvas->margin_xmax = num;   /* right margin, must be converted to xmax */
         break;
       case 'b':
         sscanf(line, "%lg", &num);
-        ctxcanvas->ymin = num;  
+        ctxcanvas->margin_ymin = num;  
         break;
       case 't':
         sscanf(line, "%lg", &num);
-        ctxcanvas->ymax = num;  /* top margin, must be converted to ymax */
+        ctxcanvas->margin_ymax = num;  /* top margin, must be converted to ymax */
         break;
       case 's':
         sscanf(line, "%d", &(ctxcanvas->res));
@@ -2053,7 +2132,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
         break;
       case 'd':
         sscanf(line, "%lg", &num);
-        ctxcanvas->bbmargin = num;
+        ctxcanvas->bb_margin = num;
         break;
       }
     }
@@ -2071,8 +2150,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   if (ctxcanvas->landscape)
   {
     _cdSwapDouble(ctxcanvas->width_pt, ctxcanvas->height_pt);
-    _cdSwapDouble(ctxcanvas->xmin, ctxcanvas->ymin);
-    _cdSwapDouble(ctxcanvas->xmax, ctxcanvas->ymax);
+    _cdSwapDouble(ctxcanvas->margin_xmin, ctxcanvas->margin_ymin);
+    _cdSwapDouble(ctxcanvas->margin_xmax, ctxcanvas->margin_ymax);
   }
 
   init_ps(ctxcanvas);

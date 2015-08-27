@@ -187,7 +187,21 @@
 </ul>
 <h4>Exclusive Attributes</h4>
 <ul>
-  <li>&quot;<strong><font face="Courier">POLYHOLE</font></strong>&quot;: defines the index 
+  <li><b><font face="Courier">&quot;MARGINS&quot;: </font></b>controls the 
+  margins 
+  creation parameter. Format is a string with 4 values &quot;left right bottom top&quot; 
+  or in C &quot;%g %g %g %g&quot;. If set to NULL reset to default values. Values are 
+  provided in millimeters. (since 5.9)</li>
+</ul>
+
+<ul>
+  <li><b><font face="Courier">&quot;DEBUG&quot;: </font></b>controls the debug 
+  creation parameter. It can have the following 
+  values: &quot;1&quot; or &quot;0&quot;. Default is &quot;0&quot;. (since 5.9)</li>
+</ul>
+
+<ul>
+    <li>&quot;<strong><font face="Courier">POLYHOLE</font></strong>&quot;: defines the index 
 	of the vertex where there is a hole in a closed polygon. It will affect the 
 	next <strong>cdEnd</strong>. Can be called several times between
   <strong>cdBegin</strong> and <strong>cdEnd</strong> to define holes. The value 
