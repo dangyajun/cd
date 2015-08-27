@@ -42,12 +42,26 @@ cd.EncodeColor(r, g, b: number) -&gt; (old_color: lightuserdata) [in Lua]</pre>
       where <tt><b>RR</b> </tt>are the red components, <b><tt>GG</tt></b> are the 
       green ones and <b><tt>BB</tt></b> are the blue ones. The code is used in the CD 
       library to define colors. It can be used without an active canvas.</p>
-    </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdDecodeColor">cdDecodeColor</a>(long int color, unsigned char *red, unsigned char *green, unsigned char *blue) [in C]</span>
+    </div><div class="function">
+    <div class="function"><pre class="function"><span class="mainFunction">long int <a name="cdEncodeColorAlpha">cdEncodeColorAlpha</a>(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) [in C]</span>
+
+cd.EncodeColorAlpha(r, g, b, a: number) -&gt; (old_color: lightuserdata) [in Lua]</pre>
+    <p>Returns a codified quadriple (<em>r,g,b,a</em>) in a long integer such as <b><tt>0xAARRGGBB</tt></b>, 
+      where <tt><b>AA</b> </tt>are the alpha components, <tt><b>RR</b> </tt>are the red components, <b><tt>GG</tt></b> are the 
+      green ones and <b><tt>BB</tt></b> are the blue ones. The code is used in the CD 
+      library to define colors. It can be used without an active canvas. (since 
+	5.9)</p>
+    </div><pre class="function"><span class="mainFunction">void <a name="cdDecodeColor">cdDecodeColor</a>(long int color, unsigned char *red, unsigned char *green, unsigned char *blue) [in C]</span>
 
 cd.DecodeColor(color: lightuserdata) -&gt; (r, g, b: number) [in Lua]</pre>
     <p>Returns the red, green and blue components of a color in the CD library. Can 
       be used without an active canvas.</p>
-    </div><div class="function"><pre class="function"><span class="mainFunction">long int <a name="cdEncodeAlpha">cdEncodeAlpha</a>(long int color, unsigned char alpha) [in C]</span>
+    </div><div class="function"><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdDecodeColorAlpha">cdDecodeColorAlpha</a>(long int color, unsigned char *red, unsigned char *green, unsigned char *blue, unsigned char *alpha) [in C]</span>
+
+cd.DecodeColorAlpha(color: lightuserdata) -&gt; (r, g, b, a: number) [in Lua]</pre>
+    <p>Returns the red, green, blue and alpha components of a color in the CD library. Can 
+      be used without an active canvas.&nbsp; (since 5.9)</p>
+    </div><pre class="function"><span class="mainFunction">long int <a name="cdEncodeAlpha">cdEncodeAlpha</a>(long int color, unsigned char alpha) [in C]</span>
 
 cd.EncodeAlpha(color: lightuserdata, alpha: number) -&gt; (color: lightuserdata) [in Lua]</pre>
     <p>Returns the given color coded with the alpha information. ATENTION: At the 

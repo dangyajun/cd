@@ -121,6 +121,7 @@ cdImage* cdlua_checkimage(lua_State* L, int param);
 cdState* cdlua_checkstate(lua_State* L, int param);
 cdBitmap* cdlua_checkbitmap(lua_State* L, int param);
 
+void cdlua_pushcolor(lua_State* L, long color);
 void cdlua_pushpalette(lua_State* L, long* palette, int size);
 void cdlua_pushstipple(lua_State* L, unsigned char* stipple, int width, int height);
 void cdlua_pushpattern(lua_State* L, long int* pattern, int width, int height);

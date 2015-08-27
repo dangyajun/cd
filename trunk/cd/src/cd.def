@@ -122,6 +122,8 @@ EXPORTS
   cdEncodeAlpha
   cdDecodeAlpha
   cdPalette
+  cdEncodeColorAlpha
+  cdDecodeColorAlpha
 
   cdGetImageRGB
   cdPutImageRectRGB

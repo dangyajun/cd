@@ -363,7 +363,7 @@ static int cdlua5_foreground(lua_State *L)
 {
   long int color_i = cdlua_checkcolor(L, 1);
   color_i = cdForeground(color_i);
-  lua_pushlightuserdata(L, (void*)color_i);
+  cdlua_pushcolor(L, color_i);
   return 1;
 }
 
@@ -374,7 +374,7 @@ static int cdlua5_background(lua_State *L)
 {
   long int color_i = cdlua_checkcolor(L, 1);
   color_i = cdBackground(color_i);
-  lua_pushlightuserdata(L, (void*) color_i);
+  cdlua_pushcolor(L, color_i);
   return 1;
 }
 

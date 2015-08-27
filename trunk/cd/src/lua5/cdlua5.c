@@ -289,6 +289,11 @@ long cdlua_checkcolor(lua_State* L, int param)
   return (long int)lua_touserdata(L, param);
 }
 
+void cdlua_pushcolor(lua_State* L, long color)
+{
+  lua_pushlightuserdata(L, (void *)color);
+}
+
 cdImage* cdlua_checkimage(lua_State* L, int param)
 {
   cdImage** image_p = (cdImage**)luaL_checkudata(L, param, "cdImage");
@@ -470,7 +475,7 @@ static int cdlua5_indexpattern(lua_State *L)
   if (index < 0 || index >= pattern_p->size)
     luaL_argerror(L, 2, "index is out of bounds");
 
-  lua_pushlightuserdata(L, (void *) pattern_p->pattern[index]);
+  cdlua_pushcolor(L, pattern_p->pattern[index]);
   return 1;
 }
 
@@ -770,7 +775,7 @@ static int cdlua5_indexchannel(lua_State *L)
   }
   
   if (channel_p->size == -1) /* COLORS */
-    lua_pushlightuserdata(L, (void *)((long int*)channel_p->channel)[index]);
+    cdlua_pushcolor(L, ((long*)channel_p->channel)[index]);
   else
     lua_pushnumber(L, channel_p->channel[index]);
 
@@ -1027,8 +1032,39 @@ static int cdlua5_encodecolor(lua_State *L)
   blue_i = (unsigned char) (blue_f);
 
   color = cdEncodeColor(red_i, green_i, blue_i);
-  lua_pushlightuserdata(L, (void *)color);
+  cdlua_pushcolor(L, color);
   
+  return 1;
+}
+
+static int cdlua5_encodecoloralpha(lua_State *L)
+{
+  int red_f, green_f, blue_f, alpha_f;
+  unsigned char red_i, green_i, blue_i, alpha_i;
+  long int color;
+
+  red_f = luaL_checkinteger(L, 1);
+  green_f = luaL_checkinteger(L, 2);
+  blue_f = luaL_checkinteger(L, 3);
+  alpha_f = luaL_checkinteger(L, 4);
+
+  if (red_f < 0 || red_f > 255)
+    luaL_argerror(L, 1, "color components values should be in range [0, 255]");
+  if (green_f < 0 || green_f > 255)
+    luaL_argerror(L, 2, "color components values should be in range [0, 255]");
+  if (blue_f < 0 || blue_f > 255)
+    luaL_argerror(L, 3, "color components values should be in range [0, 255]");
+  if (alpha_f < 0 || alpha_f > 255)
+    luaL_argerror(L, 4, "color components values should be in range [0, 255]");
+
+  red_i = (unsigned char)(red_f);
+  green_i = (unsigned char)(green_f);
+  blue_i = (unsigned char)(blue_f);
+  alpha_i = (unsigned char)(alpha_f);
+
+  color = cdEncodeColorAlpha(red_i, green_i, blue_i, alpha_i);
+  cdlua_pushcolor(L, color);
+
   return 1;
 }
 
@@ -1046,6 +1082,19 @@ static int cdlua5_decodecolor(lua_State *L)
   lua_pushnumber(L, blue_i);
 
   return 3;
+}
+
+static int cdlua5_decodecoloralpha(lua_State *L)
+{
+  unsigned char red_i, green_i, blue_i, alpha_i;
+  long int color = cdlua_checkcolor(L, 1);
+  cdDecodeColorAlpha(color, &red_i, &green_i, &blue_i, &alpha_i);
+  lua_pushnumber(L, red_i);
+  lua_pushnumber(L, green_i);
+  lua_pushnumber(L, blue_i);
+  lua_pushnumber(L, alpha_i);
+
+  return 4;
 }
 
 /***************************************************************************\
@@ -1067,7 +1116,7 @@ static int cdlua5_encodealpha(lua_State *L)
     luaL_argerror(L, 2, "alpha components values should be in range [0, 255]");
   
   color = cdEncodeAlpha(color, (unsigned char)alpha);
-  lua_pushlightuserdata(L, (void *) color);
+  cdlua_pushcolor(L, color);
   return 1;
 }
 
@@ -1162,7 +1211,7 @@ static int cdlua5_indexpalette(lua_State *L)
   if (index < 0 || index >= pal->count)
     luaL_argerror(L, 2, "index is out of bounds");
 
-  lua_pushlightuserdata(L, (void*) pal->color[index]);
+  cdlua_pushcolor(L, pal->color[index]);
   return 1;
 }
 
@@ -1361,6 +1410,8 @@ static const luaL_Reg cdlib[] = {
   /* Color Coding */
   {"EncodeColor"    , cdlua5_encodecolor},
   {"DecodeColor"    , cdlua5_decodecolor},
+  {"EncodeColorAlpha"    , cdlua5_encodecoloralpha},
+  {"DecodeColorAlpha"    , cdlua5_decodecoloralpha},
   {"EncodeAlpha"    , cdlua5_encodealpha},
   {"DecodeAlpha"    , cdlua5_decodealpha},
   {"Alpha"          , cdlua5_alpha},
@@ -1682,7 +1733,7 @@ static void initcolor(lua_State *L)
   for (; l->name; l++) 
   {
     lua_pushstring(L, l->name);
-    lua_pushlightuserdata(L, (void*) l->value);
+    cdlua_pushcolor(L, l->value);
     lua_settable(L, -3);
   }
 }

@@ -974,6 +974,21 @@ long cdEncodeColor(unsigned char r, unsigned char g, unsigned char b)
          (((unsigned long)b) <<  0);
 }
 
+long cdEncodeColorAlpha(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+  a = ~a;
+  return (((unsigned long)a) << 24) | 
+         (((unsigned long)r) << 16) |
+         (((unsigned long)g) << 8) |
+         (((unsigned long)b) << 0);
+}
+
+long cdEncodeAlpha(long color, unsigned char alpha)
+{
+  alpha = ~alpha;
+  return (((unsigned long)alpha) << 24) | (color & 0xFFFFFF);
+}
+
 void cdDecodeColor(long color, unsigned char *r, unsigned char *g, unsigned char *b)
 {
   *r = cdRed(color);
@@ -981,16 +996,18 @@ void cdDecodeColor(long color, unsigned char *r, unsigned char *g, unsigned char
   *b = cdBlue(color);
 }
 
+void cdDecodeColorAlpha(long color, unsigned char *r, unsigned char *g, unsigned char *b, unsigned char *a)
+{
+  *r = cdRed(color);
+  *g = cdGreen(color);
+  *b = cdBlue(color);
+  *a = ~cdReserved(color);
+}
+
 unsigned char cdDecodeAlpha(long color)
 {
   unsigned char alpha = cdReserved(color);
   return ~alpha;
-}
-
-long cdEncodeAlpha(long color, unsigned char alpha)
-{
-  alpha = ~alpha;
-  return (((unsigned long)alpha) << 24) | (color & 0xFFFFFF);
 }
 
 int cdCanvasGetColorPlanes(cdCanvas* canvas)
