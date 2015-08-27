@@ -34,6 +34,37 @@
 #include "cdpicture.h"
 #include "cdim.h"
 
+
+#if 0
+// DOC
+wdCanvasPlay
+wdCanvasGetImageRGB
+cdfCanvasPixel
+cdfCanvasMark
+cdfCanvasGetImageRGB
+cdfCanvasPutImageRectRGB
+cdfCanvasPutImageRectRGBA
+cdfCanvasPutImageRectMap
+cdfCanvasPutImImage
+cdfCanvasGetImImage
+wdCanvasPutImImage
+wdCanvasGetImImage
+
+// DRIVER
+void(*cxFPixel)(cdCtxCanvas* ctxcanvas, double x, double y, long color);
+void(*cxFGetImageRGB)(cdCtxCanvas* ctxcanvas, unsigned char* r, unsigned char* g, unsigned char* b, double x, double y, int iw, int ih);
+void(*cxFPutImageRectRGB)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
+void(*cxFPutImageRectRGBA)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
+void(*cxFPutImageRectMap)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* index, const long* colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
+
+// MAYBE
+cdCanvasIsPointInRegion
+cdfCanvasOffsetRegion
+cdfCanvasGetRegionBox
+cdfCanvasGetTextBox
+cdfCanvasGetTextBounds
+#endif
+
 namespace iup
 {
   class Canvas;
@@ -50,23 +81,6 @@ namespace iup
  */
 namespace cd
 {
-#if 0
-   cdfCanvasPlay
-   cdfCanvasIsPointInRegion 
-   cdfCanvasOffsetRegion 
-   cdfCanvasGetRegionBox 
-   cdfCanvasPixel 
-   cdfCanvasMark 
-   cdfCanvasGetTextBox 
-   cdfCanvasGetTextBounds 
-   cdfCanvasPutImImage
-   cdfCanvasGetImImage
-
-   wdCanvasPlay 
-   wdCanvasPutImImage
-   wdCanvasGetImImage 
-#endif
-
   inline char* Version()
   {
     return cdVersion();
@@ -239,12 +253,6 @@ namespace cd
       cdContextRegisterCallback(context.cd_context, CD_SIZECB, (cdCallback)PlaySize_CB);
       return cdCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
     }
-    int Play(const Context& context, double xmin, double xmax, double ymin, double ymax, void *data)
-    {
-      cdCanvasSetAttribute(canvas, "USERDATA", (char*)this);
-      cdContextRegisterCallback(context.cd_context, CD_SIZECB, (cdCallback)PlaySize_CB);
-      return cdfCanvasPlay(canvas, context.cd_context, xmin, xmax, ymin, ymax, data);
-    } 
     int wPlay(const Context& context, double xmin, double xmax, double ymin, double ymax, void *data)
     {
       cdCanvasSetAttribute(canvas, "USERDATA", (char*)this);

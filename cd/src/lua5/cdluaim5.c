@@ -117,6 +117,50 @@ static int cdlua_CanvasGetImImage(lua_State *L)
   return 0;
 }
 
+static int cdlua_fCanvasPutImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  double x = luaL_checknumber(L, 3);
+  double y = luaL_checknumber(L, 4);
+  double w = luaL_checknumber(L, 5);
+  double h = luaL_checknumber(L, 6);
+  cdfCanvasPutImImage(canvas, image, x, y, w, h);
+  return 0;
+}
+
+static int cdlua_fCanvasGetImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  double x = luaL_checknumber(L, 3);
+  double y = luaL_checknumber(L, 4);
+  cdfCanvasGetImImage(canvas, image, x, y);
+  return 0;
+}
+
+static int cdlua_wCanvasPutImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  double x = luaL_checknumber(L, 3);
+  double y = luaL_checknumber(L, 4);
+  double w = luaL_checknumber(L, 5);
+  double h = luaL_checknumber(L, 6);
+  wdCanvasPutImImage(canvas, image, x, y, w, h);
+  return 0;
+}
+
+static int cdlua_wCanvasGetImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  double x = luaL_checknumber(L, 3);
+  double y = luaL_checknumber(L, 4);
+  wdCanvasGetImImage(canvas, image, x, y);
+  return 0;
+}
+
 static int cdlua_CanvasPatternImImage(lua_State *L)
 {
   cdCanvas* canvas = cdlua_checkcanvas(L, 1);
@@ -338,10 +382,14 @@ static const luaL_Reg imImage_metalib[] = {
 };
 
 static const luaL_Reg cdCanvas_metalib[] = {
-  { "PutImImage", cdlua_CanvasPutImImage },
   { "PatternImImage", cdlua_CanvasPatternImImage },
   { "StippleImImage", cdlua_CanvasStippleImImage },
+  { "PutImImage", cdlua_CanvasPutImImage },
   { "GetImImage", cdlua_CanvasGetImImage },
+  { "fPutImImage", cdlua_fCanvasPutImImage },
+  { "fGetImImage", cdlua_fCanvasGetImImage },
+  { "wPutImImage", cdlua_wCanvasPutImImage },
+  { "wGetImImage", cdlua_wCanvasGetImImage },
 
   { NULL, NULL }
 };

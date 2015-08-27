@@ -34,28 +34,12 @@ void simFillHorizBox(cdSimulation* simulation, int xmin, int xmax, int ymin, int
 void simGetPenPos(cdCanvas* canvas, int x, int y, const char* s, int len, FT_Matrix *matrix, FT_Vector *pen);
 int simIsPointInPolyWind(cdPoint* poly, int n, int x, int y);
 
-/* list of non-horizontal line segments */
-typedef struct _simLineSegment
-{
-  int x1, y1;   /* always y1 < y2 */
-  int x2, y2;   /* (x2,y2) is not included in the segment to avoid duplicated intersections */
-  int x;        /* incremental x from x2 to x1 */
-  int DeltaX, DeltaY, XDir, Swap;
-  unsigned short ErrorInc, ErrorAcc;
-} simLineSegment;
 
-int simAddSegment(simLineSegment* segment, int x1, int y1, int x2, int y2, int *y_max, int *y_min);
-int simSegmentInc(simLineSegment* segment);
+typedef struct _simLineSegment simLineSegment;
 
-int simPolyFindHorizontalIntervals(simLineSegment *segments, int n_seg, int* xx, int *hh, int y, int height);
-void simPolyMakeSegments(simLineSegment *segments, int *n_seg, cdPoint* poly, int n, int *max_hh, int *y_max, int *y_min);
-
-void simPolyFill(cdSimulation* simulation, cdPoint* poly, int n);
-void simLineThin(cdCanvas* canvas, int x1, int y1, int x2, int y2);
-void simLineThick(cdCanvas* canvas, int x1, int y1, int x2, int y2);
-void simfLineThick(cdCanvas* canvas, double x1, double y1, double x2, double y2);
-void simfLineThin(cdCanvas* canvas, double x1, double y1, double x2, double y2, int *last_xi_a, int *last_yi_a, int *last_xi_b, int *last_yi_b);
-extern int simLineStyleNoReset;
+simLineSegment* simLineSegmentArrayCreate(int n);
+int simLineSegmentArrayFindHorizontalIntervals(simLineSegment *segments, int n_seg, int* xx, int *hh, int y, int height);
+void simLineSegmentArrayMakeAll(simLineSegment *segments, int *n_seg, cdPoint* poly, int n, int *max_hh, int *y_max, int *y_min);
 
 #endif
 

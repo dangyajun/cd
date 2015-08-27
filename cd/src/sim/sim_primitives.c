@@ -1,5 +1,6 @@
 /** \file
- * \brief Primitives of the Simulation Base Driver
+ * \brief Simulation Primitives
+ *  They actually do not depend on the Simulation base driver.
  *
  * See Copyright Notice in cd.h
  */
@@ -19,11 +20,12 @@ void cdSimLine(cdCtxCanvas* ctxcanvas, int x1, int y1, int x2, int y2)
   cdPoint poly[2];
   poly[0].x = x1; poly[0].y = y1;
   poly[1].x = x2; poly[1].y = y2;
-  cdCanvasPoly(canvas, CD_OPEN_LINES, poly, 2);
+  cdPoly(canvas, CD_OPEN_LINES, poly, 2);
 }
 
 void cdfSimLine(cdCtxCanvas* ctxcanvas, double x1, double y1, double x2, double y2)
 {
+  /* can be used only by drivers that implement cxFPoly */
   cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
   cdfPoint poly[2];
   poly[0].x = x1; poly[0].y = y1;
@@ -39,7 +41,7 @@ void cdSimRect(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
   poly[1].x = xmin; poly[1].y = ymax;
   poly[2].x = xmax; poly[2].y = ymax;
   poly[3].x = xmax; poly[3].y = ymin;
-  cdCanvasPoly(canvas, CD_CLOSED_LINES, poly, 4);
+  cdPoly(canvas, CD_CLOSED_LINES, poly, 4);
 }
 
 void cdfSimRect(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
@@ -62,7 +64,7 @@ void cdSimBox(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
   poly[1].x = xmin; poly[1].y = ymax;
   poly[2].x = xmax; poly[2].y = ymax;
   poly[3].x = xmax; poly[3].y = ymin;
-  cdCanvasPoly(canvas, CD_FILL, poly, 4);
+  cdPoly(canvas, CD_FILL, poly, 4);
 }
 
 void cdfSimBox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
@@ -277,7 +279,7 @@ void cdSimArc(cdCtxCanvas* ctxcanvas, int xc, int yc, int width, int height, dou
 
   if (poly)
   {
-    cdCanvasPoly(canvas, CD_OPEN_LINES, poly, n);
+    cdPoly(canvas, CD_OPEN_LINES, poly, n);
     free(poly);
   }
 }
@@ -329,7 +331,7 @@ static void sElipse(cdCtxCanvas* ctxcanvas, int xc, int yc, int width, int heigh
 
   if (poly)
   {
-    cdCanvasPoly(canvas, CD_FILL, poly, n);
+    cdPoly(canvas, CD_FILL, poly, n);
     free(poly);
   }
 }
@@ -492,7 +494,7 @@ static int sBezierNumSegments(cdCanvas* canvas, cdPoint start, const cdPoint* p)
     cdMatrixTransformPoint(canvas->matrix, xmax, ymax, &xmax, &ymax);
   }
 
-  /* diagonal of the bouding box */
+  /* diagonal of the bounding box */
   dx = (xmax-xmin);
   dy = (ymax-ymin);
   d = (int)(sqrt(dx*dx + dy*dy));
@@ -528,7 +530,7 @@ static int sfBezierNumSegments(cdCanvas* canvas, cdfPoint start, const cdfPoint*
     cdfMatrixTransformPoint(canvas->matrix, xmax, ymax, &xmax, &ymax);
   }
 
-  /* diagonal of the bouding box */
+  /* diagonal of the bounding box */
   dx = (xmax-xmin);
   dy = (ymax-ymin);
   d = (int)(sqrt(dx*dx + dy*dy));
@@ -677,7 +679,7 @@ void cdSimPolyBezier(cdCanvas* canvas, const cdPoint* points, int n)
 
   if (poly)
   {
-    cdCanvasPoly(canvas, CD_OPEN_LINES, poly, poly_n);
+    cdPoly(canvas, CD_OPEN_LINES, poly, poly_n);
     free(poly);
   }
 }
@@ -782,7 +784,7 @@ void cdfSimPolyPath(cdCanvas* canvas, const cdfPoint* poly, int n)
 
         if (i+3 > n) break;
 
-        if (!cdfCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+        if (!cdfGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
             return;
 
         if (current_set)
@@ -898,7 +900,7 @@ static void sSimPolyFPath(cdCanvas* canvas, const cdPoint* poly, int n)
 
         if (i+3 > n) break;
 
-        if (!cdCanvasGetArcPathF(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+        if (!cdGetArcPathF(poly+i, &xc, &yc, &w, &h, &a1, &a2))
           return;
 
         if (current_set)
@@ -1028,7 +1030,7 @@ void cdSimPolyPath(cdCanvas* canvas, const cdPoint* poly, int n)
 
         if (i+3 > n) break;
 
-        if (!cdCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+        if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
           return;
 
         if (current_set)
@@ -1072,22 +1074,22 @@ void cdSimPolyPath(cdCanvas* canvas, const cdPoint* poly, int n)
       break;
     case CD_PATH_FILL:
       if (poly)
-        cdCanvasPoly(canvas, CD_FILL, path_poly, path_poly_n);
+        cdPoly(canvas, CD_FILL, path_poly, path_poly_n);
       break;
     case CD_PATH_STROKE:
       if (poly)
-        cdCanvasPoly(canvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        cdPoly(canvas, CD_OPEN_LINES, path_poly, path_poly_n);
       break;
     case CD_PATH_FILLSTROKE:
       if (poly)
       {
-        cdCanvasPoly(canvas, CD_FILL, path_poly, path_poly_n);
-        cdCanvasPoly(canvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        cdPoly(canvas, CD_FILL, path_poly, path_poly_n);
+        cdPoly(canvas, CD_OPEN_LINES, path_poly, path_poly_n);
       }
       break;
     case CD_PATH_CLIP:
       if (poly)
-        cdCanvasPoly(canvas, CD_CLIP, path_poly, path_poly_n);
+        cdPoly(canvas, CD_CLIP, path_poly, path_poly_n);
       break;
     }
   }
@@ -1096,76 +1098,9 @@ void cdSimPolyPath(cdCanvas* canvas, const cdPoint* poly, int n)
     free(path_poly);
 }
 
+
 /************************************************************************/
 
-/* Simulation functions that depend on the simulation base driver. */
-static void cdSimPolyFill(cdCanvas* canvas, cdPoint* poly, int n);
-static void cdSimPolyLine(cdCanvas* canvas, const cdPoint* poly, int n);
-static void cdfSimPolyLine(cdCanvas* canvas, const cdfPoint* poly, int n);
-
-void cdSimPoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
-{
-  cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
-
-  switch(mode) 
-  {
-  case CD_CLOSED_LINES:
-    poly[n] = poly[0];   /* can do that because poly is internal of the CD */
-    n++;
-    /* continue */
-  case CD_OPEN_LINES:
-    cdSimPolyLine(canvas, poly, n);
-    break;
-  case CD_BEZIER:
-    cdSimPolyBezier(canvas, poly, n);
-    break;
-  case CD_PATH:
-    cdSimPolyPath(canvas, poly, n);
-    break;
-  case CD_FILL:
-    cdSimPolyFill(canvas, poly, n);
-    break;
-  }
-}
-
-void cdfSimPoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* fpoly, int n)
-{
-  cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
-
-  switch(mode) 
-  {
-  case CD_CLOSED_LINES:
-    fpoly[n] = fpoly[0];
-    n++;
-    /* continue */
-  case CD_OPEN_LINES:
-    cdfSimPolyLine(canvas, fpoly, n);
-    break;
-  case CD_BEZIER:
-    cdfSimPolyBezier(canvas, fpoly, n);
-    break;
-  case CD_PATH:
-    cdfSimPolyPath(canvas, fpoly, n);
-    break;
-  case CD_CLIP:
-  case CD_FILL:
-    {
-      cdPoint* poly = malloc(sizeof(cdPoint)*n);
-      int i;
-
-      for (i = 0; i<n; i++)
-      {
-        poly[i].x = _cdRound(fpoly[i].x);
-        poly[i].y = _cdRound(fpoly[i].y);
-      }
-
-      cdCanvasPoly(canvas, mode, poly, n);
-
-      free(poly);
-    }
-    break;
-  }
-}
 
 void cdSimMark(cdCanvas* canvas, int x, int y)
 {
@@ -1206,47 +1141,40 @@ void cdSimMark(cdCanvas* canvas, int x, int y)
   switch (canvas->mark_type)
   {
   case CD_STAR:
-    canvas->cxLine(canvas->ctxcanvas, left, bottom, right, top);
-    canvas->cxLine(canvas->ctxcanvas, left, top, right, bottom);
+    cdCanvasLine(canvas, left, bottom, right, top);
+    cdCanvasLine(canvas, left, top, right, bottom);
     /* continue */
   case CD_PLUS:
-    canvas->cxLine(canvas->ctxcanvas, left, y, right, y);
-    canvas->cxLine(canvas->ctxcanvas, x, bottom, x, top);
+    cdCanvasLine(canvas, left, y, right, y);
+    cdCanvasLine(canvas, x, bottom, x, top);
     break;
   case CD_X:
-    canvas->cxLine(canvas->ctxcanvas, left, bottom, right, top);
-    canvas->cxLine(canvas->ctxcanvas, left, top, right, bottom);
+    cdCanvasLine(canvas, left, bottom, right, top);
+    cdCanvasLine(canvas, left, top, right, bottom);
     break;
   case CD_HOLLOW_CIRCLE:
-    canvas->cxArc(canvas->ctxcanvas, x, y, size, size, 0, 360);
+    cdCanvasArc(canvas, x, y, size, size, 0, 360);
     break;
   case CD_HOLLOW_BOX:
-    canvas->cxRect(canvas->ctxcanvas, left, right, bottom, top);
+    cdCanvasRect(canvas, left, right, bottom, top);
     break;
   case CD_CIRCLE:
-    canvas->cxSector(canvas->ctxcanvas, x, y, size, size, 0, 360);
+    cdCanvasSector(canvas, x, y, size, size, 0, 360);
     break;
   case CD_BOX:
-    canvas->cxBox(canvas->ctxcanvas, left, right, bottom, top);
+    cdCanvasBox(canvas, left, right, bottom, top);
     break;
   case CD_HOLLOW_DIAMOND:
   case CD_DIAMOND:
-    {
-      cdPoint poly[5];  /* leave room for one more point */
-      poly[0].x = left;
-      poly[0].y = y;
-      poly[1].x = x;
-      poly[1].y = top;
-      poly[2].x = right;
-      poly[2].y = y;
-      poly[3].x = x;
-      poly[3].y = bottom;
-
-      if (canvas->mark_type == CD_DIAMOND)
-        cdCanvasPoly(canvas, CD_FILL, poly, 4);
-      else
-        cdCanvasPoly(canvas, CD_CLOSED_LINES, poly, 4);
-    }
+    if (canvas->mark_type == CD_DIAMOND)
+      cdCanvasBegin(canvas, CD_FILL);
+    else
+      cdCanvasBegin(canvas, CD_CLOSED_LINES);
+    cdCanvasVertex(canvas, left, y);
+    cdCanvasVertex(canvas, x, top);
+    cdCanvasVertex(canvas, right, y);
+    cdCanvasVertex(canvas, x, bottom);
+    cdCanvasEnd(canvas);
     break;
   }
 
@@ -1274,6 +1202,112 @@ void cdSimMark(cdCanvas* canvas, int x, int y)
        canvas->mark_type == CD_HOLLOW_DIAMOND))
     cdCanvasLineWidth(canvas, oldlinewidth);
 }
+
+void cdfSimMark(cdCanvas* canvas, double x, double y)
+{
+  int oldinteriorstyle = canvas->interior_style;
+  int oldlinestyle = canvas->line_style;
+  int oldlinewidth = canvas->line_width;
+
+  double size = (double)canvas->mark_size;
+  double half_size = size / 2;
+  double bottom = y - half_size;
+  double top = y + half_size;
+  double left = x - half_size;
+  double right = x + half_size;
+
+  if (canvas->interior_style != CD_SOLID &&
+      (canvas->mark_type == CD_CIRCLE ||
+      canvas->mark_type == CD_BOX ||
+      canvas->mark_type == CD_DIAMOND))
+      cdCanvasInteriorStyle(canvas, CD_SOLID);
+
+  if (canvas->line_style != CD_CONTINUOUS &&
+      (canvas->mark_type == CD_STAR ||
+      canvas->mark_type == CD_PLUS ||
+      canvas->mark_type == CD_X ||
+      canvas->mark_type == CD_HOLLOW_BOX ||
+      canvas->mark_type == CD_HOLLOW_CIRCLE ||
+      canvas->mark_type == CD_HOLLOW_DIAMOND))
+      cdCanvasLineStyle(canvas, CD_CONTINUOUS);
+
+  if (canvas->line_width != 1 &&
+      (canvas->mark_type == CD_STAR ||
+      canvas->mark_type == CD_PLUS ||
+      canvas->mark_type == CD_X ||
+      canvas->mark_type == CD_HOLLOW_BOX ||
+      canvas->mark_type == CD_HOLLOW_CIRCLE ||
+      canvas->mark_type == CD_HOLLOW_DIAMOND))
+      cdCanvasLineWidth(canvas, 1);
+
+  switch (canvas->mark_type)
+  {
+  case CD_STAR:
+    cdfCanvasLine(canvas, left, bottom, right, top);
+    cdfCanvasLine(canvas, left, top, right, bottom);
+    /* continue */
+  case CD_PLUS:
+    cdfCanvasLine(canvas, left, y, right, y);
+    cdfCanvasLine(canvas, x, bottom, x, top);
+    break;
+  case CD_X:
+    cdfCanvasLine(canvas, left, bottom, right, top);
+    cdfCanvasLine(canvas, left, top, right, bottom);
+    break;
+  case CD_HOLLOW_CIRCLE:
+    cdfCanvasArc(canvas, x, y, size, size, 0, 360);
+    break;
+  case CD_HOLLOW_BOX:
+    cdfCanvasRect(canvas, left, right, bottom, top);
+    break;
+  case CD_CIRCLE:
+    cdfCanvasSector(canvas, x, y, size, size, 0, 360);
+    break;
+  case CD_BOX:
+    cdfCanvasBox(canvas, left, right, bottom, top);
+    break;
+  case CD_HOLLOW_DIAMOND:
+  case CD_DIAMOND:
+    if (canvas->mark_type == CD_DIAMOND)
+      cdCanvasBegin(canvas, CD_FILL);
+    else
+      cdCanvasBegin(canvas, CD_CLOSED_LINES);
+    cdfCanvasVertex(canvas, left, y);
+    cdfCanvasVertex(canvas, x, top);
+    cdfCanvasVertex(canvas, right, y);
+    cdfCanvasVertex(canvas, x, bottom);
+    cdCanvasEnd(canvas);
+    break;
+  }
+
+  if (canvas->interior_style != oldinteriorstyle &&
+      (canvas->mark_type == CD_CIRCLE ||
+      canvas->mark_type == CD_BOX ||
+      canvas->mark_type == CD_DIAMOND))
+      cdCanvasInteriorStyle(canvas, oldinteriorstyle);
+
+  if (canvas->line_style != oldlinestyle &&
+      (canvas->mark_type == CD_STAR ||
+      canvas->mark_type == CD_PLUS ||
+      canvas->mark_type == CD_X ||
+      canvas->mark_type == CD_HOLLOW_BOX ||
+      canvas->mark_type == CD_HOLLOW_CIRCLE ||
+      canvas->mark_type == CD_HOLLOW_DIAMOND))
+      cdCanvasLineStyle(canvas, oldlinestyle);
+
+  if (canvas->line_width != oldlinewidth &&
+      (canvas->mark_type == CD_STAR ||
+      canvas->mark_type == CD_PLUS ||
+      canvas->mark_type == CD_X ||
+      canvas->mark_type == CD_HOLLOW_BOX ||
+      canvas->mark_type == CD_HOLLOW_CIRCLE ||
+      canvas->mark_type == CD_HOLLOW_DIAMOND))
+      cdCanvasLineWidth(canvas, oldlinewidth);
+}
+
+
+/********************************************************************************************/
+
 
 void cdSimPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
@@ -1316,6 +1350,49 @@ void cdSimPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned char
   free(fy);
 }
 
+void cdfSimPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int size, i, j, dst, src, *fx, *fy, rw, rh;
+  unsigned char *ar, *ag, *ab, al;
+  int zw = _cdRound(w);
+  int zh = _cdRound(h);
+  (void)ih;
+
+  size = zw * zh;
+  ar = (unsigned char*)malloc(size * 3);
+  if (!ar) return;
+  ag = ar + size;
+  ab = ag + size;
+
+  canvas->cxFGetImageRGB(canvas->ctxcanvas, ar, ag, ab, x, y, zw, zh);
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  fx = cdGetZoomTable(zw, rw, xmin);
+  fy = cdGetZoomTable(zh, rh, ymin);
+
+  for (j = 0; j < zh; j++)
+  {
+    for (i = 0; i < zw; i++)
+    {
+      dst = j * zw + i;
+      src = fy[j] * iw + fx[i];
+      al = a[src];
+      ar[dst] = CD_ALPHA_BLEND(r[src], ar[dst], al);
+      ag[dst] = CD_ALPHA_BLEND(g[src], ag[dst], al);
+      ab[dst] = CD_ALPHA_BLEND(b[src], ab[dst], al);
+    }
+  }
+
+  canvas->cxFPutImageRectRGB(canvas->ctxcanvas, zw, zh, ar, ag, ab, x, y, w, h, 0, 0, 0, 0);
+
+  free(ar);
+
+  free(fx);
+  free(fy);
+}
+
 void cdSimPutImageRectRGB(cdCanvas* canvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   int height = ymax-ymin+1;
@@ -1338,168 +1415,24 @@ void cdSimPutImageRectRGB(cdCanvas* canvas, int iw, int ih, const unsigned char 
   free(map);
 }
 
-
-/************************************************************************/
-
-#include "cd_truetype.h"
-#include "sim.h"
-
-static void cdSimPolyLine(cdCanvas* canvas, const cdPoint* poly, int n)
+void cdfSimPutImageRectRGB(cdCanvas* canvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
-  int i, reset = 1, transform = 0;
-  int old_use_matrix = canvas->use_matrix;
-  int x1, y1, x2, y2;
+  int height = ymax - ymin + 1;
+  unsigned char* map;
+  int pal_size = 1L << canvas->bpp;
+  long colors[256];
+  (void)ih;
 
-  if (canvas->use_matrix)
-    transform = 1;
+  map = (unsigned char*)malloc(iw * height);
+  if (!map)
+    return;
 
-  /* disable line transformation */
-  canvas->use_matrix = 0;
-
-  /* prepare the line style for several lines */
-  if (simLineStyleNoReset)
-  {
-    reset = 0;
-    simLineStyleNoReset = 1;
-  }
-
-  x1 = poly[0].x;
-  y1 = poly[0].y;
-
-  if (transform)
-    cdMatrixTransformPoint(canvas->matrix, x1, y1, &x1, &y1);
-
-  for (i = 0; i < n-1; i++)
-  {
-    x2 = poly[i+1].x;
-    y2 = poly[i+1].y;
-
-    if (transform)
-      cdMatrixTransformPoint(canvas->matrix, x2, y2, &x2, &y2);
-
-    if(canvas->line_width > 1)
-      simLineThick(canvas, x1, y1, x2, y2);
-    else 
-      simLineThin(canvas, x1, y1, x2, y2);
-
-    x1 = x2;
-    y1 = y2;
-  }
-
-  if (reset) simLineStyleNoReset = 0;
-  canvas->use_matrix = old_use_matrix;
-}
-
-static void cdfSimPolyLine(cdCanvas* canvas, const cdfPoint* poly, int n)
-{
-  int i, reset = 1, transform = 0;
-  int old_use_matrix = canvas->use_matrix;
-  double x1, y1, x2, y2;
-  int last_xi_a = -65535, 
-      last_yi_a = -65535, 
-      last_xi_b = -65535, 
-      last_yi_b = -65535;
-
-  if (canvas->use_matrix)
-    transform = 1;
-
-  /* disable line transformation */
-  canvas->use_matrix = 0;
-
-  /* prepare the line style for several lines */
-  if (simLineStyleNoReset)
-  {
-    reset = 0;
-    simLineStyleNoReset = 1;
-  }
-
-  x1 = poly[0].x;
-  y1 = poly[0].y;
-
-  if (transform)
-    cdfMatrixTransformPoint(canvas->matrix, x1, y1, &x1, &y1);
-
-  for (i = 0; i < n-1; i++)
-  {
-    x2 = poly[i+1].x;
-    y2 = poly[i+1].y;
-
-    if (transform)
-      cdfMatrixTransformPoint(canvas->matrix, x2, y2, &x2, &y2);
-
-    if(canvas->line_width > 1)
-      simfLineThick(canvas, x1, y1, x2, y2);
-    else 
-      simfLineThin(canvas, x1, y1, x2, y2, &last_xi_a, &last_yi_a, &last_xi_b, &last_yi_b);
-
-    x1 = x2;
-    y1 = y2;
-  }
-
-  if (reset) simLineStyleNoReset = 0;
-  canvas->use_matrix = old_use_matrix;
-}
-
-static int sCheckIsBox(cdPoint* poly)
-{
-  if (poly[0].x == poly[1].x && 
-      poly[1].y == poly[2].y &&
-      poly[2].x == poly[3].x &&
-      poly[3].y == poly[0].y)
-    return 1;
-
-  if (poly[0].y == poly[1].y && 
-      poly[1].x == poly[2].x &&
-      poly[2].y == poly[3].y &&
-      poly[3].x == poly[0].x)
-    return 1;
-
-  return 0;
-}
-
-static void sGetBox(cdPoint* poly, int *xmin, int *xmax, int *ymin, int *ymax)
-{
-  int i;
-  *xmin = poly[0].x;
-  *xmax = poly[0].x;
-  *ymin = poly[0].y;
-  *ymax = poly[0].y;
-  for (i=1; i<4; i++)
-  {
-    if (poly[i].x < *xmin)
-      *xmin = poly[i].x;
-    if (poly[i].y < *ymin)
-      *ymin = poly[i].y;
-    if (poly[i].x > *xmax)
-      *xmax = poly[i].x;
-    if (poly[i].y > *ymin)
-      *ymax = poly[i].y;
-  }
-}
-
-static void cdSimPolyFill(cdCanvas* canvas, cdPoint* poly, int n)
-{
-  int old_use_matrix = canvas->use_matrix;
-
-  if (canvas->use_matrix)
-  {
-    int i;
-    for(i = 0; i < n; i++)    /* can do that because poly is internal of the CD, and it will NOT be stored */
-      cdMatrixTransformPoint(canvas->matrix, poly[i].x, poly[i].y, &poly[i].x, &poly[i].y);
-  }
-
-  /* disable fill transformation */
-  canvas->use_matrix = 0;
-
-  if (n == 4 && sCheckIsBox(poly))
-  {
-    int xmin, xmax, ymin, ymax;
-    sGetBox(poly, &xmin, &xmax, &ymin, &ymax);
-    simFillHorizBox(canvas->simulation, xmin, xmax, ymin, ymax);
-  }
+  if (pal_size == 2) /* probably a laser printer, use a gray image for better results */
+    cdRGB2Gray(iw, height, r + ymin*iw, g + ymin*iw, b + ymin*iw, map, colors);
   else
-    simPolyFill(canvas->simulation, poly, n);
+    cdRGB2Map(iw, height, r + ymin*iw, g + ymin*iw, b + ymin*iw, map, pal_size, colors);
 
-  canvas->use_matrix = old_use_matrix;
+  canvas->cxFPutImageRectMap(canvas->ctxcanvas, iw, height, map, colors, x, y, w, h, xmin, xmax, 0, height - 1);
+
+  free(map);
 }
-

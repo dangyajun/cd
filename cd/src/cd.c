@@ -296,7 +296,7 @@ int cdContextType(cdContext *context)
 
 int cdCanvasSimulate(cdCanvas* canvas, int mode)
 {
-  int sim_mode;
+  int old_sim_mode;
   cdContext* context;
 
   assert(canvas);
@@ -304,9 +304,9 @@ int cdCanvasSimulate(cdCanvas* canvas, int mode)
 
   context = canvas->context;
 
-  sim_mode = canvas->sim_mode;
+  old_sim_mode = canvas->sim_mode;
   if (mode == CD_QUERY || cdCanvasGetContext(canvas) == CD_IMAGERGB)
-    return sim_mode;
+    return old_sim_mode;
 
   /* default simulation functions */
   cd_setdefaultfunc(canvas);
@@ -316,7 +316,7 @@ int cdCanvasSimulate(cdCanvas* canvas, int mode)
 
   canvas->sim_mode = mode;
   if (mode == CD_SIM_NONE)
-    return sim_mode;
+    return old_sim_mode;
 
   /* when simulation is active must not set driver transform */
   canvas->cxTransform = NULL;
@@ -359,15 +359,15 @@ int cdCanvasSimulate(cdCanvas* canvas, int mode)
 
   if (mode & CD_SIM_TEXT)
   {
-    canvas->cxText = cdSimTextFT;
+    canvas->cxText = cdSimulationText;
     canvas->cxFText = NULL;
     canvas->cxNativeFont = NULL;
-    canvas->cxFont = cdSimFontFT;
-    canvas->cxGetFontDim = cdSimGetFontDimFT;
-    canvas->cxGetTextSize = cdSimGetTextSizeFT;
+    canvas->cxFont = cdSimulationFont;
+    canvas->cxGetFontDim = cdSimulationGetFontDim;
+    canvas->cxGetTextSize = cdSimulationGetTextSize;
     canvas->cxTextOrientation = NULL;
 
-    cdSimInitText(canvas->simulation);
+    cdSimulationInitText(canvas->simulation);
     canvas->cxFont(canvas->ctxcanvas, canvas->font_type_face, canvas->font_style, canvas->font_size);
   }
   else
@@ -376,11 +376,11 @@ int cdCanvasSimulate(cdCanvas* canvas, int mode)
   if (mode & CD_SIM_POLYLINE || mode & CD_SIM_POLYGON)
   {
     /* can NOT replace canvas->cxPoly because it will be used by the simulation,
-       handle polygon simulation in Begin/End */
+       handle polygon simulation in cdCanvasEnd by calling cdPoly */
     canvas->cxFPoly = NULL;
   }
 
-  return sim_mode;
+  return old_sim_mode;
 }
 
 cdState* cdCanvasSaveState(cdCanvas* canvas)

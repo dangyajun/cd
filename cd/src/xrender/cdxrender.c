@@ -18,7 +18,6 @@
 #include "cdimage.h"
 #include "cdnative.h"
 #include "cd_truetype.h"
-#include "sim.h"
 
 #include <X11/Xproto.h>
 

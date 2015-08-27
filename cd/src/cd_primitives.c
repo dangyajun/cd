@@ -35,6 +35,26 @@ void cdCanvasPixel(cdCanvas* canvas, int x, int y, long color)
   canvas->cxPixel(canvas->ctxcanvas, x, y, color);
 }
 
+void cdfCanvasPixel(cdCanvas* canvas, double x, double y, long color)
+{
+  assert(canvas);
+  if (!_cdCheckCanvas(canvas)) return;
+
+  if (canvas->use_origin)
+  {
+    x += canvas->forigin.x;
+    y += canvas->forigin.y;
+  }
+
+  if (canvas->invert_yaxis)
+    y = _cdInvertYAxis(canvas, y);
+
+  if (canvas->cxFPixel)
+    canvas->cxFPixel(canvas->ctxcanvas, x, y, color);
+  else
+    canvas->cxPixel(canvas->ctxcanvas, _cdRound(x), _cdRound(y), color);
+}
+
 void cdCanvasMark(cdCanvas* canvas, int x, int y)
 {
   assert(canvas);
@@ -46,16 +66,21 @@ void cdCanvasMark(cdCanvas* canvas, int x, int y)
     return;
   }
 
-  if (canvas->use_origin)
+  cdSimMark(canvas, x, y);
+}
+
+void cdfCanvasMark(cdCanvas* canvas, double x, double y)
+{
+  assert(canvas);
+  if (!_cdCheckCanvas(canvas)) return;
+
+  if (canvas->mark_size == 1)
   {
-    x += canvas->origin.x;
-    y += canvas->origin.y;
+    cdfCanvasPixel(canvas, x, y, canvas->foreground);
+    return;
   }
 
-  if (canvas->invert_yaxis)
-    y = _cdInvertYAxis(canvas, y);
-
-  cdSimMark(canvas, x, y);
+  cdfSimMark(canvas, x, y);
 }
 
 void cdCanvasLine(cdCanvas* canvas, int x1, int y1, int x2, int y2)
@@ -270,23 +295,25 @@ void cdCanvasPathSet(cdCanvas* canvas, int action)
   canvas->path_n++;
 }
 
-void cdCanvasPoly(cdCanvas* canvas, int mode, cdPoint* points, int n)
+void cdPoly(cdCanvas* canvas, int mode, cdPoint* points, int n)
 {
+  /* can NOT replace canvas->cxPoly because it will be used by the simulation,
+     handle polygon simulation in cdCanvasEnd by calling cdPoly */
   int sim_poly = 0;
 
-  /* simulacao de linhas */
+  /* simulation of lines */
   if ((mode == CD_CLOSED_LINES || mode == CD_OPEN_LINES || 
        mode == CD_BEZIER || mode == CD_PATH) && 
       canvas->sim_mode & CD_SIM_POLYLINE)
     sim_poly = 1;
 
-  /* simulacao de poligonos preenchidos */
+  /* simulation of filled polygons */
   if ((mode == CD_FILL || mode == CD_PATH) && 
       canvas->sim_mode & CD_SIM_POLYGON)
     sim_poly = 1;
 
   if (sim_poly)
-    cdSimPoly(canvas->ctxcanvas, mode, points, n);
+    cdSimulationPoly(canvas->ctxcanvas, mode, points, n);
   else
     canvas->cxPoly(canvas->ctxcanvas, mode, points, n);
 }
@@ -330,10 +357,10 @@ void cdCanvasEnd(cdCanvas* canvas)
     return;
   }
 
-  if (canvas->use_fpoly)
+  if (canvas->use_fpoly == 1)
     canvas->cxFPoly(canvas->ctxcanvas, canvas->poly_mode, canvas->fpoly, canvas->poly_n);
-  else
-    cdCanvasPoly(canvas, canvas->poly_mode, canvas->poly, canvas->poly_n);
+  else /* canvas->use_fpoly == 0 (-1 will never occur here) */
+    cdPoly(canvas, canvas->poly_mode, canvas->poly, canvas->poly_n);
 
   if (canvas->poly_mode == CD_CLIP)
   {
@@ -351,12 +378,12 @@ void cdCanvasEnd(cdCanvas* canvas)
       canvas->clip_poly = NULL;
     }
 
-    if (canvas->use_fpoly)
+    if (canvas->use_fpoly == 1)
     {
       canvas->clip_fpoly = (cdfPoint*)malloc((canvas->poly_n+1) * sizeof(cdfPoint));
       memcpy(canvas->clip_fpoly, canvas->fpoly, canvas->poly_n * sizeof(cdfPoint));
     }
-    else
+    else /* canvas->use_fpoly == 0 (-1 will never occur here) */
     {
       canvas->clip_poly = (cdPoint*)malloc((canvas->poly_n+1) * sizeof(cdPoint));
       memcpy(canvas->clip_poly, canvas->poly, canvas->poly_n * sizeof(cdPoint));
@@ -717,7 +744,7 @@ void cdfCanvasChord(cdCanvas* canvas, double xc, double yc, double w, double h, 
     canvas->cxChord(canvas->ctxcanvas, _cdRound(xc), _cdRound(yc), _cdRound(w), _cdRound(h), angle1, angle2);
 }
 
-void cdCanvasGetArcStartEnd(int xc, int yc, int w, int h, double a1, double a2, int *x1, int *y1, int *x2, int *y2)
+void cdGetArcStartEnd(int xc, int yc, int w, int h, double a1, double a2, int *x1, int *y1, int *x2, int *y2)
 {
   /* computation is done as if the angles are counterclockwise, 
      and yaxis is NOT inverted. */
@@ -730,7 +757,7 @@ void cdCanvasGetArcStartEnd(int xc, int yc, int w, int h, double a1, double a2, 
   if (y2) *y2 = yc + cdRound((h/2.0)*sin(a2*CD_DEG2RAD));
 }
 
-void cdfCanvasGetArcStartEnd(double xc, double yc, double w, double h, double a1, double a2, double *x1, double *y1, double *x2, double *y2)
+void cdfGetArcStartEnd(double xc, double yc, double w, double h, double a1, double a2, double *x1, double *y1, double *x2, double *y2)
 {
   if (x1) *x1 = xc + (w/2.0)*cos(a1*CD_DEG2RAD);
   if (y1) *y1 = yc + (h/2.0)*sin(a1*CD_DEG2RAD);
@@ -738,7 +765,7 @@ void cdfCanvasGetArcStartEnd(double xc, double yc, double w, double h, double a1
   if (y2) *y2 = yc + (h/2.0)*sin(a2*CD_DEG2RAD);
 }
 
-void cdCanvasGetArcBox(int xc, int yc, int w, int h, double a1, double a2, int *xmin, int *xmax, int *ymin, int *ymax)
+void cdGetArcBox(int xc, int yc, int w, int h, double a1, double a2, int *xmin, int *xmax, int *ymin, int *ymax)
 {
   int x, y;
 
@@ -751,7 +778,7 @@ void cdCanvasGetArcBox(int xc, int yc, int w, int h, double a1, double a2, int *
   if (x < *xmin) *xmin = x;   \
   if (y < *ymin) *ymin = y;
 
-  cdCanvasGetArcStartEnd(xc, yc, w, h, a1, a2, xmin, ymin, &x, &y);
+  cdGetArcStartEnd(xc, yc, w, h, a1, a2, xmin, ymin, &x, &y);
   *xmax = *xmin;
   *ymax = *ymin;
   _BBOX()
@@ -782,7 +809,7 @@ void cdCanvasGetArcBox(int xc, int yc, int w, int h, double a1, double a2, int *
   }
 }
 
-int cdCanvasGetArcPath(const cdPoint* poly, int *xc, int *yc, int *w, int *h, double *a1, double *a2)
+int cdGetArcPath(const cdPoint* poly, int *xc, int *yc, int *w, int *h, double *a1, double *a2)
 {
   *xc = poly[0].x; 
   *yc = poly[0].y; 
@@ -802,7 +829,7 @@ int cdCanvasGetArcPath(const cdPoint* poly, int *xc, int *yc, int *w, int *h, do
   return 1;
 }
 
-int cdfCanvasGetArcPath(const cdfPoint* poly, double *xc, double *yc, double *w, double *h, double *a1, double *a2)
+int cdfGetArcPath(const cdfPoint* poly, double *xc, double *yc, double *w, double *h, double *a1, double *a2)
 {
   *xc = poly[0].x; 
   *yc = poly[0].y; 
@@ -818,7 +845,7 @@ int cdfCanvasGetArcPath(const cdfPoint* poly, double *xc, double *yc, double *w,
   return 1;
 }
 
-int cdCanvasGetArcPathF(const cdPoint* poly, double *xc, double *yc, double *w, double *h, double *a1, double *a2)
+int cdGetArcPathF(const cdPoint* poly, double *xc, double *yc, double *w, double *h, double *a1, double *a2)
 {
   *xc = poly[0].x; 
   *yc = poly[0].y; 

@@ -1056,7 +1056,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
           if (i+3 > n) return;
 
-          if (!cdCanvasGetArcPathF(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+          if (!cdGetArcPathF(poly+i, &xc, &yc, &w, &h, &a1, &a2))
             return;
 
           sFixAngles(ctxcanvas->canvas, &a1, &a2, 0);  /* do not swap because we handle negative arcs here */
@@ -1211,7 +1211,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 
           if (i+3 > n) return;
 
-          if (!cdfCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+          if (!cdfGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
             return;
 
           sFixAngles(ctxcanvas->canvas, &a1, &a2, 0);  /* do not swap because we handle negative arcs here */

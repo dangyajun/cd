@@ -221,12 +221,12 @@ EXPORTS
   cdStrEqualNoCase
   cdStrIsAscii
   cdSetPaperSize
-  cdCanvasGetArcPath
-  cdfCanvasGetArcPath
-  cdCanvasGetArcPathF
-  cdCanvasGetArcBox
-  cdCanvasGetArcStartEnd
-  cdfCanvasGetArcStartEnd
+  cdGetArcPath
+  cdfGetArcPath
+  cdGetArcPathF
+  cdGetArcBox
+  cdGetArcStartEnd
+  cdfGetArcStartEnd
   cdStrEqualNoCasePartial
   cdGetFontFileName
   cdGetFontFileNameDefault
@@ -426,6 +426,15 @@ EXPORTS
   cdSimChord
   cdfSimBox
   cdSimBox
+
+  wdCanvasPlay
+  wdCanvasGetImageRGB
+  cdfCanvasPixel
+  cdfCanvasMark
+  cdfCanvasGetImageRGB
+  cdfCanvasPutImageRectRGB
+  cdfCanvasPutImageRectRGBA
+  cdfCanvasPutImageRectMap
 
   cdContextCairoImage
   cdContextCairoImageRGB

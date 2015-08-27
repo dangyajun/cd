@@ -818,7 +818,7 @@ static void sCalcArc(cdCanvas* canvas, int xc, int yc, int w, int h, double a1, 
   if (!canvas->invert_yaxis)
     _cdSwapInt(arc->BottomRect, arc->TopRect);  /* not necessary, but done for clarity */
 
-  cdCanvasGetArcStartEnd(xc, yc, w, h, a1, a2, &(arc->XStartArc), &(arc->YStartArc), &(arc->XEndArc), &(arc->YEndArc));
+  cdGetArcStartEnd(xc, yc, w, h, a1, a2, &(arc->XStartArc), &(arc->YStartArc), &(arc->XEndArc), &(arc->YEndArc));
 
   if (canvas->invert_yaxis)
   {
@@ -975,7 +975,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
 
           if (i+3 > n) return;
 
-          if (!cdCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2)) 
+          if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2)) 
             return;
 
           sCalcArc(ctxcanvas->canvas, xc, yc, w, h, a1, a2, &arc, 0);

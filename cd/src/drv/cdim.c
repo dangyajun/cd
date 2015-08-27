@@ -15,6 +15,7 @@
 #include <im_image.h>
 
 #include "cd.h"
+#include "wd.h"
 #include "cd_private.h"
 #include "cdirgb.h"
 #include "cdim.h"
@@ -117,6 +118,78 @@ void cdCanvasGetImImage(cdCanvas* canvas, imImage* image, int x, int y)
                       (unsigned char*)image->data[1],
                       (unsigned char*)image->data[2],
                       x, y, image->width, image->height);
+}
+
+void cdfCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h)
+{
+  if (image->data_type != IM_BYTE)
+    return;
+
+  if (image->color_space == IM_RGB)
+  {
+    if (image->has_alpha)
+      cdfCanvasPutImageRectRGBA(canvas, image->width, image->height,
+      (unsigned char*)image->data[0],
+      (unsigned char*)image->data[1],
+      (unsigned char*)image->data[2],
+      (unsigned char*)image->data[3],
+      x, y, w, h, 0, 0, 0, 0);
+    else
+      cdfCanvasPutImageRectRGB(canvas, image->width, image->height,
+      (unsigned char*)image->data[0],
+      (unsigned char*)image->data[1],
+      (unsigned char*)image->data[2],
+      x, y, w, h, 0, 0, 0, 0);
+  }
+  else if (image->color_space == IM_MAP || image->color_space == IM_GRAY || image->color_space == IM_BINARY)
+    cdfCanvasPutImageRectMap(canvas, image->width, image->height,
+    (unsigned char*)image->data[0], image->palette,
+    x, y, w, h, 0, 0, 0, 0);
+}
+
+void cdfCanvasGetImImage(cdCanvas* canvas, imImage* image, double x, double y)
+{
+  cdfCanvasGetImageRGB(canvas,
+                      (unsigned char*)image->data[0],
+                      (unsigned char*)image->data[1],
+                      (unsigned char*)image->data[2],
+                      x, y, image->width, image->height);
+}
+
+void wdCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h)
+{
+  if (image->data_type != IM_BYTE)
+    return;
+
+  if (image->color_space == IM_RGB)
+  {
+    if (image->has_alpha)
+      wdCanvasPutImageRectRGBA(canvas, image->width, image->height,
+      (unsigned char*)image->data[0],
+      (unsigned char*)image->data[1],
+      (unsigned char*)image->data[2],
+      (unsigned char*)image->data[3],
+      x, y, w, h, 0, 0, 0, 0);
+    else
+      wdCanvasPutImageRectRGB(canvas, image->width, image->height,
+      (unsigned char*)image->data[0],
+      (unsigned char*)image->data[1],
+      (unsigned char*)image->data[2],
+      x, y, w, h, 0, 0, 0, 0);
+  }
+  else if (image->color_space == IM_MAP || image->color_space == IM_GRAY || image->color_space == IM_BINARY)
+    wdCanvasPutImageRectMap(canvas, image->width, image->height,
+    (unsigned char*)image->data[0], image->palette,
+    x, y, w, h, 0, 0, 0, 0);
+}
+
+void wdCanvasGetImImage(cdCanvas* canvas, imImage* image, double x, double y)
+{
+  wdCanvasGetImageRGB(canvas,
+                       (unsigned char*)image->data[0],
+                       (unsigned char*)image->data[1],
+                       (unsigned char*)image->data[2],
+                       x, y, image->width, image->height);
 }
 
 static void(*cdcreatecanvasIMAGERGB)(cdCanvas* canvas, void *data) = NULL;

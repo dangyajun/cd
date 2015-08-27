@@ -17,7 +17,7 @@
 #include FT_GLYPH_H
 
 
-static int font_name_match(const char* map, const char* name)
+static int sFontNameMatch(const char* map, const char* name)
 {
   while (*map != '=')
   {
@@ -31,7 +31,7 @@ static int font_name_match(const char* map, const char* name)
   return 1;
 }
 
-static void cdSimAddFontMap(cdSimulation* simulation, const char* map)
+static void sAddFontMap(cdSimulation* simulation, const char* map)
 {
   int i;
 
@@ -40,7 +40,7 @@ static void cdSimAddFontMap(cdSimulation* simulation, const char* map)
 
   for (i = 0; i < simulation->font_map_n; i++)
   {
-    if (font_name_match(simulation->font_map[i], map))
+    if (sFontNameMatch(simulation->font_map[i], map))
     {
       /* replace */
       simulation->font_map[i] = map;
@@ -53,19 +53,19 @@ static void cdSimAddFontMap(cdSimulation* simulation, const char* map)
   simulation->font_map_n++;
 }
 
-static void set_addfontmap(cdCtxCanvas* ctxcanvas, char* data)
+static void set_addfontmap_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
     cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
-    cdSimAddFontMap(canvas->simulation, data);
+    sAddFontMap(canvas->simulation, data);
   }
 }
 
 static cdAttribute addfontmap_attrib =
 {
   "ADDFONTMAP",
-  set_addfontmap,
+  set_addfontmap_attrib,
   NULL
 }; 
 
@@ -86,7 +86,7 @@ static cdAttribute version_attrib =
   get_version_attrib
 }; 
 
-void cdSimInitText(cdSimulation* simulation)
+void cdSimulationInitText(cdSimulation* simulation)
 {
   if (!simulation->tt_text)
     simulation->tt_text = cdTT_create();
@@ -100,13 +100,13 @@ static const char* sFindFontMap(cdSimulation* simulation, const char* name)
   int i;
   for (i = 0; i < simulation->font_map_n; i++)
   {
-    if (font_name_match(simulation->font_map[i], name))
+    if (sFontNameMatch(simulation->font_map[i], name))
       return strstr(simulation->font_map[i], "=")+1;
   }
   return NULL;
 }
 
-int cdSimFontFT(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int size)
+int cdSimulationFont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int size)
 {
   char filename[10240];
   cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
@@ -131,7 +131,7 @@ int cdSimFontFT(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int si
   return cdTT_load(canvas->simulation->tt_text, filename, cdGetFontSizePoints(canvas, size), canvas->xres, canvas->yres);
 }
             
-void cdSimGetFontDimFT(cdCtxCanvas* ctxcanvas, int *max_width, int *height, int *ascent, int *descent)
+void cdSimulationGetFontDim(cdCtxCanvas* ctxcanvas, int *max_width, int *height, int *ascent, int *descent)
 {
   cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
   cdSimulation* simulation = canvas->simulation;
@@ -145,7 +145,7 @@ void cdSimGetFontDimFT(cdCtxCanvas* ctxcanvas, int *max_width, int *height, int 
   if(height) *height= simulation->tt_text->max_height;
 }
 
-void cdSimGetTextSizeFT(cdCtxCanvas* ctxcanvas, const char *s, int len, int *width, int *height)
+void cdSimulationGetTextSize(cdCtxCanvas* ctxcanvas, const char *s, int len, int *width, int *height)
 {
   cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
   cdSimulation* simulation = canvas->simulation;
@@ -189,7 +189,7 @@ void cdSimGetTextSizeFT(cdCtxCanvas* ctxcanvas, const char *s, int len, int *wid
   if (width)  *width  = w >> 6;
 }
 
-static void simDrawTextBitmap(cdSimulation* simulation, FT_Bitmap* bitmap, int x, int y)
+static void sDrawTextBitmap(cdSimulation* simulation, FT_Bitmap* bitmap, int x, int y)
 {
   unsigned char *red, *green, *blue, *alpha, *bitmap_data;
   int width = bitmap->width;
@@ -337,8 +337,8 @@ void simGetPenPos(cdCanvas* canvas, int x, int y, const char* s, int len, FT_Mat
   int old_invert_yaxis = canvas->invert_yaxis;
   int w, h, ascent, height, baseline;
 
-  cdSimGetTextSizeFT(canvas->ctxcanvas, s, len, &w, &h);
-  cdSimGetFontDimFT(canvas->ctxcanvas, NULL, &height, &ascent, NULL);
+  cdSimulationGetTextSize(canvas->ctxcanvas, s, len, &w, &h);
+  cdSimulationGetFontDim(canvas->ctxcanvas, NULL, &height, &ascent, NULL);
   baseline = height - ascent;
 
   /* in this case we are always upwards */
@@ -396,7 +396,7 @@ void simGetPenPos(cdCanvas* canvas, int x, int y, const char* s, int len, FT_Mat
 
 }
 
-void cdSimTextFT(cdCtxCanvas* ctxcanvas, int x, int y, const char* s, int len)
+void cdSimulationText(cdCtxCanvas* ctxcanvas, int x, int y, const char* s, int len)
 {
   cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
   cdSimulation* simulation = canvas->simulation;
@@ -447,7 +447,7 @@ void cdSimTextFT(cdCtxCanvas* ctxcanvas, int x, int y, const char* s, int len)
       y = _cdInvertYAxis(canvas, y);
 
     /* now, draw to our target surface (convert position) */
-    simDrawTextBitmap(simulation, &slot->bitmap, x, y);
+    sDrawTextBitmap(simulation, &slot->bitmap, x, y);
 
     /* increment pen position */
     pen.x += slot->advance.x;
