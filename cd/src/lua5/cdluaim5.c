@@ -107,6 +107,16 @@ static int cdlua_CanvasPutImImage(lua_State *L)
   return 0;
 }
 
+static int cdlua_CanvasGetImImage(lua_State *L)
+{
+  cdCanvas* canvas = cdlua_checkcanvas(L, 1);
+  imImage *image = imlua_checkimage(L, 2);
+  int x = luaL_checkinteger(L, 3);
+  int y = luaL_checkinteger(L, 4);
+  cdCanvasGetImImage(canvas, image, x, y);
+  return 0;
+}
+
 static int cdlua_CanvasPatternImImage(lua_State *L)
 {
   cdCanvas* canvas = cdlua_checkcanvas(L, 1);
@@ -331,6 +341,7 @@ static const luaL_Reg cdCanvas_metalib[] = {
   { "PutImImage", cdlua_CanvasPutImImage },
   { "PatternImImage", cdlua_CanvasPatternImImage },
   { "StippleImImage", cdlua_CanvasStippleImImage },
+  { "GetImImage", cdlua_CanvasGetImImage },
 
   { NULL, NULL }
 };

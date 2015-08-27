@@ -108,7 +108,16 @@ void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, in
     cdCanvasPutImageRectMap(canvas, image->width, image->height,       
                         (unsigned char*)image->data[0], image->palette,   
                         x, y, w, h, 0, 0, 0, 0);        
-}                                                                               
+}    
+
+void cdCanvasGetImImage(cdCanvas* canvas, imImage* image, int x, int y)
+{
+  cdCanvasGetImageRGB(canvas,
+                      (unsigned char*)image->data[0],
+                      (unsigned char*)image->data[1],
+                      (unsigned char*)image->data[2],
+                      x, y, image->width, image->height);
+}
 
 static void(*cdcreatecanvasIMAGERGB)(cdCanvas* canvas, void *data) = NULL;
 
