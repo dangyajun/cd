@@ -3,4 +3,5 @@ EXPORTS
   cdCanvasPutImImage
   cdCanvasPatternImImage
   cdCanvasStippleImImage
+  cdCanvasGetImImage
   
