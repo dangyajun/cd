@@ -226,9 +226,11 @@ void cdBitmapRGB2Map(cdBitmap* bitmap_rgb, cdBitmap* bitmap_map);
 
 /* color */
 long cdEncodeColor(unsigned char red, unsigned char green, unsigned char blue);
-void cdDecodeColor(long color, unsigned char* red, unsigned char* green, unsigned char* blue);
-unsigned char cdDecodeAlpha(long color);
+long cdEncodeColorAlpha(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 long cdEncodeAlpha(long color, unsigned char alpha);
+void cdDecodeColor(long color, unsigned char* red, unsigned char* green, unsigned char* blue);
+void cdDecodeColorAlpha(long color, unsigned char* red, unsigned char* green, unsigned char* blue, unsigned char* alpha);
+unsigned char cdDecodeAlpha(long color);
 
 #define cdAlpha(_)    (unsigned char)(~(((_) >> 24) & 0xFF))
 #define cdReserved(_) (unsigned char)(((_) >> 24) & 0xFF)
@@ -236,7 +238,7 @@ long cdEncodeAlpha(long color, unsigned char alpha);
 #define cdGreen(_)    (unsigned char)(((_) >>  8) & 0xFF)
 #define cdBlue(_)     (unsigned char)(((_) >>  0) & 0xFF)
 
-/* client image color convertion */
+/* client image color conversion */
 void cdRGB2Map(int width, int height, const unsigned char* red, const unsigned char* green, const unsigned char* blue, unsigned char* index, int pal_size, long *color);
 
 
