@@ -933,7 +933,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
 
             if (i+3 > n) break;
 
-            if (!cdCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+            if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
               return;
 
             if (current_set)
@@ -941,9 +941,9 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
               int StartX, StartY;
 
               if (ctxcanvas->canvas->invert_yaxis)
-                cdCanvasGetArcStartEnd(xc, yc, w, h, -a1, -a2, &StartX, &StartY, NULL, NULL);
+                cdGetArcStartEnd(xc, yc, w, h, -a1, -a2, &StartX, &StartY, NULL, NULL);
               else
-                cdCanvasGetArcStartEnd(xc, yc, w, h, a1, a2, &StartX, &StartY, NULL, NULL);
+                cdGetArcStartEnd(xc, yc, w, h, a1, a2, &StartX, &StartY, NULL, NULL);
 
               graphics_path->AddLine(current_x, current_y, StartX, StartY);
             }
@@ -1157,7 +1157,7 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
 
             if (i+3 > n) break;
 
-            if (!cdfCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+            if (!cdfGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
               return;
 
             if (current_set)
@@ -1165,9 +1165,9 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
               double StartX, StartY;
 
               if (ctxcanvas->canvas->invert_yaxis)
-                cdfCanvasGetArcStartEnd(xc, yc, w, h, -a1, -a2, &StartX, &StartY, NULL, NULL);
+                cdfGetArcStartEnd(xc, yc, w, h, -a1, -a2, &StartX, &StartY, NULL, NULL);
               else
-                cdfCanvasGetArcStartEnd(xc, yc, w, h, a1, a2, &StartX, &StartY, NULL, NULL);
+                cdfGetArcStartEnd(xc, yc, w, h, a1, a2, &StartX, &StartY, NULL, NULL);
 
               graphics_path->AddLine((REAL)current_x, (REAL)current_y, (REAL)StartX, (REAL)StartY);
             }

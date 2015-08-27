@@ -25,7 +25,7 @@ static const unsigned short int simLineStyleBitTable[5]=
   0xFE10, /* CD_DASH_DOT    */
   0xFF24, /* CD_DASH_DOT_DOT*/
 };
-int simLineStyleNoReset = 0;
+static int simLineStyleNoReset = 0;
 static unsigned short int simLineStyleLastBits = 0;
 
 #define simRotateLineStyle(_x) (((_x) & 0x8000)? ((_x) << 1)|(0x0001): ((_x) << 1))
@@ -76,7 +76,24 @@ static int compare_int(const int* xx1, const int* xx2)
   return *xx1 - *xx2;
 }
 
-int simAddSegment(simLineSegment* segment, int x1, int y1, int x2, int y2, int *y_max, int *y_min)
+/* list of non-horizontal line segments */
+typedef struct _simLineSegment
+{
+  int x1, y1;   /* always y1 < y2 */
+  int x2, y2;   /* (x2,y2) is not included in the segment to avoid duplicated intersections */
+  int x;        /* incremental x from x2 to x1 */
+  int DeltaX, DeltaY, XDir, Swap;
+  unsigned short ErrorInc, ErrorAcc;
+} simLineSegment;
+
+
+simLineSegment* simLineSegmentArrayCreate(int n)
+{
+  simLineSegment *segments = (simLineSegment *)malloc(n*sizeof(simLineSegment));
+  return segments;
+}
+
+static int simLineSegmentAdd(simLineSegment* segment, int x1, int y1, int x2, int y2, int *y_max, int *y_min)
 {
   if (x1==x2 && y1==y2)
     return 0;
@@ -141,7 +158,7 @@ int simAddSegment(simLineSegment* segment, int x1, int y1, int x2, int y2, int *
   return 1;
 }
 
-int simSegmentInc(simLineSegment* segment)
+static int simLineSegmentInc(simLineSegment* segment)
 {
   unsigned short ErrorAccTemp, Weighting;
 
@@ -172,7 +189,7 @@ int simSegmentInc(simLineSegment* segment)
   if (segment->DeltaY > segment->DeltaX) 
   {
     /* Increment pixels other than the first and last */
-    ErrorAccTemp = segment->ErrorAcc;   /* remember currrent accumulated error */
+    ErrorAccTemp = segment->ErrorAcc;   /* remember current accumulated error */
     segment->ErrorAcc += segment->ErrorInc;      /* calculate error for next pixel */
     if (segment->ErrorAcc <= ErrorAccTemp) 
     {
@@ -193,7 +210,7 @@ int simSegmentInc(simLineSegment* segment)
     int hline_end = 0;
     while (!hline_end)
     {
-      ErrorAccTemp = segment->ErrorAcc;   /* remember currrent accumulated error */
+      ErrorAccTemp = segment->ErrorAcc;   /* remember current accumulated error */
       segment->ErrorAcc += segment->ErrorInc;      /* calculate error for next pixel */
       if (segment->ErrorAcc <= ErrorAccTemp) 
       {
@@ -269,7 +286,7 @@ static void simPolyAAPixels(cdCanvas *canvas, simIntervalList* line_int_list, in
     /* Draw all pixels other than the first and last */
     while (--DeltaY) 
     {
-      ErrorAccTemp = ErrorAcc;   /* remember currrent accumulated error */
+      ErrorAccTemp = ErrorAcc;   /* remember current accumulated error */
       ErrorAcc += ErrorInc;      /* calculate error for next pixel */
       if (ErrorAcc <= ErrorAccTemp) 
         x1 += XDir;
@@ -310,7 +327,7 @@ static void simPolyAAPixels(cdCanvas *canvas, simIntervalList* line_int_list, in
     /* Draw all pixels other than the first and last */
     while (--DeltaX) 
     {
-      ErrorAccTemp = ErrorAcc;   /* remember currrent accumulated error */
+      ErrorAccTemp = ErrorAcc;   /* remember current accumulated error */
       ErrorAcc += ErrorInc;      /* calculate error for next pixel */
       if (ErrorAcc <= ErrorAccTemp) 
         y1++;
@@ -365,7 +382,7 @@ static void simLineIntervallAdd(simIntervalList* line_int_list, int x1, int x2)
   line_int_list->n += 2;
 }
 
-void simPolyMakeSegments(simLineSegment *segments, int *n_seg, cdPoint* poly, int n, int *max_hh, int *y_max, int *y_min)
+void simLineSegmentArrayMakeAll(simLineSegment *segments, int *n_seg, cdPoint* poly, int n, int *max_hh, int *y_max, int *y_min)
 {
   int i, i1;
   *y_max = poly[0].y;
@@ -374,7 +391,7 @@ void simPolyMakeSegments(simLineSegment *segments, int *n_seg, cdPoint* poly, in
   for(i = 0; i < n; i++)
   {
     i1 = (i+1)%n; /* next point(i+1), next of last(n-1) is first(0) */
-    if (simAddSegment(segments, poly[i].x, poly[i].y, poly[i1].x, poly[i1].y, y_max, y_min))
+    if (simLineSegmentAdd(segments, poly[i].x, poly[i].y, poly[i1].x, poly[i1].y, y_max, y_min))
     {
       if (poly[i].y == poly[i1].y)
         (*max_hh)++;  /* increment the number of horizontal segments */
@@ -446,7 +463,7 @@ static void simMergeHxx(int *xx, int *xx_count, int *hh, int hh_count)
   }
 }
 
-int simPolyFindHorizontalIntervals(simLineSegment *segments, int n_seg, int* xx, int *hh, int y, int height)
+int simLineSegmentArrayFindHorizontalIntervals(simLineSegment *segments, int n_seg, int* xx, int *hh, int y, int height)
 {
   simLineSegment *seg_i;
   int i, hh_count = 0;
@@ -557,12 +574,12 @@ int simPolyFindHorizontalIntervals(simLineSegment *segments, int n_seg, int* xx,
     }
     else /* if ((y > seg_i->y1) && (y < seg_i->y2))  intersection inside the segment  */
     {                                             
-      xx[xx_count++] = simSegmentInc(seg_i);  /* save the intersection point */
+      xx[xx_count++] = simLineSegmentInc(seg_i);  /* save the intersection point */
     }
   }
 
   /* if outside the canvas, ignore the intervals and */
-  /* continue since the segments where updated in simSegmentInc. */
+  /* continue since the segments where updated in simLineSegmentInc. */
   if (y > height-1)
     return 0;
 
@@ -583,7 +600,7 @@ int simPolyFindHorizontalIntervals(simLineSegment *segments, int n_seg, int* xx,
   return xx_count;
 }
 
-void simPolyFill(cdSimulation* simulation, cdPoint* poly, int n) 
+static void sPolyFill(cdSimulation* simulation, cdPoint* poly, int n)
 {
   /***********IMPORTANT: this function is used as a reference for irgbClipPoly in "cdirgb.c",
      if a change is made here, must be reflected there, and vice-versa */
@@ -592,12 +609,12 @@ void simPolyFill(cdSimulation* simulation, cdPoint* poly, int n)
       xx_count, height, *xx, *hh, max_hh, n_seg;
 
   /* alloc maximum number of segments */
-  simLineSegment *segments = (simLineSegment *)malloc(n*sizeof(simLineSegment));
+  simLineSegment *segments = simLineSegmentArrayCreate(n);
 
   height = simulation->canvas->h;
   fill_mode = simulation->canvas->fill_mode;
   
-  simPolyMakeSegments(segments, &n_seg, poly, n, &max_hh, &y_max, &y_min);
+  simLineSegmentArrayMakeAll(segments, &n_seg, poly, n, &max_hh, &y_max, &y_min);
   
   if (y_min > height-1 || y_max < 0)
   {
@@ -626,7 +643,7 @@ void simPolyFill(cdSimulation* simulation, cdPoint* poly, int n)
   /* for all horizontal lines between y_max and y_min */
   for(y = y_max; y >= y_min; y--)
   {
-    xx_count = simPolyFindHorizontalIntervals(segments, n_seg, xx, hh, y, height);
+    xx_count = simLineSegmentArrayFindHorizontalIntervals(segments, n_seg, xx, hh, y, height);
     if (xx_count < 2)
       continue;
 
@@ -689,7 +706,7 @@ static double myhypot ( double x, double y )
  return sqrt ( x*x + y*y );
 }
 
-void simLineThick(cdCanvas* canvas, int x1, int y1, int x2, int y2)
+static void simLineThick(cdCanvas* canvas, int x1, int y1, int x2, int y2)
 {
   const int interior = canvas->interior_style;
   const int width = canvas->line_width;
@@ -736,14 +753,14 @@ void simLineThick(cdCanvas* canvas, int x1, int y1, int x2, int y2)
   poly[3].x = p4x;
   poly[3].y = p4y;
 
-  simPolyFill(canvas->simulation, poly, 4);
+  sPolyFill(canvas->simulation, poly, 4);
 
   cdCanvasLineWidth(canvas, width);
   cdCanvasInteriorStyle(canvas, interior);
   cdCanvasLineStyle(canvas, style);
 }
 
-void simfLineThick(cdCanvas* canvas, double x1, double y1, double x2, double y2)
+static void simfLineThick(cdCanvas* canvas, double x1, double y1, double x2, double y2)
 {
   const int interior = canvas->interior_style;
   const int width = canvas->line_width;
@@ -790,14 +807,14 @@ void simfLineThick(cdCanvas* canvas, double x1, double y1, double x2, double y2)
   poly[3].x = _cdRound(p4x);
   poly[3].y = _cdRound(p4y);
 
-  simPolyFill(canvas->simulation, poly, 4);
+  sPolyFill(canvas->simulation, poly, 4);
 
   cdCanvasLineWidth(canvas, width);
   cdCanvasInteriorStyle(canvas, interior);
   cdCanvasLineStyle(canvas, style);
 }
 
-void simLineThin(cdCanvas* canvas, int x1, int y1, int x2, int y2)
+static void simLineThin(cdCanvas* canvas, int x1, int y1, int x2, int y2)
 {
   unsigned short ErrorInc, ErrorAcc;
   unsigned short ErrorAccTemp, Weighting;
@@ -898,7 +915,7 @@ void simLineThin(cdCanvas* canvas, int x1, int y1, int x2, int y2)
     /* Draw all pixels other than the first and last */
     while (--DeltaY) 
     {
-      ErrorAccTemp = ErrorAcc;   /* remember currrent accumulated error */
+      ErrorAccTemp = ErrorAcc;   /* remember current accumulated error */
       ErrorAcc += ErrorInc;      /* calculate error for next pixel */
       if (ErrorAcc <= ErrorAccTemp) 
       {
@@ -950,7 +967,7 @@ void simLineThin(cdCanvas* canvas, int x1, int y1, int x2, int y2)
     /* Draw all pixels other than the first and last */
     while (--DeltaX) 
     {
-      ErrorAccTemp = ErrorAcc;   /* remember currrent accumulated error */
+      ErrorAccTemp = ErrorAcc;   /* remember current accumulated error */
       ErrorAcc += ErrorInc;      /* calculate error for next pixel */
       if (ErrorAcc <= ErrorAccTemp) 
       {
@@ -997,7 +1014,7 @@ void simLineThin(cdCanvas* canvas, int x1, int y1, int x2, int y2)
   simLineStyleLastBits = ls;
 }
 
-void simfLineThin(cdCanvas* canvas, double x1, double y1, double x2, double y2, int *last_xi_a, int *last_yi_a, int *last_xi_b, int *last_yi_b)
+static void simfLineThin(cdCanvas* canvas, double x1, double y1, double x2, double y2, int *last_xi_a, int *last_yi_a, int *last_xi_b, int *last_yi_b)
 {
   double DeltaX, DeltaY, a, b;
   long aa_fgcolor;
@@ -1220,3 +1237,227 @@ void simfLineThin(cdCanvas* canvas, double x1, double y1, double x2, double y2, 
 
   simLineStyleLastBits = ls;
 }
+
+static void sSimPolyLine(cdCanvas* canvas, const cdPoint* poly, int n)
+{
+  int i, reset = 1, transform = 0;
+  int old_use_matrix = canvas->use_matrix;
+  int x1, y1, x2, y2;
+
+  if (canvas->use_matrix)
+    transform = 1;
+
+  /* disable line transformation */
+  canvas->use_matrix = 0;
+
+  /* prepare the line style for several lines */
+  if (simLineStyleNoReset)
+  {
+    reset = 0;
+    simLineStyleNoReset = 1;
+  }
+
+  x1 = poly[0].x;
+  y1 = poly[0].y;
+
+  if (transform)
+    cdMatrixTransformPoint(canvas->matrix, x1, y1, &x1, &y1);
+
+  for (i = 0; i < n - 1; i++)
+  {
+    x2 = poly[i + 1].x;
+    y2 = poly[i + 1].y;
+
+    if (transform)
+      cdMatrixTransformPoint(canvas->matrix, x2, y2, &x2, &y2);
+
+    if (canvas->line_width > 1)
+      simLineThick(canvas, x1, y1, x2, y2);
+    else
+      simLineThin(canvas, x1, y1, x2, y2);
+
+    x1 = x2;
+    y1 = y2;
+  }
+
+  if (reset) simLineStyleNoReset = 0;
+  canvas->use_matrix = old_use_matrix;
+}
+
+static void sfSimPolyLine(cdCanvas* canvas, const cdfPoint* poly, int n)
+{
+  int i, reset = 1, transform = 0;
+  int old_use_matrix = canvas->use_matrix;
+  double x1, y1, x2, y2;
+  int last_xi_a = -65535,
+    last_yi_a = -65535,
+    last_xi_b = -65535,
+    last_yi_b = -65535;
+
+  if (canvas->use_matrix)
+    transform = 1;
+
+  /* disable line transformation */
+  canvas->use_matrix = 0;
+
+  /* prepare the line style for several lines */
+  if (simLineStyleNoReset)
+  {
+    reset = 0;
+    simLineStyleNoReset = 1;
+  }
+
+  x1 = poly[0].x;
+  y1 = poly[0].y;
+
+  if (transform)
+    cdfMatrixTransformPoint(canvas->matrix, x1, y1, &x1, &y1);
+
+  for (i = 0; i < n - 1; i++)
+  {
+    x2 = poly[i + 1].x;
+    y2 = poly[i + 1].y;
+
+    if (transform)
+      cdfMatrixTransformPoint(canvas->matrix, x2, y2, &x2, &y2);
+
+    if (canvas->line_width > 1)
+      simfLineThick(canvas, x1, y1, x2, y2);
+    else
+      simfLineThin(canvas, x1, y1, x2, y2, &last_xi_a, &last_yi_a, &last_xi_b, &last_yi_b);
+
+    x1 = x2;
+    y1 = y2;
+  }
+
+  if (reset) simLineStyleNoReset = 0;
+  canvas->use_matrix = old_use_matrix;
+}
+
+static int sCheckIsBox(cdPoint* poly)
+{
+  if (poly[0].x == poly[1].x &&
+      poly[1].y == poly[2].y &&
+      poly[2].x == poly[3].x &&
+      poly[3].y == poly[0].y)
+      return 1;
+
+  if (poly[0].y == poly[1].y &&
+      poly[1].x == poly[2].x &&
+      poly[2].y == poly[3].y &&
+      poly[3].x == poly[0].x)
+      return 1;
+
+  return 0;
+}
+
+static void sGetBox(cdPoint* poly, int *xmin, int *xmax, int *ymin, int *ymax)
+{
+  int i;
+  *xmin = poly[0].x;
+  *xmax = poly[0].x;
+  *ymin = poly[0].y;
+  *ymax = poly[0].y;
+  for (i = 1; i<4; i++)
+  {
+    if (poly[i].x < *xmin)
+      *xmin = poly[i].x;
+    if (poly[i].y < *ymin)
+      *ymin = poly[i].y;
+    if (poly[i].x > *xmax)
+      *xmax = poly[i].x;
+    if (poly[i].y > *ymin)
+      *ymax = poly[i].y;
+  }
+}
+
+static void sSimPolyFill(cdCanvas* canvas, cdPoint* poly, int n)
+{
+  int old_use_matrix = canvas->use_matrix;
+
+  if (canvas->use_matrix)
+  {
+    int i;
+    for (i = 0; i < n; i++)    /* can do that because poly is internal of the CD, and it will NOT be stored */
+      cdMatrixTransformPoint(canvas->matrix, poly[i].x, poly[i].y, &poly[i].x, &poly[i].y);
+  }
+
+  /* disable fill transformation */
+  canvas->use_matrix = 0;
+
+  if (n == 4 && sCheckIsBox(poly))
+  {
+    int xmin, xmax, ymin, ymax;
+    sGetBox(poly, &xmin, &xmax, &ymin, &ymax);
+    simFillHorizBox(canvas->simulation, xmin, xmax, ymin, ymax);
+  }
+  else
+    sPolyFill(canvas->simulation, poly, n);
+
+  canvas->use_matrix = old_use_matrix;
+}
+
+void cdSimulationPoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
+{
+  cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
+
+  switch (mode)
+  {
+  case CD_CLOSED_LINES:
+    poly[n] = poly[0];   /* can do that because poly is internal of the CD */
+    n++;
+    /* continue */
+  case CD_OPEN_LINES:
+    sSimPolyLine(canvas, poly, n);
+    break;
+  case CD_BEZIER:
+    cdSimPolyBezier(canvas, poly, n);
+    break;
+  case CD_PATH:
+    cdSimPolyPath(canvas, poly, n);
+    break;
+  case CD_FILL:
+    sSimPolyFill(canvas, poly, n);
+    break;
+  }
+}
+
+void cdfSimulationPoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* fpoly, int n)
+{
+  cdCanvas* canvas = ((cdCtxCanvasBase*)ctxcanvas)->canvas;
+
+  switch (mode)
+  {
+  case CD_CLOSED_LINES:
+    fpoly[n] = fpoly[0];
+    n++;
+    /* continue */
+  case CD_OPEN_LINES:
+    sfSimPolyLine(canvas, fpoly, n);
+    break;
+  case CD_BEZIER:
+    cdfSimPolyBezier(canvas, fpoly, n);
+    break;
+  case CD_PATH:
+    cdfSimPolyPath(canvas, fpoly, n);
+    break;
+  case CD_CLIP:
+  case CD_FILL:
+  {
+    cdPoint* poly = malloc(sizeof(cdPoint)*n);
+    int i;
+
+    for (i = 0; i<n; i++)
+    {
+      poly[i].x = _cdRound(fpoly[i].x);
+      poly[i].y = _cdRound(fpoly[i].y);
+    }
+
+    sSimPolyFill(canvas, poly, n);
+
+    free(poly);
+  }
+  break;
+  }
+}
+

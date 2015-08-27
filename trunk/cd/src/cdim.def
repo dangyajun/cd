@@ -4,4 +4,8 @@ EXPORTS
   cdCanvasPatternImImage
   cdCanvasStippleImImage
   cdCanvasGetImImage
+  cdfCanvasPutImImage
+  cdfCanvasGetImImage
+  wdCanvasPutImImage
+  wdCanvasGetImImage
   

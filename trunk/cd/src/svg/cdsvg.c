@@ -222,7 +222,7 @@ static void sCalcArc(cdCanvas* canvas, double xc, double yc, double w, double h,
   /* computation is done as if the angles are counterclockwise, 
      and yaxis is NOT inverted. */
 
-  cdfCanvasGetArcStartEnd(xc, yc, w, h, a1, a2, arcStartX, arcStartY, arcEndX, arcEndY);
+  cdfGetArcStartEnd(xc, yc, w, h, a1, a2, arcStartX, arcStartY, arcEndX, arcEndY);
 
   if (canvas->invert_yaxis)  
   {
@@ -477,7 +477,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 
           if (i+3 > n) return;
 
-          if (!cdfCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+          if (!cdfGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
             return;
 
           sCalcArc(ctxcanvas->canvas, xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY, &largeArc, 0);
@@ -645,7 +645,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
           if (i+3 > n) return;
 
-          if (!cdCanvasGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+          if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
             return;
 
           sCalcArc(ctxcanvas->canvas, xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY, &largeArc, 0);

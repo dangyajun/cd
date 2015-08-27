@@ -73,7 +73,7 @@ void     cdCanvasSetfAttribute(cdCanvas* canvas, const char* name, const char* f
 char*    cdCanvasGetAttribute(cdCanvas* canvas, const char* name);
 
 /* interpretation */
-int  cdCanvasPlay(cdCanvas* canvas, cdContext *context, int xmin, int xmax, int ymin, int ymax, void *data);
+int cdCanvasPlay(cdCanvas* canvas, cdContext *context, int xmin, int xmax, int ymin, int ymax, void *data);
 
 /* coordinate transformation */
 void cdCanvasGetSize(cdCanvas* canvas, int *width, int *height, double *width_mm, double *height_mm);
@@ -114,6 +114,8 @@ int  cdCanvasRegionCombineMode(cdCanvas* canvas, int mode);
 /* primitives */
 void cdCanvasPixel(cdCanvas* canvas, int x, int y, long color);
 void cdCanvasMark(cdCanvas* canvas, int x, int y);
+void cdfCanvasPixel(cdCanvas* canvas, double x, double y, long color);
+void cdfCanvasMark(cdCanvas* canvas, double x, double y);
 
 void cdCanvasBegin(cdCanvas* canvas, int mode);
 void cdCanvasPathSet(cdCanvas* canvas, int action);
@@ -202,19 +204,24 @@ int  cdCanvasGetColorPlanes(cdCanvas* canvas);
 void cdCanvasPalette(cdCanvas* canvas, int n, const long *palette, int mode);
 
 /* client images */
-void cdCanvasGetImageRGB(cdCanvas* canvas, unsigned char* r, unsigned char* g, unsigned char* b, int x, int y, int w, int h);
+void cdCanvasGetImageRGB(cdCanvas* canvas, unsigned char* r, unsigned char* g, unsigned char* b, int x, int y, int iw, int ih);
 void cdCanvasPutImageRectRGB(cdCanvas* canvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax);
 void cdCanvasPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax);
 void cdCanvasPutImageRectMap(cdCanvas* canvas, int iw, int ih, const unsigned char* index, const long* colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax);
 
-/* server images */
+void cdfCanvasGetImageRGB(cdCanvas* canvas, unsigned char* r, unsigned char* g, unsigned char* b, double x, double y, int iw, int ih);
+void cdfCanvasPutImageRectRGB(cdCanvas* canvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
+void cdfCanvasPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
+void cdfCanvasPutImageRectMap(cdCanvas* canvas, int iw, int ih, const unsigned char* index, const long* colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
+
+/* server images - deprecated (use double buffer drivers) */
 cdImage* cdCanvasCreateImage(cdCanvas* canvas, int w, int h);
 void cdKillImage(cdImage* image);
 void cdCanvasGetImage(cdCanvas* canvas, cdImage* image, int x, int y);
 void cdCanvasPutImageRect(cdCanvas* canvas, cdImage* image, int x, int y, int xmin, int xmax, int ymin, int ymax);
 void cdCanvasScrollArea(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, int dx, int dy);
 
-/* bitmap */
+/* bitmap - deprecated (use imImage) */
 cdBitmap* cdCreateBitmap(int w, int h, int type);
 cdBitmap* cdInitBitmap(int w, int h, int type, ...);
 void cdKillBitmap(cdBitmap* bitmap);

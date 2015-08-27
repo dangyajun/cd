@@ -599,7 +599,7 @@ static void irgbClipPoly(cdCtxCanvas* ctxcanvas, unsigned char* clip_region, cdP
       xx_count, width, height, *xx, *hh, max_hh, n_seg;
   
   /* alloc maximum number of segments */
-  simLineSegment *segments = (simLineSegment *)malloc(n*sizeof(simLineSegment));
+  simLineSegment *segments = simLineSegmentArrayCreate(n);
 
   if (canvas->use_matrix)
   {
@@ -615,7 +615,7 @@ static void irgbClipPoly(cdCtxCanvas* ctxcanvas, unsigned char* clip_region, cdP
   height = canvas->h;
   fill_mode = canvas->fill_mode;
   
-  simPolyMakeSegments(segments, &n_seg, poly, n, &max_hh, &y_max, &y_min);
+  simLineSegmentArrayMakeAll(segments, &n_seg, poly, n, &max_hh, &y_max, &y_min);
   
   if (y_min > height-1 || y_max < 0)
   {
@@ -633,7 +633,7 @@ static void irgbClipPoly(cdCtxCanvas* ctxcanvas, unsigned char* clip_region, cdP
   /* for all horizontal lines between y_max and y_min */
   for(y = y_max; y >= y_min; y--)
   {
-    xx_count = simPolyFindHorizontalIntervals(segments, n_seg, xx, hh, y, height);
+    xx_count = simLineSegmentArrayFindHorizontalIntervals(segments, n_seg, xx, hh, y, height);
     if (xx_count < 2)
       continue;
     
@@ -908,7 +908,7 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *s, int len)
     return;
   }
 
-  cdSimTextFT(ctxcanvas, x, y, s, len);
+  cdSimulationText(ctxcanvas, x, y, s, len);
 }
 
 static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
@@ -931,7 +931,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
     irgbClipPoly(ctxcanvas, ctxcanvas->clip, poly, n, CD_UNION);
   }
   else
-    cdSimPoly(ctxcanvas, mode, poly, n);
+    cdSimulationPoly(ctxcanvas, mode, poly, n);
 }
 
 static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
@@ -1894,7 +1894,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   canvas->ctxcanvas = ctxcanvas;
   ctxcanvas->canvas = canvas;
 
-  cdSimInitText(canvas->simulation); 
+  cdSimulationInitText(canvas->simulation); 
   /* nao preciso inicializar a fonte,
      pois isso sera' feito na inicializacao dos atributos default do driver */
 
@@ -1953,14 +1953,14 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxFArc = cdfSimArc;
   canvas->cxFSector = cdfSimSector;
   canvas->cxFChord = cdfSimChord;
-  canvas->cxFPoly = cdfSimPoly;
+  canvas->cxFPoly = cdfSimulationPoly;
 
   canvas->cxKillCanvas = cdkillcanvas;
 
   /* use simulation */
-  canvas->cxFont = cdSimFontFT;
-  canvas->cxGetFontDim = cdSimGetFontDimFT;
-  canvas->cxGetTextSize = cdSimGetTextSizeFT;
+  canvas->cxFont = cdSimulationFont;
+  canvas->cxGetFontDim = cdSimulationGetFontDim;
+  canvas->cxGetTextSize = cdSimulationGetTextSize;
 
   sim = canvas->simulation;
 
