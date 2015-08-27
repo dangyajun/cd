@@ -32,6 +32,7 @@
 #include "cddebug.h"
 #include "cdgl.h"
 #include "cdpicture.h"
+#include "cdim.h"
 
 namespace iup
 {
@@ -51,7 +52,6 @@ namespace cd
 {
 #if 0
    cdfCanvasPlay
-   wdCanvasPlay 
    cdfCanvasIsPointInRegion 
    cdfCanvasOffsetRegion 
    cdfCanvasGetRegionBox 
@@ -59,11 +59,12 @@ namespace cd
    cdfCanvasMark 
    cdfCanvasGetTextBox 
    cdfCanvasGetTextBounds 
-   cdfCanvasPutImageRectRGBA 
-   cdfCanvasPutImageRectRGB 
-   cdfCanvasPutImageRectMap 
-   cdfCanvasGetImageRGB 
-   wdCanvasGetImageRGB 
+   cdfCanvasPutImImage
+   cdfCanvasGetImImage
+
+   wdCanvasPlay 
+   wdCanvasPutImImage
+   wdCanvasGetImImage 
 #endif
 
   inline char* Version()
@@ -83,26 +84,23 @@ namespace cd
 
   inline long ColorEncode(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255)
   {
-    alpha = ~alpha;
-    return (((long)alpha) << 24) | (((long)red) << 16) | (((long)green) << 8) | ((long)blue);
+    return cdEncodeColorAlpha(red, green, blue, alpha);
   }
   inline unsigned char ColorAlpha(long color)
   {
-    unsigned char alpha = (unsigned char)(color >> 24);
-    alpha = ~alpha;
-    return alpha;
+    return cdAlpha(color);
   }
   inline unsigned char ColorRed(long color)
   {
-    return (unsigned char)(color >> 16);
+    return cdRed(color);
   }
   inline unsigned char ColorGreen(long color)
   {
-    return (unsigned char)(color >> 8);
+    return cdGreen(color);
   }
   inline unsigned char ColorBlue(long color)
   {
-    return (unsigned char)color;
+    return cdBlue(color);
   }
 
 
@@ -654,25 +652,17 @@ namespace cd
     {
       return cdCanvasHatch(canvas, style);
     }
-    void Stipple(int w, int h, const unsigned char* stipple)
+    void Stipple(const im::Image& stipple)
     {
-      cdCanvasStipple(canvas, w, h, stipple);
-    }
-    void wStipple(int w, int h, const unsigned char* stipple, double w_mm, double h_mm)
-    {
-      wdCanvasStipple(canvas, w, h, stipple, w_mm, h_mm);
+      cdCanvasStippleImImage(canvas, stipple.im_image);
     }
     unsigned char* GetStipple(int &n, int &m)
     {
       return cdCanvasGetStipple(canvas, &n, &m);
     }
-    void Pattern(int w, int h, long const int *pattern)
+    void Pattern(const im::Image& pattern)
     {
-      cdCanvasPattern(canvas, w, h, pattern);
-    }
-    void wPattern(int w, int h, const long *color, double w_mm, double h_mm)
-    {
-      wdCanvasPattern(canvas, w, h, color, w_mm, h_mm);
+      cdCanvasPatternImImage(canvas, pattern.im_image);
     }
     long* GetPattern(int& n, int& m)
     {
@@ -892,102 +882,27 @@ namespace cd
     /* client images */
     void PutImage(const im::Image& image, int x, int y, int w, int h)
     {
-      const imImage* im_image = image.im_image;
-      if (im_image->color_space == IM_RGB)
-      {
-        if (im_image->has_alpha)
-          cdCanvasPutImageRectRGBA(canvas, im_image->width, im_image->height,
-                                   (unsigned char*)im_image->data[0],
-                                   (unsigned char*)im_image->data[1],
-                                   (unsigned char*)im_image->data[2],
-                                   (unsigned char*)im_image->data[3],
-                                   x, y, w, h, 0, 0, 0, 0);
-        else
-          cdCanvasPutImageRectRGB(canvas, im_image->width, im_image->height,
-                                  (unsigned char*)im_image->data[0],
-                                  (unsigned char*)im_image->data[1],
-                                  (unsigned char*)im_image->data[2],
-                                  x, y, w, h, 0, 0, 0, 0);
-      }
-      else
-        cdCanvasPutImageRectMap(canvas, im_image->width, im_image->height,
-                                (unsigned char*)im_image->data[0], im_image->palette,
-                                x, y, w, h, 0, 0, 0, 0);
+      cdCanvasPutImImage(canvas, image.im_image, x, y, w, h);
     }
     void PutImage(const im::Image& image, double x, double y, double w, double h)
     {
-      const imImage* im_image = image.im_image;
-      if (im_image->color_space == IM_RGB)
-      {
-        if (im_image->has_alpha)
-          cdfCanvasPutImageRectRGBA(canvas, im_image->width, im_image->height,
-                                    (unsigned char*)im_image->data[0],
-                                    (unsigned char*)im_image->data[1],
-                                    (unsigned char*)im_image->data[2],
-                                    (unsigned char*)im_image->data[3],
-                                    x, y, w, h, 0, 0, 0, 0);
-        else
-          cdfCanvasPutImageRectRGB(canvas, im_image->width, im_image->height,
-                                   (unsigned char*)im_image->data[0],
-                                   (unsigned char*)im_image->data[1],
-                                   (unsigned char*)im_image->data[2],
-                                   x, y, w, h, 0, 0, 0, 0);
-      }
-      else
-        cdfCanvasPutImageRectMap(canvas, im_image->width, im_image->height,
-                                 (unsigned char*)im_image->data[0], im_image->palette,
-                                 x, y, w, h, 0, 0, 0, 0);
+      cdfCanvasPutImImage(canvas, image.im_image, x, y, w, h);
     }
     void wPutImage(const im::Image& image, double x, double y, double w, double h)
     {
-      const imImage* im_image = image.im_image;
-      if (im_image->color_space == IM_RGB)
-      {
-        if (im_image->has_alpha)
-          wdCanvasPutImageRectRGBA(canvas, im_image->width, im_image->height,
-                                   (unsigned char*)im_image->data[0],
-                                   (unsigned char*)im_image->data[1],
-                                   (unsigned char*)im_image->data[2],
-                                   (unsigned char*)im_image->data[3],
-                                   x, y, w, h, 0, 0, 0, 0);
-        else
-          wdCanvasPutImageRectRGB(canvas, im_image->width, im_image->height,
-                                  (unsigned char*)im_image->data[0],
-                                  (unsigned char*)im_image->data[1],
-                                  (unsigned char*)im_image->data[2],
-                                  x, y, w, h, 0, 0, 0, 0);
-      }
-      else
-        wdCanvasPutImageRectMap(canvas, im_image->width, im_image->height,
-                                (unsigned char*)im_image->data[0], im_image->palette,
-                                x, y, w, h, 0, 0, 0, 0);
+      wdCanvasPutImImage(canvas, image.im_image, x, y, w, h);
     }
     void GetImage(im::Image& image, int x, int y)
     {
-      const imImage* im_image = image.im_image;
-      cdCanvasGetImageRGB(canvas,
-                          (unsigned char*)im_image->data[0],
-                          (unsigned char*)im_image->data[1],
-                          (unsigned char*)im_image->data[2],
-                          x, y, im_image->width, im_image->height);
+      cdCanvasGetImImage(canvas, image.im_image, x, y);
     }
     void GetImage(im::Image& image, double x, double y)
     {
-      const imImage* im_image = image.im_image;
-      cdfCanvasGetImageRGB(canvas,
-                           (unsigned char*)im_image->data[0],
-                           (unsigned char*)im_image->data[1],
-                           (unsigned char*)im_image->data[2],
-                           x, y, im_image->width, im_image->height);
+      cdfCanvasGetImImage(canvas, image.im_image, x, y);
     }
     void wGetImage(im::Image& image, double x, double y)
     {
-      const imImage* im_image = image.im_image;
-      wdCanvasGetImageRGB(canvas,
-                          (unsigned char*)im_image->data[0],
-                          (unsigned char*)im_image->data[1],
-                          (unsigned char*)im_image->data[2],
-                          x, y, im_image->width, im_image->height);
+      wdCanvasGetImImage(canvas, image.im_image, x, y);
     }
   };
 
@@ -1034,49 +949,16 @@ namespace cd
       else
         canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %s", width, height, alpha);
     }
-    CanvasImageRGB(im::Image& image, double res = 0)
+  };
+  class CanvasImImage : public Canvas
+  {
+  public:
+    CanvasImImage(im::Image& image, double res = 0)
       : Canvas()
     {
-      imImage* im_image = image.im_image;
-
-      if (im_image->color_space != IM_RGB || im_image->data_type != IM_BYTE)
-        return;
-
-      if (!res)
-      {
-        const char* res_unit = image.GetAttribString("ResolutionUnit");
-        if (res_unit)
-        {
-          double xres = image.GetAttribReal("XResolution");
-          if (xres)
-          {
-            /* to DPM */
-            if (res_unit[0] == 'D' && res_unit[1] == 'P' && res_unit[2] == 'I')
-              res = xres / (10. * 2.54);
-            else  /* DPC */
-              res = xres / 10.0;
-          }
-        }
-      }
-
-      if (res)
-      {
-        if (im_image->has_alpha)
-          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p %p -a", im_image->width, im_image->height,
-                                   im_image->data[0], im_image->data[1], im_image->data[2], im_image->data[3]);
-        else
-          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p", im_image->width, im_image->height,
-                                   im_image->data[0], im_image->data[1], im_image->data[2]);
-      }
-      else
-      {
-        if (im_image->has_alpha)
-          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p %p -r%g -a", im_image->width, im_image->height,
-                                                 im_image->data[0], im_image->data[1], im_image->data[2], im_image->data[3], res);
-        else
-          canvas = cdCreateCanvasf(CD_IMAGERGB, "%dx%d %p %p %p -r%g", im_image->width, im_image->height,
-                                                 im_image->data[0], im_image->data[1], im_image->data[2], res);
-      }
+      canvas = cdCreateCanvas(CD_IMIMAGE, image.im_image);
+      if (canvas && res)
+        cdCanvasSetfAttribute(canvas, "RESOLUTION", "%g", res);
     }
   };
   class CanvasMetafileEMF : public Canvas
@@ -1366,31 +1248,6 @@ namespace cd
   class CanvasMetafilePS : public Canvas
   {
   public:
-    struct OptionalParamPS
-    {
-      int paper;
-      double width_mm, height_mm;
-      double left_mm, right_mm, bottom_mm, top_mm;
-      int res_dpi;
-      bool eps;
-      bool level1;
-      bool landscape;
-      bool debug;
-      double bbox_margin;
-
-      OptionalParamPS()
-      {
-        paper = 0;
-        width_mm = 0; height_mm = 0;
-        left_mm = -1.0, right_mm = -1.0, bottom_mm = -1.0, top_mm = -1.0;
-        res_dpi = 0;
-        eps = false;
-        level1 = false;
-        landscape = false;
-        debug = false;
-        bbox_margin = -1.0;
-      }
-    };
     CanvasMetafilePS(const char* filename, int paper, int res_dpi = 0, bool landscape = false)
       : Canvas()
     {
@@ -1404,20 +1261,31 @@ namespace cd
 
       canvas = cdCreateCanvasf(CD_PS, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
     }
-    CanvasMetafilePS(const char* filename, const OptionalParamPS& param)
+    CanvasMetafilePS(const char* filename, double width_mm, double height_mm, int res_dpi = 0, bool landscape = false)
       : Canvas()
     {
-      //char* landscape_str = "";
-      //if (landscape)
-      //  landscape_str = "-o";
+      char* landscape_str = "";
+      if (landscape)
+        landscape_str = "-o";
 
-      //char* res_dpi_str = "";
-      //if (res_dpi)
-      //  res_dpi_str = "-s";
+      char* res_dpi_str = "";
+      if (res_dpi)
+        res_dpi_str = "-s";
 
-      //"-l[left] -r[right] -b[bottom] -t[top] [-e] [-g] [-1] -d[margin]" //"%s -p%d -w%g -h%g -l%g -r%g -b%g -t%g -s%d -e -o -1 -g -d%g"
+      canvas = cdCreateCanvasf(CD_PS, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
+    }
+    CanvasMetafilePS(const char* filename, int res_dpi = 0, bool landscape = false)
+      : Canvas()
+    {
+      char* landscape_str = "";
+      if (landscape)
+        landscape_str = "-o";
 
-      //canvas = cdCreateCanvasf(CD_PS, "\"%s\" -w%g -h%g %s%s %s", filename, width_mm, height_mm, res_dpi_str, res_dpi, landscape_str);
+      char* res_dpi_str = "";
+      if (res_dpi)
+        res_dpi_str = "-s";
+
+      canvas = cdCreateCanvasf(CD_PS, "\"%s\" -e %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
     }
   };
 }

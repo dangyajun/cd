@@ -46,7 +46,8 @@ cd.ReleaseState(state: cdState) [in Lua]</pre>
     
 canvas:SetAttribute(name, data: string) [in Lua]</pre>
     <p>Modifies a custom attribute directly in the driver of the active canvas. If 
-      the driver does not have this attribute, the call is ignored.</p>
+      the driver does not have this attribute, the call is ignored. All drivers 
+	have the USERDATA attribute (since 5.9).</p>
     </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdSetfAttribute">cdCanvasSetfAttribute</a>(cdCanvas* canvas, const char* name, const char* format, ...); [in C]</span>
     
 [There is no equivalent in Lua]</pre>
