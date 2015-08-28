@@ -1739,6 +1739,21 @@ static void cdpixel (cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   write_code(ctxcanvas, 30, "0");  /* z */
 }
 
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  int color_index = get_palette_index(color);
+
+  begin_entity(ctxcanvas, "POINT", "AcDbPoint");
+
+  /* attributes */
+  write_code_int(ctxcanvas, 62, color_index);
+
+  /* coordinates */
+  write_code_real(ctxcanvas, 10, x);
+  write_code_real(ctxcanvas, 20, y);
+  write_code(ctxcanvas, 30, "0");  /* z */
+}
+
 /******************************************************/
 
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
@@ -1848,6 +1863,7 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxFRect = cdfSimRect;
   canvas->cxFBox = cdfSimBox;
   canvas->cxFChord = cdfSimChord;
+  canvas->cxFPixel = cdfpixel;
 
   canvas->cxArc = cdarc;
   canvas->cxFArc = cdfarc;

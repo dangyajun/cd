@@ -1018,9 +1018,9 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   lodepng_state_init(&state);
   lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
 
-  target_size = (buffer_size+2)/3*4+1;
+  target_size = (int)(buffer_size+2)/3*4+1;
   rgb_target = (char*)malloc(target_size);
-  base64_encode(rgb_buffer, buffer_size, rgb_target, target_size);
+  base64_encode(rgb_buffer, (int)buffer_size, rgb_target, target_size);
  
   if (ctxcanvas->canvas->use_matrix)  /* Transformation active */
     fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %d %d)\" width=\"%d\" height=\"%d\" xlink:href=\"data:image/png;base64,%s\"/>\n", 
@@ -1067,9 +1067,9 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   lodepng_state_init(&state);
   lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
 
-  target_size = (buffer_size+2)/3*4+1;
+  target_size = (int)(buffer_size + 2) / 3 * 4 + 1;
   rgb_target = (char*)malloc(target_size);
-  base64_encode(rgb_buffer, buffer_size, rgb_target, target_size);
+  base64_encode(rgb_buffer, (int)buffer_size, rgb_target, target_size);
 
   if (ctxcanvas->canvas->use_matrix)  /* Transformation active */
     fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %d %d)\" width=\"%d\" height=\"%d\" xlink:href=\"data:image/png;base64,%s\"/>\n", 
@@ -1118,9 +1118,9 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   lodepng_state_init(&state);
   lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
 
-  target_size = (buffer_size+2)/3*4+1;
+  target_size = (int)(buffer_size + 2) / 3 * 4 + 1;
   rgb_target = (char*)malloc(target_size);
-  base64_encode(rgb_buffer, buffer_size, rgb_target, target_size);
+  base64_encode(rgb_buffer, (int)buffer_size, rgb_target, target_size);
 
   if (ctxcanvas->canvas->use_matrix)  /* Transformation active */
     fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %d %d)\" width=\"%d\" height=\"%d\" xlink:href=\"data:image/png;base64,%s\"/>\n", 
@@ -1144,7 +1144,165 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
           x, y, r, g, b, ctxcanvas->opacity);
 }
 
-static void cddeactivate (cdCtxCanvas* ctxcanvas)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int i, j, d, rw, rh, rgb_size, target_size;
+  unsigned char* rgb_data, *rgb_buffer;
+  size_t buffer_size;
+  LodePNGState state;
+  char* rgb_target;
+
+  if (xmin<0 || ymin<0 || xmax - xmin + 1>iw || ymax - ymin + 1>ih) return;
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  rgb_size = 4 * rw*rh;
+  rgb_data = (unsigned char*)malloc(rgb_size);
+  if (!rgb_data) return;
+
+  d = 0;
+  for (i = ymax; i >= ymin; i--)
+  {
+    for (j = xmin; j <= xmax; j++)
+    {
+      rgb_data[d] = r[i*iw + j]; d++;
+      rgb_data[d] = g[i*iw + j]; d++;
+      rgb_data[d] = b[i*iw + j]; d++;
+      rgb_data[d] = (unsigned char)0xFF; d++;
+    }
+  }
+
+  lodepng_state_init(&state);
+  lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
+
+  target_size = (int)(buffer_size + 2) / 3 * 4 + 1;
+  rgb_target = (char*)malloc(target_size);
+  base64_encode(rgb_buffer, (int)buffer_size, rgb_target, target_size);
+
+  if (ctxcanvas->canvas->use_matrix)  /* Transformation active */
+    fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %g %g)\" width=\"%g\" height=\"%g\" xlink:href=\"data:image/png;base64,%s\"/>\n",
+    1, 0, 0, -1, x, y + h, w, h, rgb_target);
+  else
+    fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %g %g)\" width=\"%g\" height=\"%g\" xlink:href=\"data:image/png;base64,%s\"/>\n",
+    1, 0, 0, 1, x, y - h, w, h, rgb_target);
+
+  free(rgb_data);
+  free(rgb_buffer);
+  free(rgb_target);
+  lodepng_state_cleanup(&state);
+}
+
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int i, j, d, rw, rh, rgb_size, target_size;
+  size_t buffer_size;
+  unsigned char* rgb_data, *rgb_buffer;
+  LodePNGState state;
+  char* rgb_target;
+
+  if (xmin<0 || ymin<0 || xmax - xmin + 1>iw || ymax - ymin + 1>ih) return;
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  rgb_size = 4 * rw*rh;
+  rgb_data = (unsigned char*)malloc(rgb_size);
+  if (!rgb_data) return;
+
+  d = 0;
+  for (i = ymax; i >= ymin; i--)
+  {
+    for (j = xmin; j <= xmax; j++)
+    {
+      rgb_data[d] = r[i*iw + j]; d++;
+      rgb_data[d] = g[i*iw + j]; d++;
+      rgb_data[d] = b[i*iw + j]; d++;
+      rgb_data[d] = a[i*iw + j]; d++;
+    }
+  }
+
+  lodepng_state_init(&state);
+  lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
+
+  target_size = (int)(buffer_size + 2) / 3 * 4 + 1;
+  rgb_target = (char*)malloc(target_size);
+  base64_encode(rgb_buffer, (int)buffer_size, rgb_target, target_size);
+
+  if (ctxcanvas->canvas->use_matrix)  /* Transformation active */
+    fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %g %g)\" width=\"%g\" height=\"%g\" xlink:href=\"data:image/png;base64,%s\"/>\n",
+    1, 0, 0, -1, x, y + h, w, h, rgb_target);
+  else
+    fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %g %g)\" width=\"%g\" height=\"%g\" xlink:href=\"data:image/png;base64,%s\"/>\n",
+    1, 0, 0, 1, x, y - h, w, h, rgb_target);
+
+  free(rgb_data);
+  free(rgb_buffer);
+  free(rgb_target);
+  lodepng_state_cleanup(&state);
+}
+
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int i, j, d, rw, rh, rgb_size, target_size;
+  unsigned char* rgb_data, *rgb_buffer;
+  size_t buffer_size;
+  LodePNGState state;
+  char* rgb_target;
+
+  if (xmin<0 || ymin<0 || xmax - xmin + 1>iw || ymax - ymin + 1>ih) return;
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  rgb_size = 4 * rw*rh;
+  rgb_data = (unsigned char*)malloc(rgb_size);
+  if (!rgb_data) return;
+
+  d = 0;
+  for (i = ymax; i >= ymin; i--)
+  {
+    for (j = xmin; j <= xmax; j++)
+    {
+      unsigned char r, g, b;
+      cdDecodeColor(colors[index[i*iw + j]], &r, &g, &b);
+      rgb_data[d] = r; d++;
+      rgb_data[d] = g; d++;
+      rgb_data[d] = b; d++;
+      rgb_data[d] = (unsigned char)0xFF; d++;
+    }
+  }
+
+  lodepng_state_init(&state);
+  lodepng_encode(&rgb_buffer, &buffer_size, rgb_data, rw, rh, &state);
+
+  target_size = (int)(buffer_size + 2) / 3 * 4 + 1;
+  rgb_target = (char*)malloc(target_size);
+  base64_encode(rgb_buffer, (int)buffer_size, rgb_target, target_size);
+
+  if (ctxcanvas->canvas->use_matrix)  /* Transformation active */
+    fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %g %g)\" width=\"%g\" height=\"%g\" xlink:href=\"data:image/png;base64,%s\"/>\n",
+    1, 0, 0, -1, x, y + h, w, h, rgb_target);
+  else
+    fprintf(ctxcanvas->file, "<image transform=\"matrix(%d %d %d %d %g %g)\" width=\"%g\" height=\"%g\" xlink:href=\"data:image/png;base64,%s\"/>\n",
+    1, 0, 0, 1, x, y - h, w, h, rgb_target);
+
+  free(rgb_data);
+  free(rgb_buffer);
+  free(rgb_target);
+  lodepng_state_cleanup(&state);
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  unsigned char r, g, b;
+  cdDecodeColor(color, &r, &g, &b);
+
+  fprintf(ctxcanvas->file, "<circle cx=\"%g\" cy=\"%g\" r=\"0.5\" style=\"fill:rgb(%d,%d,%d); stroke:none; opacity:%g\" />\n",
+          x, y, r, g, b, ctxcanvas->opacity);
+}
+
+static void cddeactivate(cdCtxCanvas* ctxcanvas)
 {
   fflush(ctxcanvas->file);
 }
@@ -1307,7 +1465,11 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
   canvas->cxPutImageRectMap = cdputimagerectmap;
-  
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
+
   canvas->cxFLine = cdfline;
   canvas->cxFPoly = cdfpoly;
   canvas->cxFRect = cdfrect;

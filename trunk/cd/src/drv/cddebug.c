@@ -615,14 +615,41 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   fprintf(ctxcanvas->file, "%s(%d, %d, %d, %d, %d)\n", CDDBG_PIXEL, x, y, (int)r, (int)g, (int)b);
 }
 
-static void cdscrollarea(cdCtxCanvas *ctxcanvas, int xmin,int xmax, int ymin,int ymax, int dx,int dy)
-{
-  fprintf(ctxcanvas->file, "%s(%d, %d, %d, %d, %d, %d)\n", CDDBG_SCROLLAREA, xmin, xmax, ymin, ymax, dx, dy);
-}
-
 static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
 {
 	fprintf(ctxcanvas->file, "%p, %p, %p = GetImageRGB(%d, %d, %d, %d)\n", r, g, b, x, y, w, h);
+}
+
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  fprintf(ctxcanvas->file, "%s(%d, %d, %p, %p, %p, %g, %g, %g, %g, %d, %d, %d)\n", CDDBG_PUTIMAGERGB, iw, ih, r, g, b, x, y, w, h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  fprintf(ctxcanvas->file, "%s(%d, %d, %p, %p, %p, %p, %g, %g, %g, %g, %d, %d, %d, %d)\n", CDDBG_PUTIMAGERGBA, iw, ih, r, g, b, a, x, y, w, h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  fprintf(ctxcanvas->file, "%s(%d, %d, %p, %p, %g, %g, %g, %g, %d, %d, %d, %d)\n", CDDBG_PUTIMAGEMAP, iw, ih, index, colors, x, y, w, h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  unsigned char r, g, b;
+  cdDecodeColor(color, &r, &g, &b);
+  fprintf(ctxcanvas->file, "%s(%g, %g, %d, %d, %d)\n", CDDBG_PIXEL, x, y, (int)r, (int)g, (int)b);
+}
+
+static void cdfgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, double x, double y, int w, int h)
+{
+  fprintf(ctxcanvas->file, "%p, %p, %p = GetImageRGB(%g, %g, %d, %d)\n", r, g, b, x, y, w, h);
+}
+
+static void cdscrollarea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax, int dx, int dy)
+{
+  fprintf(ctxcanvas->file, "%s(%d, %d, %d, %d, %d, %d)\n", CDDBG_SCROLLAREA, xmin, xmax, ymin, ymax, dx, dy);
 }
 
 static cdCtxImage* cdcreateimage(cdCtxCanvas* ctxcanvas, int w, int h)
@@ -779,6 +806,11 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxFSector = cdfsector;
   canvas->cxFChord = cdfchord;
   canvas->cxFText = cdftext;
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
+  canvas->cxFGetImageRGB = cdfgetimagergb;
   canvas->cxClip = cdclip;
   canvas->cxClipArea = cdcliparea;
   canvas->cxBackOpacity = cdbackopacity;
