@@ -36,22 +36,6 @@
 
 
 #if 0
-// DOC
-wdCanvasPlay
-wdCanvasGetImageRGB
-cdfCanvasPixel
-cdfCanvasMark
-cdfCanvasGetImageRGB
-cdfCanvasPutImageRectRGB
-cdfCanvasPutImageRectRGBA
-cdfCanvasPutImageRectMap
-cdfCanvasPutImImage
-cdfCanvasGetImImage
-wdCanvasPutImImage
-wdCanvasGetImImage
-cdfCanvasGetTextBox
-cdfCanvasGetTextBounds
-
 // DRIVER
 void(*cxFPixel)(cdCtxCanvas* ctxcanvas, double x, double y, long color);
 void(*cxFGetImageRGB)(cdCtxCanvas* ctxcanvas, unsigned char* r, unsigned char* g, unsigned char* b, double x, double y, int iw, int ih);

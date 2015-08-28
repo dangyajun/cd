@@ -18,9 +18,11 @@
 
 <hr>
 <div class="function"><pre class="function"><span class="mainFunction">void <a name="cdPixel">cdCanvasPixel</a>(cdCanvas* canvas, int x, int y, long int color); [in C]</span>
+void cdfCanvasPixel(cdCanvas* canvas, double x, double y, long int color); [in C]
 void wdCanvasPixel(cdCanvas* canvas, double x, double y, long int color); (WC) [in C]
 
 canvas:Pixel(x, y: number, color: lightuserdata) [in Lua]
+canvas:fPixel(x, y: number, color: lightuserdata) [in Lua]
 canvas:wPixel(x, y: number, color: lightuserdata) (WC) [in Lua]</pre>
 
   <p>Configures the pixel <b>(x,y)</b> with the color defined by  <b>color</b>. It is the smallest element of the canvas. It depends only 
@@ -28,9 +30,11 @@ canvas:wPixel(x, y: number, color: lightuserdata) (WC) [in Lua]</pre>
 	Sometimes it is implemented as a rectangle with size 1x1.</p>
 
 </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdMark">cdCanvasMark</a>(cdCanvas* canvas, int x, int y); [in C]</span>
+void cdfCanvasMark(cdCanvas* canvas, double x, double y); [in C]
 void wdCanvasMark(cdCanvas* canvas, double x, double y); (WC) [in C]
 
 canvas:Mark(x, y: number) [in Lua]
+canvas:fMark(x, y: number) [in Lua]
 canvas:wMark(x, y: number) (WC) [in Lua]</pre>
 
   <p>Draws a mark in <b><b>(x,y)</b> </b>using the current foreground color. 

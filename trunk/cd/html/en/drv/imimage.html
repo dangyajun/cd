@@ -6,11 +6,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>CD_DBUFFER</title>
 <link rel="stylesheet" type="text/css" href="../../style.css">
-<style type="text/css">
-.auto-style1 {
-	font-family: Courier;
-}
-</style>
 </head>
 
 <body>
@@ -54,40 +49,34 @@ not necessary if you do require&quot;cdluaim&quot;.&nbsp; </p>
 
 <h3>Utility Functions</h3>
 
-<h4><span class="auto-style1">void cdCanvasPutImImage(cdCanvas* canvas, const imImage* 
-image, int x, int y, int w, int h);</span><font face="Courier"> [in C]<br>
-cd.Canvas<span class="auto-style1">PutImImage</span>(canvas: cdCanvas, image: 
-imImage, x,y,w,h: number) [in Lua]</font></h4>
+<pre class="function"><strong>void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, int w, int h); [in C]
+</strong>void cdfCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h); [in C]
+void wdCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h); (WC) [in C]
 
-  <p>Draws an <strong>imImage</strong> on any canvas. Image must be a 
-  displayable image (<strong>imImageIsBitmap</strong>).</p>
+canvas:PutImImage(image: imImage, x,y,w,h: number) [in Lua]
+canvas:fPutImImage(image: imImage, x,y,w,h: number) [in Lua]
+canvas:wPutImImage(image: imImage, x,y,w,h: number) (WC) [in Lua]</pre>
+<p>Draws an <strong>imImage</strong> on any canvas. Image must be a 
+  displayable image (<strong>imImageIsBitmap</strong>), and it can has an alpha 
+channel.</p>
+<pre class="function"><strong>void cdCanvasPatternImImage(cdCanvas* canvas, const imImage* image); [in C]
 
-<h4><span class="auto-style1">void cdCanvasPatternImImage(cdCanvas* canvas, 
-const imImage* 
-image);</span><font face="Courier"> [in C]<br>
-cd.Canvas<span class="auto-style1">PatternImImage</span>(canvas: cdCanvas, image: 
-imImage) [in Lua]</font></h4>
-
-  <p>Defines an <strong>imImage</strong> as a pattern on any canvas. Image must 
+</strong>cd.CanvasPatternImImage(canvas: cdCanvas, image: imImage) [in Lua]</pre>
+<p>Defines an <strong>imImage</strong> as a pattern on any canvas. Image must 
   be a displayable image (<strong>imImageIsBitmap</strong>).</p>
+<pre class="function"><strong>void cdCanvasStippleImImage(cdCanvas* canvas, const imImage* image); [in C]
 
-
-<h4><span class="auto-style1">void cdCanvasStippleImImage(cdCanvas* canvas, 
-const imImage* 
-image);</span><font face="Courier"> [in C]<br>
-cd.Canvas<span class="auto-style1">StippleImImage</span>(canvas: cdCanvas, image: 
-imImage) [in Lua]</font></h4>
-
-  <p>Defines an <strong>imImage</strong> as a stipple on any canvas. Image must 
+</strong>cd.CanvasStippleImImage(canvas: cdCanvas, image: imImage) [in Lua]</pre>
+<p>Defines an <strong>imImage</strong> as a stipple on any canvas. Image must 
   be a binary image (color_space=IM_BINARY).</p>
+<pre class="function"><strong>void cdCanvasGetImImage(cdCanvas* canvas, const imImage* image, int x, int y); [in C]
+</strong>void cdfCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); [in C]
+void wdCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); (WC) [in C]
 
-
-<h4><span class="auto-style1">void cdCanvasGetImImage(cdCanvas* canvas, imImage* 
-image);</span><font face="Courier"> [in C]<br>
-cd.Canvas<span class="auto-style1">GetImImage</span>(canvas: cdCanvas, image: 
-imImage) [in Lua]</font></h4>
-
-  <p>Retrieves the canvas contents in an <strong>imImage</strong>. Image must 
+canvas:GetImImage(image: imImage, x,y: number) [in Lua]
+canvas:fGetImImage(image: imImage, x,y: number) [in Lua]
+canvas:wGetImImage(image: imImage, x,y: number) (WC) [in Lua]</pre>
+<p>Retrieves the canvas contents in an <strong>imImage</strong>. Image must 
   be a display RGB image (color_space=IM_RGB and data_type=IM_BYTE).</p>
 
 
