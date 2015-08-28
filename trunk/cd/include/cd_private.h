@@ -325,7 +325,9 @@ void cdMatrixInverse(const double* matrix, double* inv_matrix);
 void cdfRotatePoint(cdCanvas* canvas, double x, double y, double cx, double cy, double *rx, double *ry, double sin_theta, double cos_theta);
 void cdRotatePoint(cdCanvas* canvas, int x, int y, int cx, int cy, int *rx, int *ry, double sin_teta, double cos_teta);
 void cdRotatePointY(cdCanvas* canvas, int x, int y, int cx, int cy, int *ry, double sin_theta, double cos_theta);
+void cdfRotatePointY(cdCanvas* canvas, double x, double y, double cx, double cy, double *ry, double sin_theta, double cos_theta);
 void cdTextTranslatePoint(cdCanvas* canvas, int x, int y, int w, int h, int baseline, int *rx, int *ry);
+void cdfTextTranslatePoint(cdCanvas* canvas, double x, double y, int w, int h, int baseline, double *rx, double *ry);
 void cdMovePoint(int *x, int *y, double dx, double dy, double sin_theta, double cos_theta);
 void cdfMovePoint(double *x, double *y, double dx, double dy, double sin_theta, double cos_theta);
 

@@ -197,7 +197,9 @@ void cdfCanvasGetVectorTextBox(cdCanvas* canvas, double x, double y, const char 
 void cdCanvasGetFontDim(cdCanvas* canvas, int *max_width, int *height, int *ascent, int *descent);
 void cdCanvasGetTextSize(cdCanvas* canvas, const char* s, int *width, int *height);
 void cdCanvasGetTextBox(cdCanvas* canvas, int x, int y, const char* s, int *xmin, int *xmax, int *ymin, int *ymax);
+void cdfCanvasGetTextBox(cdCanvas* canvas, double x, double y, const char *s, double *xmin, double *xmax, double *ymin, double *ymax);
 void cdCanvasGetTextBounds(cdCanvas* canvas, int x, int y, const char* s, int *rect);
+void cdfCanvasGetTextBounds(cdCanvas* canvas, double x, double y, const char *s, double *rect);
 int  cdCanvasGetColorPlanes(cdCanvas* canvas);
 
 /* color */

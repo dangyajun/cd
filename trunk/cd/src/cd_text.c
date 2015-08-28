@@ -38,7 +38,7 @@ void cdCanvasText(cdCanvas* canvas, int x, int y, const char *s)
     if (canvas->invert_yaxis)
       y = _cdInvertYAxis(canvas, y);
 
-    canvas->cxText(canvas->ctxcanvas, x, y, s, strlen(s));
+    canvas->cxText(canvas->ctxcanvas, x, y, s, (int)strlen(s));
   }
   else
   {
@@ -90,7 +90,7 @@ void cdCanvasText(cdCanvas* canvas, int x, int y, const char *s)
     {
       q = strchr(p, '\n');
       if (q) len = (int)(q-p);  /* Cut the string to contain only one line */
-      else len = strlen(p);
+      else len = (int)strlen(p);
 
       /* Draw the line */
       if (canvas->invert_yaxis)
@@ -135,9 +135,9 @@ void cdfCanvasText(cdCanvas* canvas, double x, double y, const char *s)
       y = _cdInvertYAxis(canvas, y);
 
     if (canvas->cxFText)
-      canvas->cxFText(canvas->ctxcanvas, x, y, s, strlen(s));
+      canvas->cxFText(canvas->ctxcanvas, x, y, s, (int)strlen(s));
     else
-      canvas->cxText(canvas->ctxcanvas, _cdRound(x), _cdRound(y), s, strlen(s));
+      canvas->cxText(canvas->ctxcanvas, _cdRound(x), _cdRound(y), s, (int)strlen(s));
   }
   else
   {
@@ -189,7 +189,7 @@ void cdfCanvasText(cdCanvas* canvas, double x, double y, const char *s)
     {
       q = strchr(p, '\n');
       if (q) len = (int)(q-p);  /* Cut the string to contain only one line */
-      else len = strlen(p);
+      else len = (int)strlen(p);
 
       /* Draw the line */
       if (canvas->invert_yaxis)
@@ -396,7 +396,7 @@ void cdCanvasGetTextSize(cdCanvas* canvas, const char *s, int *width, int *heigh
 
   num_line = cdStrLineCount(s);
   if (num_line == 1)
-    canvas->cxGetTextSize(canvas->ctxcanvas, s, strlen(s), width, height);
+    canvas->cxGetTextSize(canvas->ctxcanvas, s, (int)strlen(s), width, height);
   else
   {
     int i, line_height, max_w = 0, w, len;
@@ -410,7 +410,7 @@ void cdCanvasGetTextSize(cdCanvas* canvas, const char *s, int *width, int *heigh
     {
       q = strchr(p, '\n');
       if (q) len = (int)(q-p);  /* Cut the string to contain only one line */
-      else len = strlen(p);
+      else len = (int)strlen(p);
 
       /* Calculate line width */
       canvas->cxGetTextSize(canvas->ctxcanvas, p, len, &w, NULL);
@@ -485,6 +485,66 @@ void cdTextTranslatePoint(cdCanvas* canvas, int x, int y, int w, int h, int base
   }
 }
 
+void cdfTextTranslatePoint(cdCanvas* canvas, double x, double y, int w, int h, int baseline, double *rx, double *ry)
+{
+  /* move to left */
+  switch (canvas->text_alignment)
+  {
+  case CD_BASE_RIGHT:
+  case CD_NORTH_EAST:
+  case CD_EAST:
+  case CD_SOUTH_EAST:
+    *rx = x - w;
+    break;
+  case CD_BASE_CENTER:
+  case CD_CENTER:
+  case CD_NORTH:
+  case CD_SOUTH:
+    *rx = x - w / 2;
+    break;
+  case CD_BASE_LEFT:
+  case CD_NORTH_WEST:
+  case CD_WEST:
+  case CD_SOUTH_WEST:
+    *rx = x;
+    break;
+  }
+
+  /* move to bottom */
+  switch (canvas->text_alignment)
+  {
+  case CD_BASE_LEFT:
+  case CD_BASE_CENTER:
+  case CD_BASE_RIGHT:
+    if (canvas->invert_yaxis)
+      *ry = y + baseline;
+    else
+      *ry = y - baseline;
+    break;
+  case CD_SOUTH_EAST:
+  case CD_SOUTH_WEST:
+  case CD_SOUTH:
+    *ry = y;
+    break;
+  case CD_NORTH_EAST:
+  case CD_NORTH:
+  case CD_NORTH_WEST:
+    if (canvas->invert_yaxis)
+      *ry = y + h;
+    else
+      *ry = y - h;
+    break;
+  case CD_CENTER:
+  case CD_EAST:
+  case CD_WEST:
+    if (canvas->invert_yaxis)
+      *ry = y + h / 2;
+    else
+      *ry = y - h / 2;
+    break;
+  }
+}
+
 void cdCanvasGetTextBounds(cdCanvas* canvas, int x, int y, const char *s, int *rect)
 {
   int w, h, ascent, line_height, baseline;
@@ -536,6 +596,57 @@ void cdCanvasGetTextBounds(cdCanvas* canvas, int x, int y, const char *s, int *r
   canvas->invert_yaxis = old_invert_yaxis;
 }
 
+void cdfCanvasGetTextBounds(cdCanvas* canvas, double x, double y, const char *s, double *rect)
+{
+  int w, h, ascent, line_height, baseline;
+  double xmin, xmax, ymin, ymax;
+  int old_invert_yaxis, num_lin;
+
+  assert(canvas);
+  assert(s);
+  if (!_cdCheckCanvas(canvas)) return;
+
+  if (s[0] == 0)
+    return;
+
+  cdCanvasGetTextSize(canvas, s, &w, &h);
+  cdCanvasGetFontDim(canvas, NULL, &line_height, &ascent, NULL);
+  baseline = line_height - ascent;
+  num_lin = h / line_height;
+  if (num_lin > 1)
+    baseline += (num_lin - 1)*line_height;
+
+  /* from here we are always upwards */
+  old_invert_yaxis = canvas->invert_yaxis;
+  canvas->invert_yaxis = 0;
+
+  /* move to bottom-left */
+  cdfTextTranslatePoint(canvas, x, y, w, h, baseline, &xmin, &ymin);
+
+  xmax = xmin + w - 1;
+  ymax = ymin + h - 1;
+
+  if (canvas->text_orientation)
+  {
+    double cos_theta = cos(canvas->text_orientation*CD_DEG2RAD);
+    double sin_theta = sin(canvas->text_orientation*CD_DEG2RAD);
+
+    cdfRotatePoint(canvas, xmin, ymin, x, y, &rect[0], &rect[1], sin_theta, cos_theta);
+    cdfRotatePoint(canvas, xmax, ymin, x, y, &rect[2], &rect[3], sin_theta, cos_theta);
+    cdfRotatePoint(canvas, xmax, ymax, x, y, &rect[4], &rect[5], sin_theta, cos_theta);
+    cdfRotatePoint(canvas, xmin, ymax, x, y, &rect[6], &rect[7], sin_theta, cos_theta);
+  }
+  else
+  {
+    rect[0] = xmin; rect[1] = ymin;
+    rect[2] = xmax; rect[3] = ymin;
+    rect[4] = xmax; rect[5] = ymax;
+    rect[6] = xmin; rect[7] = ymax;
+  }
+
+  canvas->invert_yaxis = old_invert_yaxis;
+}
+
 void cdCanvasGetTextBox(cdCanvas* canvas, int x, int y, const char *s, int *xmin, int *xmax, int *ymin, int *ymax)
 {
   int rect[8];
@@ -563,6 +674,40 @@ void cdCanvasGetTextBox(cdCanvas* canvas, int x, int y, const char *s, int *xmin
   if(rect[3] > _ymax) _ymax = rect[3];
   if(rect[5] > _ymax) _ymax = rect[5];
   if(rect[7] > _ymax) _ymax = rect[7];
+
+  if (xmin) *xmin = _xmin;
+  if (xmax) *xmax = _xmax;
+  if (ymin) *ymin = _ymin;
+  if (ymax) *ymax = _ymax;
+}
+
+void cdfCanvasGetTextBox(cdCanvas* canvas, double x, double y, const char *s, double *xmin, double *xmax, double *ymin, double *ymax)
+{
+  double rect[8];
+  double _xmin, _xmax, _ymin, _ymax;
+
+  cdfCanvasGetTextBounds(canvas, x, y, s, rect);
+
+  _xmin = rect[0];
+  _ymin = rect[1];
+  _xmax = rect[0];
+  _ymax = rect[1];
+
+  if (rect[2] < _xmin) _xmin = rect[2];
+  if (rect[4] < _xmin) _xmin = rect[4];
+  if (rect[6] < _xmin) _xmin = rect[6];
+
+  if (rect[3] < _ymin) _ymin = rect[3];
+  if (rect[5] < _ymin) _ymin = rect[5];
+  if (rect[7] < _ymin) _ymin = rect[7];
+
+  if (rect[2] > _xmax) _xmax = rect[2];
+  if (rect[4] > _xmax) _xmax = rect[4];
+  if (rect[6] > _xmax) _xmax = rect[6];
+
+  if (rect[3] > _ymax) _ymax = rect[3];
+  if (rect[5] > _ymax) _ymax = rect[5];
+  if (rect[7] > _ymax) _ymax = rect[7];
 
   if (xmin) *xmin = _xmin;
   if (xmax) *xmax = _xmax;
@@ -635,7 +780,7 @@ static const char * cd_getword(const char *str, const char *last, int *wordlen)
   while (result > str && !is_style_sep (*(result - 1)))
     result--;
 
-  *wordlen = last - result;
+  *wordlen = (int)(last - result);
   
   return result;
 }
@@ -694,7 +839,7 @@ int cdParsePangoFont(const char *nativefont, char *type_face, int *style, int *s
 
   if (nativefont != last)
   {
-    len = (last - nativefont);
+    len = (int)(last - nativefont);
     strncpy(type_face, nativefont, len);
     type_face[len] = 0;
     return 1;
@@ -718,7 +863,7 @@ int cdParseIupWinFont(const char *nativefont, char *type_face, int *style, int *
     nativefont++;       /* skip separator */
   else
   {
-    c = strcspn(nativefont, ":");      /* extract type_face */
+    c = (int)strcspn(nativefont, ":");      /* extract type_face */
     if (c == 0) return 0;
     strncpy(type_face, nativefont, c);
     type_face[c] = '\0';
@@ -739,7 +884,7 @@ int cdParseIupWinFont(const char *nativefont, char *type_face, int *style, int *
     {
       char style_str[30];
 
-      c = strcspn(nativefont, ":,");
+      c = (int)strcspn(nativefont, ":,");
       if (c == 0)
         break;
 

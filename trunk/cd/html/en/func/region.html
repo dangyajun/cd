@@ -12,7 +12,7 @@
 <h2 align="center">Complex Clipping Regions</h2>
 
   <p>A complex region can composed of boxes, sectors, chords, polygons and 
-  texts. It is implemented only in the Windows GDI, GDI+ and X-Windows base drivers.</p>
+  texts. It is implemented only in the Windows GDI, Windows GDI+, GDK, Cairo(*), and X-Windows base drivers.</p>
 
   <p>Complex clipping regions can be created using <font><strong>
   cdBegin(</strong></font><b><tt>CD_REGION</tt></b><font><strong>)/(filled 
@@ -35,6 +35,10 @@
   <p>To make the region active you must call <strong><font>
   cdClip(</font></strong><b><tt>CD_CLIPREGION</tt></b><strong><font>)</font></strong>. 
   For other clipping regions see <a href="clipping.html">Clipping</a>.</p>
+<p>Although Cairo is capable of creating regions, you can not use them for 
+clipping, just to use <span><strong>IsPointInRegion</strong>. And it can create 
+only rectangle based regions, i.e. only <strong>cdBox</strong> will actually 
+combine rectangles into the region.</span></p>
 <p>Complex clipping regions are not saved by <strong>cdSaveState</strong>.</p>
 
 <hr>

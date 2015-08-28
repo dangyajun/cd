@@ -515,30 +515,30 @@ void wdCanvasGetTextSize(cdCanvas* canvas, const char *s, double *width, double 
 
 void wdCanvasGetTextBox(cdCanvas* canvas, double x, double y, const char *s, double *xmin, double *xmax, double *ymin, double *ymax)
 {
-  int rx, ry, rxmin, rxmax, rymin, rymax;
+  double rx, ry, rxmin, rxmax, rymin, rymax;
   assert(canvas);
   if (!_cdCheckCanvas(canvas)) return;
 
-  _wWorld2Canvas(canvas, x, y, rx, ry);
-  cdCanvasGetTextBox(canvas, rx, ry, s, &rxmin, &rxmax, &rymin, &rymax);
+  _wfWorld2Canvas(canvas, x, y, rx, ry);
+  cdfCanvasGetTextBox(canvas, rx, ry, s, &rxmin, &rxmax, &rymin, &rymax);
 
-  _wCanvas2World(canvas, rxmin, rymin, *xmin, *ymin);
-  _wCanvas2World(canvas, rxmax, rymax, *xmax, *ymax);
+  _wfCanvas2World(canvas, rxmin, rymin, *xmin, *ymin);
+  _wfCanvas2World(canvas, rxmax, rymax, *xmax, *ymax);
 }
 
 void wdCanvasGetTextBounds(cdCanvas* canvas, double x, double y, const char *s, double *rect)
 {
-  int rx, ry, rrect[8];
+  double rx, ry, rrect[8];
   assert(canvas);
   if (!_cdCheckCanvas(canvas)) return;
 
-  _wWorld2Canvas(canvas, x, y, rx, ry);
-  cdCanvasGetTextBounds(canvas, rx, ry, s, rrect);
+  _wfWorld2Canvas(canvas, x, y, rx, ry);
+  cdfCanvasGetTextBounds(canvas, rx, ry, s, rrect);
 
-  _wCanvas2World(canvas, rrect[0], rrect[1], rect[0], rect[1]);
-  _wCanvas2World(canvas, rrect[2], rrect[3], rect[2], rect[3]);
-  _wCanvas2World(canvas, rrect[4], rrect[5], rect[4], rect[5]);
-  _wCanvas2World(canvas, rrect[6], rrect[7], rect[6], rect[7]);
+  _wfCanvas2World(canvas, rrect[0], rrect[1], rect[0], rect[1]);
+  _wfCanvas2World(canvas, rrect[2], rrect[3], rect[2], rect[3]);
+  _wfCanvas2World(canvas, rrect[4], rrect[5], rect[4], rect[5]);
+  _wfCanvas2World(canvas, rrect[6], rrect[7], rect[6], rect[7]);
 }
 
 void wdCanvasPattern(cdCanvas* canvas, int w, int h, const long *color, double w_mm, double h_mm)
