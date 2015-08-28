@@ -4,6 +4,11 @@
     <meta http-equiv="Content-Language" content="en-us">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="../../style.css">
+    <style type="text/css">
+	.auto-style1 {
+		font-size: 110%;
+	}
+	</style>
   </head>
   <body>
     <h2 align="center">Client Images</h2>
@@ -20,12 +25,19 @@
     <p>The Put functions may do zoom in or out; zero order interpolation is used to 
       scale the image. It is not possible to specify a part of the image to be drawn.</p>
     <hr>
-  <div class="function"><pre class="function"><span class="mainFunction">void <a name="cdGetImageRGB">cdCanvasGetImageRGB</a>(cdCanvas* canvas, unsigned char *r, 
-                   unsigned char *g, 
-                   unsigned char *b, 
-                   int x, int y, int iw, int ih); [in C]</span>
+  <div class="function"><pre class="function"><span class="mainFunction">void <a name="cdGetImageRGB">cdCanvasGetImageRGB</a>(cdCanvas* canvas, 
+                         unsigned char *r, unsigned char *g, unsigned char *b, 
+                         int x, int y, int iw, int ih); [in C]</span>
+<span class="auto-style1">void c<a name="cdGetImageRGB1">dfCanvasGetImageRGB</a>(cdCanvas* canvas, 
+                         unsigned char *r, unsigned char *g, unsigned char *b, 
+                         double x, double y, int iw, int ih); [in C]
+void <a name="cdGetImageRGB0">wdCanvasGetImageRGB</a>(cdCanvas* canvas, 
+                         unsigned char *r, unsigned char *g, unsigned char *b, 
+                         double x, double y, int iw, int ih); (WC) [in C]</span>
 
-canvas:GetImageRGB(imagergb: cdImageRGB; x, y: number) [in Lua]</pre>
+canvas:GetImageRGB(imagergb: cdImageRGB; x, y: number) [in Lua]
+canvas:fGetImageRGB(imagergb: cdImageRGB; x, y: number) [in Lua]
+canvas:wGetImageRGB(imagergb: cdImageRGB; x, y: number) <span class="auto-style1">(WC) </span>[in Lua]</pre>
     <p>Returns the red, green and blue components of each pixel in a server image. 
       The RGB components are provided in three matrices stored as byte arrays. The <strong>
         <tt>(i,j)</tt></strong> component of these matrices is at the address <strong><tt>
@@ -34,19 +46,20 @@ canvas:GetImageRGB(imagergb: cdImageRGB; x, y: number) [in Lua]</pre>
       corner, and the pixel <strong><tt>(w-1,h-1)</tt></strong> is that the upper 
       right corner of the image rectangle.</p>
     </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdPutImageRectRGB">cdCanvasPutImageRectRGB</a>(cdCanvas* canvas, int iw, int ih, 
-                       const unsigned char *r, 
-                       const unsigned char *g, 
-                       const unsigned char *b, 
+                       const unsigned char *r, const unsigned char *g, const unsigned char *b, 
                        int x, int y, int w, int h, 
                        int xmin, int xmax, int ymin, int ymax); [in C]</span>
+void cdfCanvasPutImageRectRGB(cdCanvas* canvas, int iw, int ih, 
+                       const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                       double x, double y, double w, double h, 
+                       int xmin, int xmax, int ymin, int ymax); [in C]
 void wdCanvasPutImageRectRGB(cdCanvas* canvas, int iw, int ih, 
-                       const unsigned char *r, 
-                       const unsigned char *g, 
-                       const unsigned char *b, 
+                       const unsigned char *r, const unsigned char *g, const unsigned char *b, 
                        double x, double y, double w, double h, 
                        int xmin, int xmax, int ymin, int ymax); (WC) [in C]
 
 canvas:PutImageRectRGB(imagergb: cdImageRGB; x, y, w, h, xmin, xmax, ymin, ymax: number) [in Lua]
+canvas:fPutImageRectRGB(imagergb: cdImageRGB; x, y, w, h, xmin, xmax, ymin, ymax: number) [in Lua]
 canvas:wPutImageRectRGB(imagergb: cdImageRGB; x, y, w, h, xmin, xmax, ymin, ymax: number) (WC) [in Lua]</pre>
     <p>Puts, in a specified area of the canvas, an image with its red, green and blue 
       components defined in the three matrices stored in byte arrays. The <strong><tt>(i,j)</tt></strong>
@@ -69,21 +82,20 @@ canvas:wPutImageRectRGB(imagergb: cdImageRGB; x, y, w, h, xmin, xmax, ymin, ymax
       converted to 256 optimal colors using the function <strong><font>cdRGB2Map</font></strong>
       and is drawn using <strong><font>cdPutImageRectMap</font></strong>.</p>
     </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdPutImageRectRGBA">cdCanvasPutImageRectRGBA</a>(cdCanvas* canvas, int iw, int ih, 
-                        const unsigned char *r, 
-                        const unsigned char *g, 
-                        const unsigned char *b, 
-                        const unsigned char *a, 
+                        const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
                         int x, int y, int w, int h, 
                         int xmin, int xmax, int ymin, int ymax); [in C]</span>
+void cdfCanvasPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, 
+                        const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                        double x, double y, double w, double h, 
+                        int xmin, int xmax, int ymin, int ymax); [in C]
 void wdCanvasPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, 
-                        const unsigned char *r, 
-                        const unsigned char *g, 
-                        const unsigned char *b, 
-                        const unsigned char *a, 
+                        const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
                         double x, double y, double w, double h, 
                         int xmin, int xmax, int ymin, int ymax); (WC) [in C]
 
 canvas:PutImageRectRGBA(imagergba: cdImageRGBA; x, y, w, h, xmin, xmax, ymin, ymax: number) [in Lua]
+canvas:fPutImageRectRGBA(imagergba: cdImageRGBA; x, y, w, h, xmin, xmax, ymin, ymax: number) [in Lua]
 canvas:wPutImageRectRGBA(imagergba: cdImageRGBA; x, y, w, h, xmin, xmax, ymin, ymax: number) (WC) [in Lua]</pre>
     <p>The same as function&nbsp; <font><strong>cdPutImageRectRGB</strong></font>, 
       except for the fact that it is possible to specify an alpha channel. The 
@@ -96,29 +108,53 @@ canvas:wPutImageRectRGBA(imagergba: cdImageRGBA; x, y, w, h, xmin, xmax, ymin, y
       then the function <strong><font>cdPutImageRectRGB</font></strong> is used, as 
       long as it is defined.</p>
     </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdPutImageRectMap">cdCanvasPutImageRectMap</a>(cdCanvas* canvas, int iw, int ih, 
-                       const unsigned char *index, 
-                       const long int *colors, 
+                       const unsigned char *index, const long int *colors, 
                        int x, int y, int w, int h, 
                        int xmin, int xmax, int ymin, int ymax); [in C]</span>
+void cdfCanvasPutImageRectMap(cdCanvas* canvas, int iw, int ih, 
+                       const unsigned char *index, const long int *colors, 
+                       double x, double y, double w, double h, 
+                       int xmin, int xmax, int ymin, int ymax); [in C]
 void wdCanvasPutImageRectMap(cdCanvas* canvas, int iw, int ih, 
-                       const unsigned char *index, 
-                       const long int *colors, 
+                       const unsigned char *index, const long int *colors, 
                        double x, double y, double w, double h, 
                        int xmin, int xmax, int ymin, int ymax); (WC) [in C]
 
 canvas:PutImageRectMap(imagemap: cdImageMap; palette: cdPalette; x, y, w, h, xmin, xmax, ymin, ymax: number) [in Lua]
+canvas:fPutImageRectMap(imagemap: cdImageMap; palette: cdPalette; x, y, w, h, xmin, xmax, ymin, ymax: number) [in Lua]
 canvas:wPutImageRectMap(imagemap: cdImageMap; palette: cdPalette; x, y, w, h, xmin, xmax, ymin, ymax: number) (WC) [in Lua]</pre>
     <p>The same as function&nbsp; <font><strong>cdPutImageRectRGB</strong></font>, 
       except for the fact that the colors are provided by means of an index matrix 
       (map). The color corresponding to a given index is given in&nbsp; <font><b>colors[index]</b></font>. 
       The map is also a matrix stored as a byte vector. If the color vector is null, 
       then a vector with 256 gray tones is assumed.</p>
-    </div><div class="function"><pre class="function"><span class="mainFunction">void <a name="cdRGB2Map">cdRGB2Map</a>(int iw, int ih, 
-               const unsigned char *r, 
-               const unsigned char *g, 
-               const unsigned char *b, 
-               unsigned char *index, 
-               int pal_size, long *color); [in C]</span>
+    </div><div class="function">
+		<pre class="function"><strong>void cdCanvasGetImImage(cdCanvas* canvas, const imImage* image, int x, int y); [in C]
+</strong>void cdfCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); [in C]
+void wdCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); (WC) [in C]
+
+canvas:GetImImage(image: imImage, x,y: number) [in Lua]
+canvas:fGetImImage(image: imImage, x,y: number) [in Lua]
+canvas:wGetImImage(image: imImage, x,y: number) (WC) [in Lua]</pre>
+		<p>The same as the <strong>cdCanvasGetImageRGB</strong> functions&nbsp;except for the fact that use an
+		<strong>imImage</strong> structure. Image must be a display RGB image (color_space=IM_RGB and data_type=IM_BYTE). See the
+		<a href="../drv/imimage.html">CD_IMIMAGE</a>. (since 5.9)</p>
+    </div><div class="function">
+		<pre class="function"><strong>void cdCanvasPutImImage(cdCanvas* canvas, const imImage* image, int x, int y, int w, int h); [in C]
+</strong>void cdfCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h); [in C]
+void wdCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h); (WC) [in C]
+
+canvas:PutImImage(image: imImage, x,y,w,h: number) [in Lua]
+canvas:fPutImImage(image: imImage, x,y,w,h: number) [in Lua]
+canvas:wPutImImage(image: imImage, x,y,w,h: number) (WC) [in Lua]</pre>
+		<p>The same as the above functions&nbsp;except for the fact that use an
+		<strong>imImage</strong> structure. Image must be a displayable image (<strong>imImageIsBitmap</strong>), 
+		and it can has an alpha channel. See the
+		<a href="../drv/imimage.html">CD_IMIMAGE</a>. (since 5.9)</p>
+    </div><div class="function">
+		<pre class="function"><span class="mainFunction">void <a name="cdRGB2Map">cdRGB2Map</a>(int iw, int ih, 
+               const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+               unsigned char *index, int pal_size, long *color); [in C]</span>
 
 cd.RGB2Map(imagergb: cdImageRGB, imagemap: cdImageMap, palette: cdPalette) [in Lua]</pre>
     <p>Converts an RGB image into an image with 256 indexed colors. The resulting 
@@ -126,7 +162,7 @@ cd.RGB2Map(imagergb: cdImageRGB, imagemap: cdImageMap, palette: cdPalette) [in L
       necessary to allocate memory for the arrays <strong><font>map</font></strong> and
       <strong><font>colors</font></strong>. This is the same algorithm used in the IM 
       library - in fact, the same code.</p></div>
-    <h3>Extras</h3>
+    <h3>Extras (Deprecated - use <a href="../drv/imimage.html">imImage</a>)</h3>
     <p>The following functions are used only for encapsulating the several types of 
       client images from the library in a single structure, simplifying their 
       treatment.&nbsp;</p>

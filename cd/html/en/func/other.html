@@ -5,6 +5,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Other</title>
 <link rel="stylesheet" type="text/css" href="../../style.css">
+<style type="text/css">
+.auto-style1 {
+	font-size: 110%;
+}
+</style>
 </head>
 
 <body>
@@ -53,15 +58,18 @@ cd._VERSION_NUMBER</pre>
 <hr>
 <h2 align="center">Metafile Interpretation</h2>
 <div class="function"><pre class="function"><span class="mainFunction">int&nbsp;<a name="cdPlay">cdCanvasPlay</a>(cdCanvas* canvas, cdContext* ctx, int xmin, int xmax, int ymin, int ymax, void *data); [in C]</span>
+<span class="auto-style1">int&nbsp;<a name="cdPlay0">wdCanvasPlay</a>(cdCanvas* canvas, cdContext* ctx, double xmin, double xmax, double ymin, double ymax, void *data); (WC) [in C]</span>
 
-canvas:Play(ctx, xmin, xmax, ymin, ymax: number, data: string) -&gt; (status: number) [in Lua]</pre>
+canvas:Play(ctx, xmin, xmax, ymin, ymax: number, data: string) -&gt; (status: number) [in Lua]
+canvas:wPlay(ctx, xmin, xmax, ymin, ymax: number, data: string) -&gt; (status: number) [in Lua]</pre>
 
   <p>Interprets the graphical contents (primitives and attributes) in a given 
   driver and calls equivalent functions of the CD library using the given 
   canvas. The primitives are drawn inside the region defined by the given 
   limits. If <font>limits are 0 (xmin</font>, <font>xmax</font>,
   <font>ymin</font> and <font>ymax)</font> the primitives will be drawn with their coordinates having the original 
-  values in the file. </p>
+  values in the file. The WD version will simply use the given limits in World 
+  Coordinates (since 5.9). </p>
 	<p>Returns CD_OK or CD_ERROR.</p>
 
   <p>Only some drivers implement this function:</p>
