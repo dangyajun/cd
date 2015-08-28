@@ -1502,6 +1502,21 @@ static int cdlua5_gettextbox(lua_State *L)
   return 4;
 }
 
+static int cdlua5_fgettextbox(lua_State *L)
+{
+  double xmin, xmax, ymin, ymax;
+  double x = luaL_checknumber(L, 2);
+  double y = luaL_checknumber(L, 3);
+  const char* s = luaL_checkstring(L, 4);
+
+  cdfCanvasGetTextBox(cdlua_checkcanvas(L, 1), x, y, s, &xmin, &xmax, &ymin, &ymax);
+  lua_pushnumber(L, xmin);
+  lua_pushnumber(L, xmax);
+  lua_pushnumber(L, ymin);
+  lua_pushnumber(L, ymax);
+  return 4;
+}
+
 /*****************************************************************************\
 * cd.wGetTextBox(x, y: number, text: string) -> (xmin, xmax, ymin, ymax: number) *
 \*****************************************************************************/
@@ -1532,6 +1547,24 @@ static int cdlua5_gettextbounds(lua_State *L)
   int i;
 
   cdCanvasGetTextBounds(cdlua_checkcanvas(L, 1), x, y, s, rect);
+  lua_createtable(L, 8, 0);
+  for (i=0; i < 8; i++)
+  {
+    lua_pushnumber(L, rect[i]);
+    lua_rawseti(L, -2, i+1);
+  }
+  return 1;
+}
+
+static int cdlua5_fgettextbounds(lua_State *L)
+{
+  double rect[8];
+  double x = luaL_checknumber(L, 2);
+  double y = luaL_checknumber(L, 3);
+  const char* s = luaL_checkstring(L, 4);
+  int i;
+
+  cdfCanvasGetTextBounds(cdlua_checkcanvas(L, 1), x, y, s, rect);
   lua_createtable(L, 8, 0);
   for (i=0; i < 8; i++)
   {
@@ -2571,8 +2604,10 @@ static const luaL_Reg cdlib_canvas_meta[] = {
   {"GetTextSize"        , cdlua5_gettextsize},
   {"wGetTextSize"       , wdlua5_gettextsize},
   {"GetTextBox"         , cdlua5_gettextbox},
+  {"fGetTextBox"        , cdlua5_fgettextbox},
   {"wGetTextBox"        , wdlua5_gettextbox},
   {"GetTextBounds"      , cdlua5_gettextbounds},
+  {"fGetTextBounds"     , cdlua5_fgettextbounds},
   {"wGetTextBounds"     , wdlua5_gettextbounds},
 
   /* Vector Text */

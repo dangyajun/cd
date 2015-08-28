@@ -108,6 +108,8 @@ void cdcairoKillCanvas(cdCtxCanvas *ctxcanvas)
   if (ctxcanvas->pattern)
     cairo_pattern_destroy(ctxcanvas->pattern);
 
+  if (ctxcanvas->new_rgn) cairo_region_destroy(ctxcanvas->new_rgn);
+
   if (ctxcanvas->fontdesc) pango_font_description_free(ctxcanvas->fontdesc);
   if (ctxcanvas->fontlayout)  g_object_unref(ctxcanvas->fontlayout);
   if (ctxcanvas->fontcontext) g_object_unref(ctxcanvas->fontcontext);
@@ -195,6 +197,8 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
       break;
     }
   case CD_CLIPREGION:
+    /* if (ctxcanvas->new_rgn)
+      cairo_region(ctxcanvas->cr, ctxcanvas->new_rgn); */
     break;
   }
 
@@ -829,12 +833,38 @@ static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
 {
-  cdfbox(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+  if (ctxcanvas->canvas->new_region)
+  {
+    cairo_rectangle_int_t rect;
+
+    rect.x = xmin;
+    rect.width = xmax - xmin + 1;
+    rect.y = ymin;
+    rect.height = ymax - ymin + 1;
+
+    switch (ctxcanvas->canvas->combine_mode)
+    {
+    case CD_UNION:
+      cairo_region_union_rectangle(ctxcanvas->new_rgn, &rect);
+      break;
+    case CD_INTERSECT:
+      cairo_region_intersect_rectangle(ctxcanvas->new_rgn, &rect);
+      break;
+    case CD_DIFFERENCE:
+      cairo_region_subtract_rectangle(ctxcanvas->new_rgn, &rect);
+      break;
+    case CD_NOTINTERSECT:
+      cairo_region_xor_rectangle(ctxcanvas->new_rgn, &rect);
+      break;
+    }
+  }
+  else
+    cdfbox(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
 }
 
-static void sGetTransformTextHeight(cdCanvas* canvas, int x, int y, int w, int h, int *hbox)
+static void sGetTransformTextHeight(cdCanvas* canvas, double x, double y, int w, int h, double *hbox)
 {
-  int xmin, xmax, ymin, ymax;
+  double xmin, xmax, ymin, ymax;
   int baseline, height, ascent;
 
   /* distance from bottom to baseline */
@@ -842,7 +872,7 @@ static void sGetTransformTextHeight(cdCanvas* canvas, int x, int y, int w, int h
   baseline = height - ascent; 
 
   /* move to bottom-left */
-  cdTextTranslatePoint(canvas, x, y, w, h, baseline, &xmin, &ymin);
+  cdfTextTranslatePoint(canvas, x, y, w, h, baseline, &xmin, &ymin);
 
   xmax = xmin + w-1;
   ymax = ymin + h-1;
@@ -852,12 +882,12 @@ static void sGetTransformTextHeight(cdCanvas* canvas, int x, int y, int w, int h
     double angle = canvas->text_orientation*CD_DEG2RAD;
     double cos_theta = cos(angle);
     double sin_theta = sin(angle);
-    int rectY[4];
+    double rectY[4];
 
-    cdRotatePointY(canvas, xmin, ymin, x, y, &rectY[0], sin_theta, cos_theta);
-    cdRotatePointY(canvas, xmax, ymin, x, y, &rectY[1], sin_theta, cos_theta);
-    cdRotatePointY(canvas, xmax, ymax, x, y, &rectY[2], sin_theta, cos_theta);
-    cdRotatePointY(canvas, xmin, ymax, x, y, &rectY[3], sin_theta, cos_theta);
+    cdfRotatePointY(canvas, xmin, ymin, x, y, &rectY[0], sin_theta, cos_theta);
+    cdfRotatePointY(canvas, xmax, ymin, x, y, &rectY[1], sin_theta, cos_theta);
+    cdfRotatePointY(canvas, xmax, ymax, x, y, &rectY[2], sin_theta, cos_theta);
+    cdfRotatePointY(canvas, xmin, ymax, x, y, &rectY[3], sin_theta, cos_theta);
 
     ymin = ymax = rectY[0];
     if (rectY[1] < ymin) ymin = rectY[1];
@@ -873,10 +903,10 @@ static void sGetTransformTextHeight(cdCanvas* canvas, int x, int y, int w, int h
 
 static void sSetTextTransform(cdCtxCanvas* ctxcanvas, double *x, double *y, int w, int h)
 {
-  int hbox;
+  double hbox;
   cairo_matrix_t mtx;
 
-  sGetTransformTextHeight(ctxcanvas->canvas, (int)*x, (int)*y, w, h, &hbox);
+  sGetTransformTextHeight(ctxcanvas->canvas, *x, *y, w, h, &hbox);
 
   /* move to (x,y) and remove a vertical offset since text reference point is top-left */
   mtx.xx = 1; mtx.yx = 0;
@@ -1640,6 +1670,48 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
   cairo_set_source(ctxcanvas->cr, old_source);
 }
 
+static void cdnewregion(cdCtxCanvas *ctxcanvas)
+{
+  if (ctxcanvas->new_rgn)
+    cairo_region_destroy(ctxcanvas->new_rgn);
+
+  ctxcanvas->new_rgn = cairo_region_create();
+}
+
+static int cdispointinregion(cdCtxCanvas *ctxcanvas, int x, int y)
+{
+  if (!ctxcanvas->new_rgn)
+    return 0;
+
+  if (cairo_region_contains_point(ctxcanvas->new_rgn, x, y))
+    return 1;
+
+  return 0;
+}
+
+static void cdoffsetregion(cdCtxCanvas *ctxcanvas, int x, int y)
+{
+  if (!ctxcanvas->new_rgn)
+    return;
+
+  cairo_region_translate(ctxcanvas->new_rgn, x, y);
+}
+
+static void cdgetregionbox(cdCtxCanvas *ctxcanvas, int *xmin, int *xmax, int *ymin, int *ymax)
+{
+  cairo_rectangle_int_t rect;
+
+  if (!ctxcanvas->new_rgn)
+    return;
+
+  cairo_region_get_extents(ctxcanvas->new_rgn, &rect);
+
+  *xmin = rect.x;
+  *xmax = rect.x + rect.width - 1;
+  *ymin = rect.y;
+  *ymax = rect.y + rect.height - 1;
+}
+
 static cdCtxImage *cdcreateimage (cdCtxCanvas *ctxcanvas, int w, int h)
 {
   cdCtxImage *ctximage = (cdCtxImage *)malloc(sizeof(cdCtxImage));
@@ -2291,6 +2363,11 @@ void cdcairoInitTable(cdCanvas* canvas)
   canvas->cxGetTextSize = cdgettextsize;
   canvas->cxTransform = cdtransform;
   canvas->cxForeground = cdforeground;
+
+  canvas->cxNewRegion = cdnewregion;
+  canvas->cxIsPointInRegion = cdispointinregion;
+  canvas->cxOffsetRegion = cdoffsetregion;
+  canvas->cxGetRegionBox = cdgetregionbox;
 
   canvas->cxGetImageRGB = cdgetimagergb;
   canvas->cxScrollArea = cdscrollarea;

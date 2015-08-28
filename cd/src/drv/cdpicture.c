@@ -621,7 +621,7 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int l
 
 static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *text, int len)
 {
-  int xmin, xmax, ymin, ymax;
+  double xmin, xmax, ymin, ymax;
   tPrimNode *prim = primCreate(CDPIC_FTEXT);
   primAddAttrib_Text(prim, ctxcanvas->canvas);
   prim->param.textf.x = x;
@@ -629,9 +629,9 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *text
   prim->param.textf.s = cdStrDupN(text, len);
   prim->param_buffer = prim->param.textf.s;
   picAddPrim(ctxcanvas, prim);
-  cdCanvasGetTextBox(ctxcanvas->canvas, _cdRound(x), _cdRound(y), prim->param.text.s, &xmin, &xmax, &ymin, &ymax);
-  picUpdateBBox(ctxcanvas, xmin, ymin, 0);
-  picUpdateBBox(ctxcanvas, xmax, ymax, 0);
+  cdfCanvasGetTextBox(ctxcanvas->canvas, x, y, prim->param.text.s, &xmin, &xmax, &ymin, &ymax);
+  picUpdateBBoxF(ctxcanvas, xmin, ymin, 0);
+  picUpdateBBoxF(ctxcanvas, xmax, ymax, 0);
 }
 
 static void cdpath(cdCtxCanvas *ctxcanvas, cdPoint* poly, int n)

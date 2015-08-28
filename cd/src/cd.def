@@ -343,7 +343,9 @@ EXPORTS
   cdCanvasGetRegionBox
   cdCanvasGetSize
   cdCanvasGetTextBounds
+  cdfCanvasGetTextBounds
   cdCanvasGetTextBox
+  cdfCanvasGetTextBox
   cdCanvasGetTextSize
   cdCanvasGetVectorTextBounds
   cdCanvasGetVectorTextBox
@@ -403,7 +405,9 @@ EXPORTS
   cdCanvasTransformScale
   cdCanvasTransformTranslate
   cdTextTranslatePoint
+  cdfTextTranslatePoint
   cdRotatePointY
+  cdfRotatePointY
   cdCanvasSetForeground
   cdCanvasSetBackground
   cdCanvasTransformPoint

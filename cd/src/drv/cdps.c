@@ -1080,12 +1080,12 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
 
   if (ctxcanvas->eps)
   {
-    int xmin, xmax, ymin, ymax;
+    double xmin, xmax, ymin, ymax;
     s = cdStrDupN(s, len);
-    cdCanvasGetTextBox(ctxcanvas->canvas, (int)x, (int)y, s, &xmin, &xmax, &ymin, &ymax);
+    cdfCanvasGetTextBox(ctxcanvas->canvas, (int)x, (int)y, s, &xmin, &xmax, &ymin, &ymax);
     free((char*)s);
-    fbbox(ctxcanvas, (double)xmin, (double)ymin);
-    fbbox(ctxcanvas, (double)xmax, (double)ymax);
+    fbbox(ctxcanvas, xmin, ymin);
+    fbbox(ctxcanvas, xmax, ymax);
   }
 
   fprintf(ctxcanvas->file, "grestore\n");

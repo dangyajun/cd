@@ -49,6 +49,8 @@ cdfCanvasPutImImage
 cdfCanvasGetImImage
 wdCanvasPutImImage
 wdCanvasGetImImage
+cdfCanvasGetTextBox
+cdfCanvasGetTextBounds
 
 // DRIVER
 void(*cxFPixel)(cdCtxCanvas* ctxcanvas, double x, double y, long color);
@@ -56,13 +58,6 @@ void(*cxFGetImageRGB)(cdCtxCanvas* ctxcanvas, unsigned char* r, unsigned char* g
 void(*cxFPutImageRectRGB)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
 void(*cxFPutImageRectRGBA)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
 void(*cxFPutImageRectMap)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* index, const long* colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
-
-// MAYBE
-cdCanvasIsPointInRegion
-cdfCanvasOffsetRegion
-cdfCanvasGetRegionBox
-cdfCanvasGetTextBox
-cdfCanvasGetTextBounds
 #endif
 
 namespace iup
@@ -430,10 +425,6 @@ namespace cd
     {
       return cdCanvasIsPointInRegion(canvas, x, y);
     }
-    int IsPointInRegion(double x, double y)
-    {
-      return cdfCanvasIsPointInRegion(canvas, x, y);
-    }
     int wIsPointInRegion(double x, double y)
     {
       return wdCanvasIsPointInRegion(canvas, x, y);
@@ -442,10 +433,6 @@ namespace cd
     {
       cdCanvasOffsetRegion(canvas, x, y);
     }
-    void OffsetRegion(double x, double y)
-    {
-      cdfCanvasOffsetRegion(canvas, x, y);
-    }
     void wOffsetRegion(double x, double y)
     {
       wdCanvasOffsetRegion(canvas, x, y);
@@ -453,10 +440,6 @@ namespace cd
     void GetRegionBox(int &xmin, int &xmax, int &ymin, int &ymax)
     {
       cdCanvasGetRegionBox(canvas, &xmin, &xmax, &ymin, &ymax);
-    }
-    void GetRegionBox(double &xmin, double &xmax, double &ymin, double &ymax)
-    {
-      cdfCanvasGetRegionBox(canvas, &xmin, &xmax, &ymin, &ymax);
     }
     void wGetRegionBox(double &xmin, double &xmax, double &ymin, double &ymax)
     {
@@ -1237,7 +1220,7 @@ namespace cd
       if (res_dpi)
         res_dpi_str = "-s";
 
-      canvas = cdCreateCanvasf(CD_PDF, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
+      canvas = cdCreateCanvasf(CD_PDF, "\"%s\" -p%d %s%s %s", filename, paper, res_dpi_str, res_dpi, landscape_str);
     }
     CanvasMetafilePDF(const char* filename, double width_mm, double height_mm, int res_dpi = 0, bool landscape = false)
       : Canvas()
@@ -1267,7 +1250,7 @@ namespace cd
       if (res_dpi)
         res_dpi_str = "-s";
 
-      canvas = cdCreateCanvasf(CD_PS, "\"%s\" %s%s %s", filename, res_dpi_str, res_dpi, landscape_str);
+      canvas = cdCreateCanvasf(CD_PS, "\"%s\" -p%d %s%s %s", filename, paper, res_dpi_str, res_dpi, landscape_str);
     }
     CanvasMetafilePS(const char* filename, double width_mm, double height_mm, int res_dpi = 0, bool landscape = false)
       : Canvas()

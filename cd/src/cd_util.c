@@ -308,6 +308,22 @@ void cdRotatePointY(cdCanvas* canvas, int x, int y, int cx, int cy, int *ry, dou
   *ry = *ry + cy;
 }
 
+void cdfRotatePointY(cdCanvas* canvas, double x, double y, double cx, double cy, double *ry, double sin_theta, double cos_theta)
+{
+  /* translate to (cx,cy) */
+  x = x - cx;
+  y = y - cy;
+
+  /* rotate */
+  if (canvas->invert_yaxis)
+    *ry = -(x * sin_theta) + (y * cos_theta);
+  else
+    *ry = (x * sin_theta) + (y * cos_theta);
+
+  /* translate back */
+  *ry = *ry + cy;
+}
+
 /* Copied from IUP3 */
 
 int cdStrEqualNoCase(const char* str1, const char* str2) 
@@ -365,7 +381,7 @@ char* cdStrDup(const char *str)
 {
   if (str)
   {
-    int size = strlen(str)+1;
+    int size = (int)strlen(str)+1;
     char *newstr = malloc(size);
     if (newstr) memcpy(newstr, str, size);
     return newstr;
