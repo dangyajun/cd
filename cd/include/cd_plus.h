@@ -35,14 +35,6 @@
 #include "cdim.h"
 
 
-#if 0
-// DRIVER
-void(*cxFPixel)(cdCtxCanvas* ctxcanvas, double x, double y, long color);
-void(*cxFGetImageRGB)(cdCtxCanvas* ctxcanvas, unsigned char* r, unsigned char* g, unsigned char* b, double x, double y, int iw, int ih);
-void(*cxFPutImageRectRGB)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
-void(*cxFPutImageRectRGBA)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* r, const unsigned char* g, const unsigned char* b, const unsigned char* a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
-void(*cxFPutImageRectMap)(cdCtxCanvas* ctxcanvas, int iw, int ih, const unsigned char* index, const long* colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax);
-#endif
 
 namespace iup
 {

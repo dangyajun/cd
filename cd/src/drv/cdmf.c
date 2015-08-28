@@ -97,8 +97,12 @@ enum
   CDMF_FCLIPAREA,                /* 73 */
   CDMF_FONT,                     /* 74 */
   CDMF_RESETMATRIX,              /* 75 */
-  CDMF_PATHSET                   /* 76 */
-};                                  
+  CDMF_PATHSET,                  /* 76 */
+  CDMF_FPUTIMAGERGBA,            /* 77 */
+  CDMF_FPUTIMAGERGB,             /* 78 */
+  CDMF_FPUTIMAGEMAP,             /* 79 */
+  CDMF_FPIXEL,                   /* 80 */
+};
                                     
 struct _cdCtxCanvas 
 {
@@ -595,7 +599,106 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   fprintf(ctxcanvas->file, "%d %d %d %d %d %d\n", CDMF_PIXEL, x, y, (int)r, (int)g, (int)b);
 }
 
-static void cdscrollarea(cdCtxCanvas *ctxcanvas, int xmin,int xmax, int ymin,int ymax, int dx,int dy)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int c, l, offset;
+
+  fprintf(ctxcanvas->file, "%d %d %d %d %d %d %d\n", CDMF_FPUTIMAGERGB, iw, ih, x, y, w, h);
+
+  offset = ymin*iw + xmin;
+  r += offset;
+  g += offset;
+  b += offset;
+
+  offset = iw - (xmax - xmin + 1);
+
+  for (l = ymin; l <= ymax; l++)
+  {
+    for (c = xmin; c <= xmax; c++)
+    {
+      fprintf(ctxcanvas->file, "%d %d %d ", (int)*r++, (int)*g++, (int)*b++);
+    }
+
+    r += offset;
+    g += offset;
+    b += offset;
+
+    fprintf(ctxcanvas->file, "\n");
+  }
+}
+
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int c, l, offset;
+
+  fprintf(ctxcanvas->file, "%d %d %d %g %g %g %g\n", CDMF_FPUTIMAGERGBA, iw, ih, x, y, w, h);
+
+  offset = ymin*iw + xmin;
+  r += offset;
+  g += offset;
+  b += offset;
+  a += offset;
+
+  offset = iw - (xmax - xmin + 1);
+
+  for (l = ymin; l <= ymax; l++)
+  {
+    for (c = xmin; c <= xmax; c++)
+    {
+      fprintf(ctxcanvas->file, "%d %d %d %d ", (int)*r++, (int)*g++, (int)*b++, (int)*a++);
+    }
+
+    r += offset;
+    g += offset;
+    b += offset;
+    a += offset;
+
+    fprintf(ctxcanvas->file, "\n");
+  }
+}
+
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int c, l, n = 0, offset;
+  unsigned char r, g, b;
+
+  fprintf(ctxcanvas->file, "%d %d %d %g %g %g %g\n", CDMF_FPUTIMAGEMAP, iw, ih, x, y, w, h);
+
+  index += ymin*iw + xmin;
+  offset = iw - (xmax - xmin + 1);
+
+  for (l = ymin; l <= ymax; l++)
+  {
+    for (c = xmin; c <= xmax; c++)
+    {
+      if (*index > n)
+        n = *index;
+
+      fprintf(ctxcanvas->file, "%d ", (int)*index++);
+    }
+
+    index += offset;
+
+    fprintf(ctxcanvas->file, "\n");
+  }
+
+  n++;
+
+  for (c = 0; c < n; c++)
+  {
+    cdDecodeColor(*colors++, &r, &g, &b);
+    fprintf(ctxcanvas->file, "%d %d %d\n", (int)r, (int)g, (int)b);
+  }
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  unsigned char r, g, b;
+  cdDecodeColor(color, &r, &g, &b);
+  fprintf(ctxcanvas->file, "%d %g %g %d %d %d\n", CDMF_FPIXEL, x, y, (int)r, (int)g, (int)b);
+}
+
+static void cdscrollarea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax, int dx, int dy)
 {
   fprintf(ctxcanvas->file, "%d %d %d %d %d %d %d\n", CDMF_SCROLLAREA, xmin, xmax, ymin, ymax, dx, dy);
 }
@@ -1024,6 +1127,71 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
       fscanf(file, "%d %d %d %d %d", &iparam1, &iparam2, &iparam3, &iparam4, &iparam5);
       cdCanvasPixel(canvas, sScaleX(iparam1), sScaleY(iparam2), cdEncodeColor((unsigned char)iparam3, (unsigned char)iparam4, (unsigned char)iparam5));
       break;
+    case CDMF_FPUTIMAGERGB:
+      fscanf(file, "%d %d %lg %lg %lg %lg", &iparam1, &iparam2, &dparam3, &dparam4, &dparam5, &dparam6);
+      t = iparam1 * iparam2;
+      _red = red = (unsigned char*)malloc(t);
+      _green = green = (unsigned char*)malloc(t);
+      _blue = blue = (unsigned char*)malloc(t);
+      for (c = 0; c < t; c++)
+      {
+        fscanf(file, "%d %d %d", &iparam7, &iparam8, &iparam9);
+        *_red++ = (unsigned char)iparam7;
+        *_green++ = (unsigned char)iparam8;
+        *_blue++ = (unsigned char)iparam9;
+      }
+      cdfCanvasPutImageRectRGB(canvas, iparam1, iparam2, red, green, blue, sfScaleX(dparam3), sfScaleY(dparam4), sfScaleW(dparam5), sfScaleH(dparam6), 0, 0, 0, 0);
+      free(red);
+      free(green);
+      free(blue);
+      break;
+    case CDMF_FPUTIMAGERGBA:
+      fscanf(file, "%d %d %lg %lg %lg %lg", &iparam1, &iparam2, &dparam3, &dparam4, &dparam5, &dparam6);
+      t = iparam1 * iparam2;
+      _red = red = (unsigned char*)malloc(t);
+      _green = green = (unsigned char*)malloc(t);
+      _blue = blue = (unsigned char*)malloc(t);
+      _alpha = alpha = (unsigned char*)malloc(t);
+      for (c = 0; c < t; c++)
+      {
+        fscanf(file, "%d %d %d %d", &iparam7, &iparam8, &iparam9, &iparam10);
+        *_red++ = (unsigned char)iparam7;
+        *_green++ = (unsigned char)iparam8;
+        *_blue++ = (unsigned char)iparam9;
+        *_alpha++ = (unsigned char)iparam10;
+      }
+      cdfCanvasPutImageRectRGBA(canvas, iparam1, iparam2, red, green, blue, alpha, sfScaleX(dparam3), sfScaleY(dparam4), sfScaleW(dparam5), sfScaleH(dparam6), 0, 0, 0, 0);
+      free(red);
+      free(green);
+      free(blue);
+      free(alpha);
+      break;
+    case CDMF_FPUTIMAGEMAP:
+      fscanf(file, "%d %d %lg %lg %lg %lg", &iparam1, &iparam2, &dparam3, &dparam4, &dparam5, &dparam6);
+      t = iparam1 * iparam2;
+      n = 0;
+      _index = index = (unsigned char*)malloc(t);
+      for (c = 0; c < t; c++)
+      {
+        fscanf(file, "%d", &iparam7);
+        *_index++ = (unsigned char)iparam7;
+        if (iparam7 > n)
+          n = iparam7;
+      }
+      _colors = colors = (long int*)malloc(n);
+      for (c = 0; c < n; c++)
+      {
+        fscanf(file, "%d %d %d", &iparam7, &iparam8, &iparam9);
+        *_colors++ = cdEncodeColor((unsigned char)iparam7, (unsigned char)iparam8, (unsigned char)iparam9);
+      }
+      cdfCanvasPutImageRectMap(canvas, iparam1, iparam2, index, colors, sfScaleX(dparam3), sfScaleY(dparam4), sfScaleW(dparam5), sfScaleH(dparam6), 0, 0, 0, 0);
+      free(index);
+      free(colors);
+      break;
+    case CDMF_FPIXEL:
+      fscanf(file, "%lg %lg %d %d %d", &dparam1, &dparam2, &iparam3, &iparam4, &iparam5);
+      cdfCanvasPixel(canvas, sfScaleX(dparam1), sfScaleY(dparam2), cdEncodeColor((unsigned char)iparam3, (unsigned char)iparam4, (unsigned char)iparam5));
+      break;
     case CDMF_SCROLLAREA:
       fscanf(file, "%d %d %d %d %d %d", &iparam1, &iparam2, &iparam3, &iparam4, &iparam5, &iparam6);
       cdCanvasScrollArea(canvas, sScaleX(iparam1), sScaleX(iparam2), sScaleY(iparam3), sScaleY(iparam4), sScaleX(iparam5), sScaleY(iparam6));
@@ -1191,6 +1359,10 @@ void cdinittableMF(cdCanvas* canvas)
   canvas->cxForeground = cdforeground;
   canvas->cxFClipArea = cdfcliparea;
   canvas->cxTransform = cdtransform;
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
 
   canvas->cxKillCanvas = (void (*)(cdCtxCanvas*))cdkillcanvasMF;
 }

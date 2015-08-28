@@ -42,6 +42,10 @@ typedef enum _tPrim
   CDPIC_IMAGEMAP,
   CDPIC_IMAGERGB,
   CDPIC_IMAGERGBA,
+  CDPIC_FPIXEL,
+  CDPIC_FIMAGEMAP,
+  CDPIC_FIMAGERGB,
+  CDPIC_FIMAGERGBA,
 } tPrim;
 
 typedef struct _tFillAttrib
@@ -148,6 +152,12 @@ typedef struct _tPixel
   long color;
 } tPixel;    /* Pixel */
 
+typedef struct _tfPixel
+{
+  double x, y;
+  long color;
+} tfPixel;    /* Pixel */
+
 typedef struct _tImageMap
 {
   int iw, ih;
@@ -155,6 +165,14 @@ typedef struct _tImageMap
   long int *colors;
   int x, y, w, h;
 } tImageMap;
+
+typedef struct _tfImageMap
+{
+  int iw, ih;
+  unsigned char *index;
+  long int *colors;
+  double x, y, w, h;
+} tfImageMap;
 
 typedef struct _tImageRGBA
 {
@@ -166,10 +184,20 @@ typedef struct _tImageRGBA
   int x, y, w, h;
 } tImageRGBA;
 
-typedef struct _tPrimNode 
+typedef struct _tfImageRGBA
+{
+  int iw, ih;
+  unsigned char *r;
+  unsigned char *g;
+  unsigned char *b;
+  unsigned char *a;
+  double x, y, w, h;
+} tfImageRGBA;
+
+typedef struct _tPrimNode
 {
   tPrim type;
-  void* param_buffer; /* dinamically allocated memory for the parameter */
+  void* param_buffer; /* dynamically allocated memory for the parameter */
   union {
     tLBR lineboxrect;
     tfLBR lineboxrectf;
@@ -182,10 +210,13 @@ typedef struct _tPrimNode
     tText text;
     tfText textf;
     tPixel pixel;
+    tfPixel pixelf;
     tImageMap imagemap;
     tImageRGBA imagergba;
+    tfImageMap imagemapf;
+    tfImageRGBA imagergbaf;
   } param;
-  void* attrib_buffer; /* dinamically allocated memory for the attributes */
+  void* attrib_buffer; /* dynamically allocated memory for the attributes */
   union {
     tLineAttrib line;
     tFillAttrib fill;
@@ -420,6 +451,16 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   prim->param.pixel.color = color;
   picAddPrim(ctxcanvas, prim);
   picUpdateBBox(ctxcanvas, x, y, 0);
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  tPrimNode *prim = primCreate(CDPIC_FPIXEL);
+  prim->param.pixelf.x = x;
+  prim->param.pixelf.y = y;
+  prim->param.pixelf.color = color;
+  picAddPrim(ctxcanvas, prim);
+  picUpdateBBoxF(ctxcanvas, x, y, 0);
 }
 
 static void cdline(cdCtxCanvas *ctxcanvas, int x1, int y1, int x2, int y2)
@@ -845,7 +886,58 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   (void)ih;
 }
 
-static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int l, offset, size;
+  unsigned char *dr, *dg, *db;
+
+  tPrimNode *prim = primCreate(CDPIC_FIMAGERGB);
+  prim->param.imagergbaf.iw = xmax - xmin + 1;
+  prim->param.imagergbaf.ih = ymax - ymin + 1;
+  prim->param.imagergbaf.x = x;
+  prim->param.imagergbaf.y = y;
+  prim->param.imagergbaf.w = w;
+  prim->param.imagergbaf.h = h;
+
+  size = prim->param.imagergbaf.iw*prim->param.imagergbaf.ih;
+  prim->param_buffer = malloc(3 * size);
+  prim->param.imagergbaf.r = prim->param_buffer;
+  prim->param.imagergbaf.g = prim->param.imagergbaf.r + size;
+  prim->param.imagergbaf.b = prim->param.imagergbaf.g + size;
+
+  offset = ymin*iw + xmin;
+  r += offset;
+  g += offset;
+  b += offset;
+
+  dr = prim->param.imagergbaf.r;
+  dg = prim->param.imagergbaf.g;
+  db = prim->param.imagergbaf.b;
+  offset = prim->param.imagergbaf.iw;
+
+  for (l = ymin; l <= ymax; l++)
+  {
+    memcpy(dr, r, offset);
+    memcpy(dg, g, offset);
+    memcpy(db, b, offset);
+
+    r += iw;
+    g += iw;
+    b += iw;
+    dr += offset;
+    dg += offset;
+    db += offset;
+  }
+
+  picUpdateBBoxF(ctxcanvas, x, y, 0);
+  picUpdateBBoxF(ctxcanvas, x + prim->param.imagergbaf.iw - 1, y + prim->param.imagergbaf.ih - 1, 0);
+
+  (void)ih;
+}
+
+static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                               int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   int l, offset, size;
   unsigned char *dr, *dg, *db, *da;
@@ -900,6 +992,62 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   (void)ih;
 }
 
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int l, offset, size;
+  unsigned char *dr, *dg, *db, *da;
+
+  tPrimNode *prim = primCreate(CDPIC_FIMAGERGBA);
+  prim->param.imagergbaf.iw = xmax - xmin + 1;
+  prim->param.imagergbaf.ih = ymax - ymin + 1;
+  prim->param.imagergbaf.x = x;
+  prim->param.imagergbaf.y = y;
+  prim->param.imagergbaf.w = w;
+  prim->param.imagergbaf.h = h;
+
+  size = prim->param.imagergbaf.iw*prim->param.imagergbaf.ih;
+  prim->param_buffer = malloc(4 * size);
+  prim->param.imagergbaf.r = prim->param_buffer;
+  prim->param.imagergbaf.g = prim->param.imagergbaf.r + size;
+  prim->param.imagergbaf.b = prim->param.imagergbaf.g + size;
+  prim->param.imagergbaf.a = prim->param.imagergbaf.b + size;
+
+  offset = ymin*iw + xmin;
+  r += offset;
+  g += offset;
+  b += offset;
+  a += offset;
+
+  dr = prim->param.imagergbaf.r;
+  dg = prim->param.imagergbaf.g;
+  db = prim->param.imagergbaf.b;
+  da = prim->param.imagergbaf.a;
+  offset = prim->param.imagergbaf.iw;
+
+  for (l = ymin; l <= ymax; l++)
+  {
+    memcpy(dr, r, offset);
+    memcpy(dg, g, offset);
+    memcpy(db, b, offset);
+    memcpy(da, a, offset);
+
+    r += iw;
+    g += iw;
+    b += iw;
+    a += iw;
+    dr += offset;
+    dg += offset;
+    db += offset;
+    da += offset;
+  }
+
+  picUpdateBBoxF(ctxcanvas, x, y, 0);
+  picUpdateBBoxF(ctxcanvas, x + prim->param.imagergbaf.iw - 1, y + prim->param.imagergbaf.ih - 1, 0);
+
+  (void)ih;
+}
+
 static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   int c, l, n = 0, offset, size;
@@ -946,6 +1094,56 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
 
   picUpdateBBox(ctxcanvas, x, y, 0);
   picUpdateBBox(ctxcanvas, x+prim->param.imagemap.iw-1, y+prim->param.imagemap.ih-1, 0);
+
+  (void)ih;
+}
+
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int c, l, n = 0, offset, size;
+  unsigned char *dindex;
+  long *dcolors;
+
+  tPrimNode *prim = primCreate(CDPIC_FIMAGEMAP);
+  prim->param.imagemapf.iw = xmax - xmin + 1;
+  prim->param.imagemapf.ih = ymax - ymin + 1;
+  prim->param.imagemapf.x = x;
+  prim->param.imagemapf.y = y;
+  prim->param.imagemapf.w = w;
+  prim->param.imagemapf.h = h;
+
+  size = prim->param.imagemapf.iw*prim->param.imagemapf.ih;
+  prim->param_buffer = malloc(size + 256);
+  prim->param.imagemapf.index = prim->param_buffer;
+  prim->param.imagemapf.colors = (long*)(prim->param.imagemapf.index + size);
+
+  offset = ymin*iw + xmin;
+  index += offset;
+
+  dindex = prim->param.imagemapf.index;
+  dcolors = prim->param.imagemapf.colors;
+  offset = iw - prim->param.imagemapf.iw;
+
+  for (l = ymin; l <= ymax; l++)
+  {
+    for (c = xmin; c <= xmax; c++)
+    {
+      if (*index > n)
+        n = *index;
+
+      *dindex++ = *index++;
+    }
+
+    index += offset;
+  }
+
+  n++;
+
+  for (c = 0; c < n; c++)
+    dcolors[c] = colors[c];
+
+  picUpdateBBoxF(ctxcanvas, x, y, 0);
+  picUpdateBBoxF(ctxcanvas, x + prim->param.imagemapf.iw - 1, y + prim->param.imagemapf.ih - 1, 0);
 
   (void)ih;
 }
@@ -1174,6 +1372,18 @@ static int cdplay(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax, void
     case CDPIC_PIXEL:
       cdCanvasPixel(canvas, sScaleX(prim->param.pixel.x), sScaleY(prim->param.pixel.y), prim->param.pixel.color);
       break;
+    case CDPIC_FIMAGERGB:
+      cdfCanvasPutImageRectRGB(canvas, prim->param.imagergbaf.iw, prim->param.imagergbaf.ih, prim->param.imagergbaf.r, prim->param.imagergbaf.g, prim->param.imagergbaf.b, sScaleX(prim->param.imagergbaf.x), sScaleY(prim->param.imagergbaf.y), sScaleW(prim->param.imagergbaf.w), sScaleH(prim->param.imagergbaf.h), 0, 0, 0, 0);
+      break;
+    case CDPIC_FIMAGERGBA:
+      cdfCanvasPutImageRectRGBA(canvas, prim->param.imagergbaf.iw, prim->param.imagergbaf.ih, prim->param.imagergbaf.r, prim->param.imagergbaf.g, prim->param.imagergbaf.b, prim->param.imagergbaf.a, sScaleX(prim->param.imagergbaf.x), sScaleY(prim->param.imagergbaf.y), sScaleW(prim->param.imagergbaf.w), sScaleH(prim->param.imagergbaf.h), 0, 0, 0, 0);
+      break;
+    case CDPIC_FIMAGEMAP:
+      cdfCanvasPutImageRectMap(canvas, prim->param.imagemapf.iw, prim->param.imagemapf.ih, prim->param.imagemapf.index, prim->param.imagemapf.colors, sScaleX(prim->param.imagemapf.x), sScaleY(prim->param.imagemapf.y), sScaleW(prim->param.imagemapf.w), sScaleH(prim->param.imagemapf.h), 0, 0, 0, 0);
+      break;
+    case CDPIC_FPIXEL:
+      cdfCanvasPixel(canvas, sScaleX(prim->param.pixelf.x), sScaleY(prim->param.pixelf.y), prim->param.pixelf.color);
+      break;
     }
 
     prim = prim->next;
@@ -1243,6 +1453,10 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
   canvas->cxPutImageRectMap = cdputimagerectmap;
   canvas->cxKillCanvas = cdkillcanvas;
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
 }
 
 static cdContext cdPictureContext =
