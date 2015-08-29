@@ -39,31 +39,6 @@ void cdCanvasGetImageRGB(cdCanvas* canvas, unsigned char *r, unsigned char *g, u
     canvas->cxGetImageRGB(canvas->ctxcanvas, r, g, b, x, y, iw, ih);
 }
 
-void cdfCanvasGetImageRGB(cdCanvas* canvas, unsigned char *r, unsigned char *g, unsigned char *b, double x, double y, int iw, int ih)
-{
-  assert(canvas);
-  assert(r);
-  assert(g);
-  assert(b);
-  assert(iw>0);
-  assert(ih>0);
-  if (!_cdCheckCanvas(canvas)) return;
-
-  if (canvas->use_origin)
-  {
-    x += canvas->forigin.x;
-    y += canvas->forigin.y;
-  }
-
-  if (canvas->invert_yaxis)
-    y = _cdInvertYAxis(canvas, y);
-
-  if (canvas->cxFGetImageRGB)
-    canvas->cxFGetImageRGB(canvas->ctxcanvas, r, g, b, x, y, iw, ih);
-  else if (canvas->cxGetImageRGB)
-    canvas->cxGetImageRGB(canvas->ctxcanvas, r, g, b, _cdRound(x), _cdRound(y), iw, ih);
-}
-
 void cdRGB2Gray(int width, int height, const unsigned char* red, const unsigned char* green, const unsigned char* blue, unsigned char* index, long *color)
 {
   int c, i, count;
@@ -233,7 +208,7 @@ void cdfCanvasPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned 
     canvas->cxPutImageRectRGBA(canvas->ctxcanvas, iw, ih, r, g, b, a, _cdRound(x), _cdRound(y), _cdRound(w), _cdRound(h), xmin, xmax, ymin, ymax);
   else
   {
-    if (canvas->cxFGetImageRGB && canvas->cxFPutImageRectRGB)
+    if (canvas->cxGetImageRGB && canvas->cxFPutImageRectRGB)
       cdfSimPutImageRectRGBA(canvas, iw, ih, r, g, b, a, x, y, w, h, xmin, xmax, ymin, ymax);
     else if (canvas->cxGetImageRGB && canvas->cxPutImageRectRGB)
       cdSimPutImageRectRGBA(canvas, iw, ih, r, g, b, a, _cdRound(x), _cdRound(y), _cdRound(w), _cdRound(h), xmin, xmax, ymin, ymax);

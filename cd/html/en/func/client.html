@@ -28,15 +28,11 @@
   <div class="function"><pre class="function"><span class="mainFunction">void <a name="cdGetImageRGB">cdCanvasGetImageRGB</a>(cdCanvas* canvas, 
                          unsigned char *r, unsigned char *g, unsigned char *b, 
                          int x, int y, int iw, int ih); [in C]</span>
-<span class="auto-style1">void c<a name="cdGetImageRGB1">dfCanvasGetImageRGB</a>(cdCanvas* canvas, 
-                         unsigned char *r, unsigned char *g, unsigned char *b, 
-                         double x, double y, int iw, int ih); [in C]
-void <a name="cdGetImageRGB0">wdCanvasGetImageRGB</a>(cdCanvas* canvas, 
+<span class="auto-style1">void <a name="cdGetImageRGB0">wdCanvasGetImageRGB</a>(cdCanvas* canvas, 
                          unsigned char *r, unsigned char *g, unsigned char *b, 
                          double x, double y, int iw, int ih); (WC) [in C]</span>
 
 canvas:GetImageRGB(imagergb: cdImageRGB; x, y: number) [in Lua]
-canvas:fGetImageRGB(imagergb: cdImageRGB; x, y: number) [in Lua]
 canvas:wGetImageRGB(imagergb: cdImageRGB; x, y: number) <span class="auto-style1">(WC) </span>[in Lua]</pre>
     <p>Returns the red, green and blue components of each pixel in a server image. 
       The RGB components are provided in three matrices stored as byte arrays. The <strong>
@@ -130,11 +126,9 @@ canvas:wPutImageRectMap(imagemap: cdImageMap; palette: cdPalette; x, y, w, h, xm
       then a vector with 256 gray tones is assumed.</p>
     </div><div class="function">
 		<pre class="function"><strong>void cdCanvasGetImImage(cdCanvas* canvas, const imImage* image, int x, int y); [in C]
-</strong>void cdfCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); [in C]
-void wdCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); (WC) [in C]
+</strong>void wdCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); (WC) [in C]
 
 canvas:GetImImage(image: imImage, x,y: number) [in Lua]
-canvas:fGetImImage(image: imImage, x,y: number) [in Lua]
 canvas:wGetImImage(image: imImage, x,y: number) (WC) [in Lua]</pre>
 		<p>The same as the <strong>cdCanvasGetImageRGB</strong> functions&nbsp;except for the fact that use an
 		<strong>imImage</strong> structure. Image must be a display RGB image (color_space=IM_RGB and data_type=IM_BYTE). See the

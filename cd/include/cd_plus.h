@@ -859,13 +859,10 @@ namespace cd
     {
       wdCanvasPutImImage(canvas, image.im_image, x, y, w, h);
     }
+
     void GetImage(im::Image& image, int x, int y)
     {
       cdCanvasGetImImage(canvas, image.im_image, x, y);
-    }
-    void GetImage(im::Image& image, double x, double y)
-    {
-      cdfCanvasGetImImage(canvas, image.im_image, x, y);
     }
     void wGetImage(im::Image& image, double x, double y)
     {

@@ -374,11 +374,12 @@ int wdCanvasPlay(cdCanvas* canvas, cdContext *context, double xmin, double xmax,
 
 void wdCanvasGetImageRGB(cdCanvas* canvas, unsigned char* r, unsigned char* g, unsigned char* b, double x, double y, int iw, int ih)
 {
+  int xr, yr;
   assert(canvas);
   if (!_cdCheckCanvas(canvas)) return;
 
-  _wfWorld2Canvas(canvas, x, y, x, y);
-  cdfCanvasGetImageRGB(canvas, r, g, b, x, y, iw, ih);
+  _wWorld2Canvas(canvas, x, y, xr, yr);
+  cdCanvasGetImageRGB(canvas, r, g, b, xr, yr, iw, ih);
 }
 
 void wdCanvasPutImageRectRGB(cdCanvas* canvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)

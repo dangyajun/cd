@@ -1943,16 +1943,6 @@ static int cdlua5_getimagergb(lua_State *L)
   return 0;
 }
 
-static int cdlua5_fgetimagergb(lua_State *L)
-{
-  cdluaImageRGB* imagergb_p = cdlua_checkimagergb(L, 2);
-  double x = luaL_checknumber(L, 3);
-  double y = luaL_checknumber(L, 4);
-  cdfCanvasGetImageRGB(cdlua_checkcanvas(L, 1), imagergb_p->red, imagergb_p->green, imagergb_p->blue,
-                      x, y, imagergb_p->width, imagergb_p->height);
-  return 0;
-}
-
 static int wdlua5_getimagergb(lua_State *L)
 {
   cdluaImageRGB* imagergb_p = cdlua_checkimagergb(L, 2);
@@ -2642,7 +2632,6 @@ static const luaL_Reg cdlib_canvas_meta[] = {
   
   /* Client Images */
   {"GetImageRGB"      , cdlua5_getimagergb},
-  {"fGetImageRGB"     , cdlua5_fgetimagergb},
   {"wGetImageRGB"     , wdlua5_getimagergb},
   {"PutImageRectRGB"  , cdlua5_putimagerectrgb},
   {"fPutImageRectRGB"  , cdlua5_fputimagerectrgb},

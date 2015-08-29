@@ -1364,7 +1364,7 @@ void cdfSimPutImageRectRGBA(cdCanvas* canvas, int iw, int ih, const unsigned cha
   ag = ar + size;
   ab = ag + size;
 
-  canvas->cxFGetImageRGB(canvas->ctxcanvas, ar, ag, ab, x, y, zw, zh);
+  canvas->cxGetImageRGB(canvas->ctxcanvas, ar, ag, ab, _cdRound(x), _cdRound(y), zw, zh);
 
   rw = xmax - xmin + 1;
   rh = ymax - ymin + 1;

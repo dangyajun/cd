@@ -70,11 +70,9 @@ channel.</p>
 <p>Defines an <strong>imImage</strong> as a stipple on any canvas. Image must 
   be a binary image (color_space=IM_BINARY).</p>
 <pre class="function"><strong>void cdCanvasGetImImage(cdCanvas* canvas, const imImage* image, int x, int y); [in C]
-</strong>void cdfCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); [in C]
-void wdCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); (WC) [in C]
+</strong>void wdCanvasGetImImage(cdCanvas* canvas, const imImage* image, double x, double y); (WC) [in C]
 
 canvas:GetImImage(image: imImage, x,y: number) [in Lua]
-canvas:fGetImImage(image: imImage, x,y: number) [in Lua]
 canvas:wGetImImage(image: imImage, x,y: number) (WC) [in Lua]</pre>
 <p>Retrieves the canvas contents in an <strong>imImage</strong>. Image must 
   be a display RGB image (color_space=IM_RGB and data_type=IM_BYTE).</p>
