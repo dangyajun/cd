@@ -1439,7 +1439,8 @@ static void sFixImageY(cdCanvas* canvas, int *topdown, double *y, double h)
     *y -= (h - 1);  /* move Y to top-left corner, since it was at the bottom of the image */
 }
 
-static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, pos, offset, topdown, stride;
   unsigned int* data;
@@ -1507,12 +1508,14 @@ static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   cairo_restore (ctxcanvas->cr);
 }
 
-static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   cdfputimagerectrgb(ctxcanvas, iw, ih, r, g, b, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
 }
 
-static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                                double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, pos, offset, topdown, stride;
   unsigned int* data;
@@ -1578,7 +1581,8 @@ static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const un
   cairo_restore (ctxcanvas->cr);
 }
 
-static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                               int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   cdfputimagerectrgba(ctxcanvas, iw, ih, r, g, b, a, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
 }
@@ -1597,7 +1601,8 @@ static int sCalcPalSize(int size, const unsigned char *index)
   return pal_size;
 }
 
-static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, 
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, pos, offset, pal_size, topdown, stride;
   unsigned int* data, cairo_colors[256];
@@ -1673,7 +1678,8 @@ static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   cairo_restore (ctxcanvas->cr);
 }
 
-static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, 
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   cdfputimagerectmap(ctxcanvas, iw, ih, index, colors, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
 }
