@@ -1697,7 +1697,8 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
 /* client images                                      */
 /******************************************************/
 
-static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh;
   rw = xmax-xmin+1;
@@ -1741,6 +1742,51 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdPutImageRectRGBEnd\n");
 }
 
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b,
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int i, j, rw, rh;
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+  (void)ih;
+
+  if (ctxcanvas->level1)
+    return;
+
+  if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdfPutImageRectRGB Start\n");
+
+  fprintf(ctxcanvas->file, "[0 0 0 0 0 0] currentmatrix\n");
+  fprintf(ctxcanvas->file, "%g %g translate\n", x, y);
+  fprintf(ctxcanvas->file, "%g %g scale\n", w, h);
+
+  fprintf(ctxcanvas->file, "%d %d 8\n", rw, rh);
+  fprintf(ctxcanvas->file, "[%d 0 0 %d 0 0]\n", rw, rh);
+  fprintf(ctxcanvas->file, "{currentfile %d string readhexstring pop}\n", rw);
+  fprintf(ctxcanvas->file, "false 3\n");
+  fprintf(ctxcanvas->file, "colorimage\n");
+
+  for (j = ymin; j <= ymax; j++)
+  {
+    for (i = xmin; i <= xmax; i++)
+    {
+      int pos = j*iw + i;
+      fprintf(ctxcanvas->file, "%02x%02x%02x", (int)r[pos], (int)g[pos], (int)b[pos]);
+    }
+
+    fprintf(ctxcanvas->file, "\n");
+  }
+
+  fprintf(ctxcanvas->file, "setmatrix\n");
+
+  if (ctxcanvas->eps)
+  {
+    fbbox(ctxcanvas, x, y);
+    fbbox(ctxcanvas, x + rw - 1, y + rh - 1);
+  }
+
+  if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdfPutImageRectRGBEnd\n");
+}
+
 static int isgray(int size, const unsigned char *index, const long int *colors)
 {
   int i, pal_size = 0;
@@ -1765,7 +1811,8 @@ static int isgray(int size, const unsigned char *index, const long int *colors)
   return 1;
 }
 
-static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, 
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, is_gray;
   rw = xmax-xmin+1;
@@ -1832,6 +1879,74 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdPutImageRectMapEnd\n");
 }
 
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors,
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int i, j, rw, rh, is_gray;
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+  (void)ih;
+
+  is_gray = isgray(iw*ih, index, colors);
+
+  if (!is_gray && ctxcanvas->level1)
+    return;
+
+  if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdPutImageRectMap Start\n");
+
+  fprintf(ctxcanvas->file, "[0 0 0 0 0 0] currentmatrix\n");
+  fprintf(ctxcanvas->file, "%g %g translate\n", x, y);
+  fprintf(ctxcanvas->file, "%g %g scale\n", w, h);
+
+  fprintf(ctxcanvas->file, "%d %d 8\n", rw, rh);
+  fprintf(ctxcanvas->file, "[%d 0 0 %d 0 0]\n", rw, rh);
+  fprintf(ctxcanvas->file, "{currentfile %d string readhexstring pop}\n", rw);
+
+  if (is_gray)
+  {
+    fprintf(ctxcanvas->file, "image\n");
+
+    for (j = ymin; j <= ymax; j++)
+    {
+      for (i = xmin; i <= xmax; i++)
+      {
+        int pos = j*iw + i;
+        fprintf(ctxcanvas->file, "%02x", (int)index[pos]);
+      }
+
+      fprintf(ctxcanvas->file, "\n");
+    }
+  }
+  else
+  {
+    fprintf(ctxcanvas->file, "false 3\n");
+    fprintf(ctxcanvas->file, "colorimage\n");
+
+    for (j = ymin; j <= ymax; j++)
+    {
+      for (i = xmin; i <= xmax; i++)
+      {
+        int pos = j*iw + i;
+        unsigned char r, g, b;
+        cdDecodeColor(colors[index[pos]], &r, &g, &b);
+        fprintf(ctxcanvas->file, "%02x%02x%02x", (int)r, (int)g, (int)b);
+      }
+
+      fprintf(ctxcanvas->file, "\n");
+    }
+  }
+
+  fprintf(ctxcanvas->file, "setmatrix\n");
+
+  if (ctxcanvas->eps)
+  {
+    fbbox(ctxcanvas, x, y);
+    fbbox(ctxcanvas, x + rw - 1, y + rh - 1);
+  }
+
+  if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdPutImageRectMapEnd\n");
+}
+
 /******************************************************/
 /* server images                                      */
 /******************************************************/
@@ -1856,6 +1971,28 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
     bbox(ctxcanvas, x, y);
 
   if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdPixelEnd\n");
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdfPixel Start\n");
+
+  fprintf(ctxcanvas->file, "%g %g %g setrgbcolor\n",
+          get_red(color), get_green(color), get_blue(color));
+
+  if (ctxcanvas->level1)
+  {
+    fprintf(ctxcanvas->file, "N\n");
+    fprintf(ctxcanvas->file, "%g %g 1 0 360 arc\n", x, y);
+    fprintf(ctxcanvas->file, "C fill\n");
+  }
+  else
+    fprintf(ctxcanvas->file, "%g %g 1 1 RF\n", x, y);
+
+  if (ctxcanvas->eps)
+    fbbox(ctxcanvas, x, y);
+
+  if (ctxcanvas->debug) fprintf(ctxcanvas->file, "%%cdfPixelEnd\n");
 }
 
 /******************************************************/
@@ -2183,6 +2320,9 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxFSector = cdfsector;
   canvas->cxFChord = cdfchord;
   canvas->cxFText = cdftext;
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;
