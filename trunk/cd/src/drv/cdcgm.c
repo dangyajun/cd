@@ -739,7 +739,8 @@ static int cdbackopacity(cdCtxCanvas *ctxcanvas, int opaque)
 /* client images                                      */
 /******************************************************/
 
-static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b,
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   double p[6];
   double  *color_array;
@@ -753,9 +754,9 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   if (!color_array)
     return;
   
-  p[0] = (double) x;      p[1] = (double) (y+h);
-  p[2] = (double) (x+w);  p[3] = (double) y;
-  p[4] = (double) (x+w);  p[5] = (double) (y+h);
+  p[0] = x;      p[1] = (y+h);
+  p[2] = (x+w);  p[3] = y;
+  p[4] = (x+w);  p[5] = (y+h);
   
   for ( i=0; i<rh; i++ )
   {
@@ -774,7 +775,14 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   free(color_array);
 }
 
-static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b,
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectrgb(ctxcanvas, iw, ih, r, g, b, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors,
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   double p[6];
   double *color_array;
@@ -789,9 +797,9 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   if (!color_array)
     return;
   
-  p[0] = (double) x;      p[1] = (double) y;
-  p[2] = (double) (x+w);  p[3] = (double) (y+h);
-  p[4] = (double) (x+w);  p[5] = (double) y;
+  p[0] = x;      p[1] = y;
+  p[2] = (x+w);  p[3] = (y+h);
+  p[4] = (x+w);  p[5] = y;
   
   for ( i=0; i<rh; i++ )
   {
@@ -810,17 +818,23 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   free(color_array);
 }
 
+static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors,
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectmap(ctxcanvas, iw, ih, index, colors, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
 /******************************************************/
 /* server images                                      */
 /******************************************************/
 
-static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long color)
 {
   double cor[3];
   double pts[2];
 
-  pts[0] = (double) x;
-  pts[1] = (double) y;
+  pts[0] = x;
+  pts[1] = y;
   
   cor[0] = get_red(color);
   cor[1] = get_green(color);
@@ -828,6 +842,11 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
 
   cgm_marker_colour( ctxcanvas->cgm, cor);
   cgm_polymarker ( ctxcanvas->cgm, 1, pts );
+}
+
+static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
+{
+  cdfpixel(ctxcanvas, (double)x, (double)y, color);
 }
 
 /*
@@ -951,6 +970,10 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxFText = cdftext;
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectMap = cdputimagerectmap;
+
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;
