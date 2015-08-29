@@ -1176,7 +1176,7 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
 /* client images                                      */
 /******************************************************/
 
-static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, d, image, rw, rh, rgb_size, pos;
   char options[80];
@@ -1206,14 +1206,19 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   sprintf(options, "width=%d height=%d components=3 bpc=8", rw, rh);
   image = PDF_load_image(ctxcanvas->pdf, "raw", "cd_raw_rgb", 0, options);
 
-  sprintf(options, "boxsize={%d %d} fitmethod=meet", w, h);
+  sprintf(options, "boxsize={%g %g} fitmethod=meet", w, h);
   PDF_fit_image(ctxcanvas->pdf, image, x, y, options);
 
   PDF_delete_pvf(ctxcanvas->pdf, "cd_raw_rgb", 0);
   free(rgb_data);
 }
 
-static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectrgb(ctxcanvas, iw, ih, r, g, b, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, d, image, image_mask, rw, rh, alpha_size, rgb_size, pos;
   char options[80];
@@ -1264,7 +1269,7 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   sprintf(options, "width=%d height=%d components=3 bpc=8 masked=%d", rw, rh, image_mask);
   image = PDF_load_image(ctxcanvas->pdf, "raw", "cd_raw_rgb", 0, options);
 
-  sprintf(options, "boxsize={%d %d} fitmethod=meet", w, h);
+  sprintf(options, "boxsize={%g %g} fitmethod=meet", w, h);
   PDF_fit_image(ctxcanvas->pdf, image, x, y, options);
 
   PDF_delete_pvf(ctxcanvas->pdf, "cd_raw_alpha", 0);
@@ -1273,7 +1278,12 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   free(rgb_data);
 }
 
-static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectrgba(ctxcanvas, iw, ih, r, g, b, a, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, d, rw, rh, image, rgb_size, pos;
   char options[80];
@@ -1305,18 +1315,23 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   sprintf(options, "width=%d height=%d components=3 bpc=8", rw, rh);
   image = PDF_load_image(ctxcanvas->pdf, "raw", "cd_raw_rgb", 0, options);
 
-  sprintf(options, "boxsize={%d %d} fitmethod=meet", w, h);
+  sprintf(options, "boxsize={%g %g} fitmethod=meet", w, h);
   PDF_fit_image(ctxcanvas->pdf, image, x, y, options);
 
   PDF_delete_pvf(ctxcanvas->pdf, "cd_raw_rgb", 0);
   free(rgb_data);
 }
 
+static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectmap(ctxcanvas, iw, ih, index, colors, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
 /******************************************************/
 /* server images                                      */
 /******************************************************/
 
-static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long color)
 {
   PDF_setcolor(ctxcanvas->pdf, "fill", "rgb", get_red(color), get_green(color), get_blue(color),  0);
 
@@ -1324,6 +1339,11 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   PDF_circle(ctxcanvas->pdf, x, y, .5);
 
   PDF_fill(ctxcanvas->pdf);
+}
+
+static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
+{
+  cdfpixel(ctxcanvas, (double)x, (double)y, color);
 }
 
 /******************************************************/
@@ -1721,6 +1741,11 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectMap = cdputimagerectmap;
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
+
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;

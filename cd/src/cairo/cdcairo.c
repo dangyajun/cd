@@ -1360,7 +1360,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 
 /******************************************************/
 
-static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
+static void cdfgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, double x, double y, int w, int h)
 {
   int i, j, pos, offset, stride;
   unsigned int* data;
@@ -1423,7 +1423,12 @@ static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned cha
   cairo_restore(ctxcanvas->cr);
 }
 
-static void sFixImageY(cdCanvas* canvas, int *topdown, int *y, int h)
+static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
+{
+  cdfgetimagergb(ctxcanvas, r, g, b, (double)x, (double)y, w, h);
+}
+
+static void sFixImageY(cdCanvas* canvas, int *topdown, double *y, double h)
 {
   if (canvas->invert_yaxis)
     *topdown = 0;
@@ -1434,7 +1439,7 @@ static void sFixImageY(cdCanvas* canvas, int *topdown, int *y, int h)
     *y -= (h - 1);  /* move Y to top-left corner, since it was at the bottom of the image */
 }
 
-static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, pos, offset, topdown, stride;
   unsigned int* data;
@@ -1502,7 +1507,12 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   cairo_restore (ctxcanvas->cr);
 }
 
-static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectrgb(ctxcanvas, iw, ih, r, g, b, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, pos, offset, topdown, stride;
   unsigned int* data;
@@ -1568,6 +1578,11 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   cairo_restore (ctxcanvas->cr);
 }
 
+static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectrgba(ctxcanvas, iw, ih, r, g, b, a, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
 static int sCalcPalSize(int size, const unsigned char *index)
 {
   int i, pal_size = 0;
@@ -1582,7 +1597,7 @@ static int sCalcPalSize(int size, const unsigned char *index)
   return pal_size;
 }
 
-static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   int i, j, rw, rh, pos, offset, pal_size, topdown, stride;
   unsigned int* data, cairo_colors[256];
@@ -1658,16 +1673,26 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   cairo_restore (ctxcanvas->cr);
 }
 
-static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
+static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+{
+  cdfputimagerectmap(ctxcanvas, iw, ih, index, colors, (double)x, (double)y, (double)w, (double)h, xmin, xmax, ymin, ymax);
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long color)
 {
   cairo_pattern_t* old_source = cairo_get_source(ctxcanvas->cr);
   cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(color), cdCairoGetGreen(color), cdCairoGetBlue(color), cdCairoGetAlpha(color));
 
-  cairo_move_to(ctxcanvas->cr, (double)x, (double)y);
-  cairo_arc(ctxcanvas->cr, (double)x, (double)y, 0.5, 0.0, 2 * M_PI);
+  cairo_move_to(ctxcanvas->cr, x, y);
+  cairo_arc(ctxcanvas->cr, x, y, 0.5, 0.0, 2 * M_PI);
 
   cairo_fill(ctxcanvas->cr);
   cairo_set_source(ctxcanvas->cr, old_source);
+}
+
+static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
+{
+  cdfpixel(ctxcanvas, (double)x, (double)y, color);
 }
 
 static void cdnewregion(cdCtxCanvas *ctxcanvas)
@@ -2380,6 +2405,11 @@ void cdcairoInitTable(cdCanvas* canvas)
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectMap = cdputimagerectmap;
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
+  canvas->cxFGetImageRGB = cdfgetimagergb;
 }
 
 #ifdef USE_GTK3
