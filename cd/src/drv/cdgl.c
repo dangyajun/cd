@@ -1057,10 +1057,10 @@ static GLuint cdglCreateTexture(void)
   return texture;
 }
 
-static void cdglDrawTexture(cdCtxCanvas *ctxcanvas, GLuint texture, int x, int y, int w, int h)
+static void cdglDrawTexture(cdCtxCanvas *ctxcanvas, GLuint texture, double x, double y, double w, double h)
 {
-  int x2 = x + w - 1;
-  int y2 = y + h - 1;
+  double x2 = x + w - 1;
+  double y2 = y + h - 1;
 
   int smooth = glIsEnabled(GL_POLYGON_SMOOTH);
   if (smooth) glDisable(GL_POLYGON_SMOOTH);
@@ -1120,6 +1120,41 @@ static void cdglPutImage(cdCtxCanvas *ctxcanvas, int rw, int rh, const unsigned 
   }
 }
 
+static void cdglfPutImage(cdCtxCanvas *ctxcanvas, int rw, int rh, const unsigned char* glImage, int format, double x, double y, double w, double h)
+{
+  if (iGLIsOpenGL2orMore())
+  {
+    /* Texture is faster(?), will follow the transformations, follow clipping,
+    but have limitations.
+    Its maximum size is 3379 (GL_MAX_TEXTURE_SIZE).
+    In OpenGL 1.x its size must be a power of two.
+    */
+    GLuint texture = cdglCreateTexture();
+
+    glTexImage2D(GL_TEXTURE_2D, 0, format, rw, rh, 0, format, GL_UNSIGNED_BYTE, glImage);
+
+    cdglDrawTexture(ctxcanvas, texture, x, y, w, h);
+
+    glDeleteTextures(1, &texture);
+  }
+  else
+  {
+    /* glDrawPixels is not affected by transformations.
+    glRasterPos2i will be clipped if outside the canvas
+    and the image will not be drawn.
+    So we will avoid these two functions and use textures by default.
+    */
+    if (w != rw || h != rh)
+      glPixelZoom((GLfloat)w / (GLfloat)rw, (GLfloat)h / (GLfloat)rh);
+
+    glRasterPos2d(x, y);
+    glDrawPixels(rw, rh, format, GL_UNSIGNED_BYTE, glImage);
+
+    if (w != rw || h != rh)
+      glPixelZoom(1.0f, 1.0f);
+  }
+}
+
 static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
 {
   GLubyte* glImage = (GLubyte*)malloc((w*3)*h);  /* each pixel uses 3 bytes (RGB) */
@@ -1136,7 +1171,8 @@ static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned cha
   free(glImage);
 }
 
-static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   GLubyte* glImage;
   int rw = xmax-xmin+1;
@@ -1156,7 +1192,29 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   (void)ctxcanvas;
 }
 
-static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, 
+                              double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  GLubyte* glImage;
+  int rw = xmax - xmin + 1;
+  int rh = ymax - ymin + 1;
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  glImage = cdglCreateImageRGBA(xmin, ymin, rw, rh, r, g, b, NULL, iw);
+  if (!glImage)
+    return;
+
+  cdglfPutImage(ctxcanvas, rw, rh, glImage, GL_RGB, x, y, w, h);
+
+  free(glImage);
+
+  (void)ih;
+  (void)ctxcanvas;
+}
+
+static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                               int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   int blend = 1;
   GLubyte* glImage;
@@ -1187,7 +1245,40 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
   (void)ctxcanvas;
 }
 
-static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, 
+                                double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  int blend = 1;
+  GLubyte* glImage;
+  int rw = xmax - xmin + 1;
+  int rh = ymax - ymin + 1;
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  glImage = cdglCreateImageRGBA(xmin, ymin, rw, rh, r, g, b, a, iw);
+  if (!glImage)
+    return;
+
+  if (!glIsEnabled(GL_BLEND))
+  {
+    blend = 0;
+    glEnable(GL_BLEND);
+  }
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  cdglfPutImage(ctxcanvas, rw, rh, glImage, GL_RGBA, x, y, w, h);
+
+  if (!blend)
+    glDisable(GL_BLEND);
+
+  free(glImage);
+
+  (void)ih;
+  (void)ctxcanvas;
+}
+
+static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, 
+                              int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
   GLubyte* glImage;
   int rw = xmax-xmin+1;
@@ -1207,6 +1298,27 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   (void)ctxcanvas;
 }
 
+static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, 
+                               double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
+{
+  GLubyte* glImage;
+  int rw = xmax-xmin+1;
+  int rh = ymax-ymin+1;
+
+  glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+
+  glImage = cdglCreateImageMap(xmin, ymin, rw, rh, colors, index, iw);
+  if (!glImage)
+    return;
+
+  cdglfPutImage(ctxcanvas, rw, rh, glImage, GL_RGB, x, y, w, h);
+
+  free(glImage);
+
+  (void)ih;
+  (void)ctxcanvas;
+}
+
 static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
 {
   glColor4ub(cdRed(color), 
@@ -1218,6 +1330,28 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   glPointSize(1);
   glBegin(GL_POINTS);
     glVertex2i(x, y);
+  glEnd();
+
+  /* restore the foreground color */
+  glColor4ub(cdRed(ctxcanvas->canvas->foreground), 
+             cdGreen(ctxcanvas->canvas->foreground), 
+             cdBlue(ctxcanvas->canvas->foreground), 
+             cdAlpha(ctxcanvas->canvas->foreground));
+
+  (void)ctxcanvas;
+}
+
+static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
+{
+  glColor4ub(cdRed(color), 
+             cdGreen(color), 
+             cdBlue(color), 
+             cdAlpha(color));
+
+  /* Draw pixel */
+  glPointSize(1);
+  glBegin(GL_POINTS);
+    glVertex2d(x, y);
   glEnd();
 
   /* restore the foreground color */
@@ -1627,6 +1761,10 @@ static void cdinittable(cdCanvas* canvas)
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectMap = cdputimagerectmap;
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
+  canvas->cxFPixel = cdfpixel;
 
   canvas->cxActivate = cdactivate;
   canvas->cxKillCanvas = cdkillcanvas;
