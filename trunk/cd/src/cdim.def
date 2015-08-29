@@ -5,7 +5,6 @@ EXPORTS
   cdCanvasStippleImImage
   cdCanvasGetImImage
   cdfCanvasPutImImage
-  cdfCanvasGetImImage
   wdCanvasPutImImage
   wdCanvasGetImImage
   

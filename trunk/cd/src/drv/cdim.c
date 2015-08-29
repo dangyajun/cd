@@ -147,15 +147,6 @@ void cdfCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, doubl
     x, y, w, h, 0, 0, 0, 0);
 }
 
-void cdfCanvasGetImImage(cdCanvas* canvas, imImage* image, double x, double y)
-{
-  cdfCanvasGetImageRGB(canvas,
-                      (unsigned char*)image->data[0],
-                      (unsigned char*)image->data[1],
-                      (unsigned char*)image->data[2],
-                      x, y, image->width, image->height);
-}
-
 void wdCanvasPutImImage(cdCanvas* canvas, const imImage* image, double x, double y, double w, double h)
 {
   if (image->data_type != IM_BYTE)

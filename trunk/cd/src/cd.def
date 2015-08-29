@@ -435,7 +435,6 @@ EXPORTS
   wdCanvasGetImageRGB
   cdfCanvasPixel
   cdfCanvasMark
-  cdfCanvasGetImageRGB
   cdfCanvasPutImageRectRGB
   cdfCanvasPutImageRectRGBA
   cdfCanvasPutImageRectMap

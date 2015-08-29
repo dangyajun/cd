@@ -1360,7 +1360,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 
 /******************************************************/
 
-static void cdfgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, double x, double y, int w, int h)
+static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
 {
   int i, j, pos, offset, stride;
   unsigned int* data;
@@ -1421,11 +1421,6 @@ static void cdfgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned ch
   cairo_destroy(cr);
 
   cairo_restore(ctxcanvas->cr);
-}
-
-static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned char *g, unsigned char *b, int x, int y, int w, int h)
-{
-  cdfgetimagergb(ctxcanvas, r, g, b, (double)x, (double)y, w, h);
 }
 
 static void sFixImageY(cdCanvas* canvas, int *topdown, double *y, double h)
@@ -2415,7 +2410,6 @@ void cdcairoInitTable(cdCanvas* canvas)
   canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
   canvas->cxFPutImageRectMap = cdfputimagerectmap;
   canvas->cxFPixel = cdfpixel;
-  canvas->cxFGetImageRGB = cdfgetimagergb;
 }
 
 #ifdef USE_GTK3

@@ -1953,6 +1953,30 @@ static void sFixImageY(cdCanvas* canvas, int *topdown, int *y, int *h)
     *y -= ((*h) - 1);  // move Y to top-left corner, since it was at the bottom of the image
 }
 
+static void sfFixImageY(cdCanvas* canvas, int *topdown, double *y, double *h)
+{
+  if (canvas->invert_yaxis)
+  {
+    if (*h < 0)
+      *topdown = 1;
+    else
+      *topdown = 0;
+  }
+  else
+  {
+    if (*h < 0)
+      *topdown = 0;
+    else
+      *topdown = 1;
+  }
+
+  if (*h < 0)
+    *h = -(*h);        // y is at top-left corner (UNDOCUMENTED FEATURE)
+
+  if (!(*topdown))
+    *y -= ((*h) - 1);  // move Y to top-left corner, since it was at the bottom of the image
+}
+
 static void sDrawImageRect(cdCtxCanvas* ctxcanvas, Bitmap& image, ImageAttributes& imageAttributes, int x, int y, int w, int h)
 {
   if (ctxcanvas->use_img_points)
@@ -1982,7 +2006,36 @@ static void sDrawImageRect(cdCtxCanvas* ctxcanvas, Bitmap& image, ImageAttribute
   }
 }
 
-static void cdputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index, 
+static void sfDrawImageRect(cdCtxCanvas* ctxcanvas, Bitmap& image, ImageAttributes& imageAttributes, double x, double y, double w, double h)
+{
+  if (ctxcanvas->use_img_points)
+  {
+    PointF pts[3];
+    pts[0] = PointF((REAL)ctxcanvas->img_points[0].X, (REAL)ctxcanvas->img_points[0].Y);
+    pts[1] = PointF((REAL)ctxcanvas->img_points[1].X, (REAL)ctxcanvas->img_points[1].Y);
+    pts[2] = PointF((REAL)ctxcanvas->img_points[2].X, (REAL)ctxcanvas->img_points[2].Y);
+    if (ctxcanvas->canvas->invert_yaxis)
+    {
+      pts[0].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[0].Y);
+      pts[1].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[1].Y);
+      pts[2].Y = _cdInvertYAxis(ctxcanvas->canvas, pts[2].Y);
+    }
+    ctxcanvas->graphics->DrawImage(&image, pts, 3,
+                                   0, 0, (REAL)image.GetWidth(), (REAL)image.GetHeight(), UnitPixel,
+                                   &imageAttributes, NULL, NULL);
+  }
+  else
+  {
+    /* Do NOT keep PixelOffsetMode because some graphic objects move their position and size. */
+    ctxcanvas->graphics->SetPixelOffsetMode(PixelOffsetModeHalf);
+    ctxcanvas->graphics->DrawImage(&image, RectF((REAL)x, (REAL)y, (REAL)w, (REAL)h),
+                                   0, 0, (REAL)image.GetWidth(), (REAL)image.GetHeight(), UnitPixel,
+                                   &imageAttributes, NULL, NULL);
+    ctxcanvas->graphics->SetPixelOffsetMode(PixelOffsetModeNone);
+  }
+}
+
+static void cdputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index,
                                                       const long int *colors, 
                                int x, int y, int w, int h, 
                                int xmin, int xmax, int ymin, int ymax)
@@ -2044,6 +2097,70 @@ static void cdputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, co
 
   ctxcanvas->dirty = 1;
 }
+
+static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index,
+                              const long int *colors,
+                              double x, double y, double w, double h,
+                              int xmin, int xmax, int ymin, int ymax)
+{
+  int topdown;
+  Bitmap image(xmax - xmin + 1, ymax - ymin + 1, PixelFormat24bppRGB);
+  image.SetResolution(ctxcanvas->graphics->GetDpiX(), ctxcanvas->graphics->GetDpiX());
+
+  sfFixImageY(ctxcanvas->canvas, &topdown, &y, &h);
+  sMap2Bitmap(image, width, height, index, colors, xmin, xmax, ymin, ymax, topdown);
+
+  ImageAttributes imageAttributes;
+  if (ctxcanvas->use_img_transp)
+    imageAttributes.SetColorKey(ctxcanvas->img_transp[0], ctxcanvas->img_transp[1], ColorAdjustTypeBitmap);
+
+  sfDrawImageRect(ctxcanvas, image, imageAttributes, x, y, w, h);
+
+  ctxcanvas->dirty = 1;
+}
+
+static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *red,
+                              const unsigned char *green,
+                              const unsigned char *blue,
+                              double x, double y, double w, double h,
+                              int xmin, int xmax, int ymin, int ymax)
+{
+  int topdown;
+  Bitmap image(xmax - xmin + 1, ymax - ymin + 1, PixelFormat24bppRGB);
+  image.SetResolution(ctxcanvas->graphics->GetDpiX(), ctxcanvas->graphics->GetDpiX());
+
+  sfFixImageY(ctxcanvas->canvas, &topdown, &y, &h);
+  sRGB2Bitmap(image, width, height, red, green, blue, xmin, xmax, ymin, ymax, topdown);
+
+  ImageAttributes imageAttributes;
+  if (ctxcanvas->use_img_transp)
+    imageAttributes.SetColorKey(ctxcanvas->img_transp[0], ctxcanvas->img_transp[1], ColorAdjustTypeBitmap);
+
+  sfDrawImageRect(ctxcanvas, image, imageAttributes, x, y, w, h);
+
+  ctxcanvas->dirty = 1;
+}
+
+static void cdfputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *red,
+                               const unsigned char *green,
+                               const unsigned char *blue,
+                               const unsigned char *alpha,
+                               double x, double y, double w, double h,
+                               int xmin, int xmax, int ymin, int ymax)
+{
+  int topdown;
+  Bitmap image(xmax - xmin + 1, ymax - ymin + 1, PixelFormat32bppARGB);
+  image.SetResolution(ctxcanvas->graphics->GetDpiX(), ctxcanvas->graphics->GetDpiX());
+
+  sfFixImageY(ctxcanvas->canvas, &topdown, &y, &h);
+  sRGBA2Bitmap(image, width, height, red, green, blue, alpha, xmin, xmax, ymin, ymax, topdown);
+
+  ImageAttributes imageAttributes;
+  sfDrawImageRect(ctxcanvas, image, imageAttributes, x, y, w, h);
+
+  ctxcanvas->dirty = 1;
+}
+
 
 /********************************************************************/
 /*
@@ -2934,6 +3051,10 @@ void cdwpInitTable(cdCanvas* canvas)
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectMap = cdputimagerectmap;
   canvas->cxPutImageRectRGBA = cdputimagerectrgba; 
+
+  canvas->cxFPutImageRectRGB = cdfputimagerectrgb;
+  canvas->cxFPutImageRectRGBA = cdfputimagerectrgba;
+  canvas->cxFPutImageRectMap = cdfputimagerectmap;
 
   canvas->cxClip = cdclip;
   canvas->cxClipArea = cdcliparea; 
