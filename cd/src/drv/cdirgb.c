@@ -396,52 +396,24 @@ static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
   free(ctxcanvas);
 }
 
-unsigned char* cdAlphaImage(cdCanvas* canvas)
-{
-  cdCtxCanvas* ctxcanvas;
-  assert(canvas);
-
-  if (canvas->context != cdContextImageRGB())
-    return NULL;
-
-  ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
-  return ctxcanvas->alpha;
-}
-
 unsigned char* cdRedImage(cdCanvas* canvas)
 {
-  cdCtxCanvas* ctxcanvas;
-  assert(canvas);
-
-  if (canvas->context != cdContextImageRGB())
-    return NULL;
-
-  ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
-  return ctxcanvas->red;
+  return (unsigned char*)cdCanvasGetAttribute(canvas, "REDIMAGE");
 }
 
 unsigned char* cdGreenImage(cdCanvas* canvas)
 {
-  cdCtxCanvas* ctxcanvas;
-  assert(canvas);
-
-  if (canvas->context != cdContextImageRGB())
-    return NULL;
-
-  ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
-  return ctxcanvas->green;
+  return (unsigned char*)cdCanvasGetAttribute(canvas, "GREENIMAGE");
 }
 
 unsigned char* cdBlueImage(cdCanvas* canvas)
 {
-  cdCtxCanvas* ctxcanvas;
-  assert(canvas);
+  return (unsigned char*)cdCanvasGetAttribute(canvas, "BLUEIMAGE");
+}
 
-  if (canvas->context != cdContextImageRGB())
-    return NULL;
-
-  ctxcanvas = (cdCtxCanvas*)canvas->ctxcanvas;
-  return ctxcanvas->blue;
+unsigned char* cdAlphaImage(cdCanvas* canvas)
+{
+  return (unsigned char*)cdCanvasGetAttribute(canvas, "ALPHAIMAGE");
 }
 
 static void cdclear(cdCtxCanvas* ctxcanvas)
