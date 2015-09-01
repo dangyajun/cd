@@ -158,6 +158,8 @@ namespace cd
         cdKillCanvas(canvas);
     }
 
+    cdCanvas* GetHandle() const { return canvas; }
+
     Context GetContext()
     {
       return cdCanvasGetContext(canvas);
@@ -615,7 +617,7 @@ namespace cd
     }
     void Stipple(const im::Image& stipple)
     {
-      cdCanvasStippleImImage(canvas, stipple.im_image);
+      cdCanvasStippleImImage(canvas, stipple.GetHandle());
     }
     unsigned char* GetStipple(int &n, int &m)
     {
@@ -623,7 +625,7 @@ namespace cd
     }
     void Pattern(const im::Image& pattern)
     {
-      cdCanvasPatternImImage(canvas, pattern.im_image);
+      cdCanvasPatternImImage(canvas, pattern.GetHandle());
     }
     long* GetPattern(int& n, int& m)
     {
@@ -843,24 +845,24 @@ namespace cd
     /* client images */
     void PutImage(const im::Image& image, int x, int y, int w, int h)
     {
-      cdCanvasPutImImage(canvas, image.im_image, x, y, w, h);
+      cdCanvasPutImImage(canvas, image.GetHandle(), x, y, w, h);
     }
     void PutImage(const im::Image& image, double x, double y, double w, double h)
     {
-      cdfCanvasPutImImage(canvas, image.im_image, x, y, w, h);
+      cdfCanvasPutImImage(canvas, image.GetHandle(), x, y, w, h);
     }
     void wPutImage(const im::Image& image, double x, double y, double w, double h)
     {
-      wdCanvasPutImImage(canvas, image.im_image, x, y, w, h);
+      wdCanvasPutImImage(canvas, image.GetHandle(), x, y, w, h);
     }
 
     void GetImage(im::Image& image, int x, int y)
     {
-      cdCanvasGetImImage(canvas, image.im_image, x, y);
+      cdCanvasGetImImage(canvas, image.GetHandle(), x, y);
     }
     void wGetImage(im::Image& image, double x, double y)
     {
-      wdCanvasGetImImage(canvas, image.im_image, x, y);
+      wdCanvasGetImImage(canvas, image.GetHandle(), x, y);
     }
   };
 
@@ -887,7 +889,7 @@ namespace cd
     CanvasImImage(im::Image& image, double res = 0)
       : Canvas()
     {
-      canvas = cdCreateCanvas(CD_IMIMAGE, image.im_image);
+      canvas = cdCreateCanvas(CD_IMIMAGE, image.GetHandle());
       if (canvas && res)
         cdCanvasSetfAttribute(canvas, "RESOLUTION", "%g", res);
     }
