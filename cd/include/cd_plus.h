@@ -36,12 +36,6 @@
 
 
 
-namespace iup
-{
-  class Canvas;
-  Ihandle* GetHandle(const Canvas&);
-}
-
 
 /** \brief Name space for C++ high level API
  *
@@ -871,33 +865,6 @@ namespace cd
   };
 
 
-  class CanvasIup : public Canvas
-  {
-  public:
-    CanvasIup(iup::Canvas& iup_canvas)
-      : Canvas()
-    {
-      canvas = cdCreateCanvas(CD_IUP, iup::GetHandle(iup_canvas));
-    }
-  };
-  class CanvasIupDoubleBuffer : public Canvas
-  {
-  public:
-    CanvasIupDoubleBuffer(iup::Canvas& iup_canvas)
-      : Canvas()
-    {
-      canvas = cdCreateCanvas(CD_IUPDBUFFER, iup::GetHandle(iup_canvas));
-    }
-  };
-  class CanvasIupDoubleBufferRGB : public Canvas
-  {
-  public:
-    CanvasIupDoubleBufferRGB(iup::Canvas& iup_canvas)
-      : Canvas()
-    {
-      canvas = cdCreateCanvas(CD_IUPDBUFFERRGB, iup::GetHandle(iup_canvas));
-    }
-  };
   class CanvasImageRGB : public Canvas
   {
   public:
