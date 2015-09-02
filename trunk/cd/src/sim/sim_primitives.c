@@ -1107,12 +1107,27 @@ void cdSimMark(cdCanvas* canvas, int x, int y)
   int oldinteriorstyle = canvas->interior_style;
   int oldlinestyle = canvas->line_style;
   int oldlinewidth = canvas->line_width;
-  int size = canvas->mark_size;
-  int half_size = size/2;
-  int bottom = y-half_size;
-  int top    = y+half_size;
-  int left   = x-half_size;
-  int right  = x+half_size;
+  int size, half_size, bottom, top, left, right;
+
+  if (canvas->mark_type == CD_DIAMOND ||
+      canvas->mark_type == CD_HOLLOW_DIAMOND)
+  {
+    if (canvas->use_origin)
+    {
+      x += canvas->origin.x;
+      y += canvas->origin.y;
+    }
+
+    if (canvas->invert_yaxis)
+      y = _cdInvertYAxis(canvas, y);
+  }
+
+  size = canvas->mark_size;
+  half_size = size/2;
+  bottom = y-half_size;
+  top    = y+half_size;
+  left   = x-half_size;
+  right  = x+half_size;
 
   if (canvas->interior_style != CD_SOLID &&
       (canvas->mark_type == CD_CIRCLE ||
@@ -1166,15 +1181,23 @@ void cdSimMark(cdCanvas* canvas, int x, int y)
     break;
   case CD_HOLLOW_DIAMOND:
   case CD_DIAMOND:
-    if (canvas->mark_type == CD_DIAMOND)
-      cdCanvasBegin(canvas, CD_FILL);
-    else
-      cdCanvasBegin(canvas, CD_CLOSED_LINES);
-    cdCanvasVertex(canvas, left, y);
-    cdCanvasVertex(canvas, x, top);
-    cdCanvasVertex(canvas, right, y);
-    cdCanvasVertex(canvas, x, bottom);
-    cdCanvasEnd(canvas);
+    {
+      /* Do not use Begin/End here so Mark can be used inside a regular BeginEnd loop */
+      cdPoint poly[5];  /* leave room for one more point */
+      poly[0].x = left;
+      poly[0].y = y;
+      poly[1].x = x;
+      poly[1].y = top;
+      poly[2].x = right;
+      poly[2].y = y;
+      poly[3].x = x;
+      poly[3].y = bottom;
+
+      if (canvas->mark_type == CD_DIAMOND)
+        cdPoly(canvas, CD_FILL, poly, 4);
+      else
+        cdPoly(canvas, CD_CLOSED_LINES, poly, 4);
+    }
     break;
   }
 
@@ -1208,13 +1231,27 @@ void cdfSimMark(cdCanvas* canvas, double x, double y)
   int oldinteriorstyle = canvas->interior_style;
   int oldlinestyle = canvas->line_style;
   int oldlinewidth = canvas->line_width;
+  double size, half_size, bottom, top, left, right;
 
-  double size = (double)canvas->mark_size;
-  double half_size = size / 2;
-  double bottom = y - half_size;
-  double top = y + half_size;
-  double left = x - half_size;
-  double right = x + half_size;
+  if (canvas->mark_type == CD_DIAMOND ||
+      canvas->mark_type == CD_HOLLOW_DIAMOND)
+  {
+    if (canvas->use_origin)
+    {
+      x += canvas->forigin.x;
+      y += canvas->forigin.y;
+    }
+
+    if (canvas->invert_yaxis)
+      y = _cdInvertYAxis(canvas, y);
+  }
+
+  size = (double)canvas->mark_size;
+  half_size = size / 2;
+  bottom = y - half_size;
+  top = y + half_size;
+  left = x - half_size;
+  right = x + half_size;
 
   if (canvas->interior_style != CD_SOLID &&
       (canvas->mark_type == CD_CIRCLE ||
@@ -1268,15 +1305,41 @@ void cdfSimMark(cdCanvas* canvas, double x, double y)
     break;
   case CD_HOLLOW_DIAMOND:
   case CD_DIAMOND:
-    if (canvas->mark_type == CD_DIAMOND)
-      cdCanvasBegin(canvas, CD_FILL);
-    else
-      cdCanvasBegin(canvas, CD_CLOSED_LINES);
-    cdfCanvasVertex(canvas, left, y);
-    cdfCanvasVertex(canvas, x, top);
-    cdfCanvasVertex(canvas, right, y);
-    cdfCanvasVertex(canvas, x, bottom);
-    cdCanvasEnd(canvas);
+      /* Do not use Begin/End here so Mark can be used inside a regular BeginEnd loop */
+      if (!canvas->cxFPoly)
+      {
+        cdPoint poly[5];  /* leave room for one more point */
+        poly[0].x = _cdRound(left);
+        poly[0].y = _cdRound(y);
+        poly[1].x = _cdRound(x);
+        poly[1].y = _cdRound(top);
+        poly[2].x = _cdRound(right);
+        poly[2].y = _cdRound(y);
+        poly[3].x = _cdRound(x);
+        poly[3].y = _cdRound(bottom);
+
+        if (canvas->mark_type == CD_DIAMOND)
+          cdPoly(canvas, CD_FILL, poly, 4);
+        else
+          cdPoly(canvas, CD_CLOSED_LINES, poly, 4);
+      }
+      else
+      {
+        cdfPoint poly[5];  /* leave room for one more point */
+        poly[0].x = left;
+        poly[0].y = y;
+        poly[1].x = x;
+        poly[1].y = top;
+        poly[2].x = right;
+        poly[2].y = y;
+        poly[3].x = x;
+        poly[3].y = bottom;
+
+        if (canvas->mark_type == CD_DIAMOND)
+          canvas->cxFPoly(canvas->ctxcanvas, CD_FILL, poly, 4);
+        else
+          canvas->cxFPoly(canvas->ctxcanvas, CD_CLOSED_LINES, poly, 4);
+      }
     break;
   }
 
