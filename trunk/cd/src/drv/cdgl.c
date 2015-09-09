@@ -151,7 +151,7 @@ static void cdglCheckUtf8Buffer(cdCtxCanvas *ctxcanvas, int len)
 
 static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
 {
-  /* FTGL multibute strings are always UTF-8 */
+  /* FTGL multibyte strings are always UTF-8 */
 
   if (ctxcanvas->utf8mode || cdStrIsAscii(str))
   {
