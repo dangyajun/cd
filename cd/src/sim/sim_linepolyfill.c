@@ -77,14 +77,14 @@ static int compare_int(const int* xx1, const int* xx2)
 }
 
 /* list of non-horizontal line segments */
-typedef struct _simLineSegment
+struct _simLineSegment
 {
   int x1, y1;   /* always y1 < y2 */
   int x2, y2;   /* (x2,y2) is not included in the segment to avoid duplicated intersections */
   int x;        /* incremental x from x2 to x1 */
   int DeltaX, DeltaY, XDir, Swap;
   unsigned short ErrorInc, ErrorAcc;
-} simLineSegment;
+};
 
 
 simLineSegment* simLineSegmentArrayCreate(int n)
