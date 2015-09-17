@@ -17,6 +17,8 @@
 typedef struct _GtkPrintJob  GtkPrintJob;
 #endif
 
+#define CAIRO_VERSION_110 CAIRO_VERSION_ENCODE(1, 10, 0)
+
 struct _cdCtxImage {
   unsigned int w, h;
   double w_mm, h_mm;   /* size in mm                                  */                  
@@ -52,7 +54,9 @@ struct _cdCtxCanvas
   int poly_holes[500];
   int holes;
 
+#if CAIRO_VERSION >= CAIRO_VERSION_110
   cairo_region_t* new_rgn;
+#endif
 
   void* window;    /* used in NativeWindow in GDK */
 
