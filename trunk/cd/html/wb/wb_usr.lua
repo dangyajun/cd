@@ -451,6 +451,7 @@ wb_usr.tree =
     },
     {
       name= {en= "Primitives"},
+      link= "primitives.html",
       folder=
       {
         {
@@ -877,6 +878,7 @@ wb_usr.tree =
     },
     {
       name= {en= "Other"},
+      link= "other.html",
       folder=
       {
         {
@@ -959,7 +961,7 @@ wb_usr.tree =
     { link= "", name= {en= "" } },
     {
       name= {nl= "Drivers"},
-      link= "drv.html",
+      link= "drivers.html",
       folder=
       {
         {

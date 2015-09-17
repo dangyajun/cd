@@ -8,9 +8,12 @@
    margin-left: 1em;
    line-height: 130%;
  }
+ h1 {
+   text-align: center;
+   }
  h2 {
    color: #3366CC;
-   text-align:center;
+   text-align: center;
  }
  h3 {
    padding: 4px;
@@ -45,49 +48,20 @@
    margin-right: 2em;
    margin-left: 2em;
  }
-h4.function {
-  font-family: "Courier New", Courier, monospace;
-  background-color: #E1E1E1;
-  border: 1px solid #B1B1B1;
-  padding: 10px;
-  line-height: 125%;
-  margin-left: 0.5em;
-  margin-right: 3em;
-  font-weight: normal;
-}
-div.function {
-	border: 1px solid #93ADE3;
-	border-radius: .3em;
-	-webkit-border-radius: .3em;
-	-moz-border-radius: .3em;
-	-webkit-box-shadow: 2px 2px 3px #999;
-	-moz-box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 2px;
-	margin-bottom: 1em;
-}
-pre.function {
-	margin: 0px;
-	font-family: "Courier New", Courier, monospace;
-	background-color: #E9E9E9;
-	border-top-left-radius: .3em;
-	-moz-border-radius-topleft: .3em;
-	-webkit-border-top-left-radius: .3em;
-	border-top-right-radius: .3em;
-	-moz-border-radius-topright: .3em;
-	-webkit-border-top-right-radius: .3em;
-	border: 0;
-	padding: 10px;
-	font-size: 100%;
-	line-height: 125%;
-	font-weight: normal;
-}
-.mainFunction {
-  font-size: 110%;
-  font-weight: bold;
-}
- h1 {
-   text-align: center;
+ table {
+	border-collapse: collapse;
  }
- .homeTitle {
+ td {
+	padding: 5px;
+	border: 1px solid #808080;
+ }
+ th {
+	padding: 5px;
+	border: 2px solid #808080;
+	background-color: #C0C0C0;
+ }
+ h1.homeTitle {
+   margin-bottom: 0;
    font-family: Arial, Helvetica, sans-serif;
    font-size: 36pt;
    font-weight: bold;
@@ -107,6 +81,26 @@ pre.function {
    color: #003399;
    text-align: center;
  }
+.bg_winxp {
+	text-align: center;
+	background-color: #ECE9D8;
+}
+.bg_vista {
+	text-align: center;
+	background-color: #F0F0F0;
+}
+.bg_gtk {
+	text-align: center;
+	background-color: #EFEBE7;
+}
+.bg_mot {
+	text-align: center;
+	background-color: #ADB1C2;
+}
+.bg_win2k {
+	text-align: center;
+	background-color: #D4D0C8;
+}
  #navigation {
    position: fixed;
    top: 0;   
