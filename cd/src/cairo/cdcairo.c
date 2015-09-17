@@ -108,7 +108,9 @@ void cdcairoKillCanvas(cdCtxCanvas *ctxcanvas)
   if (ctxcanvas->pattern)
     cairo_pattern_destroy(ctxcanvas->pattern);
 
+#if CAIRO_VERSION >= CAIRO_VERSION_110
   if (ctxcanvas->new_rgn) cairo_region_destroy(ctxcanvas->new_rgn);
+#endif
 
   if (ctxcanvas->fontdesc) pango_font_description_free(ctxcanvas->fontdesc);
   if (ctxcanvas->fontlayout)  g_object_unref(ctxcanvas->fontlayout);
@@ -835,6 +837,7 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 {
   if (ctxcanvas->canvas->new_region)
   {
+#if CAIRO_VERSION >= CAIRO_VERSION_110
     cairo_rectangle_int_t rect;
 
     rect.x = xmin;
@@ -857,6 +860,7 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
       cairo_region_xor_rectangle(ctxcanvas->new_rgn, &rect);
       break;
     }
+#endif
   }
   else
     cdfbox(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
@@ -1698,14 +1702,17 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
 
 static void cdnewregion(cdCtxCanvas *ctxcanvas)
 {
+#if CAIRO_VERSION >= CAIRO_VERSION_110
   if (ctxcanvas->new_rgn)
     cairo_region_destroy(ctxcanvas->new_rgn);
 
   ctxcanvas->new_rgn = cairo_region_create();
+#endif
 }
 
 static int cdispointinregion(cdCtxCanvas *ctxcanvas, int x, int y)
 {
+#if CAIRO_VERSION >= CAIRO_VERSION_110
   if (!ctxcanvas->new_rgn)
     return 0;
 
@@ -1713,18 +1720,22 @@ static int cdispointinregion(cdCtxCanvas *ctxcanvas, int x, int y)
     return 1;
 
   return 0;
+#endif
 }
 
 static void cdoffsetregion(cdCtxCanvas *ctxcanvas, int x, int y)
 {
+#if CAIRO_VERSION >= CAIRO_VERSION_110
   if (!ctxcanvas->new_rgn)
     return;
 
   cairo_region_translate(ctxcanvas->new_rgn, x, y);
+#endif
 }
 
 static void cdgetregionbox(cdCtxCanvas *ctxcanvas, int *xmin, int *xmax, int *ymin, int *ymax)
 {
+#if CAIRO_VERSION >= CAIRO_VERSION_110
   cairo_rectangle_int_t rect;
 
   if (!ctxcanvas->new_rgn)
@@ -1736,6 +1747,7 @@ static void cdgetregionbox(cdCtxCanvas *ctxcanvas, int *xmin, int *xmax, int *ym
   *xmax = rect.x + rect.width - 1;
   *ymin = rect.y;
   *ymax = rect.y + rect.height - 1;
+#endif
 }
 
 static cdCtxImage *cdcreateimage (cdCtxCanvas *ctxcanvas, int w, int h)
