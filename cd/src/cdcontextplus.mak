@@ -13,6 +13,9 @@ else
   INCLUDES = . sim freetype2
   
   ifdef GTK_DEFAULT
+    ifdef USE_GTK3
+      DEFINES += USE_GTK3
+    endif
     CHECK_GTK = Yes
     SRC = cairo/cdcairoplus.c 
   else
