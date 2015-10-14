@@ -25,12 +25,21 @@
 #endif
 
 
-void sCairoRectangle(cairo_t *cr, double xmin, double ymin, double xmax, double ymax)
+static void sfCairoRectangle(cairo_t *cr, double xmin, double ymin, double xmax, double ymax)
 {
   cairo_move_to(cr, xmin, ymin);
   cairo_line_to(cr, xmax, ymin);
   cairo_line_to(cr, xmax, ymax);
   cairo_line_to(cr, xmin, ymax);
+  cairo_close_path(cr);
+}
+
+static void sCairoRectangleWH(cairo_t *cr, int x, int y, int w, int h)
+{
+  cairo_move_to(cr, x, y);
+  cairo_line_to(cr, x + w, y);
+  cairo_line_to(cr, x + w, y + h);
+  cairo_line_to(cr, x, y + h);
   cairo_close_path(cr);
 }
 
@@ -142,7 +151,7 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
     return;
 
   cairo_reset_clip(ctxcanvas->cr);
-  sCairoRectangle(ctxcanvas->cr, xmin, ymin, xmax, ymax);
+  sfCairoRectangle(ctxcanvas->cr, xmin, ymin, xmax, ymax);
   cairo_clip(ctxcanvas->cr);
 }
 
@@ -155,10 +164,10 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
     break;
   case CD_CLIPAREA:
     cairo_reset_clip(ctxcanvas->cr);
-    sCairoRectangle(ctxcanvas->cr, ctxcanvas->canvas->clip_frect.xmin,
-                                   ctxcanvas->canvas->clip_frect.ymin, 
-                                   ctxcanvas->canvas->clip_frect.xmax, 
-                                   ctxcanvas->canvas->clip_frect.ymax);
+    sfCairoRectangle(ctxcanvas->cr, ctxcanvas->canvas->clip_frect.xmin,
+                                    ctxcanvas->canvas->clip_frect.ymin, 
+                                    ctxcanvas->canvas->clip_frect.xmax, 
+                                    ctxcanvas->canvas->clip_frect.ymax);
     cairo_clip(ctxcanvas->cr);
     break;
   case CD_CLIPPOLYGON:
@@ -351,7 +360,7 @@ static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
   if (ctxcanvas->canvas->back_opacity == CD_OPAQUE)
   {
     cairo_set_source_rgba(cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), cdCairoGetAlpha(ctxcanvas->canvas->background));
-    cairo_rectangle(cr, 0, 0, hsize, hsize);
+    sCairoRectangleWH(cr, 0, 0, hsize, hsize);
     cairo_fill(cr);
   }
 
@@ -640,7 +649,7 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
   cairo_save (ctxcanvas->cr);
   cairo_identity_matrix(ctxcanvas->cr);
   cairo_reset_clip(ctxcanvas->cr);
-  sCairoRectangle(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w - 1, ctxcanvas->canvas->h-1);
+  sCairoRectangleWH(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
   cairo_clip(ctxcanvas->cr);
   cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), cdCairoGetAlpha(ctxcanvas->canvas->background));
   cairo_set_operator (ctxcanvas->cr, CAIRO_OPERATOR_SOURCE);
@@ -811,7 +820,7 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
 static void cdfrect(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
   sUpdateFill(ctxcanvas, 0);
-  sCairoRectangle(ctxcanvas->cr, xmin, ymin, xmax, ymax);
+  sfCairoRectangle(ctxcanvas->cr, xmin, ymin, xmax, ymax);
   cairo_stroke(ctxcanvas->cr);
 }
 
@@ -831,7 +840,7 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
 static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
   sUpdateFill(ctxcanvas, 1);
-  sCairoRectangle(ctxcanvas->cr, xmin, ymin, xmax, ymax);
+  sfCairoRectangle(ctxcanvas->cr, xmin, ymin, xmax, ymax);
   cairo_fill(ctxcanvas->cr);
 }
 
@@ -1488,7 +1497,7 @@ static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 
   cairo_save (ctxcanvas->cr);
 
-  cairo_rectangle(ctxcanvas->cr, x, y, w, h);
+  sfCairoRectangle(ctxcanvas->cr, x, y, x+w, y+h);
   cairo_clip(ctxcanvas->cr);
 
   if (w != rw || h != rh)
@@ -1561,7 +1570,7 @@ static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const un
 
   cairo_save (ctxcanvas->cr);
 
-  cairo_rectangle(ctxcanvas->cr, x, y, w, h);
+  sfCairoRectangle(ctxcanvas->cr, x, y, x+w, y+h);
   cairo_clip(ctxcanvas->cr);
 
   if (w != rw || h != rh)
@@ -1658,7 +1667,7 @@ static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 
   cairo_save (ctxcanvas->cr);
 
-  cairo_rectangle(ctxcanvas->cr, x, y, w, h);
+  sfCairoRectangle(ctxcanvas->cr, x, y, x+w, y+h);
   cairo_clip(ctxcanvas->cr);
 
   if (w != rw || h != rh)
@@ -1774,7 +1783,7 @@ static cdCtxImage *cdcreateimage (cdCtxCanvas *ctxcanvas, int w, int h)
     return (void *)0;
   }
 
-  cairo_rectangle(ctximage->cr, 0, 0, ctximage->w, ctximage->h);
+  sCairoRectangleWH(ctximage->cr, 0, 0, ctximage->w, ctximage->h);
   cairo_set_source_rgba(ctximage->cr, 1.0, 0.0, 0.0, 1.0); /* white opaque */
   cairo_fill(ctximage->cr);
 
@@ -1823,7 +1832,7 @@ static void cdputimagerect (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x,
   /* y is the bottom-left of the image region in CD */
   y -= (ymax-ymin+1)-1;
 
-  cairo_rectangle(ctxcanvas->cr, x, y, xmax-xmin+1, ymax-ymin+1);
+  sCairoRectangleWH(ctxcanvas->cr, x, y, xmax - xmin + 1, ymax - ymin + 1);
   cairo_clip(ctxcanvas->cr);
 
   /* creates a pattern from the image and sets it as source in the canvas. */
@@ -1853,7 +1862,7 @@ static void cdscrollarea (cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, 
     _cdSwapInt(ymin, ymax);
   }
 
-  cairo_rectangle(ctxcanvas->cr, xmin+dx, ymin+dy, xmax-xmin+1, ymax-ymin+1);
+  sCairoRectangleWH(ctxcanvas->cr, xmin + dx, ymin + dy, xmax - xmin + 1, ymax - ymin + 1);
   cairo_clip(ctxcanvas->cr);
 
   /* creates a pattern from the canvas and sets it as source in the canvas. */
