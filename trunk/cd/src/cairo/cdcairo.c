@@ -148,23 +148,25 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
 
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
 {
-  cairo_reset_clip(ctxcanvas->cr);
-
   switch (mode)
   {
   case CD_CLIPOFF:
-    cairo_rectangle(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
+    cairo_reset_clip(ctxcanvas->cr);
     break;
   case CD_CLIPAREA:
+    cairo_reset_clip(ctxcanvas->cr);
     sCairoRectangle(ctxcanvas->cr, ctxcanvas->canvas->clip_frect.xmin,
                                    ctxcanvas->canvas->clip_frect.ymin, 
                                    ctxcanvas->canvas->clip_frect.xmax, 
                                    ctxcanvas->canvas->clip_frect.ymax);
+    cairo_clip(ctxcanvas->cr);
     break;
   case CD_CLIPPOLYGON:
     {
       int hole_index = 0;
       int i;
+
+      cairo_reset_clip(ctxcanvas->cr);
 
       if (ctxcanvas->canvas->clip_poly)
       {
@@ -196,15 +198,15 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
             cairo_line_to(ctxcanvas->cr, poly[i].x, poly[i].y);
         }
       }
+
+      cairo_clip(ctxcanvas->cr);
       break;
     }
   case CD_CLIPREGION:
     /* if (ctxcanvas->new_rgn)
-      cairo_region(ctxcanvas->cr, ctxcanvas->new_rgn); */
+      cairo_region(ctxcanvas->cr, ctxcanvas->new_rgn); */ /* Does NOT exist. */
     break;
   }
-
-  cairo_clip(ctxcanvas->cr);
 
   return mode;
 }
@@ -638,7 +640,7 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
   cairo_save (ctxcanvas->cr);
   cairo_identity_matrix(ctxcanvas->cr);
   cairo_reset_clip(ctxcanvas->cr);
-  cairo_rectangle(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
+  sCairoRectangle(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w - 1, ctxcanvas->canvas->h-1);
   cairo_clip(ctxcanvas->cr);
   cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), cdCairoGetAlpha(ctxcanvas->canvas->background));
   cairo_set_operator (ctxcanvas->cr, CAIRO_OPERATOR_SOURCE);
