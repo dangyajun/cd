@@ -27,6 +27,7 @@
 
 static void sfCairoRectangle(cairo_t *cr, double xmin, double ymin, double xmax, double ymax)
 {
+  /* cairo_rectangle was not including the last line and last column */
   cairo_move_to(cr, xmin, ymin);
   cairo_line_to(cr, xmax, ymin);
   cairo_line_to(cr, xmax, ymax);
@@ -36,11 +37,13 @@ static void sfCairoRectangle(cairo_t *cr, double xmin, double ymin, double xmax,
 
 static void sCairoRectangleWH(cairo_t *cr, int x, int y, int w, int h)
 {
+  cairo_rectangle(cr, x, y, w, h);
+  /* TODO: should we replace cairo_rectangle here too?
   cairo_move_to(cr, x, y);
-  cairo_line_to(cr, x + w + 0.5, y);
-  cairo_line_to(cr, x + w + 0.5, y + h + 0.5);
-  cairo_line_to(cr, x, y + h + 0.5);
-  cairo_close_path(cr);
+  cairo_line_to(cr, x + w, y);
+  cairo_line_to(cr, x + w, y + h);
+  cairo_line_to(cr, x, y + h);
+  cairo_close_path(cr); */
 }
 
 static void sUpdateFill(cdCtxCanvas *ctxcanvas, int fill)
