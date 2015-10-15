@@ -37,9 +37,9 @@ static void sfCairoRectangle(cairo_t *cr, double xmin, double ymin, double xmax,
 static void sCairoRectangleWH(cairo_t *cr, int x, int y, int w, int h)
 {
   cairo_move_to(cr, x, y);
-  cairo_line_to(cr, x + w, y);
-  cairo_line_to(cr, x + w, y + h);
-  cairo_line_to(cr, x, y + h);
+  cairo_line_to(cr, x + w + 0.5, y);
+  cairo_line_to(cr, x + w + 0.5, y + h + 0.5);
+  cairo_line_to(cr, x, y + h + 0.5);
   cairo_close_path(cr);
 }
 
