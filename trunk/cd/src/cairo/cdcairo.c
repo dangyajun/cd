@@ -158,6 +158,15 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
   cairo_clip(ctxcanvas->cr);
 }
 
+static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
+{
+  /* try to include the last integer line */
+  if (!ctxcanvas->canvas->use_matrix)
+    cdfcliparea(ctxcanvas, (double)xmin, (double)xmax + 0.75, (double)ymin, (double)ymax + 0.75);
+  else
+    cdfcliparea(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+}
+
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
 {
   switch (mode)
@@ -651,12 +660,14 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
 {
   cairo_save (ctxcanvas->cr);
   cairo_identity_matrix(ctxcanvas->cr);
+
   cairo_reset_clip(ctxcanvas->cr);
   sCairoRectangleWH(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
   cairo_clip(ctxcanvas->cr);
   cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), cdCairoGetAlpha(ctxcanvas->canvas->background));
   cairo_set_operator (ctxcanvas->cr, CAIRO_OPERATOR_SOURCE);
-  cairo_paint (ctxcanvas->cr);  /* paints the current source everywhere within the current clip region. */
+  cairo_paint(ctxcanvas->cr);  /* paints the current source everywhere within the current clip region. */
+
   cairo_restore (ctxcanvas->cr);
 }
 
@@ -700,7 +711,7 @@ static void sFixAngles(cdCanvas* canvas, double *a1, double *a2, int swap)
   /* Cairo angles are clock-wise by default, in radians */
 
   /* if NOT inverted means a transformation is set, 
-     so the angle will follow the transformation that includes the axis invertion,
+     so the angle will follow the transformation that includes the axis inversion,
      then it is already counter-clockwise */
 
   if (canvas->invert_yaxis)
@@ -877,7 +888,13 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 #endif
   }
   else
-    cdfbox(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+  {
+    /* try to include the last integer line */
+    if (!ctxcanvas->canvas->use_matrix)
+      cdfbox(ctxcanvas, (double)xmin, (double)xmax + 0.75, (double)ymin, (double)ymax + 0.75);
+    else
+      cdfbox(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+  }
 }
 
 static void sGetTransformTextHeight(cdCanvas* canvas, double x, double y, int w, int h, double *hbox)
@@ -1385,9 +1402,8 @@ static void cdgetimagergb(cdCtxCanvas *ctxcanvas, unsigned char *r, unsigned cha
   cairo_surface_t* image_surface;
   cairo_t* cr;
 
-  cairo_save (ctxcanvas->cr);
-
-  /* reset to the identity. */
+  /* reset to the identity in image get operations */
+  cairo_save(ctxcanvas->cr);
   cairo_identity_matrix(ctxcanvas->cr);
 
   /* if 0, invert because the transform was reset */
@@ -1803,9 +1819,8 @@ static void cdkillimage (cdCtxImage *ctximage)
 
 static void cdgetimage (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x, int y)
 {
-  cairo_save (ctximage->cr);
-
-  /* reset to the identity. */
+  /* reset to the identity in image get operations */
+  cairo_save(ctximage->cr);
   cairo_identity_matrix(ctximage->cr);
 
   cairo_reset_clip(ctximage->cr);
@@ -1851,9 +1866,8 @@ static void cdputimagerect (cdCtxCanvas *ctxcanvas, cdCtxImage *ctximage, int x,
 
 static void cdscrollarea (cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax, int dx, int dy)
 {
-  cairo_save (ctxcanvas->cr);
-
-  /* reset to identity */
+  /* reset to the identity in image get operations */
+  cairo_save(ctxcanvas->cr);
   cairo_identity_matrix(ctxcanvas->cr);
 
   /* if 0, invert because the transform was reset */
@@ -2402,6 +2416,7 @@ void cdcairoInitTable(cdCanvas* canvas)
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;
+  canvas->cxClipArea = cdcliparea;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineWidth = cdlinewidth;
   canvas->cxLineCap = cdlinecap;
