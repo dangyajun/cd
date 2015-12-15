@@ -335,7 +335,7 @@ static int cdwritemode(cdCtxCanvas *ctxcanvas, int write_mode)
 
 static int cdhatch(cdCtxCanvas *ctxcanvas, int hatch_style)
 {
-  GLubyte pattern[128];
+  GLubyte pattern[128]; /* 32x32 / 8 (1 bit per pixel) */
   int x, y, pos = 0;
  
   glEnable(GL_POLYGON_STIPPLE);
