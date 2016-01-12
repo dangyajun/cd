@@ -263,7 +263,10 @@ int cdCanvasFont(cdCanvas* canvas, const char* type_face, int style, int size)
 
   if (canvas->cxFont(canvas->ctxcanvas, type_face, style, size))
   {
-    strcpy(canvas->font_type_face, type_face);
+    /* check if pointers are the same */
+    if (type_face != canvas->font_type_face)
+      strcpy(canvas->font_type_face, type_face);
+
     canvas->font_style = style;
     canvas->font_size = size;
     canvas->native_font[0] = 0;
