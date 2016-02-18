@@ -18,7 +18,7 @@ extern "C" {
 
 #define CD_NAME "CD - A 2D Graphics Library"
 #define CD_DESCRIPTION "Vector Graphics Toolkit with Device Independent Output"
-#define CD_COPYRIGHT "Copyright (C) 1994-2015 Tecgraf/PUC-Rio"
+#define CD_COPYRIGHT "Copyright (C) 1994-2016 Tecgraf/PUC-Rio"
 #define CD_VERSION "5.9"              /* bug fixes are reported only by cdVersion functions */
 #define CD_VERSION_NUMBER 509000
 #define CD_VERSION_DATE "2015/09/15"  /* does not include bug fix releases */
@@ -528,7 +528,7 @@ enum {
 
 
 /******************************************************************************
-Copyright (C) 1994-2015 Tecgraf/PUC-Rio.
+Copyright (C) 1994-2016 Tecgraf/PUC-Rio.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
