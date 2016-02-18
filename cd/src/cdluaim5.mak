@@ -8,6 +8,21 @@ SRCDIR = lua5
 SRC = cdluaim5.c
 LIBS = cdim
 
+ifdef USE_LUA_VERSION
+  USE_LUA51:=
+  USE_LUA52:=
+  USE_LUA53:=
+  ifeq ($(USE_LUA_VERSION), 53)
+    USE_LUA53:=Yes
+  endif
+  ifeq ($(USE_LUA_VERSION), 52)
+    USE_LUA52:=Yes
+  endif
+  ifeq ($(USE_LUA_VERSION), 51)
+    USE_LUA51:=Yes
+  endif
+endif
+
 ifdef USE_LUA53
   LIBNAME := $(LIBNAME)53
 else
