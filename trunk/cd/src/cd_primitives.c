@@ -60,6 +60,9 @@ void cdCanvasMark(cdCanvas* canvas, int x, int y)
   assert(canvas);
   if (!_cdCheckCanvas(canvas)) return;
 
+  if (canvas->mark_size < 1)
+    return;
+
   if (canvas->mark_size == 1)
   {
     cdCanvasPixel(canvas, x, y, canvas->foreground);
@@ -73,6 +76,9 @@ void cdfCanvasMark(cdCanvas* canvas, double x, double y)
 {
   assert(canvas);
   if (!_cdCheckCanvas(canvas)) return;
+
+  if (canvas->mark_size < 1)
+    return;
 
   if (canvas->mark_size == 1)
   {
