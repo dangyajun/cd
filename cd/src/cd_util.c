@@ -11,6 +11,12 @@
 #include <memory.h>
 #include <math.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 
 #include "cd.h"
 
@@ -793,5 +799,35 @@ int cdStrTmpFileName(char* filename)
   return 1;
 #else
   return tmpnam(filename)!=NULL;
+#endif
+}
+
+int cdMakeDirectory(const char *path)
+{
+#ifdef _WIN32
+  return CreateDirectoryA(path, NULL);
+#else
+  if (mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP |
+                  S_IWGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0)
+    return 0;
+  else
+    return 1;
+#endif
+}
+
+int cdIsDirectory(const char* path)
+{
+#ifdef _WIN32   
+  DWORD fattrib = GetFileAttributesA(path);
+  if ((fattrib != INVALID_FILE_ATTRIBUTES) && (fattrib & FILE_ATTRIBUTE_DIRECTORY))
+    return 1;
+  return 0;
+#else
+  struct stat status;
+  if (stat(path, &status) != 0)
+    return 0;
+  if (S_ISDIR(status.st_mode))
+    return 1;
+  return 0;
 #endif
 }

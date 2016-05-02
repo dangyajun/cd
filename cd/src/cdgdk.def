@@ -415,6 +415,8 @@ EXPORTS
   cdRound
   cdStrDup
   cdStrTmpFileName
+  cdMakeDirectory
+  cdIsDirectory
   
   cdInitContextPlusList
   cdGetContextPlus
