@@ -79,7 +79,7 @@
       <AdditionalDependencies>freetype6.lib;comctl32.lib;cd.lib;iupcd.lib;cdcontextplus.lib;iup.lib;gdiplus.lib;cdpdf.lib;pdflib.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\lib\Debug;..\..\iup\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\Debug;..\..\iup\lib\Debug;..\..\freetype\lib\Debug;..\..\zlib\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -114,7 +114,7 @@
       <AdditionalDependencies>freetype6.lib;comctl32.lib;cd.lib;iupcd.lib;cdcontextplus.lib;iup.lib;gdiplus.lib;cdpdf.lib;pdflib.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\lib\Debug_64;..\..\iup\lib\Debug_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\Debug_64;..\..\iup\lib\Debug_64;..\..\freetype\lib\Debug_64;..\..\zlib\lib\Debug_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>

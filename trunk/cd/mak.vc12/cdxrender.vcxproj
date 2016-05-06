@@ -39,14 +39,14 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\lib\Debug\</OutDir>
- <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\lib\Debug_64\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\lib\Debug_64\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\obj\Debug\$(ProjectName)\</IntDir>
- <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\obj\Debug_64\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\obj\Debug_64\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\iup;..\src\x11;..\src\xrender;..\src\sim;C:\cygwin17\usr\X11R6\include\;D:\LNG\x11inc;..\..\iup\include;..\src\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\iup;..\src\x11;..\src\xrender;..\src\sim;C:\cygwin17\usr\X11R6\include\;D:\LNG\x11inc;..\..\iup\include;..\..\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -70,7 +70,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\iup;..\src\x11;..\src\xrender;..\src\sim;C:\cygwin17\usr\X11R6\include\;D:\LNG\x11inc;..\..\iup\include;..\src\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\src\iup;..\src\x11;..\src\xrender;..\src\sim;C:\cygwin17\usr\X11R6\include\;D:\LNG\x11inc;..\..\iup\include;..\..\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
