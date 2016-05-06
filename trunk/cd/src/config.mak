@@ -65,7 +65,8 @@ SRCCOMM = cd.c wd.c wdhdcpy.c rgb2map.c cd_vectortext.c cd_active.c \
           cd_attributes.c cd_bitmap.c cd_image.c cd_primitives.c cd_text.c cd_util.c
       
 SRC = $(SRCCOMM) $(SRCSVG) $(SRCINTCGM) $(SRCDRV) $(SRCSIM)
-INCLUDES = . drv x11 win32 intcgm freetype2 freetype2/include sim cairo ../include
+INCLUDES = . drv x11 win32 intcgm sim cairo ../include
+USE_FREETYPE = Yes
 
 ifdef USE_GDK
   USE_GTK = Yes
@@ -84,7 +85,6 @@ ifdef USE_GDK
   
   ifneq ($(findstring Win, $(TEC_SYSNAME)), )
     SRC += cairo/cdcairoprn_win32.c cairo/cdcairoemf.c
-    LIBS += freetype6
   else
      #USE_X11 = Yes
 #    ifeq ($(findstring MacOS, $(TEC_UNAME)), )     (TODO: handle GTK using Darwin)
@@ -96,7 +96,6 @@ ifdef USE_GDK
         INCLUDES += $(GTK)/include/gtk-unix-print-2.0
       endif 
 #    endif
-    LIBS += freetype
     ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
       LIBS += fontconfig
     endif
@@ -110,7 +109,6 @@ ifdef USE_GDK
 else
   ifdef USE_X11
     SRC += $(SRCX11) $(SRCNULL)
-    LIBS += freetype
     ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
       LIBS += fontconfig
     endif
@@ -122,11 +120,10 @@ else
     endif
   else ifdef USE_HAIKU
     SRC += $(SRCHAIKU) $(SRCNULL)
-    LIBS += freetype fontconfig
+    LIBS += fontconfig
   else
     SRC += $(SRCWIN32)
     DEFINES += UNICODE
-    LIBS += freetype6
     ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
       LIBS += fontconfig
     endif
