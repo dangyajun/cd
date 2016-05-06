@@ -1,0 +1,1084 @@
+$(OBJDIR)/autofit.obj: autofit/autofit.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h autofit/afpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ autofit/afpic.h autofit/afglobal.h autofit/aftypes.h \
+ ../include/freetype/ftoutln.h ../include/freetype/internal/ftdebug.h \
+ autofit/afblue.h autofit/afwrtsys.h autofit/afscript.h autofit/afcover.h \
+ autofit/afstyles.h autofit/afmodule.h autofit/afshaper.h \
+ autofit/aferrors.h autofit/afangles.c autofit/afblue.c \
+ autofit/afglobal.c autofit/afranges.h autofit/afdummy.h \
+ autofit/aflatin.h autofit/afhints.h autofit/afcjk.h autofit/afindic.h \
+ autofit/afhints.c ../include/freetype/internal/ftcalc.h \
+ autofit/afranges.c autofit/afdummy.c autofit/aflatin.c \
+ ../include/freetype/ftadvanc.h autofit/afwarp.h autofit/afcjk.c \
+ autofit/afindic.c autofit/afshaper.c autofit/afloader.c \
+ autofit/afloader.h autofit/afmodule.c ../include/freetype/ftautoh.h \
+ ../include/freetype/internal/services/svprop.h autofit/afwarp.c
+$(OBJDIR)/bdf.obj: bdf/bdf.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h bdf/bdflib.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ bdf/bdf.h ../include/freetype/internal/fthash.h bdf/bdferror.h \
+ bdf/bdfdrivr.c ../include/freetype/ftbdf.h \
+ ../include/freetype/ttnameid.h \
+ ../include/freetype/internal/services/svbdf.h \
+ ../include/freetype/internal/services/svfntfmt.h bdf/bdfdrivr.h
+$(OBJDIR)/cff.obj: cff/cff.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h cff/cffpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ cff/cffcmap.h cff/cffobjs.h cff/cfftypes.h \
+ ../include/freetype/t1tables.h \
+ ../include/freetype/internal/services/svpscmap.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/tttypes.h ../include/freetype/tttables.h \
+ ../include/freetype/ftmm.h cff/cffpic.h cff/cfferrs.h cff/cffdrivr.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/sfnt.h \
+ ../include/freetype/internal/services/svcid.h \
+ ../include/freetype/internal/services/svpsinfo.h \
+ ../include/freetype/internal/t1types.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpostnm.h \
+ ../include/freetype/internal/services/svttcmap.h cff/cffdrivr.h \
+ cff/cffgload.h cff/cffload.h cff/cffparse.h \
+ ../include/freetype/internal/services/svfntfmt.h \
+ ../include/freetype/internal/services/svgldict.h \
+ ../include/freetype/internal/services/svprop.h \
+ ../include/freetype/ftcffdrv.h cff/cffparse.c cff/cfftoken.h \
+ cff/cffload.c ../include/freetype/tttags.h cff/cffobjs.c \
+ ../include/freetype/internal/ftcalc.h ../include/freetype/ttnameid.h \
+ cff/cffgload.c ../include/freetype/ftoutln.h cff/cf2ft.h cff/cf2types.h \
+ cff/cf2glue.h cff/cf2error.h cff/cf2fixed.h cff/cf2arrst.h cff/cf2read.h \
+ cff/cffcmap.c cff/cf2arrst.c cff/cf2blues.c cff/cf2blues.h \
+ cff/cf2hints.h cff/cf2font.h cff/cf2error.c cff/cf2font.c cff/cf2intrp.h \
+ cff/cf2ft.c cff/cf2hints.c cff/cf2intrp.c cff/cf2stack.h cff/cf2read.c \
+ cff/cf2stack.c
+$(OBJDIR)/ftcache.obj: cache/ftcache.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h cache/ftcmru.c \
+ ../include/freetype/ftcache.h ../include/freetype/ftglyph.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h cache/ftcmru.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftdebug.h cache/ftcerror.h cache/ftcmanag.c \
+ cache/ftcmanag.h cache/ftccache.h cache/ftccback.h cache/ftcimage.h \
+ cache/ftcglyph.h cache/ftcsbits.h cache/ftccache.c cache/ftccmap.c \
+ cache/ftcglyph.c cache/ftcimage.c cache/ftcsbits.c cache/ftcbasic.c
+$(OBJDIR)/ftgzip.obj: gzip/ftgzip.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/freetype.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/ftgzip.h \
+ /cygdrive/d/tecgraf/zlib/include/zlib.h \
+ /cygdrive/d/tecgraf/zlib/include/zconf.h
+$(OBJDIR)/ftlzw.obj: lzw/ftlzw.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/freetype.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/ftlzw.h \
+ lzw/ftzopen.h lzw/ftzopen.c
+$(OBJDIR)/gxvalid.obj: gxvalid/gxvalid.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h gxvalid/gxvfeat.c \
+ gxvalid/gxvalid.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h gxvalid/gxverror.h \
+ ../include/freetype/internal/ftvalid.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ gxvalid/gxvcommn.h ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/ftsnames.h gxvalid/gxvfeat.h gxvalid/gxvcommn.c \
+ gxvalid/gxvbsln.c gxvalid/gxvtrak.c gxvalid/gxvjust.c gxvalid/gxvmort.c \
+ gxvalid/gxvmort.h gxvalid/gxvmort0.c gxvalid/gxvmort1.c \
+ gxvalid/gxvmort2.c gxvalid/gxvmort4.c gxvalid/gxvmort5.c \
+ gxvalid/gxvmorx.c gxvalid/gxvmorx.h gxvalid/gxvmorx0.c \
+ gxvalid/gxvmorx1.c gxvalid/gxvmorx2.c gxvalid/gxvmorx4.c \
+ gxvalid/gxvmorx5.c gxvalid/gxvkern.c \
+ ../include/freetype/internal/services/svgxval.h \
+ ../include/freetype/ftgxval.h gxvalid/gxvopbd.c gxvalid/gxvprop.c \
+ gxvalid/gxvlcar.c gxvalid/gxvmod.c ../include/freetype/tttables.h \
+ ../include/freetype/tttags.h gxvalid/gxvmod.h
+$(OBJDIR)/otvalid.obj: otvalid/otvalid.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h otvalid/otvbase.c \
+ otvalid/otvalid.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h otvalid/otverror.h \
+ ../include/freetype/internal/ftvalid.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ otvalid/otvcommn.h ../include/freetype/internal/ftdebug.h \
+ otvalid/otvcommn.c otvalid/otvgdef.c otvalid/otvgpos.c otvalid/otvgpos.h \
+ otvalid/otvgsub.c otvalid/otvjstf.c otvalid/otvmath.c otvalid/otvmod.c \
+ ../include/freetype/tttables.h ../include/freetype/tttags.h \
+ ../include/freetype/ftotval.h \
+ ../include/freetype/internal/services/svotval.h otvalid/otvmod.h
+$(OBJDIR)/pcf.obj: pcf/pcf.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h pcf/pcfutil.c pcf/pcfutil.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h pcf/pcfread.c \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ pcf/pcf.h pcf/pcfread.h pcf/pcferror.h pcf/pcfdrivr.c \
+ ../include/freetype/ftgzip.h ../include/freetype/ftlzw.h \
+ ../include/freetype/ftbzip2.h ../include/freetype/ftbdf.h \
+ ../include/freetype/ttnameid.h pcf/pcfdrivr.h \
+ ../include/freetype/internal/services/svbdf.h \
+ ../include/freetype/internal/services/svfntfmt.h
+$(OBJDIR)/pfr.obj: pfr/pfr.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h pfr/pfrload.c pfr/pfrload.h \
+ pfr/pfrobjs.h pfr/pfrtypes.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftdebug.h pfr/pfrerror.h pfr/pfrgload.c \
+ pfr/pfrgload.h pfr/pfrsbit.h pfr/pfrcmap.c pfr/pfrcmap.h pfr/pfrobjs.c \
+ ../include/freetype/ftoutln.h ../include/freetype/internal/ftcalc.h \
+ ../include/freetype/ttnameid.h pfr/pfrdrivr.c \
+ ../include/freetype/internal/services/svpfr.h \
+ ../include/freetype/ftpfr.h \
+ ../include/freetype/internal/services/svfntfmt.h pfr/pfrdrivr.h \
+ pfr/pfrsbit.c
+$(OBJDIR)/psaux.obj: psaux/psaux.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h psaux/psobjs.c \
+ ../include/freetype/internal/psaux.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/t1types.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpscmap.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftcalc.h psaux/psobjs.h psaux/psconv.h \
+ psaux/psauxerr.h psaux/psauxmod.c psaux/psauxmod.h psaux/t1decode.h \
+ psaux/t1cmap.h psaux/afmparse.h psaux/t1decode.c \
+ ../include/freetype/ftoutln.h psaux/t1cmap.c psaux/afmparse.c \
+ psaux/psconv.c
+$(OBJDIR)/pshinter.obj: pshinter/pshinter.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h pshinter/pshpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ pshinter/pshpic.h pshinter/pshnterr.h pshinter/pshrec.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftcalc.h pshinter/pshrec.h \
+ ../include/freetype/internal/pshints.h ../include/freetype/t1tables.h \
+ pshinter/pshglob.h pshinter/pshalgo.h pshinter/pshglob.c \
+ pshinter/pshalgo.c pshinter/pshmod.c
+$(OBJDIR)/psnames.obj: psnames/psnames.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h psnames/pspic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ psnames/pspic.h psnames/psnamerr.h psnames/psmodule.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/services/svpscmap.h psnames/psmodule.h \
+ psnames/pstables.h
+$(OBJDIR)/raster.obj: raster/raster.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h raster/rastpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ raster/rastpic.h raster/rasterrs.h raster/ftraster.c raster/ftraster.h \
+ ../include/freetype/internal/ftcalc.h \
+ ../include/freetype/internal/ftdebug.h raster/ftrend1.c \
+ ../include/freetype/ftoutln.h raster/ftrend1.h
+$(OBJDIR)/sfnt.obj: sfnt/sfnt.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h sfnt/sfntpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ sfnt/sfntpic.h sfnt/sferrors.h sfnt/ttload.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftstream.h ../include/freetype/tttags.h \
+ sfnt/ttload.h ../include/freetype/internal/tttypes.h \
+ ../include/freetype/tttables.h ../include/freetype/ftmm.h \
+ ../include/freetype/t1tables.h sfnt/ttmtx.c sfnt/ttmtx.h sfnt/ttcmap.c \
+ ../include/freetype/internal/ftvalid.h sfnt/ttcmap.h \
+ ../include/freetype/internal/services/svttcmap.h sfnt/ttcmapc.h \
+ sfnt/ttkern.c sfnt/ttkern.h sfnt/sfobjs.c sfnt/sfobjs.h \
+ ../include/freetype/internal/sfnt.h ../include/freetype/ttnameid.h \
+ ../include/freetype/internal/services/svpscmap.h \
+ ../include/freetype/ftsnames.h ../include/freetype/ftgzip.h sfnt/ttbdf.h \
+ ../include/freetype/ftbdf.h sfnt/sfdriver.c sfnt/sfdriver.h \
+ sfnt/ttsbit.h sfnt/ttpost.h \
+ ../include/freetype/internal/services/svbdf.h \
+ ../include/freetype/internal/services/svgldict.h \
+ ../include/freetype/internal/services/svpostnm.h \
+ ../include/freetype/internal/services/svsfnt.h sfnt/pngshim.c \
+ sfnt/ttsbit.c ../include/freetype/ftbitmap.h sfnt/pngshim.h \
+ sfnt/ttpost.c sfnt/ttbdf.c
+$(OBJDIR)/smooth.obj: smooth/smooth.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h smooth/ftspic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ smooth/ftspic.h smooth/ftsmerrs.h smooth/ftgrays.c smooth/ftgrays.h \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/ftoutln.h \
+ smooth/ftsmooth.c smooth/ftsmooth.h
+$(OBJDIR)/truetype.obj: truetype/truetype.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h truetype/ttpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ truetype/ttpic.h truetype/tterrors.h truetype/ttdriver.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/sfnt.h \
+ ../include/freetype/internal/tttypes.h ../include/freetype/tttables.h \
+ ../include/freetype/ftmm.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/services/svfntfmt.h \
+ ../include/freetype/internal/services/svmm.h \
+ ../include/freetype/internal/services/svtteng.h \
+ ../include/freetype/internal/services/svttglyf.h \
+ ../include/freetype/internal/services/svprop.h \
+ ../include/freetype/ftttdrv.h truetype/ttdriver.h truetype/ttgload.h \
+ truetype/ttobjs.h truetype/ttinterp.h truetype/ttpload.h \
+ truetype/ttgxvar.h truetype/ttpload.c ../include/freetype/tttags.h \
+ truetype/ttgload.c ../include/freetype/internal/ftcalc.h \
+ ../include/freetype/ftoutln.h ../include/freetype/ftlist.h \
+ truetype/ttsubpix.h truetype/ttobjs.c truetype/ttinterp.c \
+ ../include/freetype/fttrigon.h truetype/ttsubpix.c truetype/ttgxvar.c
+$(OBJDIR)/type1.obj: type1/type1.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h type1/t1parse.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/psaux.h \
+ ../include/freetype/internal/t1types.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpscmap.h type1/t1parse.h \
+ type1/t1errors.h type1/t1load.c ../include/freetype/ftmm.h \
+ ../include/freetype/internal/ftcalc.h type1/t1load.h type1/t1tokens.h \
+ type1/t1objs.c ../include/freetype/ttnameid.h type1/t1gload.h \
+ type1/t1objs.h type1/t1afm.h type1/t1driver.c type1/t1driver.h \
+ ../include/freetype/internal/services/svmm.h \
+ ../include/freetype/internal/services/svgldict.h \
+ ../include/freetype/internal/services/svfntfmt.h \
+ ../include/freetype/internal/services/svpostnm.h \
+ ../include/freetype/internal/services/svpsinfo.h \
+ ../include/freetype/internal/services/svkern.h \
+ ../include/freetype/tttables.h type1/t1gload.c \
+ ../include/freetype/ftoutln.h type1/t1afm.c
+$(OBJDIR)/type1cid.obj: cid/type1cid.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h cid/cidparse.c \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftstream.h cid/cidparse.h \
+ ../include/freetype/internal/t1types.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpscmap.h \
+ ../include/freetype/internal/psaux.h cid/ciderrs.h cid/cidload.c \
+ ../include/freetype/ftmm.h cid/cidload.h cid/cidtoken.h cid/cidobjs.c \
+ cid/cidgload.h cid/cidobjs.h cid/cidriver.c cid/cidriver.h \
+ ../include/freetype/internal/services/svpostnm.h \
+ ../include/freetype/internal/services/svfntfmt.h \
+ ../include/freetype/internal/services/svpsinfo.h \
+ ../include/freetype/internal/services/svcid.h cid/cidgload.c \
+ ../include/freetype/ftoutln.h ../include/freetype/internal/ftcalc.h
+$(OBJDIR)/type42.obj: type42/type42.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h type42/t42objs.c \
+ type42/t42objs.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/t1types.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpscmap.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ type42/t42types.h type42/t42parse.h ../include/freetype/internal/psaux.h \
+ type42/t42error.h ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/ftlist.h ../include/freetype/ttnameid.h \
+ type42/t42parse.c ../include/freetype/internal/ftstream.h \
+ type42/t42drivr.c type42/t42drivr.h \
+ ../include/freetype/internal/services/svfntfmt.h \
+ ../include/freetype/internal/services/svgldict.h \
+ ../include/freetype/internal/services/svpostnm.h \
+ ../include/freetype/internal/services/svpsinfo.h
+$(OBJDIR)/winfnt.obj: winfonts/winfnt.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftwinfnt.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/ttnameid.h winfonts/winfnt.h winfonts/fnterrs.h \
+ ../include/freetype/internal/services/svwinfnt.h \
+ ../include/freetype/internal/services/svfntfmt.h
+$(OBJDIR)/ftbzip2.obj: bzip2/ftbzip2.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/freetype.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/ftbzip2.h
+$(OBJDIR)/ftapi.obj: base/ftapi.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftlist.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftoutln.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftstream.h ../include/freetype/tttables.h
+$(OBJDIR)/ftbbox.obj: base/ftbbox.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftbbox.h ../include/freetype/ftoutln.h \
+ ../include/freetype/internal/ftcalc.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h
+$(OBJDIR)/ftbdf.obj: base/ftbdf.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svbdf.h \
+ ../include/freetype/ftbdf.h
+$(OBJDIR)/ftbitmap.obj: base/ftbitmap.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftbitmap.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h
+$(OBJDIR)/ftdebug.obj: base/ftdebug.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftdebug.h
+$(OBJDIR)/ftgasp.obj: base/ftgasp.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftgasp.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/tttypes.h \
+ ../include/freetype/tttables.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/ftmm.h ../include/freetype/t1tables.h
+$(OBJDIR)/ftglyph.obj: base/ftglyph.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftoutln.h \
+ ../include/freetype/ftbitmap.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ base/basepic.h
+$(OBJDIR)/ftgxval.obj: base/ftgxval.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svgxval.h \
+ ../include/freetype/ftgxval.h ../include/freetype/internal/ftvalid.h
+$(OBJDIR)/ftinit.obj: base/ftinit.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftdebug.h base/basepic.h \
+ ../include/freetype/config/ftmodule.h
+$(OBJDIR)/ftlcdfil.obj: base/ftlcdfil.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h
+$(OBJDIR)/ftmm.obj: base/ftmm.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftmm.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svmm.h
+$(OBJDIR)/ftotval.obj: base/ftotval.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svotval.h \
+ ../include/freetype/ftotval.h ../include/freetype/internal/ftvalid.h
+$(OBJDIR)/ftpatent.obj: base/ftpatent.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/tttags.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/services/svsfnt.h \
+ ../include/freetype/tttables.h \
+ ../include/freetype/internal/services/svttglyf.h
+$(OBJDIR)/ftpfr.obj: base/ftpfr.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svpfr.h \
+ ../include/freetype/ftpfr.h
+$(OBJDIR)/ftstroke.obj: base/ftstroke.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftstroke.h \
+ ../include/freetype/ftoutln.h ../include/freetype/freetype.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/ftglyph.h \
+ ../include/freetype/fttrigon.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ base/basepic.h
+$(OBJDIR)/ftsynth.obj: base/ftsynth.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftsynth.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/ftoutln.h ../include/freetype/ftbitmap.h
+$(OBJDIR)/ftsystem.obj: base/ftsystem.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h
+$(OBJDIR)/fttype1.obj: base/fttype1.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svpsinfo.h \
+ ../include/freetype/internal/t1types.h ../include/freetype/t1tables.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpscmap.h
+$(OBJDIR)/ftwinfnt.obj: base/ftwinfnt.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h \
+ ../include/freetype/internal/ftdebug.h \
+ ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/freetype.h \
+ ../include/freetype/fttypes.h ../include/freetype/ftsystem.h \
+ ../include/freetype/ftimage.h ../include/freetype/fterrors.h \
+ ../include/freetype/ftmoderr.h ../include/freetype/fterrdef.h \
+ ../include/freetype/ftwinfnt.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svwinfnt.h
+$(OBJDIR)/ftbase.obj: base/ftbase.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h base/ftpic.c \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ base/basepic.h base/basepic.c base/ftadvanc.c \
+ ../include/freetype/internal/ftdebug.h ../include/freetype/ftadvanc.h \
+ base/ftcalc.c ../include/freetype/fttrigon.h \
+ ../include/freetype/internal/ftcalc.h base/ftdbgmem.c base/ftgloadr.c \
+ base/fthash.c ../include/freetype/internal/fthash.h base/ftobjs.c \
+ ../include/freetype/ftlist.h ../include/freetype/ftoutln.h \
+ ../include/freetype/internal/ftvalid.h \
+ ../include/freetype/internal/ftrfork.h \
+ ../include/freetype/internal/ftstream.h \
+ ../include/freetype/internal/sfnt.h \
+ ../include/freetype/internal/tttypes.h ../include/freetype/tttables.h \
+ ../include/freetype/ftmm.h ../include/freetype/t1tables.h \
+ ../include/freetype/tttags.h ../include/freetype/ttnameid.h \
+ ../include/freetype/internal/services/svprop.h \
+ ../include/freetype/internal/services/svsfnt.h \
+ ../include/freetype/internal/services/svpostnm.h \
+ ../include/freetype/internal/services/svgldict.h \
+ ../include/freetype/internal/services/svttcmap.h \
+ ../include/freetype/internal/services/svkern.h \
+ ../include/freetype/internal/services/svtteng.h base/ftbase.h \
+ base/ftoutln.c base/ftrfork.c base/ftsnames.c \
+ ../include/freetype/ftsnames.h base/ftstream.c base/fttrigon.c \
+ base/ftutil.c
+$(OBJDIR)/ftcid.obj: base/ftcid.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftcid.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svcid.h
+$(OBJDIR)/ftfstype.obj: base/ftfstype.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/t1tables.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/tttables.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/services/svpsinfo.h \
+ ../include/freetype/internal/t1types.h \
+ ../include/freetype/internal/pshints.h \
+ ../include/freetype/internal/fthash.h \
+ ../include/freetype/internal/services/svpscmap.h \
+ ../include/freetype/internal/ftobjs.h ../include/freetype/ftrender.h \
+ ../include/freetype/ftmodapi.h ../include/freetype/ftglyph.h \
+ ../include/freetype/ftsizes.h ../include/freetype/ftlcdfil.h \
+ ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h
+$(OBJDIR)/md5.obj: base/md5.c base/md5.h
+$(OBJDIR)/ftfntfmt.obj: base/ftfntfmt.c ../include/ft2build.h \
+ ../include/freetype/config/ftheader.h \
+ ../include/freetype/internal/internal.h ../include/freetype/ftfntfmt.h \
+ ../include/freetype/freetype.h ../include/freetype/config/ftconfig.h \
+ ../include/freetype/config/ftoption.h \
+ ../include/freetype/config/ftstdlib.h ../include/freetype/fttypes.h \
+ ../include/freetype/ftsystem.h ../include/freetype/ftimage.h \
+ ../include/freetype/fterrors.h ../include/freetype/ftmoderr.h \
+ ../include/freetype/fterrdef.h ../include/freetype/internal/ftobjs.h \
+ ../include/freetype/ftrender.h ../include/freetype/ftmodapi.h \
+ ../include/freetype/ftglyph.h ../include/freetype/ftsizes.h \
+ ../include/freetype/ftlcdfil.h ../include/freetype/internal/ftmemory.h \
+ ../include/freetype/internal/ftgloadr.h \
+ ../include/freetype/internal/ftdriver.h \
+ ../include/freetype/internal/autohint.h \
+ ../include/freetype/internal/ftserv.h \
+ ../include/freetype/internal/ftpic.h ../include/freetype/ftincrem.h \
+ ../include/freetype/internal/services/svfntfmt.h
