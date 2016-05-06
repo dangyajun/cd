@@ -10,7 +10,8 @@ ifneq ($(findstring Win, $(TEC_SYSNAME)), )
   LIBS = gdiplus
   CHECK_GDIPLUS = Yes
 else
-  INCLUDES = . sim freetype2
+  INCLUDES = . sim
+  USE_FREETYPE = Yes
   
   ifdef GTK_DEFAULT
     ifdef USE_GTK3

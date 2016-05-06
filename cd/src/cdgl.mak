@@ -4,9 +4,10 @@ OPT = YES
 
 SRC = drv/cdgl.c
 
-INCLUDES = . sim ftgl freetype2 freetype2/include
-LIBS = ftgl
+INCLUDES = . sim
 
+USE_FTGL = Yes
+USE_FREETYPE = Yes
 USE_OPENGL = Yes
 USE_CD = YES
 CD = ..

@@ -3,9 +3,8 @@ LIBNAME = pdflib
 OPT = YES
 
 DEF_FILE = pdflib/pdflib.def
-INCLUDES = zlib
 LDIR = ../lib/$(TEC_UNAME)
-LINK_ZLIB = Yes
+USE_ZLIB = Yes
 
 ifeq ($(TEC_UNAME), ppc)
   DEFINES = WORDS_BIGENDIAN
