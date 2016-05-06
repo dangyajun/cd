@@ -98,12 +98,6 @@
   <ItemGroup>
     <ClInclude Include="..\include\cdgl.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="cd_ftgl.vcxproj">
-      <Project>{1d758eea-59c3-46e4-bef5-16dcca8c0b21}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
