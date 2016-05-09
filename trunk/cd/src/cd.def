@@ -416,6 +416,7 @@ EXPORTS
   cdStrDup
   cdStrTmpFileName
   cdMakeDirectory
+  cdRemoveDirectory
   cdIsDirectory
   
   cdInitContextPlusList
