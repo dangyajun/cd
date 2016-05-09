@@ -815,6 +815,18 @@ int cdMakeDirectory(const char *path)
 #endif
 }
 
+int cdRemoveDirectory(const char *path)
+{
+#ifdef _WIN32
+  return RemoveDirectoryA(path);
+#else
+  if (rmdir(path) != 0)
+    return 0;
+  else
+    return 1;
+#endif
+}
+
 int cdIsDirectory(const char* path)
 {
 #ifdef _WIN32   

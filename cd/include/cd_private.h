@@ -298,6 +298,7 @@ int cdGetFontFileNameSystem(const char *type_face, int style, char* filename);
 int cdStrTmpFileName(char* filename);
 int cdMakeDirectory(const char *path);
 int cdIsDirectory(const char* path);
+int cdRemoveDirectory(const char *path);
 
 void cdPoly(cdCanvas* canvas, int mode, cdPoint* points, int n);
 
