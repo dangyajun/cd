@@ -254,7 +254,7 @@ static unsigned int sEncodeRGBA(unsigned char r, unsigned char g, unsigned char 
          (((unsigned int)b) <<  0);
 }
 
-static void make_pattern(cdCtxCanvas *ctxcanvas, int n, int m, void* userdata, int (*data2rgb)(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* userdata, unsigned char*r, unsigned char*g, unsigned char*b, unsigned char*a))
+static void make_pattern(cdCtxCanvas *ctxcanvas, int n, int m, void* userdata, int (*data2rgba)(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* userdata, unsigned char*r, unsigned char*g, unsigned char*b, unsigned char*a))
 {
   int i, j, offset, ret, stride;
   unsigned char r, g, b, a;
@@ -280,9 +280,9 @@ static void make_pattern(cdCtxCanvas *ctxcanvas, int n, int m, void* userdata, i
     {
       /* internal transform, affects also pattern orientation */
       if (ctxcanvas->canvas->invert_yaxis)
-        ret = data2rgb(ctxcanvas, n, i, m-1-j, userdata, &r, &g, &b, &a);
+        ret = data2rgba(ctxcanvas, n, i, m-1-j, userdata, &r, &g, &b, &a);
       else
-        ret = data2rgb(ctxcanvas, n, i, j, userdata, &r, &g, &b, &a);
+        ret = data2rgba(ctxcanvas, n, i, j, userdata, &r, &g, &b, &a);
 
       if (ret == -1)
       {
@@ -313,7 +313,7 @@ static void make_pattern(cdCtxCanvas *ctxcanvas, int n, int m, void* userdata, i
   cairo_surface_destroy(pattern_surface);
 }
 
-static int long2rgb(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, unsigned char*r, unsigned char*g, unsigned char*b, unsigned char*a)
+static int long2rgba(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, unsigned char*r, unsigned char*g, unsigned char*b, unsigned char*a)
 {
   long* long_data = (long*)data;
   long c = long_data[j*n+i];
@@ -325,12 +325,12 @@ static int long2rgb(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, uns
 
 static void cdpattern(cdCtxCanvas *ctxcanvas, int n, int m, const long *pattern)
 {
-  make_pattern(ctxcanvas, n, m, (void*)pattern, long2rgb);
+  make_pattern(ctxcanvas, n, m, (void*)pattern, long2rgba);
   cairo_set_source(ctxcanvas->cr, ctxcanvas->pattern);
   ctxcanvas->last_source = 1;
 }
 
-static int uchar2rgb(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, unsigned char*r, unsigned char*g, unsigned char*b, unsigned char*a)
+static int uchar2rgba(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, unsigned char*r, unsigned char*g, unsigned char*b, unsigned char*a)
 {
   unsigned char* uchar_data = (unsigned char*)data;
   if (uchar_data[j*n+i])
@@ -354,7 +354,7 @@ static int uchar2rgb(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, un
 
 static void cdstipple(cdCtxCanvas *ctxcanvas, int n, int m, const unsigned char *stipple)
 {
-  make_pattern(ctxcanvas, n, m, (void*)stipple, uchar2rgb);
+  make_pattern(ctxcanvas, n, m, (void*)stipple, uchar2rgba);
   cairo_set_source(ctxcanvas->cr, ctxcanvas->pattern);
   ctxcanvas->last_source = 1;
 }
