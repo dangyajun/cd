@@ -32,7 +32,7 @@
 #define get_blue(_)  (((double)cdBlue(_))/255.)
 
 /* ATENTION: currentmatrix/setmatrix
-   Remeber that there is a tranformation set just after file open, to define margins and pixel scale.
+   Remember that there is a transformation set just after file open, to define margins and pixel scale.
    So use transformations carefully.
 */
 
