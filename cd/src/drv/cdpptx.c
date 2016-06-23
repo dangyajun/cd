@@ -456,10 +456,7 @@ static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, doubl
 
   setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
 
-  if (interiorStyle != CD_HOLLOW)
-    pptxEndSector(ctxcanvas->presentation);
-  else
-    pptxEndLine(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndLine(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
 }
 
 static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -520,10 +517,7 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
 
   setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
 
-  if (interiorStyle != CD_HOLLOW)
-    pptxEndSector(ctxcanvas->presentation);
-  else
-    pptxEndLine(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndLine(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
 }
 
 static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int len)
@@ -971,7 +965,7 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
 
   canvas->bpp = 24;
 
-  ctxcanvas->presentation = pptxCreatePresentation(canvas->w, canvas->h);
+  ctxcanvas->presentation = pptxCreatePresentation(canvas->w_mm, canvas->h_mm, canvas->w, canvas->h);
   if (!ctxcanvas->presentation)
   {
     free(ctxcanvas);
