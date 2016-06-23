@@ -30,6 +30,7 @@ int SimpleDrawPS(void);
 int SimpleDrawEPS(void);
 int SimpleDrawSVG(void);
 int SimpleDrawWMF(void);
+int SimpleDrawPPTX(void);
 int SimpleDrawPrint(void);
 int SimpleDrawPrintDialog(void);
 int SimpleDrawClipboardBitmap(void);

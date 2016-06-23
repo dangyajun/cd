@@ -380,7 +380,8 @@ mnSave = MENU
  itDGN = ITEM[ACTIVE=NO]("DGN...", cmdDGN),
  itDXF = ITEM[ACTIVE=NO]("DXF...", cmdDXF),
  itEMF = ITEM[ACTIVE=NO]("EMF...", cmdEMF),
- itWMF = ITEM[ACTIVE=NO]("WMF...", cmdWMF)
+ itWMF = ITEM[ACTIVE=NO]("WMF...", cmdWMF),
+ itPPTX = ITEM[ACTIVE=NO]("PPTX...", cmdPPTX)
 )
 
 mnFile = MENU

@@ -31,6 +31,9 @@ endif
 SRCSVG = base64.c lodepng.c cdsvg.c
 SRCSVG := $(addprefix svg/, $(SRCSVG))
 
+SRCMINIZIP = ioapi.c minizip.c zip.c
+SRCMINIZIP := $(addprefix minizip/, $(SRCMINIZIP))
+
 SRCINTCGM = cd_intcgm.c cgm_bin_get.c cgm_bin_parse.c cgm_list.c \
             cgm_play.c cgm_sism.c cgm_txt_get.c cgm_txt_parse.c
 SRCINTCGM  := $(addprefix intcgm/, $(SRCINTCGM))
@@ -55,7 +58,8 @@ SRCCAIRO = cdcairodbuf.c cdcairopdf.c cdcairosvg.c cdcairo.c \
            cdcairoimg.c cdcairoirgb.c cdcairops.c
 SRCCAIRO := $(addprefix cairo/, $(SRCCAIRO))
 
-SRCDRV = cddgn.c cdcgm.c cgm.c cddxf.c cdirgb.c cdmf.c cdps.c cdpicture.c cddebug.c
+SRCDRV = cddgn.c cdcgm.c cgm.c cddxf.c cdirgb.c cdmf.c cdps.c cdpicture.c \
+         cddebug.c cdpptx.c pptx.c
 SRCDRV  := $(addprefix drv/, $(SRCDRV))
 
 SRCNULL = cd0prn.c cd0emf.c cd0wmf.c
@@ -64,7 +68,7 @@ SRCNULL  := $(addprefix drv/, $(SRCNULL))
 SRCCOMM = cd.c wd.c wdhdcpy.c rgb2map.c cd_vectortext.c cd_active.c \
           cd_attributes.c cd_bitmap.c cd_image.c cd_primitives.c cd_text.c cd_util.c
       
-SRC = $(SRCCOMM) $(SRCSVG) $(SRCINTCGM) $(SRCDRV) $(SRCSIM)
+SRC = $(SRCCOMM) $(SRCSVG) $(SRCINTCGM) $(SRCDRV) $(SRCMINIZIP) $(SRCSIM)
 INCLUDES = . drv x11 win32 intcgm sim cairo ../include
 USE_FREETYPE = Yes
 
@@ -81,6 +85,7 @@ ifdef USE_GDK
   else
     SRC += $(SRCGDK) drv/cd0prn.c drv/cd0emf.c
   endif
+  # Cairo is always included
   SRC += $(SRCCAIRO) cairo/cdcaironative_gdk.c
   
   ifneq ($(findstring Win, $(TEC_SYSNAME)), )

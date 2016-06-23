@@ -22,6 +22,12 @@
     <Filter Include="include">
       <UniqueIdentifier>{1e0658ed-7606-4d61-8d9c-ad5262d42e42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DRV\PPTX">
+      <UniqueIdentifier>{0d5bf3c4-3fc1-43bc-b02d-352ed6a59790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DRV\MINIZIP">
+      <UniqueIdentifier>{c876d88b-49c3-4aeb-ac67-c2d4d5cdbbc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\sim\cd_truetype.c">
@@ -114,6 +120,21 @@
     <ClCompile Include="..\src\rgb2map.c" />
     <ClCompile Include="..\src\wd.c" />
     <ClCompile Include="..\src\wdhdcpy.c" />
+    <ClCompile Include="..\src\drv\pptx.c">
+      <Filter>DRV\PPTX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\drv\cdpptx.c">
+      <Filter>DRV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\minizip\minizip.c">
+      <Filter>DRV\MINIZIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\minizip\zip.c">
+      <Filter>DRV\MINIZIP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\minizip\ioapi.c">
+      <Filter>DRV\MINIZIP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\sim\cd_truetype.h">
@@ -211,6 +232,18 @@
     </ClInclude>
     <ClInclude Include="..\include\wd_old.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\drv\pptx.h">
+      <Filter>DRV\PPTX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\minizip\ioapi.h">
+      <Filter>DRV\MINIZIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\minizip\zip.h">
+      <Filter>DRV\MINIZIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\minizip\crypt.h">
+      <Filter>DRV\MINIZIP</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

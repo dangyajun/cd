@@ -626,6 +626,7 @@ static short file_get_word(FILE *fp)
   return word;
 }
 
+#if 0
 static short file_get_word2(FILE *fp)
 {
   short word=0;
@@ -635,6 +636,7 @@ static short file_get_word2(FILE *fp)
 
   return word;
 }
+#endif
 
 /*******************************************
  * Le elementos de um arquivo DGN e os     *

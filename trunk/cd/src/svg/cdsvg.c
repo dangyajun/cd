@@ -991,7 +991,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   int i, j, d, rw, rh, rgb_size, target_size;
   unsigned char* rgb_data, *rgb_buffer;
   size_t buffer_size;
-		LodePNGState state;
+  LodePNGState state;
   char* rgb_target;
 
   if (xmin<0 || ymin<0 || xmax-xmin+1>iw || ymax-ymin+1>ih) return;

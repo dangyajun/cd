@@ -1039,6 +1039,10 @@ wb_usr.tree =
               link= "drv/ps.html"
             },
             {
+              name= {nl= "PPTX"},
+              link= "drv/pptx.html"
+            },
+            {
               name= {nl= "SVG"},
               link= "drv/svg.html"
             },

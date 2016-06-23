@@ -59,9 +59,9 @@ typedef struct _cdglFontCache
 } cdglFontCache;
 
 
-static int gl_canvas_count = 0;
 #ifndef WIN32
-iconv_t cdgl_iconv = (iconv_t)-1;
+static int gl_canvas_count = 0;
+static iconv_t cdgl_iconv = (iconv_t)-1;
 #endif
 
 struct _cdCtxImage
@@ -193,6 +193,9 @@ static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int le
   }
 #else
   {
+    size_t ulen = (size_t)len;
+    size_t utf8len = ulen*2;
+
     if (cdgl_iconv == (iconv_t)-1)
     {
       cdglCheckUtf8Buffer(ctxcanvas, 1);
@@ -200,12 +203,9 @@ static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int le
       return;
     }
 
-    size_t ulen = (size_t)len;
-    size_t utf8len = ulen*2;
     cdglCheckUtf8Buffer(ctxcanvas, utf8len);
-    char* utf8 = ctxcanvas->utf8_buffer;
 
-    iconv(cdgl_iconv, (char**)&str, &ulen, &utf8, &utf8len);
+    iconv(cdgl_iconv, (char**)&str, &ulen, &(ctxcanvas->utf8_buffer), &utf8len);
   }
 #endif
 }
@@ -322,6 +322,7 @@ static GLubyte* cdglCreateImageMap(int xmin, int ymin, int width, int height, co
   return glImage;
 }
 
+#if 0
 static GLubyte* cdglCreateImagePattern(int width, int height, const long* pattern)
 {
   const long *line_data;
@@ -400,6 +401,7 @@ static GLubyte* cdglCreateImageStipple(int width, int height, const char* stippl
 
   return glImage;
 }
+#endif
 
 static int iGLIsOpenGL2orMore(void)
 {
@@ -551,15 +553,15 @@ static int cdactivate(cdCtxCanvas *ctxcanvas)
 
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
+#ifndef WIN32
   gl_canvas_count--;
   if (gl_canvas_count == 0) /* last canvas */
   {
-#ifndef WIN32
     if (cdgl_iconv != (iconv_t)-1)
       iconv_close(cdgl_iconv);
     cdgl_iconv = (iconv_t)-1;
-#endif
   }
+#endif
 
   if (ctxcanvas->gl_fonts)
   {
@@ -1767,14 +1769,14 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
 
+#ifndef WIN32
   gl_canvas_count++;
   if (gl_canvas_count == 1) /* first canvas */
   {
-#ifndef WIN32
     if (cdgl_iconv == (iconv_t)-1)
       cdgl_iconv = iconv_open("UTF-8", "ISO-8859-1");
-#endif
   }
+#endif
 
   canvas->w = w;
   canvas->h = h;

@@ -97,8 +97,9 @@ int main(int argc, char** argv)
   IupSetFunction("SimpleDrawPS", (Icallback) SimpleDrawPS);
   IupSetFunction("SimpleDrawEPS", (Icallback) SimpleDrawEPS);
   IupSetFunction("SimpleDrawSVG", (Icallback) SimpleDrawSVG);
-  IupSetFunction("SimpleDrawWMF", (Icallback) SimpleDrawWMF);
-  IupSetFunction("SimpleDrawPrint", (Icallback) SimpleDrawPrint);
+  IupSetFunction("SimpleDrawWMF", (Icallback)SimpleDrawWMF);
+  IupSetFunction("SimpleDrawPPTX", (Icallback)SimpleDrawPPTX);
+  IupSetFunction("SimpleDrawPrint", (Icallback)SimpleDrawPrint);
   IupSetFunction("SimpleDrawPrintDialog", (Icallback) SimpleDrawPrintDialog);
   IupSetFunction("SimpleDrawClipboardBitmap", (Icallback) SimpleDrawClipboardBitmap);
   IupSetFunction("SimpleDrawClipboardMetafile", (Icallback) SimpleDrawClipboardMetafile);
@@ -122,8 +123,8 @@ int main(int argc, char** argv)
   IupSetFunction("SimpleTransform", (Icallback) SimpleTransform);
 
   IupSetFunction("SimpleAll", (Icallback) SimpleAll);
-  IupSetFunction("SimpleTextAlign", (Icallback) SimpleTextAlign);
-  IupSetFunction("SimpleTextFonts", (Icallback) SimpleTextFonts);
+  IupSetFunction("SimpleTextAlign", (Icallback)SimpleTextAlign);
+  IupSetFunction("SimpleTextFonts", (Icallback)SimpleTextFonts);
   IupSetFunction("SimpleTest", (Icallback) SimpleTest);
 
   IupSetFunction("SimpleRepaint", (Icallback) SimpleRepaint);

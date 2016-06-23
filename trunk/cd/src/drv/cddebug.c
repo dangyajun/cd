@@ -622,7 +622,7 @@ static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *r, unsigned cha
 
 static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
-  fprintf(ctxcanvas->file, "%s(%d, %d, %p, %p, %p, %g, %g, %g, %g, %d, %d, %d)\n", CDDBG_PUTIMAGERGB, iw, ih, r, g, b, x, y, w, h, xmin, xmax, ymin, ymax);
+  fprintf(ctxcanvas->file, "%s(%d, %d, %p, %p, %p, %g, %g, %g, %g, %d, %d, %d, %d)\n", CDDBG_PUTIMAGERGB, iw, ih, r, g, b, x, y, w, h, xmin, xmax, ymin, ymax);
 }
 
 static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)

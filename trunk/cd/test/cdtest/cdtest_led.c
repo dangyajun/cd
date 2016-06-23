@@ -429,7 +429,9 @@ void cdtest_loadled (void)
       "ACTIVE", "NO", NULL ),
     named[14] = IupSetAtt( "itWMF", IupItem( "WMF...", "cmdWMF" ), 
       "ACTIVE", "NO", NULL ),
-  NULL), NULL );
+      named[15] = IupSetAtt("itPPTX", IupItem("PPTX...", "cmdPPTX"),
+      "ACTIVE", "NO", NULL),
+      NULL), NULL);
   named[15] = IupSetAtt( "mnFile", IupMenu(
     IupSetAtt( NULL, IupSubmenu( "Open",
       named[0] /* mnOpen */
