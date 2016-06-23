@@ -15,10 +15,58 @@
 
 #define to_angle(_)   (int)((_)*60000)
 
+struct _pptxPresentation
+{
+  char baseDir[10240];
+
+  FILE* slideFile;
+  FILE* slideRelsFile;
+  FILE* presentationFile;
+
+  int slideHeight;
+  int slideWidth;
+  int slideXRes;
+  int slideYRes;
+
+  int slideNum;
+  int objectNum;
+  int mediaNum;
+  int imageId;
+
+  int pixelSize;
+};
+
+#define PPTX_PPT_DIR          "ppt"
+#define PPTX_PPT_RELS_DIR     "ppt/_rels"
+#define PPTX_LAYOUTS_DIR      "ppt/slideLayouts"
+#define PPTX_LAYOUTS_RELS_DIR "ppt/slideLayouts/_rels"
+#define PPTX_MASTERS_DIR      "ppt/slideMasters"
+#define PPTX_MASTERS_RELS_DIR "ppt/slideMasters/_rels"
+#define PPTX_SLIDES_DIR       "ppt/slides"
+#define PPTX_SLIDES_RELS_DIR  "ppt/slides/_rels"
+#define PPTX_THEME_DIR        "ppt/theme"
+#define PPTX_MEDIA_DIR        "ppt/media"
+#define PPTX_RELS_DIR         "_rels"
+
+#define PPTX_CONTENT_TYPES_FILE     "[Content_Types].xml"
+#define PPTX_PRESENTATION_FILE      "ppt/presentation.xml"
+#define PPTX_PRES_PROPS_FILE        "ppt/presProps.xml"
+#define PPTX_IMAGE_FILE             "ppt/media/image%d.png"
+#define PPTX_SLIDE_LAYOUT_FILE      "ppt/slideLayouts/slideLayout1.xml"
+#define PPTX_SLIDE_LAYOUT_RELS_FILE "ppt/slideLayouts/_rels/slideLayout1.xml.rels"
+#define PPTX_SLIDE_MASTER_FILE      "ppt/slideMasters/slideMaster1.xml"
+#define PPTX_SLIDE_MASTER_RELS      "ppt/slideMasters/_rels/slideMaster1.xml.rels"
+#define PPTX_SLIDE_FILE             "ppt/slides/slide%d.xml"
+#define PPTX_SLIDE_RELS_FILE        "ppt/slides/_rels/slide%d.xml.rels"
+#define PPTX_THEME_FILE             "ppt/theme/theme1.xml"
+#define PPTX_PRESENTATION_RELS      "ppt/_rels/presentation.xml.rels"
+#define PPTX_RELS_FILE              "_rels/.rels"
+
+
 int minizip(const char *filename, const char *temDir, const char **files, const int nFiles);
 
 
-static int createRGBImageFile(char *filename, int width, int height, const unsigned char *red, const unsigned char *green, const unsigned char *blue, const unsigned char *alpha)
+static int createImageFileRGBA(char *filename, int width, int height, const unsigned char *red, const unsigned char *green, const unsigned char *blue, const unsigned char *alpha)
 {
 #if 0
   int error;
@@ -53,12 +101,8 @@ static int createRGBImageFile(char *filename, int width, int height, const unsig
   return 0;
 }
 
-static int pptxCreateImageFile(pptxPresentation*presentation, int width, int height, const unsigned char *index, const long int *colors)
+static int createImageFileMap(char *filename, int width, int height, const unsigned char *index, const long int *colors)
 {
-  char filename[10240];
-
-  sprintf(filename, "%s/image%d.png", presentation->mediaDir, presentation->mediaNum);
-
 #if 0
   imImage *image = imImageInit(width, height, colorSpace, IM_BYTE, index, colors, 256);
 
@@ -605,6 +649,8 @@ static void printContentTypes(FILE* ctFile, int nSlides)
 
 static void printPptRelsFile(FILE* pptRelsFile, int nSlides)
 {
+  int i;
+
   const char *relsPrefix =
   {
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -625,7 +671,7 @@ static void printPptRelsFile(FILE* pptRelsFile, int nSlides)
   };
 
   fprintf(pptRelsFile, relsPrefix);
-  for (int i = 0; i < nSlides; i++)
+  for (i = 0; i < nSlides; i++)
     fprintf(pptRelsFile, slides, i + 4, i + 1);
   fprintf(pptRelsFile, relsSuffix);
 }
@@ -666,28 +712,28 @@ static void printSlideRels(pptxPresentation *presentation)
 /**************************************  FILE OPEN/CLOSE   ******************************************************/
 
 
-void pptxOpenSlide(pptxPresentation *presentation)
+int pptxOpenSlide(pptxPresentation *presentation)
 {
-  char slideFileName[10240];
-  char slideRelsFileName[10240];
+  char filename[10240];
 
-  sprintf(slideFileName, "%s/slide%d.xml", presentation->slidesDir, presentation->slideNum);
+  sprintf(filename, "%s/"PPTX_SLIDE_FILE, presentation->baseDir, presentation->slideNum);
 
-  presentation->slideFile = fopen(slideFileName, "w");
+  presentation->slideFile = fopen(filename, "w");
   if (!presentation->slideFile)
-    return;
+    return 0;
 
-  sprintf(slideRelsFileName, "%s/slide%d.xml.rels", presentation->slidesRelsDir, presentation->slideNum);
+  sprintf(filename, "%s/"PPTX_SLIDE_RELS_FILE, presentation->baseDir, presentation->slideNum);
 
-  presentation->slideRelsFile = fopen(slideRelsFileName, "w");
+  presentation->slideRelsFile = fopen(filename, "w");
   if (!presentation->slideRelsFile)
-    return;
+    return 0;
 
   printOpenSlide(presentation->slideFile, presentation->objectNum);
 
   printOpenSlideRels(presentation->slideRelsFile);
 
   presentation->objectNum++;
+  return 1;
 }
 
 void pptxCloseSlide(pptxPresentation *presentation)
@@ -705,14 +751,18 @@ void pptxCloseSlide(pptxPresentation *presentation)
   presentation->slideNum++;
 }
 
-void pptxWritePresProps(pptxPresentation *presentation)
+static FILE* openFile(pptxPresentation *presentation, const char* subfile)
 {
   char filename[10240];
-  FILE* presPropsFile;
 
-  sprintf(filename, "%s/presProps.xml", presentation->pptDir);
+  sprintf(filename, "%s/%s", presentation->baseDir, subfile);
 
-  presPropsFile = fopen(filename, "w");
+  return fopen(filename, "w");
+}
+
+void pptxWritePresProps(pptxPresentation *presentation)
+{
+  FILE* presPropsFile = openFile(presentation, PPTX_PRES_PROPS_FILE);
   if (!presPropsFile)
     return;
 
@@ -723,12 +773,7 @@ void pptxWritePresProps(pptxPresentation *presentation)
 
 void pptxWriteRels(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *relsFile;
-
-  sprintf(filename, "%s/.rels", presentation->relsDir);
-
-  relsFile = fopen(filename, "w");
+  FILE *relsFile = openFile(presentation, PPTX_RELS_FILE);
   if (!relsFile)
     return;
 
@@ -739,12 +784,7 @@ void pptxWriteRels(pptxPresentation *presentation)
 
 void pptxWriteLayoutRels(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *pptLayoutRels;
-
-  sprintf(filename, "%s/slideLayout1.xml.rels", presentation->layoutsRelDir);
-
-  pptLayoutRels = fopen(filename, "w");
+  FILE *pptLayoutRels = openFile(presentation, PPTX_SLIDE_LAYOUT_RELS_FILE);
   if (!pptLayoutRels)
     return;
 
@@ -755,12 +795,7 @@ void pptxWriteLayoutRels(pptxPresentation *presentation)
 
 void pptxWriteLayout(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *layoutRels;
-
-  sprintf(filename, "%s/slideLayout1.xml", presentation->layoutsDir);
-
-  layoutRels = fopen(filename, "w");
+  FILE *layoutRels = openFile(presentation, PPTX_SLIDE_LAYOUT_FILE);
   if (!layoutRels)
     return;
 
@@ -771,12 +806,7 @@ void pptxWriteLayout(pptxPresentation *presentation)
 
 void pptxWriteMasterRels(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *masterRels;
-
-  sprintf(filename, "%s/slideMaster1.xml.rels", presentation->masterRelsDir);
-
-  masterRels = fopen(filename, "w");
+  FILE *masterRels = openFile(presentation, PPTX_SLIDE_MASTER_RELS);
   if (!masterRels)
     return;
 
@@ -787,12 +817,7 @@ void pptxWriteMasterRels(pptxPresentation *presentation)
 
 void pptxWriteMaster(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *master;
-
-  sprintf(filename, "%s/slideMaster1.xml", presentation->mastersDir);
-
-  master = fopen(filename, "w");
+  FILE *master = openFile(presentation, PPTX_SLIDE_MASTER_FILE);
   if (!master)
     return;
 
@@ -803,12 +828,7 @@ void pptxWriteMaster(pptxPresentation *presentation)
 
 void pptxWriteTheme(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *theme;
-
-  sprintf(filename, "%s/theme1.xml", presentation->themeDir);
-
-  theme = fopen(filename, "w");
+  FILE *theme = openFile(presentation, PPTX_THEME_FILE);
   if (!theme)
     return;
 
@@ -819,11 +839,7 @@ void pptxWriteTheme(pptxPresentation *presentation)
 
 void pptxWritePresentation(pptxPresentation *presentation)
 {
-  char filename[10240];
-
-  sprintf(filename, "%s/presentation.xml", presentation->pptDir);
-
-  presentation->presentationFile = fopen(filename, "w");
+  presentation->presentationFile = openFile(presentation, PPTX_PRESENTATION_FILE);
   if (!presentation->presentationFile)
     return;
 
@@ -834,12 +850,7 @@ void pptxWritePresentation(pptxPresentation *presentation)
 
 void pptxWriteContentTypes(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *ctFile;
-
-  sprintf(filename, "%s/[Content_Types].xml", presentation->baseDir);
-
-  ctFile = fopen(filename, "w");
+  FILE *ctFile = openFile(presentation, PPTX_CONTENT_TYPES_FILE);
   if (!ctFile)
     return;
 
@@ -850,12 +861,7 @@ void pptxWriteContentTypes(pptxPresentation *presentation)
 
 void pptxWritePptRels(pptxPresentation *presentation)
 {
-  char filename[10240];
-  FILE *pptRels;
-
-  sprintf(filename, "%s/presentation.xml.rels", presentation->pptRelsDir);
-
-  pptRels = fopen(filename, "w");
+  FILE *pptRels = openFile(presentation, PPTX_PRESENTATION_RELS);
   if (!pptRels)
     return;
 
@@ -1004,13 +1010,6 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
   fprintf(presentation->slideFile, patt, style, red, green, blue, alphaPct, bRed, bGreen, bBlue, bAlphaPct);
 }
 
-static void pptxCreatePatternImage(pptxPresentation *presentation, const unsigned char *red, const unsigned char* green, const unsigned char *blue, int width, int height)
-{
-  char filename[10240];
-  sprintf(filename, "%s/image%d.png", presentation->mediaDir, presentation->mediaNum);
-  createRGBImageFile(filename, width, height, red, green, blue, NULL);
-}
-
 void pptxPattern(pptxPresentation *presentation, const unsigned char *red, const unsigned char* green, const unsigned char *blue, int width, int height)
 {
   const char *img =
@@ -1021,8 +1020,11 @@ void pptxPattern(pptxPresentation *presentation, const unsigned char *red, const
     "\t\t\t\t\t\t<a:tile tx=\"0\" ty=\"0\" sx=\"100000\" sy=\"100000\" flip=\"none\" algn=\"tl\"/>\n"
     "\t\t\t\t\t</a:blipFill>\n"
   };
+  char filename[10240];
 
-  pptxCreatePatternImage(presentation, red, green, blue, width, height);
+  sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
+
+  createImageFileRGBA(filename, width, height, red, green, blue, NULL);
 
   fprintf(presentation->slideFile, img, presentation->imageId);
 
@@ -1032,15 +1034,16 @@ void pptxPattern(pptxPresentation *presentation, const unsigned char *red, const
   presentation->imageId++;
 }
 
-static void pptxCreateStippleImage(pptxPresentation *presentation, unsigned char fRed, unsigned char fGreen, unsigned char fBlue, unsigned char bRed, unsigned char bGreen, unsigned char bBlue,
+static void createStippleImage(pptxPresentation *presentation, unsigned char fRed, unsigned char fGreen, unsigned char fBlue, unsigned char bRed, unsigned char bGreen, unsigned char bBlue,
                             const unsigned char *stipple, int width, int height, int backOpacity)
 {
   int lin, col;
   char filename[10240];
-  unsigned char* red = (unsigned char*)malloc(width*height*sizeof(unsigned char));
-  unsigned char* green = (unsigned char*)malloc(width*height*sizeof(unsigned char));
-  unsigned char* blue = (unsigned char*)malloc(width*height*sizeof(unsigned char));
-  unsigned char* alpha = (unsigned char*)malloc(width*height*sizeof(unsigned char));
+  int plane_size = width*height;
+  unsigned char* red = (unsigned char*)malloc(plane_size * 4);
+  unsigned char* green = red + plane_size;
+  unsigned char* blue = green + plane_size;
+  unsigned char* alpha = blue + plane_size;
 
   for (lin = 0; lin < width; lin++)
   {
@@ -1067,8 +1070,11 @@ static void pptxCreateStippleImage(pptxPresentation *presentation, unsigned char
     }
   }
 
-  sprintf(filename, "%s/image%d.png", presentation->mediaDir, presentation->mediaNum);
-  createRGBImageFile(filename, width, height, red, green, blue, alpha);
+  sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
+
+  createImageFileRGBA(filename, width, height, red, green, blue, alpha);
+
+  free(red);
 }
 
 void pptxStipple(pptxPresentation *presentation, unsigned char fRed, unsigned char fGreen, unsigned char fBlue, unsigned char bRed, unsigned char bGreen, unsigned char bBlue,
@@ -1083,7 +1089,7 @@ void pptxStipple(pptxPresentation *presentation, unsigned char fRed, unsigned ch
     "\t\t\t\t\t</a:blipFill>\n"
   };
 
-  pptxCreateStippleImage(presentation, fRed, fGreen, fBlue, bRed, bGreen, bBlue, stipple, width, height, backOpacity);
+  createStippleImage(presentation, fRed, fGreen, fBlue, bRed, bGreen, bBlue, stipple, width, height, backOpacity);
 
   fprintf(presentation->slideFile, img, presentation->imageId);
 
@@ -1095,6 +1101,7 @@ void pptxStipple(pptxPresentation *presentation, unsigned char fRed, unsigned ch
 
 void pptxEndLine(pptxPresentation *presentation, int width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes)
 {
+  int i;
   int alphaPct = (int)(((double)alpha / 255.) * 100 * 1000);
 
   const char *lineEndPrefix =
@@ -1129,7 +1136,7 @@ void pptxEndLine(pptxPresentation *presentation, int width, unsigned char red, u
   else
   {
     fprintf(presentation->slideFile, "\t\t\t\t\t<a:custDash>\n");
-    for (int i = 0; i < nDashes; i += 2)
+    for (i = 0; i < nDashes; i += 2)
       fprintf(presentation->slideFile, "\t\t\t\t\t\t<a:ds d=\"%d%%\" sp=\"%d%%\"/>\n", dashes[i], dashes[i + 1]);
     fprintf(presentation->slideFile, "\t\t\t\t\t</a:custDash>\n");
   }
@@ -1338,8 +1345,11 @@ void pptxImageMap(pptxPresentation *presentation, int iw, int ih, const unsigned
     "\t\t\t\t</p:spPr>\n"
     "\t\t\t</p:pic>\n"
   };
+  char filename[10240];
 
-  pptxCreateImageFile(presentation, iw, ih, index, colors);
+  sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
+
+  createImageFileMap(filename, iw, ih, index, colors);
 
   fprintf(presentation->slideFile, image, presentation->objectNum, presentation->objectNum, presentation->imageId, x*presentation->slideXRes, y*presentation->slideYRes,
           w*presentation->slideXRes, h*presentation->slideYRes);
@@ -1384,8 +1394,11 @@ void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigne
     "\t\t\t\t</p:spPr>\n"
     "\t\t\t</p:pic>\n"
   };
+  char filename[10240];
 
-  createRGBImageFile(presentation, iw, ih, red, green, blue, alpha);
+  sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
+
+  createImageFileRGBA(filename, iw, ih, red, green, blue, alpha);
 
   fprintf(presentation->slideFile, image, presentation->objectNum, presentation->objectNum, presentation->imageId, x*presentation->slideXRes, y*presentation->slideYRes,
           w*presentation->slideXRes, h*presentation->slideYRes);
@@ -1401,27 +1414,28 @@ void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigne
 /*************************************  CREATE/KILL  *********************************************************/
 
 
-static char* createRootDirectory(const char *rootName)
+static void createSubDirectory(const char* dirname, const char* subdir)
 {
-  cdMakeDirectory(rootName);
-
-  return rootName;
+  char dir[10240];
+  sprintf(dir, "%s/%s", dirname, subdir);
+  cdMakeDirectory(dir);
 }
 
-static char* createSubDirectory(const char* rootName, const char* dirName)
+static void removeSubDirectory(const char* dirname, const char* subdir)
 {
-  char* subdir = malloc(10240);
-
-  subdir = strcpy(subdir, rootName);
-  subdir = strcat(subdir, "/");
-  subdir = strcat(subdir, dirName);
-
-  cdMakeDirectory(subdir);
-
-  return subdir;
+  char dir[10240];
+  sprintf(dir, "%s/%s", dirname, subdir);
+  cdRemoveDirectory(dir);
 }
 
-pptxPresentation *pptxCreatePresentation(const char *dirname, int width, int height)
+static void removeFile(const char* dirname, const char* file)
+{
+  char filename[10240];
+  sprintf(filename, "%s/%s", dirname, file);
+  remove(filename);
+}
+
+pptxPresentation *pptxCreatePresentation(int width, int height)
 {
   pptxPresentation *presentation = (pptxPresentation*)malloc(sizeof(pptxPresentation));
   double slideRatio, canvasRatio;
@@ -1430,41 +1444,53 @@ pptxPresentation *pptxCreatePresentation(const char *dirname, int width, int hei
   // TODO: what's this????? - begin
   presentation->slideHeight = 6858000;
   presentation->slideWidth = 12192000;
-
   presentation->pixelSize = 9525;
 
   slideRatio = (double)presentation->slideWidth / presentation->slideHeight;
   canvasRatio = (double)width / height;
-
   if (canvasRatio > slideRatio)
     presentation->slideHeight = (int)(presentation->slideWidth / canvasRatio);
   else
     presentation->slideWidth = (int)(presentation->slideHeight * canvasRatio);
-
-  presentation->slideXRes = presentation->slideWidth / width;
-  presentation->slideYRes = presentation->slideHeight / height;
   // TODO: what's this????? - end
 
 
-  presentation->baseDir = createRootDirectory(dirname);
-  presentation->pptDir = createSubDirectory(dirname, PPTX_PPT_DIR);
-  presentation->pptRelsDir = createSubDirectory(dirname, PPTX_PPT_RELS_DIR);
-  presentation->layoutsDir = createSubDirectory(dirname, PPTX_LAYOUTS_DIR);
-  presentation->layoutsRelDir = createSubDirectory(dirname, PPTX_LAYOUTS_RELS_DIR);
-  presentation->mastersDir = createSubDirectory(dirname, PPTX_MASTERS_DIR);
-  presentation->masterRelsDir = createSubDirectory(dirname, PPTX_MASTERS_RELS_DIR);
-  presentation->slidesDir = createSubDirectory(dirname, PPTX_SLIDES_DIR);
-  presentation->slidesRelsDir = createSubDirectory(dirname, PPTX_SLIDES_RELS_DIR);
-  presentation->themeDir = createSubDirectory(dirname, PPTX_THEME_DIR);
-  presentation->mediaDir = createSubDirectory(dirname, PPTX_MEDIA_DIR);
-  presentation->relsDir = createSubDirectory(dirname, PPTX_RELS_DIR);
+  presentation->slideXRes = presentation->slideWidth / width;
+  presentation->slideYRes = presentation->slideHeight / height;
+
+  cdStrTmpFileName(presentation->baseDir);
+#ifdef WIN32
+  remove(presentation->baseDir);
+#endif
+  if (!cdMakeDirectory(presentation->baseDir))
+  {
+    free(presentation);
+    return NULL;
+  }
+
+  /* must be created in this order */
+  createSubDirectory(presentation->baseDir, PPTX_PPT_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_PPT_RELS_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_LAYOUTS_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_LAYOUTS_RELS_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_MASTERS_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_MASTERS_RELS_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_SLIDES_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_SLIDES_RELS_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_THEME_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_MEDIA_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_RELS_DIR);
 
   presentation->slideNum = 1;
   presentation->objectNum = 51;
   presentation->mediaNum = 0;
   presentation->imageId = 4;
 
-  pptxOpenSlide(presentation);
+  if (!pptxOpenSlide(presentation))
+  {
+    free(presentation);
+    return NULL;
+  }
 
   pptxWritePresProps(presentation);
 
@@ -1483,7 +1509,7 @@ pptxPresentation *pptxCreatePresentation(const char *dirname, int width, int hei
   return presentation;
 }
 
-static void pptxClosePresentation(pptxPresentation *presentation)
+static void closePresentation(pptxPresentation *presentation)
 {
   pptxWritePresentation(presentation);
 
@@ -1494,105 +1520,78 @@ static void pptxClosePresentation(pptxPresentation *presentation)
   pptxCloseSlide(presentation);
 }
 
-static int addFileToPPTX(char* filename, char *file)
-{
-  strcpy(file, filename);
-  return 1;
-}
-
 static void removeTempFiles(const char* dirname, const char **files, int nFiles)
 {
-  char path[10240];
-  char filename[10240];
+  int i;
 
-  strcpy(path, dirname);
-  strcat(path, "\\");
+  for (i = 0; i < nFiles; i++)
+    removeFile(dirname, files[i]);
 
-  for (int i = 0; i < nFiles; i++)
-  {
-    strcat(strcpy(filename, path), files[i]);
-    remove(filename);
-  }
-
-  cdRemoveDirectory(strcat(path, PPTX_RELS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_MEDIA_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_THEME_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_SLIDES_RELS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_SLIDES_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_MASTERS_RELS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_MASTERS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_LAYOUTS_RELS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_LAYOUTS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_PPT_RELS_DIR));
-  cdRemoveDirectory(strcat(path, PPTX_PPT_DIR));
+  /* must be removed in this order (reverse from creation) */
+  removeSubDirectory(dirname, PPTX_RELS_DIR);
+  removeSubDirectory(dirname, PPTX_MEDIA_DIR);
+  removeSubDirectory(dirname, PPTX_THEME_DIR);
+  removeSubDirectory(dirname, PPTX_SLIDES_RELS_DIR);
+  removeSubDirectory(dirname, PPTX_SLIDES_DIR);
+  removeSubDirectory(dirname, PPTX_MASTERS_RELS_DIR);
+  removeSubDirectory(dirname, PPTX_MASTERS_DIR);
+  removeSubDirectory(dirname, PPTX_LAYOUTS_RELS_DIR);
+  removeSubDirectory(dirname, PPTX_LAYOUTS_DIR);
+  removeSubDirectory(dirname, PPTX_PPT_RELS_DIR);
+  removeSubDirectory(dirname, PPTX_PPT_DIR);
 
   cdRemoveDirectory(dirname);
 }
 
-static int pptxWriteZipFile(pptxPresentation *presentation, const char* dirname, const char* filename)
+static int writeZipFile(pptxPresentation *presentation, const char* dirname, const char* filename)
 {
   char **files;
-  int i = 0;
+  int i, j, k, ret,
+    count = presentation->mediaNum + 2 * presentation->slideNum + 10;
 
-  files = calloc(128, sizeof(char*));
-  for (int i = 0; i < 128; ++i)
+  files = malloc(count * sizeof(char*));
+  for (i = 0; i < count; ++i)
     files[i] = malloc(80);
 
-  if (addFileToPPTX(PPTX_CONTENT_TYPES_FILE, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_PRESENTATION_FILE, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_PRES_PROPS_FILE, files[i++]) == 0)
-    return 0;
-  for (int j = 0; j < presentation->mediaNum; j++)
+  i = 0;
+  strcpy(files[i], PPTX_CONTENT_TYPES_FILE); i++;
+  strcpy(files[i], PPTX_PRESENTATION_FILE); i++;
+  strcpy(files[i], PPTX_PRES_PROPS_FILE); i++;
+  for (j = 0; j < presentation->mediaNum; j++)
+    sprintf(files[i], PPTX_IMAGE_FILE, j); i++;
+  strcpy(files[i], PPTX_SLIDE_LAYOUT_FILE); i++;
+  strcpy(files[i], PPTX_SLIDE_LAYOUT_RELS_FILE); i++;
+  strcpy(files[i], PPTX_SLIDE_MASTER_FILE); i++;
+  strcpy(files[i], PPTX_SLIDE_MASTER_RELS); i++;
+  for (k = 1; k < presentation->slideNum; k++)
   {
-    char s[80];
-    sprintf(s, PPTX_IMAGE_FILE, j);
-    if (addFileToPPTX(s, files[i++]) == 0)
-      return 0;
+    sprintf(files[i], PPTX_SLIDE_FILE, k); i++;
+    sprintf(files[i], PPTX_SLIDE_RELS_FILE, k); i++;
   }
-  if (addFileToPPTX(PPTX_SLIDE_LAYOUT_FILE, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_SLIDE_LAYOUT_RELS_FILE, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_SLIDE_MASTER_FILE, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_SLIDE_MASTER_RELS, files[i++]) == 0)
-    return 0;
-  for (int k = 1; k < presentation->slideNum; k++)
-  {
-    char s[80];
-    sprintf(s, PPTX_SLIDE_FILE, k);
-    if (addFileToPPTX(s, files[i++]) == 0)
-      return 0;
-    sprintf(s, PPTX_SLIDE_RELS_FILE, k);
-    if (addFileToPPTX(s, files[i++]) == 0)
-      return 0;
-  }
-  if (addFileToPPTX(PPTX_THEME_FILE, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_PRESENTATION_RELS, files[i++]) == 0)
-    return 0;
-  if (addFileToPPTX(PPTX_RELS_FILE, files[i++]) == 0)
-    return 0;
+  strcpy(files[i], PPTX_THEME_FILE); i++;
+  strcpy(files[i], PPTX_PRESENTATION_RELS); i++;
+  strcpy(files[i], PPTX_RELS_FILE); i++;
 
-  if (minizip(filename, dirname, files, i))
-    return 0;
+  ret = minizip(filename, dirname, files, count);
 
-  removeTempFiles(dirname, files, i);
+  removeTempFiles(dirname, files, count);
 
+  for (i = 0; i < count; ++i)
+    free(files[i]);
   free(files);
 
-  return 1;
+  return ret;
 }
 
-int pptxKillPresentation(pptxPresentation *presentation, const char* dirname, const char* filename)
+int pptxKillPresentation(pptxPresentation *presentation, const char* filename)
 {
-  pptxClosePresentation(presentation);
+  int ret;
 
-  pptxWriteZipFile(presentation, dirname, filename);
+  closePresentation(presentation);
+
+  ret = writeZipFile(presentation, presentation->baseDir, filename);
 
   free(presentation);
 
-  return 1;
+  return ret;
 }
