@@ -28,8 +28,9 @@ void simple_loadled (void)
     IupItem( "PS", "SimpleDrawPS" ),
     IupItem( "EPS", "SimpleDrawEPS" ),
     IupItem( "SVG", "SimpleDrawSVG" ),
-    IupItem( "WMF", "SimpleDrawWMF" ),
-  NULL), NULL );
+    IupItem( "WMF", "SimpleDrawWMF"),
+    IupItem( "PPTX", "SimpleDrawPPTX"),
+    NULL), NULL);
   named[2] = IupSetAtt( "mnFile", IupMenu(
     IupSubmenu( "Open",
       named[0] /* mnOpen */
@@ -79,8 +80,8 @@ void simple_loadled (void)
   NULL), NULL );
   named[8] = IupSetAtt( "mnPrimitives", IupMenu(
     IupItem( "All", "SimpleAll" ),
-    IupItem( "Text Align", "SimpleTextAlign" ),
-    IupItem( "Text Fonts", "SimpleTextFonts" ),
+    IupItem("Text Align", "SimpleTextAlign"),
+    IupItem("Text Fonts", "SimpleTextFonts"),
     IupItem( "Test", "SimpleTest" ),
   NULL), NULL );
   named[9] = IupSetAtt( "mnSimpleMenu", IupMenu(

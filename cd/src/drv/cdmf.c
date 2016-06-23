@@ -603,7 +603,7 @@ static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 {
   int c, l, offset;
 
-  fprintf(ctxcanvas->file, "%d %d %d %d %d %d %d\n", CDMF_FPUTIMAGERGB, iw, ih, x, y, w, h);
+  fprintf(ctxcanvas->file, "%d %d %d %g %g %g %g\n", CDMF_FPUTIMAGERGB, iw, ih, x, y, w, h);
 
   offset = ymin*iw + xmin;
   r += offset;

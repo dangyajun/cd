@@ -21,6 +21,7 @@
 #include "cdprint.h"
 #include "cdps.h"
 #include "cdpdf.h"
+#include "cdpptx.h"
 #include "cdsvg.h"
 #include "cdwmf.h"
 #include "cdiup.h"
@@ -331,6 +332,12 @@ int SimpleDrawEPS(void)
 int SimpleDrawWMF(void)
 {
   DrawCanvasDriverSize(CD_WMF, "simple.wmf", 1, "");
+  return 0;
+}
+
+int SimpleDrawPPTX(void)
+{
+  DrawCanvasDriverSize(CD_PPTX, "simple.pptx", 3, "");
   return 0;
 }
 
@@ -650,6 +657,7 @@ void SimpleDrawAll(cdCanvas* canvas)
     cdCanvasClip(canvas, CD_CLIPPOLYGON);
     break;
   case CD_CLIPREGION:
+
     cdCanvasTextAlignment(canvas, CD_CENTER);
     cdCanvasFont(canvas, "Times", CD_BOLD, 50);
 
@@ -698,7 +706,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   /* Reset line style and width */
   cdCanvasLineStyle(canvas, CD_CONTINUOUS);
   cdCanvasLineWidth(canvas, 1);
-//  cdBackOpacity(CD_TRANSPARENT); 
+  cdCanvasBackOpacity(canvas, CD_TRANSPARENT); 
                    
   /* Draw an arc at bottom-left, and a sector at bottom-right.
      Notice that counter-clockwise orientation of both. */
@@ -713,9 +721,9 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasBox(canvas, w/2 - 100, w/2 + 100, h/2 - 100, h/2 + 100); 
 
   /* Prepare font for text. */
-  cdCanvasTextAlignment(canvas, CD_CENTER);
-  cdCanvasTextOrientation(canvas, 70);
-  cdCanvasFont(canvas, "Times", CD_BOLD, 24);
+    cdCanvasTextAlignment(canvas, CD_CENTER);
+    cdCanvasTextOrientation(canvas, 70);
+    cdCanvasFont(canvas, "Times", CD_BOLD, 24);
   //  cdCanvasSetAttribute(canvas, "ADDFONTMAP", "MyWingDings=wingxing");
   //  cdCanvasFont(canvas, "MyWingDings", CD_PLAIN, 24);
   //  cdCanvasFont(canvas, "wingxing", CD_PLAIN, 24); // Current folder
@@ -732,9 +740,9 @@ void SimpleDrawAll(cdCanvas* canvas)
     char* mode = cdCanvasGetAttribute(canvas, "UTF8MODE");
     int utf8mode = mode? (mode[0]=='1'? 1: 0): 0;
     if(utf8mode)
-      cdCanvasGetTextBounds(canvas, w/2, h/2, "Simple Draw (p8-√ß√£√≠)≠", rect);
+      cdCanvasGetTextBounds(canvas, w/2, h/2, "Simple Draw (p8-√ß√£√≠)≠\nSecond Line", rect);
     else
-      cdCanvasGetTextBounds(canvas, w/2, h/2, "Simple Draw (p-Á„Ì)", rect);
+      cdCanvasGetTextBounds(canvas, w/2, h/2, "Simple Draw (p-Á„Ì)\nSecond Line", rect);
     cdCanvasForeground(canvas, CD_RED);
     cdCanvasBegin(canvas, CD_CLOSED_LINES);
     cdCanvasVertex(canvas, rect[0], rect[1]);
@@ -742,12 +750,13 @@ void SimpleDrawAll(cdCanvas* canvas)
     cdCanvasVertex(canvas, rect[4], rect[5]);
     cdCanvasVertex(canvas, rect[6], rect[7]);
     cdCanvasEnd(canvas);
-  
+
+
     cdCanvasForeground(canvas, CD_BLUE);
-    if(utf8mode)
-      cdCanvasText(canvas, w/2, h/2, "Simple Draw (p8-√ß√£√≠)");
+    if (utf8mode)
+      cdCanvasText(canvas, w/2, h/2, "Simple Draw (p8-√ß√£√≠)\nSecond Line");
     else
-      cdCanvasText(canvas, w/2, h/2, "Simple Draw (p-Á„Ì)");
+      cdCanvasText(canvas, w/2, h/2, "Simple Draw (p-Á„Ì)\nSecond Line");
     cdCanvasTextOrientation(canvas, 0);
   }
 
@@ -823,6 +832,8 @@ void SimpleDrawAll(cdCanvas* canvas)
 
   /* Draw a filled path at center-right (looks like a weird fish). 
      Notice that in PDF the arc is necessarily a circle arc, and not an ellipse. */
+  cdCanvasInteriorStyle(canvas, CD_HATCH);
+  cdCanvasHatch(canvas, CD_DIAGCROSS);
   cdCanvasForeground(canvas, CD_GREEN);
   cdCanvasBegin(canvas, CD_PATH);
   cdCanvasPathSet(canvas, CD_PATH_MOVETO);
@@ -845,16 +856,25 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasVertex(canvas, w/2+300, h/2);  /* center */
   cdCanvasVertex(canvas, 200, 100);  /* width, height */
   cdCanvasVertex(canvas, -30*1000, -170*1000);  /* start angle, end angle (degrees / 1000) */
-//  cdCanvasPathSet(canvas, CD_PATH_CLOSE);
-//  cdCanvasPathSet(canvas, CD_PATH_STROKE);
-  cdCanvasPathSet(canvas, CD_PATH_FILL);
-//  cdCanvasPathSet(canvas, CD_PATH_FILLSTROKE);
+  //cdCanvasPathSet(canvas, CD_PATH_CLOSE);
+  //cdCanvasPathSet(canvas, CD_PATH_STROKE);
+  //cdCanvasPathSet(canvas, CD_PATH_FILL);
+  cdCanvasPathSet(canvas, CD_PATH_FILLSTROKE);
   cdCanvasEnd(canvas);
 
+  cdCanvasForeground(canvas, CD_BLACK);
+  cdCanvasArc(canvas, w / 2 + 300, h / 2, 200, 100, -170, -30);
+
+  cdCanvasForeground(canvas, CD_DARK_RED);
+  cdCanvasRect(canvas, w / 2 + 300 - 100, w / 2 + 300 + 100, h / 2 - 50, h / 2 + 50);
+
   /* Draw 3 pixels at center left. */
-  cdCanvasPixel(canvas, 10, h/2+0, CD_RED);
-  cdCanvasPixel(canvas, 11, h/2+1, CD_GREEN);
-  cdCanvasPixel(canvas, 12, h/2+2, CD_BLUE);
+  cdCanvasPixel(canvas, 10, h / 2 + 0, CD_RED);
+  cdCanvasPixel(canvas, 11, h / 2 + 1, CD_GREEN);
+  cdCanvasPixel(canvas, 12, h / 2 + 2, CD_BLUE);
+  cdCanvasPixel(canvas, 13, h / 2 + 3, CD_RED);
+  cdCanvasPixel(canvas, 14, h / 2 + 4, CD_GREEN);
+  cdCanvasPixel(canvas, 15, h / 2 + 5, CD_BLUE);
 
   /* Draw 4 mark types, distributed near each corner.  */
   cdCanvasForeground(canvas, CD_RED);
@@ -1095,33 +1115,33 @@ void SimpleDrawTextAlign(cdCanvas* canvas)
 
 #if 0
   char* text_aligment_str[] = {
-  "North (√yj)\nSecond Line (√yj)\nThird Line",
-  "South (√yj)\nSecond Line (√yj)\nThird Line",
-  "East (√yj)\nSecond Line (√yj)\nThird Line",
-  "West (√yj)\nSecond Line (√yj)\nThird Line",
-  "North East (√yj)\nSecond Line (√yj)\nThird Line",
-  "North West (√yj)\nSecond Line (√yj)\nThird Line",
-  "South East (√yj)\nSecond Line (√yj)\nThird Line",
-  "South West (√yj)\nSecond Line (√yj)\nThird Line",
-  "Center (√yj)\nSecond Line (√yj)\nThird Line",
-  "Base Center (√yj)\nSecond Line (√yj)\nThird Line",
-  "Base Right (√yj)\nSecond Line (√yj)\nThird Line",
-  "Base Left (√yj)\nSecond Line (√yj)\nThird Line"
+    "North (√yj)\nSecond Line (√yj)\nThird Line",
+    "South (√yj)\nSecond Line (√yj)\nThird Line",
+    "East (√yj)\nSecond Line (√yj)\nThird Line",
+    "West (√yj)\nSecond Line (√yj)\nThird Line",
+    "North East (√yj)\nSecond Line (√yj)\nThird Line",
+    "North West (√yj)\nSecond Line (√yj)\nThird Line",
+    "South East (√yj)\nSecond Line (√yj)\nThird Line",
+    "South West (√yj)\nSecond Line (√yj)\nThird Line",
+    "Center (√yj)\nSecond Line (√yj)\nThird Line",
+    "Base Center (√yj)\nSecond Line (√yj)\nThird Line",
+    "Base Right (√yj)\nSecond Line (√yj)\nThird Line",
+    "Base Left (√yj)\nSecond Line (√yj)\nThird Line"
   };
 #else
   char* text_aligment_str[] = {
-  "North (√yj)",
-  "South (√yj)",
-  "East (√yj)",
-  "West (√yj)",
-  "North East (√yj)",
-  "North West (√yj)",
-  "South East (√yj)",
-  "South West (√yj)",
-  "Center (√yj)",
-  "Base Center (√yj)",
-  "Base Right (√yj)",
-  "Base Left (√yj)"
+    "North (√yj)",
+    "South (√yj)",
+    "East (√yj)",
+    "West (√yj)",
+    "North East (√yj)",
+    "North West (√yj)",
+    "South East (√yj)",
+    "South West (√yj)",
+    "Center (√yj)",
+    "Base Center (√yj)",
+    "Base Right (√yj)",
+    "Base Left (√yj)"
   };
 #endif
 
@@ -1139,8 +1159,8 @@ void SimpleDrawTextAlign(cdCanvas* canvas)
     cdCanvasTextOrientation(canvas, 45);
 #endif
 
-  xoff = w/4;
-  yoff = h/7;
+  xoff = w / 4;
+  yoff = h / 7;
 
   if (use_vector)
     cdCanvasVectorCharSize(canvas, 30);
@@ -1156,16 +1176,16 @@ void SimpleDrawTextAlign(cdCanvas* canvas)
     if (i < 6)
     {
       if (use_vector)
-        DrawVectorTextBox(canvas, xoff, yoff*(i+1), text_aligment_str[i]);
+        DrawVectorTextBox(canvas, xoff, yoff*(i + 1), text_aligment_str[i]);
       else
-        DrawTextBox(canvas, xoff, yoff*(i+1), text_aligment_str[i]);
+        DrawTextBox(canvas, xoff, yoff*(i + 1), text_aligment_str[i]);
     }
     else
     {
       if (use_vector)
-        DrawVectorTextBox(canvas, 3*xoff, yoff*(i-5), text_aligment_str[i]);
+        DrawVectorTextBox(canvas, 3 * xoff, yoff*(i - 5), text_aligment_str[i]);
       else
-        DrawTextBox(canvas, 3*xoff, yoff*(i-5), text_aligment_str[i]);
+        DrawTextBox(canvas, 3 * xoff, yoff*(i - 5), text_aligment_str[i]);
     }
   }
 }

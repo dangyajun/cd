@@ -2043,7 +2043,7 @@ static char* get_margins_attrib(cdCtxCanvas *ctxcanvas)
   double margin_ymin = ctxcanvas->margin_ymin / CD_MM2PT;
   double margin_ymax = (ctxcanvas->height_pt - ctxcanvas->margin_ymax) / CD_MM2PT;
 
-  sprintf(margins, "%d %d %d %d", margin_xmin, margin_xmax, margin_ymin, margin_ymax);
+  sprintf(margins, "%g %g %g %g", margin_xmin, margin_xmax, margin_ymin, margin_ymax);
   return margins;
 }
 

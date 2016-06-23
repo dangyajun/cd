@@ -449,7 +449,6 @@ void cdSetPaperSize(int size, double *w_pt, double *h_pt)
 }
 
 #ifdef WIN32
-#include <windows.h>
 static char* winRegReadStringKey(HKEY hBaseKey, const char* key_name, const char* value_name)
 {
 	HKEY hKey;

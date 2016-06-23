@@ -25,6 +25,7 @@
 #include "cdmf.h"
 #include "cdps.h"
 #include "cdsvg.h"
+#include "cdpptx.h"
 #include "cddbuf.h"
 #include "cddebug.h"
 #include "cdpicture.h"
@@ -54,7 +55,7 @@ static int cdlua5_sizecb(cdCanvas *canvas, int w, int h, double mm_w, double mm_
   if (!lua_isnumber(L,-1))
     luaL_error(L, "invalid return value");
 
-  return luaL_checkinteger(L,-1);
+  return (int)luaL_checkinteger(L,-1);
 }
 
 
@@ -140,7 +141,7 @@ static int cgm_countercb(cdCanvas *canvas, double percent)
   if (!lua_isnumber(L,-1))
     luaL_error(L, "invalid return value");
 
-  return luaL_checkinteger(L,-1);
+  return (int)luaL_checkinteger(L,-1);
 }
 
 /***************************************************************************\
@@ -161,7 +162,7 @@ static int cgm_begpictcb(cdCanvas *canvas, char *pict)
   if (!lua_isnumber(L,-1))
     luaL_error(L,"invalid return value");
 
-  return luaL_checkinteger(L,-1);
+  return (int)luaL_checkinteger(L,-1);
 }
 
 static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx)
@@ -179,25 +180,25 @@ static int cgm_begmtfcb(cdCanvas *canvas, int *xmn, int *ymn, int *xmx, int *ymx
   if (!lua_isnumber(L, -5))
     luaL_error(L, "invalid return value");
   
-  result_i = luaL_checkinteger(L, -5);
+  result_i = (int)luaL_checkinteger(L, -5);
   if (result_i == 1)
     return 1;
 
   if (!lua_isnumber(L, -4))
     luaL_error(L, "invalid xmn return value");
-  *xmn = luaL_checkinteger(L, -4);
+  *xmn = (int)luaL_checkinteger(L, -4);
 
   if (!lua_isnumber(L, -3))
     luaL_error(L, "invalid ymn return value");
-  *ymn = luaL_checkinteger(L, -3);
+  *ymn = (int)luaL_checkinteger(L, -3);
 
   if (!lua_isnumber(L, -2))
     luaL_error(L, "invalid xmx return value");
-  *xmx = luaL_checkinteger(L, -2);
+  *xmx = (int)luaL_checkinteger(L, -2);
 
   if (!lua_isnumber(L, -1))
     luaL_error(L, "invalid ymx return value");
-  *ymx = luaL_checkinteger(L, -1);
+  *ymx = (int)luaL_checkinteger(L, -1);
 
   return result_i;
 }
@@ -219,7 +220,7 @@ static int cgm_begpictbcb(cdCanvas *canvas)
   if (!lua_isnumber(L, -1))
     luaL_error(L, "invalid return value");
     
-  return luaL_checkinteger(L,-1);
+  return (int)luaL_checkinteger(L,-1);
 }
 
 /***************************************************************************\
@@ -249,7 +250,7 @@ static int cgm_sclmdecb(cdCanvas *canvas, short scl_mde, short *draw_mode_i, dou
   if (!lua_isnumber(L, -3))
     luaL_error(L, "invalid return value");
 
-  result_i = luaL_checkinteger(L, -3);
+  result_i = (int)luaL_checkinteger(L, -3);
 
   if (result_i == 1)
     return 1;
@@ -283,24 +284,24 @@ static int cgm_vdcextcb(cdCanvas *canvas, short type, void *xmn, void *ymn, void
 
   if (!lua_isnumber(L, -5))
     luaL_error(L, "invalid return value");
-  result_i = luaL_checkinteger(L,-5);
+  result_i = (int)luaL_checkinteger(L,-5);
   if (result_i == 1)
     return 1;
 
   if (!lua_isnumber(L, -4))
     luaL_error(L, "invalid xmn return value");
   if (type == 1) *((double *) xmn) = lua_tonumber(L, -4);
-  else *((int *) xmn) = luaL_checkinteger(L, -4);
+  else *((int *) xmn) = (int)luaL_checkinteger(L, -4);
 
   if (!lua_isnumber(L, -3))
     luaL_error(L, "invalid ymn return value");
   if (type == 1) *((double *) ymn) = lua_tonumber(L, -3);
-  else *((int *) ymn) = luaL_checkinteger(L, -3);
+  else *((int *) ymn) = (int)luaL_checkinteger(L, -3);
 
   if (!lua_isnumber(L, -2))
     luaL_error(L,"invalid xmx return value");
   if (type == 1) *((double *) xmx) = lua_tonumber(L, -2);
-  else *((int *) xmx) = luaL_checkinteger(L, -2);
+  else *((int *) xmx) = (int)luaL_checkinteger(L, -2);
 
   if (!lua_isnumber(L, -1))
     luaL_error(L,"invalid ymx return value");
@@ -734,6 +735,24 @@ static cdluaContext cdluasvgctx =
 };
 
 /***************************************************************************\
+* CD_PPTX.                                                                    *
+\***************************************************************************/
+static void *cdpptx_checkdata(lua_State *L, int param)
+{
+  return (void *)luaL_checkstring(L, param);
+}
+
+static cdluaContext cdluapptxctx =
+{
+  0,
+  "PPTX",
+  cdContextPPTX,
+  cdpptx_checkdata,
+  NULL,
+  0
+};
+
+/***************************************************************************\
 * CD_PRINTER.                                                               *
 \***************************************************************************/
 static void *cdprinter_checkdata(lua_State *L, int param)
@@ -828,6 +847,7 @@ void cdlua_initdrivers(lua_State * L, cdluaLuaState* cdL)
   cdlua_addcontext(L, cdL, &cdluapicturectx);
   cdlua_addcontext(L, cdL, &cdluapsctx);
   cdlua_addcontext(L, cdL, &cdluasvgctx);
+  cdlua_addcontext(L, cdL, &cdluapptxctx);
   cdlua_addcontext(L, cdL, &cdluaclipboardctx);
   cdlua_addcontext(L, cdL, &cdluanativewindowctx);
   cdlua_addcontext(L, cdL, &cdluaprinterctx);

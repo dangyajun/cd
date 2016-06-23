@@ -34,6 +34,7 @@ extern tCTC ctgc;
 #define PDF
 #define CDDBG
 #define SVG
+#define PPTX
 
 static int LoadCanvas(char* ctx_name, cdContext* ctx, char *filename)
 {
@@ -426,6 +427,27 @@ static int fPlayEMF(void)
 #endif
 
 /*-------------------------------------------------------------------------*/
+/* Copia o conteudo do canvas para um arquivo PPTX.                        */
+/*-------------------------------------------------------------------------*/
+#ifdef PPTX
+#include <cdpptx.h>
+
+static int fPPTX(void)
+{
+  char filename[1024] = "*.pptx";
+  char data[1000];
+
+  if (IupGetFile(filename) >= 0)
+  {
+    sprintf(data, "%s", filename);
+    return SaveCanvas("CD_PPTX", CD_PPTX, data);
+  }
+
+  return IUP_DEFAULT;
+}
+#endif
+
+/*-------------------------------------------------------------------------*/
 /* Copia o conteudo do canvas para a impressora.                           */
 /*-------------------------------------------------------------------------*/
 #ifdef PRINTER
@@ -495,12 +517,16 @@ void DriversInit(void)
 #ifdef WMF
   IupSetAttribute(IupGetHandle("itEMF"), IUP_ACTIVE, IUP_YES);
   IupSetAttribute(IupGetHandle("itWMF"), IUP_ACTIVE, IUP_YES);
-  IupSetFunction("cmdEMF", (Icallback) fEMF);
-  IupSetFunction("cmdWMF", (Icallback) fWMF);
+  IupSetFunction("cmdEMF", (Icallback)fEMF);
+  IupSetFunction("cmdWMF", (Icallback)fWMF);
   IupSetAttribute(IupGetHandle("itPlayEMF"), IUP_ACTIVE, IUP_YES);
   IupSetAttribute(IupGetHandle("itPlayWMF"), IUP_ACTIVE, IUP_YES);
-  IupSetFunction("cmdPlayEMF", (Icallback) fPlayEMF);
-  IupSetFunction("cmdPlayWMF", (Icallback) fPlayWMF);
+  IupSetFunction("cmdPlayEMF", (Icallback)fPlayEMF);
+  IupSetFunction("cmdPlayWMF", (Icallback)fPlayWMF);
+#endif
+#ifdef PPTX
+  IupSetAttribute(IupGetHandle("itPPTX"), IUP_ACTIVE, IUP_YES);
+  IupSetFunction("cmdPPTX", (Icallback)fPPTX);
 #endif
 #ifdef PRINTER
   IupSetAttribute(IupGetHandle("itPrint"), IUP_ACTIVE, IUP_YES);
