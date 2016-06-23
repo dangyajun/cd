@@ -795,10 +795,15 @@ int cdStrTmpFileName(char* filename)
     return 0;
   if (GetTempFileNameA(tmpPath, "~cd", 0, filename)==0)
     return 0;
-  return 1;
 #else
-  return tmpnam(filename)!=NULL;
+/* OLD: tmpnam(filename)  */
+  char* tmp = tempnam(NULL, "~cd");
+  if (!tmp)
+    return 0;
+  strcpy(filename, tmp);
+  free(tmp);
 #endif
+  return 1;
 }
 
 int cdMakeDirectory(const char *path)

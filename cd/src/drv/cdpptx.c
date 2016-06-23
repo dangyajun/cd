@@ -27,8 +27,6 @@ struct _cdCtxCanvas
   /* public */
   cdCanvas* canvas;
   char filename[10240];
-  char temp_folder[10240];
-  FILE* file;
 
   pptxPresentation *presentation;
 
@@ -209,7 +207,7 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
 
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
-  pptxKillPresentation(ctxcanvas->presentation, ctxcanvas->temp_folder, ctxcanvas->filename);
+  pptxKillPresentation(ctxcanvas->presentation, ctxcanvas->filename);
 
 #ifndef WIN32
   if (ctxcanvas->cdgl_iconv != (iconv_t)-1)
@@ -944,7 +942,7 @@ static cdAttribute utf8mode_attrib =
   get_utf8mode_attrib
 };
 
-void cdcreatecanvasPPTX(cdCanvas *canvas, void *data)
+static void cdcreatecanvas(cdCanvas *canvas, void *data)
 {
   char filename[10240] = "";
   char* strdata = (char*)data;
@@ -960,22 +958,6 @@ void cdcreatecanvasPPTX(cdCanvas *canvas, void *data)
   ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
 
-  ctxcanvas->nDashes = 0;
-  ctxcanvas->dashes = NULL;
-#ifndef WIN32
-  ctxcanvas->cdgl_iconv = iconv_open("UTF-8", "ISO-8859-1");
-#endif
-
-  /* store the base canvas */
-  ctxcanvas->canvas = canvas;
-  canvas->ctxcanvas = ctxcanvas;
-
-  strcpy(ctxcanvas->filename, filename);
-
-  cdStrTmpFileName(ctxcanvas->temp_folder);
-  remove(ctxcanvas->temp_folder);
-  strcat(ctxcanvas->temp_folder, "_PPTX");
-
   sscanf(strdata, "%lgx%lg %lg", &w_mm, &h_mm, &res);
   canvas->w = (int)(w_mm * res);
   canvas->h = (int)(h_mm * res);
@@ -989,12 +971,29 @@ void cdcreatecanvasPPTX(cdCanvas *canvas, void *data)
 
   canvas->bpp = 24;
 
-  cdRegisterAttribute(canvas, &utf8mode_attrib);
+  ctxcanvas->presentation = pptxCreatePresentation(canvas->w, canvas->h);
+  if (!ctxcanvas->presentation)
+  {
+    free(ctxcanvas);
+    return;
+  }
 
-  ctxcanvas->presentation = pptxCreatePresentation(ctxcanvas->temp_folder, canvas->w, canvas->h);
+  ctxcanvas->nDashes = 0;
+  ctxcanvas->dashes = NULL;
+#ifndef WIN32
+  ctxcanvas->cdgl_iconv = iconv_open("UTF-8", "ISO-8859-1");
+#endif
+
+  strcpy(ctxcanvas->filename, filename);
+
+  /* store the base canvas */
+  ctxcanvas->canvas = canvas;
+  canvas->ctxcanvas = ctxcanvas;
+
+  cdRegisterAttribute(canvas, &utf8mode_attrib);
 }
 
-void cdinittablePPTX(cdCanvas* canvas)
+static void cdinittable(cdCanvas* canvas)
 {
   canvas->cxFlush = cdflush;
   canvas->cxClip = cdclip;
@@ -1020,8 +1019,8 @@ static cdContext cdPPTXContext =
   CD_CAP_ALL & ~(CD_CAP_CLEAR | CD_CAP_GETIMAGERGB | CD_CAP_IMAGESRV | CD_CAP_PLAY | CD_CAP_PALETTE | CD_CAP_YAXIS |
   CD_CAP_REGION | CD_CAP_WRITEMODE | CD_CAP_FONTDIM | CD_CAP_TEXTSIZE),
   CD_CTX_FILE,
-  cdcreatecanvasPPTX,
-  cdinittablePPTX,
+  cdcreatecanvas,
+  cdinittable,
   NULL,
   NULL,
 };
