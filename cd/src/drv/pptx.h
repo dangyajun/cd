@@ -27,7 +27,8 @@ void pptxSolidFill(pptxPresentation *presentation, unsigned char red, unsigned c
 void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, unsigned char bRed, unsigned char bGreen, unsigned char bBlue, unsigned char bAlpha);
 void pptxPattern(pptxPresentation *presentation, const unsigned char *rgb_data, int width, int height);
 void pptxStipple(pptxPresentation *presentation, const unsigned char *rgba_data, int width, int height);
-void pptxEndPath(pptxPresentation *presentation, int width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes);
+void pptxEndLine(pptxPresentation *presentation, int width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes);
+void pptxEndFill(pptxPresentation *presentation);
 void pptxText(pptxPresentation *presentation, int xmin, int ymin, int w, int h, double rotAngle, int bold, int italic, int underline, int strikeout, int size, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* typeface, const char* text);
 void pptxPixel(pptxPresentation *presentation, int x, int y, int width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 void pptxImageRGB(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgb_data, int x, int y, int w, int h);
