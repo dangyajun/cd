@@ -11,6 +11,7 @@
 #include "cd.h"
 #include "cd_private.h"
 
+#include "lodepng.h"
 #include "pptx.h"
 
 #define to_angle(_)   (int)((_)*60000)
@@ -62,63 +63,6 @@ struct _pptxPresentation
 
 
 int minizip(const char *filename, const char *dirname, const char **files, const int nFiles);
-
-
-static int createImageFileRGBA(char *filename, int width, int height, const unsigned char *red, const unsigned char *green, const unsigned char *blue, const unsigned char *alpha)
-{
-#if 0
-  int error;
-  LodePNGState state;
-
-  imImage *image = imImageCreate(width, height, IM_RGB, IM_BYTE);
-
-  if (alpha != NULL)
-  {
-    imImageAddAlpha(image);
-  }
-  memcpy(image->data[0], red, width*height);
-  memcpy(image->data[1], green, width*height);
-  memcpy(image->data[2], blue, width*height);
-  if (alpha != NULL)
-  {
-    memcpy(image->data[3], alpha, width*height);
-  }
-
-  imFile* ifile = imFileNew(filename, "PNG", &error);
-  if (error)
-    return error;
-
-  error = imFileSaveImage(ifile, image);
-
-  imFileClose(ifile);
-
-  if (error)
-    return error;
-#endif
-
-  return 0;
-}
-
-static int createImageFileMap(char *filename, int width, int height, const unsigned char *index, const long int *colors)
-{
-#if 0
-  imImage *image = imImageInit(width, height, colorSpace, IM_BYTE, index, colors, 256);
-
-  imFile* ifile = imFileNew(filename, "PNG", &error);
-  if (error)
-    return error;
-
-  error = imFileSaveImage(ifile, image);
-
-  imFileClose(ifile);
-
-  if (error)
-    return error;
-#endif
-
-  return 0;
-}
-
 
 
 /************************************  PRINT  ******************************************************/
@@ -1008,7 +952,7 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
   fprintf(presentation->slideFile, patt, style, red, green, blue, alphaPct, bRed, bGreen, bBlue, bAlphaPct);
 }
 
-void pptxPattern(pptxPresentation *presentation, const unsigned char *red, const unsigned char* green, const unsigned char *blue, int width, int height)
+void pptxPattern(pptxPresentation *presentation, const unsigned char* rgb_data, int width, int height)
 {
   const char *img =
   {
@@ -1022,7 +966,7 @@ void pptxPattern(pptxPresentation *presentation, const unsigned char *red, const
 
   sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
 
-  createImageFileRGBA(filename, width, height, red, green, blue, NULL);
+  lodepng_encode_file(filename, rgb_data, width, height, LCT_RGB, 8);
 
   fprintf(presentation->slideFile, img, presentation->imageId);
 
@@ -1032,51 +976,7 @@ void pptxPattern(pptxPresentation *presentation, const unsigned char *red, const
   presentation->imageId++;
 }
 
-static void createStippleImage(pptxPresentation *presentation, unsigned char fRed, unsigned char fGreen, unsigned char fBlue, unsigned char bRed, unsigned char bGreen, unsigned char bBlue,
-                            const unsigned char *stipple, int width, int height, int backOpacity)
-{
-  int lin, col;
-  char filename[10240];
-  int plane_size = width*height;
-  unsigned char* red = (unsigned char*)malloc(plane_size * 4);
-  unsigned char* green = red + plane_size;
-  unsigned char* blue = green + plane_size;
-  unsigned char* alpha = blue + plane_size;
-
-  for (lin = 0; lin < width; lin++)
-  {
-    for (col = 0; col < height; col++)
-    {
-      int ind = (height - lin - 1)*width + col;
-      if (stipple[width*lin + col] == 0)
-      {
-        red[ind] = bRed;
-        green[ind] = bGreen;
-        blue[ind] = bBlue;
-        if (backOpacity == 1)
-          alpha[ind] = 255;
-        else
-          alpha[ind] = 0;
-      }
-      else
-      {
-        red[ind] = fRed;
-        green[ind] = fGreen;
-        blue[ind] = fBlue;
-        alpha[ind] = 255;
-      }
-    }
-  }
-
-  sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
-
-  createImageFileRGBA(filename, width, height, red, green, blue, alpha);
-
-  free(red);
-}
-
-void pptxStipple(pptxPresentation *presentation, unsigned char fRed, unsigned char fGreen, unsigned char fBlue, unsigned char bRed, unsigned char bGreen, unsigned char bBlue,
-                 const unsigned char *stipple, int width, int height, int backOpacity)
+void pptxStipple(pptxPresentation *presentation, const unsigned char *rgba_data, int width, int height)
 {
   const char *img =
   {
@@ -1086,8 +986,11 @@ void pptxStipple(pptxPresentation *presentation, unsigned char fRed, unsigned ch
     "                  <a:tile tx=\"0\" ty=\"0\" sx=\"100000\" sy=\"100000\" flip=\"none\" algn=\"tl\"/>\n"
     "               </a:blipFill>\n"
   };
+  char filename[10240];
 
-  createStippleImage(presentation, fRed, fGreen, fBlue, bRed, bGreen, bBlue, stipple, width, height, backOpacity);
+  sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
+
+  lodepng_encode_file(filename, rgba_data, width, height, LCT_RGBA, 8);
 
   fprintf(presentation->slideFile, img, presentation->imageId);
 
@@ -1296,7 +1199,7 @@ void pptxPixel(pptxPresentation *presentation, int x, int y, int width, unsigned
   presentation->objectNum++;
 }
 
-void pptxImageMap(pptxPresentation *presentation, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+void pptxImageRGB(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgb_data, int x, int y, int w, int h)
 {
   const char *image =
   {
@@ -1333,7 +1236,7 @@ void pptxImageMap(pptxPresentation *presentation, int iw, int ih, const unsigned
 
   sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
 
-  createImageFileMap(filename, iw, ih, index, colors);
+  lodepng_encode_file(filename, rgb_data, iw, ih, LCT_RGB, 8);
 
   fprintf(presentation->slideFile, image, presentation->objectNum, presentation->objectNum, presentation->imageId, x*presentation->slide_xfactor, y*presentation->slide_yfactor,
           w*presentation->slide_xfactor, h*presentation->slide_yfactor);
@@ -1345,7 +1248,7 @@ void pptxImageMap(pptxPresentation *presentation, int iw, int ih, const unsigned
   presentation->imageId++;
 }
 
-void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigned char *red, const unsigned char* green, const unsigned char *blue, const unsigned char *alpha, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
+void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgba_data, int x, int y, int w, int h)
 {
   const char *image =
   {
@@ -1382,7 +1285,7 @@ void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigne
 
   sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
 
-  createImageFileRGBA(filename, iw, ih, red, green, blue, alpha);
+  lodepng_encode_file(filename, rgba_data, iw, ih, LCT_RGBA, 8);
 
   fprintf(presentation->slideFile, image, presentation->objectNum, presentation->objectNum, presentation->imageId, x*presentation->slide_xfactor, y*presentation->slide_yfactor,
           w*presentation->slide_xfactor, h*presentation->slide_yfactor);

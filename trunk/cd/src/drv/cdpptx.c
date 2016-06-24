@@ -178,16 +178,27 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
     break;
   case CD_PATTERN:
   {
-    int width, height, i;
+    int width, height;
     long *pattern = cdCanvasGetPattern(ctxcanvas->canvas, &width, &height);
     int plane_size = width*height;
-    unsigned char *red = (unsigned char *)malloc(3 * plane_size);
-    unsigned char *green = red + plane_size;
-    unsigned char *blue = green + plane_size;
-    for (i = 0; i<plane_size; i++)
-      cdDecodeColor(pattern[i], &red[i], &green[i], &blue[i]);
-    pptxPattern(ctxcanvas->presentation, red, green, blue, width, height);
-    free(red);
+    unsigned char* rgb = (unsigned char*)malloc(plane_size * 3);
+    int lin, col;
+
+    for (lin = 0; lin < width; lin++)
+    {
+      for (col = 0; col < height; col++)
+      {
+        int ind = ((height - 1 - lin)*width + col) * 3;
+        int i = width*lin + col;
+        rgb[ind + 0] = cdRed(pattern[i]);
+        rgb[ind + 1] = cdGreen(pattern[i]);
+        rgb[ind + 2] = cdBlue(pattern[i]);
+      }
+    }
+
+    pptxPattern(ctxcanvas->presentation, rgb, width, height);
+
+    free(rgb);
     break;
   }
   case CD_STIPPLE:
@@ -196,7 +207,38 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
     unsigned char *stipple = cdCanvasGetStipple(ctxcanvas->canvas, &width, &height);
     long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
     long background = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
-    pptxStipple(ctxcanvas->presentation, cdRed(foreground), cdGreen(foreground), cdBlue(foreground), cdRed(background), cdGreen(background), cdBlue(background), stipple, width, height, backopacity);
+    int lin, col;
+    int plane_size = width*height;
+    unsigned char* rgba = (unsigned char*)malloc(plane_size * 4);
+
+    for (lin = 0; lin < width; lin++)
+    {
+      for (col = 0; col < height; col++)
+      {
+        int ind = ((height-1 - lin)*width + col) * 4;
+        if (stipple[width*lin + col] == 0)
+        {
+          rgba[ind+0] = cdRed(background);
+          rgba[ind+1] = cdGreen(background);
+          rgba[ind+2] = cdBlue(background);
+          if (backopacity == 1)
+            rgba[ind+3] = 255;
+          else
+            rgba[ind+3] = 0;
+        }
+        else
+        {
+          rgba[ind+0] = cdRed(foreground);
+          rgba[ind+1] = cdGreen(foreground);
+          rgba[ind+2] = cdBlue(foreground);
+          rgba[ind+3] = 255;
+        }
+      }
+    }
+
+    pptxStipple(ctxcanvas->presentation, rgba, width, height);
+
+    free(rgba);
     break;
   }
   default: /* CD_HOLLOW */
@@ -890,17 +932,97 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
 static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
-  pptxImageMap(ctxcanvas->presentation, iw, ih, index, colors, x, y, w, h, xmin, xmax, ymin, ymax);
+  int i, j, d, rw, rh;
+  unsigned char* rgb;
+
+  if (xmin<0 || ymin<0 || xmax - xmin + 1>iw || ymax - ymin + 1>ih) return;
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  rgb = (unsigned char*)malloc(3 * rw*rh);
+  if (!rgb)
+    return;
+
+  d = 0;
+  for (i = ymax; i >= ymin; i--)
+  {
+    for (j = xmin; j <= xmax; j++)
+    {
+      int off = i*iw + j;
+      long c = colors[index[off]];
+      rgb[d] = cdRed(c); d++;
+      rgb[d] = cdGreen(c); d++;
+      rgb[d] = cdBlue(c); d++;
+    }
+  }
+
+  pptxImageRGB(ctxcanvas->presentation, rw, rh, rgb, x, y, w, h);
+
+  free(rgb);
 }
 
 static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
-  pptxImageRGBA(ctxcanvas->presentation, iw, ih, r, g, b, NULL, x, y, w, h, xmin, xmax, ymin, ymax);
+  int i, j, d, rw, rh;
+  unsigned char* rgb;
+
+  if (xmin<0 || ymin<0 || xmax - xmin + 1>iw || ymax - ymin + 1>ih) return;
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  rgb = (unsigned char*)malloc(3 * rw*rh);
+  if (!rgb) 
+    return;
+
+  d = 0;
+  for (i = ymax; i >= ymin; i--)
+  {
+    for (j = xmin; j <= xmax; j++)
+    {
+      int off = i*iw + j;
+      rgb[d] = r[off]; d++;
+      rgb[d] = g[off]; d++;
+      rgb[d] = b[off]; d++;
+    }
+  }
+
+  pptxImageRGB(ctxcanvas->presentation, rw, rh, rgb, x, y, w, h);
+
+  free(rgb);
 }
 
 static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b, const unsigned char *a, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
 {
-  pptxImageRGBA(ctxcanvas->presentation, iw, ih, r, g, b, a, x, y, w, h, xmin, xmax, ymin, ymax);
+  int i, j, d, rw, rh;
+  unsigned char* rgba;
+
+  if (xmin<0 || ymin<0 || xmax - xmin + 1>iw || ymax - ymin + 1>ih) return;
+
+  rw = xmax - xmin + 1;
+  rh = ymax - ymin + 1;
+
+  rgba = (unsigned char*)malloc(4 * rw*rh);
+  if (!rgba)
+    return;
+
+  d = 0;
+  for (i = ymax; i >= ymin; i--)
+  {
+    for (j = xmin; j <= xmax; j++)
+    {
+      int off = i*iw + j;
+      rgba[d] = r[off]; d++;
+      rgba[d] = g[off]; d++;
+      rgba[d] = b[off]; d++;
+      rgba[d] = a[off]; d++;
+    }
+  }
+
+  pptxImageRGBA(ctxcanvas->presentation, rw, rh, rgba, x, y, w, h);
+
+  free(rgba);
 }
 
 static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
