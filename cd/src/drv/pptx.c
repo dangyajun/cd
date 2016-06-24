@@ -112,10 +112,10 @@ static void printPresProps(FILE* presPropsFile)
   {
     "<?xml version = \"1.0\" encoding = \"UTF-8\" standalone = \"yes\"?>\n"
     "<p:presentationPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
-    "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
-    "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
-    "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
-    "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\"/>\n"
+                      "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
+                      "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+                      "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
+                      "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\"/>\n"
   };
 
   fprintf(presPropsFile, presProps);
@@ -153,10 +153,10 @@ static void printLayoutFile(FILE* layoutFile)
   {
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
     "   <p:sldLayout xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
-    "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
-    "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
-    "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
-    "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" type=\"blank\">\n"
+                    "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
+                    "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+                    "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
+                    "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" type=\"blank\">\n"
     "   <p:cSld name=\"Blank\">\n"
     "      <p:spTree>\n"
     "         <p:nvGrpSpPr>\n"
@@ -177,7 +177,7 @@ static void printLayoutFile(FILE* layoutFile)
     "   <p:clrMapOvr>\n"
     "      <a:masterClrMapping/>\n"
     "   </p:clrMapOvr>\n"
-    "</p:sldLayout>"
+    "</p:sldLayout>\n"
   };
 
   fprintf(layoutFile, rels);
@@ -191,7 +191,7 @@ static void printMasterRelsFile(FILE* masterRelsFile)
     "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n"
     "   <Relationship Id=\"rId11\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout1.xml\"/>\n"
     "   <Relationship Id=\"rId12\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme1.xml\"/>\n"
-    "</Relationships>"
+    "</Relationships>\n"
   };
 
   fprintf(masterRelsFile, rels);
@@ -237,7 +237,7 @@ static void printMasterFile(FILE* masterFile)
     "      <p:sldLayoutId id=\"2147483658\" r:id=\"rId11\"/>\n"
     "   </p:sldLayoutIdLst>\n"
     "   <p:hf dt=\"0\" ftr=\"0\" hdr=\"0\" sldNum=\"0\"/>\n"
-    "</p:sldMaster>"
+    "</p:sldMaster>\n"
   };
 
   fprintf(masterFile, rels);
@@ -545,7 +545,7 @@ static void printPresentation(FILE* presentationFile, int nSlides, int height, i
     "            </p:sldIdLst>\n"
     "            <p:sldSz cx=\"%d\" cy=\"%d\"/>\n"
     "            <p:notesSz cx=\"%d\" cy=\"%d\"/>\n"
-    "</p:presentation>"
+    "</p:presentation>\n"
   };
 
   fprintf(presentationFile, presentationPrefix);
@@ -624,7 +624,7 @@ static void printCloseSlide(FILE* slideFile)
   {
     "      </p:spTree>\n"
     "   </p:cSld>\n"
-    "</p:sld>"
+    "</p:sld>\n"
   };
 
   fprintf(slideFile, suffix);
@@ -634,7 +634,7 @@ static void printCloseSlideRels(FILE* slideRelsFile)
 {
   const char *rels =
   {
-    "</Relationships>"
+    "</Relationships>\n"
   };
 
   fprintf(slideRelsFile, rels);
@@ -816,24 +816,24 @@ void pptxWritePptRels(pptxPresentation *presentation)
 /**************************************  PRIMITIVES   ******************************************************/
 
 
-void pptxBeginLine(pptxPresentation *presentation, int xmin, int ymin, int w, int h)
+void pptxBeginPath(pptxPresentation *presentation, int xmin, int ymin, int w, int h)
 {
   const char *linePrefix =
-  {
-    "         <p:sp>\n"
+  {/*012345678| - primitives ident (9) */
+    "         <p:sp>\n"                /* to be closed (pptxEndPath) */
     "            <p:nvSpPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
     "               <p:cNvSpPr/>\n"
     "               <p:nvPr/>\n"
     "            </p:nvSpPr>\n"
-    "            <p:spPr>\n"
+    "            <p:spPr>\n"           /* to be closed (pptxEndPath) */
     "               <a:xfrm>\n"
     "                  <a:off x=\"%d\" y=\"%d\"/>\n"
     "                  <a:ext cx=\"%d\" cy=\"%d\"/>\n"
     "               </a:xfrm>\n"
-    "               <a:custGeom>\n"
-    "                  <a:pathLst>\n"
-    "                     <a:path extrusionOk=\"0\" w=\"%d\" h=\"%d\">\n"
+    "               <a:custGeom>\n"    /* to be closed (pptxClosePath) */
+    "                  <a:pathLst>\n"  /* to be closed (pptxClosePath) */
+    "                     <a:path extrusionOk=\"0\" w=\"%d\" h=\"%d\">\n"  /* to be closed (pptxClosePath) */
   };
 
   fprintf(presentation->slideFile, linePrefix, presentation->objectNum, presentation->objectNum, xmin*presentation->slide_xfactor, ymin*presentation->slide_yfactor,
@@ -843,7 +843,7 @@ void pptxBeginLine(pptxPresentation *presentation, int xmin, int ymin, int w, in
 void pptxMoveTo(pptxPresentation *presentation, int x, int y)
 {
   const char *line =
-  {
+  {/*012345678901234567890123| - path primitives ident (24) */
     "                        <a:moveTo>\n"
     "                           <a:pt x=\"%d\" y=\"%d\"/>\n"
     "                        </a:moveTo>\n"
@@ -855,7 +855,7 @@ void pptxMoveTo(pptxPresentation *presentation, int x, int y)
 void pptxLineTo(pptxPresentation *presentation, int x, int y)
 {
   const char *line =
-  {
+  {/*012345678901234567890123| - path primitives ident (24) */
     "                        <a:lnTo>\n"
     "                           <a:pt x=\"%d\" y=\"%d\"/>\n"
     "                        </a:lnTo>\n"
@@ -867,7 +867,7 @@ void pptxLineTo(pptxPresentation *presentation, int x, int y)
 void pptxArcTo(pptxPresentation *presentation, int h, int w, double stAng, double swAng)
 {
   const char *arc =
-  {
+  {/*012345678901234567890123| - path primitives ident (24) */
     "                        <a:arcTo hR=\"%d\" wR=\"%d\" stAng=\"%d\" swAng=\"%d\"/>\n"
   };
 
@@ -877,7 +877,7 @@ void pptxArcTo(pptxPresentation *presentation, int h, int w, double stAng, doubl
 void pptxBezierLineTo(pptxPresentation *presentation, int c1x, int c1y, int c2x, int c2y, int c3x, int c3y)
 {
   const char *line =
-  {
+  {/*012345678901234567890123| - path primitives ident (24) */
     "                        <a:cubicBezTo>\n"
     "                           <a:pt x=\"%d\" y=\"%d\"/>\n"
     "                           <a:pt x=\"%d\" y=\"%d\"/>\n"
@@ -889,10 +889,10 @@ void pptxBezierLineTo(pptxPresentation *presentation, int c1x, int c1y, int c2x,
           c3x*presentation->slide_xfactor, c3y*presentation->slide_yfactor);
 }
 
-void pptxLineClose(pptxPresentation *presentation)
+void pptxClosePath(pptxPresentation *presentation)
 {
   const char *lineSuffix =
-  {
+  {/*012345678901234567890| - closing path ident (21) */
     "                     </a:path>\n"
     "                  </a:pathLst>\n"
     "               </a:custGeom>\n"
@@ -904,7 +904,7 @@ void pptxLineClose(pptxPresentation *presentation)
 void pptxNoFill(pptxPresentation *presentation)
 {
   const char *noFill =
-  {
+  {/*012345678901234| - path style ident (15) */
     "               <a:noFill/>\n"
   };
 
@@ -916,7 +916,7 @@ void pptxSolidFill(pptxPresentation *presentation, unsigned char red, unsigned c
   int alphaPct = (int)(((double)alpha / 255.) * 100 * 1000);
 
   const char *fill =
-  {
+  {/*012345678901234| - path style ident (15) */
     "               <a:solidFill>\n"
     "                  <a:srgbClr val=\"%02X%02X%02X\">\n"
     "                     <a:alpha val=\"%d\"/>\n"
@@ -934,7 +934,7 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
   int bAlphaPct = (int)(((double)bAlpha / 255.) * 100 * 1000);
 
   const char *patt =
-  {
+  {/*012345678901234| - path style ident (15) */
     "               <a:pattFill prst=\"%s\">\n"
     "                  <a:fgClr>\n"
     "                     <a:srgbClr val=\"%02X%02X%02X\">\n"
@@ -955,7 +955,7 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
 void pptxPattern(pptxPresentation *presentation, const unsigned char* rgb_data, int width, int height)
 {
   const char *img =
-  {
+  {/*012345678901234| - path style ident (15) */
     "               <a:blipFill dpi=\"0\" rotWithShape=\"1\">\n"
     "                  <a:blip r:embed=\"rId%d\"/>\n"
     "                  <a:srcRect/>\n"
@@ -979,7 +979,7 @@ void pptxPattern(pptxPresentation *presentation, const unsigned char* rgb_data, 
 void pptxStipple(pptxPresentation *presentation, const unsigned char *rgba_data, int width, int height)
 {
   const char *img =
-  {
+  {/*012345678901234| - path style ident (15) */
     "               <a:blipFill dpi=\"0\" rotWithShape=\"1\">\n"
     "                  <a:blip r:embed=\"rId%d\"/>\n"
     "                  <a:srcRect/>\n"
@@ -1000,14 +1000,14 @@ void pptxStipple(pptxPresentation *presentation, const unsigned char *rgba_data,
   presentation->imageId++;
 }
 
-void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes)
+void pptxEndPath(pptxPresentation *presentation, int line_width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes)
 {
   int i;
   int alphaPct = (int)(((double)alpha / 255.) * 100 * 1000);
 
   const char *lineEndPrefix =
-  {
-    "               <a:ln cap=\"flat\" cmpd=\"sng\" w=\"%d\">\n"
+  {/*012345678901234| - path style ident (15) */
+    "               <a:ln cap=\"flat\" cmpd=\"sng\" w=\"%d\">\n"  /* to be closed (lineEndSuffix) */
     "                  <a:solidFill>\n"
     "                     <a:srgbClr val=\"%02X%02X%02X\">\n"
     "                        <a:alpha val=\"%d\"/>\n"
@@ -1016,12 +1016,12 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
   };
 
   const char *style =
-  {
+  {/*012345678901234567| - line style ident (18) */
     "                  <a:prstDash val = \"%s\"/>\n"
   };
 
   const char *lineEndSuffix =
-  {
+  {/*012345678| - primitives ident (9) */
     "                  <a:round/>\n"
     "                  <a:headEnd len=\"lg\" w=\"lg\" type=\"none\"/>\n"
     "                  <a:tailEnd len=\"lg\" w=\"lg\" type=\"none\"/>\n"
@@ -1035,11 +1035,11 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
   if (strcmp(lineStyle, "custom") != 0)
     fprintf(presentation->slideFile, style, lineStyle);
   else
-  {
-    fprintf(presentation->slideFile, "               <a:custDash>\n");
+  {                                   /*012345678901234567| - line style ident (18) */
+    fprintf(presentation->slideFile,   "                  <a:custDash>\n");
     for (i = 0; i < nDashes; i += 2)
-      fprintf(presentation->slideFile, "                  <a:ds d=\"%d%%\" sp=\"%d%%\"/>\n", dashes[i], dashes[i + 1]);
-    fprintf(presentation->slideFile, "               </a:custDash>\n");
+      fprintf(presentation->slideFile, "                     <a:ds d=\"%d%%\" sp=\"%d%%\"/>\n", dashes[i], dashes[i+1]);
+    fprintf(presentation->slideFile,   "                  </a:custDash>\n");
   }
 
   fprintf(presentation->slideFile, lineEndSuffix, lineStyle);
@@ -1050,24 +1050,24 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
 void pptxBeginSector(pptxPresentation *presentation, const char *geomType, int xmin, int ymin, int w, int h, double angle1, double angle2)
 {
   const char *arc =
-  {
-    "         <p:sp>\n"
+  {/*012345678| - primitives ident (9) */
+    "         <p:sp>\n"                /* to be closed */
     "            <p:nvSpPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
     "               <p:cNvSpPr/>\n"
     "               <p:nvPr/>\n"
     "            </p:nvSpPr>\n"
-    "            <p:spPr>\n"
+    "            <p:spPr>\n"           /* to be closed */
     "               <a:xfrm>\n"
     "                  <a:off x=\"%d\" y=\"%d\"/>\n"
     "                  <a:ext cx=\"%d\" cy=\"%d\"/>\n"
     "               </a:xfrm>\n"
-    "                  <a:prstGeom prst=\"%s\">\n"
-    "                     <a:avLst>\n"
-    "                        <a:gd fmla=\"val %d\" name=\"adj1\"/>\n"
-    "                        <a:gd fmla=\"val %d\" name=\"adj2\"/>\n"
+    "               <a:prstGeom prst=\"%s\">\n"
+    "                  <a:avLst>\n"
+    "                     <a:gd fmla=\"val %d\" name=\"adj1\"/>\n"
+    "                     <a:gd fmla=\"val %d\" name=\"adj2\"/>\n"
     "                  </a:avLst>\n"
-    "                  </a:prstGeom>\n"
+    "               </a:prstGeom>\n"
   };
 
   fprintf(presentation->slideFile, arc, presentation->objectNum, presentation->objectNum, xmin*presentation->slide_xfactor, ymin*presentation->slide_yfactor, w*presentation->slide_xfactor, h*presentation->slide_yfactor,
@@ -1080,7 +1080,7 @@ void pptxText(pptxPresentation *presentation, int xmin, int ymin, int w, int h, 
   int alphaPct = (int)(((double)alpha / 255.) * 100 * 1000);
 
   const char *textInit =
-  {
+  {/*012345678| - primitives ident (9) */
     "         <p:sp>\n"
     "            <p:nvSpPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
@@ -1144,13 +1144,13 @@ void pptxPixel(pptxPresentation *presentation, int x, int y, int width, unsigned
   int w = width*presentation->slide_xfactor;
 
   const char *pixel =
-  {
+  {/*012345678| - primitives ident (9) */
     "         <p:sp>\n"
     "            <p:nvSpPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
-    "            <p:cNvSpPr/>\n"
-    "            <p:nvPr/>\n"
-    "         </p:nvSpPr>\n"
+    "               <p:cNvSpPr/>\n"
+    "               <p:nvPr/>\n"
+    "            </p:nvSpPr>\n"
     "         <p:spPr>\n"
     "            <a:xfrm>\n"
     "               <a:off x=\"%d\" y=\"%d\"/>\n"
@@ -1202,12 +1202,12 @@ void pptxPixel(pptxPresentation *presentation, int x, int y, int width, unsigned
 void pptxImageRGB(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgb_data, int x, int y, int w, int h)
 {
   const char *image =
-  {
+  {/*012345678| - primitives ident (9) */
     "         <p:pic>\n"
     "            <p:nvPicPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
-    "            <p:cNvPicPr preferRelativeResize=\"0\"/>\n"
-    "            <p:nvPr/>\n"
+    "               <p:cNvPicPr preferRelativeResize=\"0\"/>\n"
+    "               <p:nvPr/>\n"
     "            </p:nvPicPr>\n"
     "            <p:blipFill>\n"
     "               <a:blip r:embed=\"rId%d\">\n"
@@ -1251,12 +1251,12 @@ void pptxImageRGB(pptxPresentation *presentation, int iw, int ih, const unsigned
 void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgba_data, int x, int y, int w, int h)
 {
   const char *image =
-  {
+  {/*012345678| - primitives ident (9) */
     "         <p:pic>\n"
     "            <p:nvPicPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
-    "            <p:cNvPicPr preferRelativeResize=\"0\"/>\n"
-    "            <p:nvPr/>\n"
+    "               <p:cNvPicPr preferRelativeResize=\"0\"/>\n"
+    "               <p:nvPr/>\n"
     "            </p:nvPicPr>\n"
     "            <p:blipFill>\n"
     "               <a:blip r:embed=\"rId%d\">\n"
