@@ -531,20 +531,20 @@ static void printPresentation(FILE* presentationFile, int nSlides, int height, i
     "<p:presentation xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" autoCompressPictures=\"0\" strictFirstAndLastChars=\"0\" saveSubsetFonts=\"1\">\n"
     "   <p:sldMasterIdLst>\n"
     "      <p:sldMasterId id=\"2147483659\" r:id=\"rId3\"/>\n"
-    "         </p:sldMasterIdLst>\n"
-    "            <p:sldIdLst>\n"
+    "   </p:sldMasterIdLst>\n"
+    "   <p:sldIdLst>\n"
   };
 
   const char *slides =
   {
-    "               <p:sldId id=\"%d\" r:id=\"rId%d\"/>\n"
+    "      <p:sldId id=\"%d\" r:id=\"rId%d\"/>\n"
   };
 
   const char *presentationSuffix =
   {
-    "            </p:sldIdLst>\n"
-    "            <p:sldSz cx=\"%d\" cy=\"%d\"/>\n"
-    "            <p:notesSz cx=\"%d\" cy=\"%d\"/>\n"
+    "   </p:sldIdLst>\n"
+    "   <p:sldSz cx=\"%d\" cy=\"%d\"/>\n"
+    "   <p:notesSz cx=\"%d\" cy=\"%d\"/>\n"
     "</p:presentation>\n"
   };
 
@@ -658,6 +658,8 @@ int pptxOpenSlide(pptxPresentation *presentation)
 {
   char filename[10240];
 
+  presentation->slideNum++;
+
   sprintf(filename, "%s/"PPTX_SLIDE_FILE, presentation->baseDir, presentation->slideNum);
 
   presentation->slideFile = fopen(filename, "w");
@@ -689,8 +691,6 @@ void pptxCloseSlide(pptxPresentation *presentation)
   fclose(presentation->slideFile);
 
   fclose(presentation->slideRelsFile);
-
-  presentation->slideNum++;
 }
 
 static FILE* openFile(pptxPresentation *presentation, const char* subfile)
@@ -820,13 +820,13 @@ void pptxBeginPath(pptxPresentation *presentation, int xmin, int ymin, int w, in
 {
   const char *linePrefix =
   {/*012345678| - primitives ident (9) */
-    "         <p:sp>\n"                /* to be closed (pptxEndPath) */
+    "         <p:sp>\n"                /* to be closed (pptxEndLine or pptxEndFill) */
     "            <p:nvSpPr>\n"
     "               <p:cNvPr id=\"%d\" name=\"Shape %d\"/>\n"
     "               <p:cNvSpPr/>\n"
     "               <p:nvPr/>\n"
     "            </p:nvSpPr>\n"
-    "            <p:spPr>\n"           /* to be closed (pptxEndPath) */
+    "            <p:spPr>\n"           /* to be closed (pptxEndLine or pptxEndFill) */
     "               <a:xfrm>\n"
     "                  <a:off x=\"%d\" y=\"%d\"/>\n"
     "                  <a:ext cx=\"%d\" cy=\"%d\"/>\n"
@@ -1000,7 +1000,7 @@ void pptxStipple(pptxPresentation *presentation, const unsigned char *rgba_data,
   presentation->imageId++;
 }
 
-void pptxEndPath(pptxPresentation *presentation, int line_width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes)
+void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes)
 {
   int i;
   int alphaPct = (int)(((double)alpha / 255.) * 100 * 1000);
@@ -1043,6 +1043,19 @@ void pptxEndPath(pptxPresentation *presentation, int line_width, unsigned char r
   }
 
   fprintf(presentation->slideFile, lineEndSuffix, lineStyle);
+
+  presentation->objectNum++;
+}
+
+void pptxEndFill(pptxPresentation *presentation)
+{
+  const char *fillEnd =
+  {/*012345678| - primitives ident (9) */
+    "            </p:spPr>\n"
+    "         </p:sp>\n"
+  };
+
+  fprintf(presentation->slideFile, fillEnd);
 
   presentation->objectNum++;
 }
@@ -1357,7 +1370,7 @@ pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int 
   createSubDirectory(presentation->baseDir, PPTX_MEDIA_DIR);
   createSubDirectory(presentation->baseDir, PPTX_RELS_DIR);
 
-  presentation->slideNum = 1;
+  presentation->slideNum = 0;
   presentation->objectNum = 51;
   presentation->mediaNum = 0;
   presentation->imageId = 4;
@@ -1434,15 +1447,17 @@ static int writeZipFile(pptxPresentation *presentation, const char* dirname, con
   strcpy(files[i], PPTX_PRESENTATION_FILE); i++;
   strcpy(files[i], PPTX_PRES_PROPS_FILE); i++;
   for (j = 0; j < presentation->mediaNum; j++)
+  {
     sprintf(files[i], PPTX_IMAGE_FILE, j); i++;
+  }
   strcpy(files[i], PPTX_SLIDE_LAYOUT_FILE); i++;
   strcpy(files[i], PPTX_SLIDE_LAYOUT_RELS_FILE); i++;
   strcpy(files[i], PPTX_SLIDE_MASTER_FILE); i++;
   strcpy(files[i], PPTX_SLIDE_MASTER_RELS); i++;
-  for (k = 1; k < presentation->slideNum; k++)
+  for (k = 0; k < presentation->slideNum; k++)
   {
-    sprintf(files[i], PPTX_SLIDE_FILE, k); i++;
-    sprintf(files[i], PPTX_SLIDE_RELS_FILE, k); i++;
+    sprintf(files[i], PPTX_SLIDE_FILE, k+1); i++;
+    sprintf(files[i], PPTX_SLIDE_RELS_FILE, k+1); i++;
   }
   strcpy(files[i], PPTX_THEME_FILE); i++;
   strcpy(files[i], PPTX_PRESENTATION_RELS); i++;

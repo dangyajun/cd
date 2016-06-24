@@ -221,10 +221,10 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
           rgba[ind+0] = cdRed(background);
           rgba[ind+1] = cdGreen(background);
           rgba[ind+2] = cdBlue(background);
-          if (backopacity == 1)
-            rgba[ind+3] = 255;
-          else
+          if (backopacity == CD_TRANSPARENT)
             rgba[ind+3] = 0;
+          else
+            rgba[ind+3] = 255;
         }
         else
         {
@@ -297,7 +297,7 @@ static void cdline(cdCtxCanvas* ctxcanvas, int x1, int y1, int x2, int y2)
 
   const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
 
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
+  int line_width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
 
   if (x2<xmin) xmin = x2;
   if (x2>xmax) xmax = x2;
@@ -314,7 +314,7 @@ static void cdline(cdCtxCanvas* ctxcanvas, int x1, int y1, int x2, int y2)
 
   pptxNoFill(ctxcanvas->presentation);
 
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
 }
 
 static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
@@ -329,7 +329,7 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
 
   const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
 
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
+  int line_width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
 
   pptxBeginPath(ctxcanvas->presentation, xmin, ymin, (xmax - xmin) + 1, (ymax - ymin) + 1);
 
@@ -344,7 +344,7 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
 
   pptxNoFill(ctxcanvas->presentation);
 
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
 }
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
@@ -355,23 +355,15 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
   unsigned char red = cdRed(foreground);
   unsigned char green = cdGreen(foreground);
   unsigned char blue = cdBlue(foreground);
-
   unsigned char alpha = cdAlpha(foreground);
 
   unsigned char bRed = cdRed(background);
   unsigned char bGreen = cdGreen(background);
   unsigned char bBlue = cdBlue(background);
-
   unsigned char bAlpha = cdAlpha(background);
 
-  const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
-
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
-
   int backOpacity = cdCanvasBackOpacity(ctxcanvas->canvas, CD_QUERY);
-
   int interiorStyle = cdCanvasInteriorStyle(ctxcanvas->canvas, CD_QUERY);
-
   int hatchStyle = cdCanvasHatch(ctxcanvas->canvas, CD_QUERY);
 
   pptxBeginPath(ctxcanvas->presentation, xmin, ymin, (xmax - xmin) + 1, (ymax - ymin) + 1);
@@ -386,10 +378,9 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 
   pptxClosePath(ctxcanvas->presentation);
 
-  setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha,
-                   bRed, bGreen, bBlue, bAlpha, backOpacity);
+  setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
 
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndFill(ctxcanvas->presentation);
 }
 
 static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -410,7 +401,7 @@ static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a
 
   const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
 
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
+  int line_width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
 
   if (ctxcanvas->canvas->invert_yaxis)
     cdGetArcStartEnd(xc, yc, w, h, -a1, -a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
@@ -437,7 +428,7 @@ static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a
 
   pptxNoFill(ctxcanvas->presentation);
 
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
 }
 
 static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -454,23 +445,15 @@ static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, doubl
   unsigned char red = cdRed(foreground);
   unsigned char green = cdGreen(foreground);
   unsigned char blue = cdBlue(foreground);
-
   unsigned char alpha = cdAlpha(foreground);
 
   unsigned char bRed = cdRed(background);
   unsigned char bGreen = cdGreen(background);
   unsigned char bBlue = cdBlue(background);
-
   unsigned char bAlpha = cdAlpha(background);
 
-  const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
-
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
-
   int backOpacity = cdCanvasBackOpacity(ctxcanvas->canvas, CD_QUERY);
-
   int interiorStyle = cdCanvasInteriorStyle(ctxcanvas->canvas, CD_QUERY);
-
   int hatchStyle = cdCanvasHatch(ctxcanvas->canvas, CD_QUERY);
 
   if (ctxcanvas->canvas->invert_yaxis)
@@ -498,7 +481,7 @@ static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, doubl
 
   setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
 
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndFill(ctxcanvas->presentation);
 }
 
 static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -515,23 +498,15 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
   unsigned char red = cdRed(foreground);
   unsigned char green = cdGreen(foreground);
   unsigned char blue = cdBlue(foreground);
-
   unsigned char alpha = cdAlpha(foreground);
 
   unsigned char bRed = cdRed(background);
   unsigned char bGreen = cdGreen(background);
   unsigned char bBlue = cdBlue(background);
-
   unsigned char bAlpha = cdAlpha(background);
 
-  const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
-
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
-
   int backOpacity = cdCanvasBackOpacity(ctxcanvas->canvas, CD_QUERY);
-
   int interiorStyle = cdCanvasInteriorStyle(ctxcanvas->canvas, CD_QUERY);
-
   int hatchStyle = cdCanvasHatch(ctxcanvas->canvas, CD_QUERY);
 
   if (ctxcanvas->canvas->invert_yaxis)
@@ -559,7 +534,7 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
 
   setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
 
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  pptxEndFill(ctxcanvas->presentation);
 }
 
 static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int len)
@@ -778,27 +753,22 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
   int xmin, xmax, ymin, ymax, i;
 
   long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
+  long background = cdCanvasBackground(ctxcanvas->canvas, CD_QUERY);
 
   unsigned char red = cdRed(foreground);
   unsigned char green = cdGreen(foreground);
   unsigned char blue = cdBlue(foreground);
-
   unsigned char alpha = cdAlpha(foreground);
 
-  unsigned char bRed = cdRed(foreground);
-  unsigned char bGreen = cdGreen(foreground);
-  unsigned char bBlue = cdBlue(foreground);
-
-  unsigned char bAlpha = cdAlpha(foreground);
+  unsigned char bRed = cdRed(background);
+  unsigned char bGreen = cdGreen(background);
+  unsigned char bBlue = cdBlue(background);
+  unsigned char bAlpha = cdAlpha(background);
 
   const char* lineStyle = getLineStyle(ctxcanvas, cdCanvasLineStyle(ctxcanvas->canvas, CD_QUERY));
-
-  int width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
-
+  int line_width = cdCanvasLineWidth(ctxcanvas->canvas, CD_QUERY);
   int backOpacity = cdCanvasBackOpacity(ctxcanvas->canvas, CD_QUERY);
-
   int interiorStyle = cdCanvasInteriorStyle(ctxcanvas->canvas, CD_QUERY);
-
   int hatchStyle = cdCanvasHatch(ctxcanvas->canvas, CD_QUERY);
 
   if (mode == CD_CLIP)
@@ -808,9 +778,10 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
   if (mode == CD_PATH)
   {
-    int p;
+    int p, end_path;
 
     pptxBeginPath(ctxcanvas->presentation, xmin, ymin, (xmax - xmin) + 1, (ymax - ymin) + 1);
+    end_path = 0;
 
     i = 0;
     for (p = 0; p<ctxcanvas->canvas->path_n; p++)
@@ -818,6 +789,16 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
       switch (ctxcanvas->canvas->path[p])
       {
       case CD_PATH_NEW:
+        if (!end_path)
+        {
+          pptxClosePath(ctxcanvas->presentation);
+          pptxNoFill(ctxcanvas->presentation);
+          pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, 0, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+          end_path = 1;
+        }
+
+        pptxBeginPath(ctxcanvas->presentation, xmin, ymin, (xmax - xmin) + 1, (ymax - ymin) + 1);
+        end_path = 0;
         break;
       case CD_PATH_MOVETO:
         if (i + 1 > n) return;
@@ -866,23 +847,27 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
       case CD_PATH_CLOSE:
         pptxLineTo(ctxcanvas->presentation, poly[0].x - xmin, poly[0].y - ymin);
         pptxClosePath(ctxcanvas->presentation);
-        pptxEndPath(ctxcanvas->presentation, width, red, green, blue, 0, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        pptxNoFill(ctxcanvas->presentation);
+        pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        end_path = 1;
         break;
       case CD_PATH_FILL:
         pptxClosePath(ctxcanvas->presentation);
-        setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha,
-                         bRed, bGreen, bBlue, bAlpha, backOpacity);
-        pptxEndPath(ctxcanvas->presentation, width, red, green, blue, 0, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
+        pptxEndFill(ctxcanvas->presentation);
+        end_path = 1;
         break;
       case CD_PATH_STROKE:
         pptxClosePath(ctxcanvas->presentation);
-        pptxEndPath(ctxcanvas->presentation, width, red, green, blue, 0, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        pptxNoFill(ctxcanvas->presentation);
+        pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        end_path = 1;
         break;
       case CD_PATH_FILLSTROKE:
         pptxClosePath(ctxcanvas->presentation);
-        setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha,
-                         bRed, bGreen, bBlue, bAlpha, backOpacity);
-        pptxEndPath(ctxcanvas->presentation, width, red, green, blue, 255, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
+        pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+        end_path = 1;
         break;
       case CD_PATH_CLIP:
         break;
@@ -913,21 +898,16 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
   pptxClosePath(ctxcanvas->presentation);
 
-  switch (mode)
+  if (mode == CD_FILL)
   {
-  case CD_CLOSED_LINES:
-  case CD_OPEN_LINES:
-  case CD_BEZIER:
-    pptxNoFill(ctxcanvas->presentation);
-    break;
-  case CD_FILL:
-    setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha,
-                       bRed, bGreen, bBlue, bAlpha, backOpacity);
-    alpha = 0;
-    break;
+    setInteriorStyle(ctxcanvas, interiorStyle, hatchStyle, red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha, backOpacity);
+    pptxEndFill(ctxcanvas->presentation);
   }
-
-  pptxEndPath(ctxcanvas->presentation, width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  else
+  {
+    pptxNoFill(ctxcanvas->presentation);
+    pptxEndLine(ctxcanvas->presentation, line_width, red, green, blue, alpha, lineStyle, ctxcanvas->nDashes, ctxcanvas->dashes);
+  }
 }
 
 static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *index, const long int *colors, int x, int y, int w, int h, int xmin, int xmax, int ymin, int ymax)
