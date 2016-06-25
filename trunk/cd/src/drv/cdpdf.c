@@ -40,6 +40,7 @@ struct _cdCtxCanvas
   double rotate_angle;
   int    rotate_center_x,
          rotate_center_y;
+  int utf8mode;
 
   int font;
   int underline;
@@ -1609,6 +1610,35 @@ static cdAttribute version_attrib =
   get_version_attrib
 }; 
 
+static void set_utf8mode_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (!data || data[0] == '0')
+  {
+    ctxcanvas->utf8mode = 0;
+    PDF_set_parameter(ctxcanvas->pdf, "textformat", "auto");
+  }
+  else
+  {
+    ctxcanvas->utf8mode = 1;
+    PDF_set_parameter(ctxcanvas->pdf, "textformat", "utf8");
+  }
+}
+
+static char* get_utf8mode_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->utf8mode)
+    return "1";
+  else
+    return "0";
+}
+
+static cdAttribute utf8mode_attrib =
+{
+  "UTF8MODE",
+  set_utf8mode_attrib,
+  get_utf8mode_attrib
+};
+
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
   char *line = (char *)data;
@@ -1651,6 +1681,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   cdRegisterAttribute(canvas, &author_attrib);
   cdRegisterAttribute(canvas, &keywords_attrib);
   cdRegisterAttribute(canvas, &version_attrib);
+  cdRegisterAttribute(canvas, &utf8mode_attrib);
 
   setpdfdefaultvalues(ctxcanvas);
 
