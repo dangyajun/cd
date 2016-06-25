@@ -330,6 +330,10 @@ void cdfRotatePointY(cdCanvas* canvas, double x, double y, double cx, double cy,
   *ry = *ry + cy;
 }
 
+
+/**************************************************************************************/
+
+
 /* Copied from IUP3 */
 
 int cdStrEqualNoCase(const char* str1, const char* str2) 
@@ -423,6 +427,10 @@ int cdStrIsAscii(const char* str)
   return 1;
 }
 
+
+/**************************************************************************************/
+
+
 void cdSetPaperSize(int size, double *w_pt, double *h_pt)
 {
   static struct
@@ -447,6 +455,10 @@ void cdSetPaperSize(int size, double *w_pt, double *h_pt)
   *w_pt = (double)paper[size].w_pt;
   *h_pt = (double)paper[size].h_pt;
 }
+
+
+/**************************************************************************************/
+
 
 #ifdef WIN32
 static char* winRegReadStringKey(HKEY hBaseKey, const char* key_name, const char* value_name)
@@ -787,6 +799,10 @@ int cdGetFontFileName(const char* type_face, char* filename)
   return 1;
 }
 
+
+/**************************************************************************************/
+
+
 int cdStrTmpFileName(char* filename)
 {
 #ifdef WIN32
@@ -846,4 +862,122 @@ int cdIsDirectory(const char* path)
     return 1;
   return 0;
 #endif
+}
+
+
+/**************************************************************************************/
+
+
+#ifdef USE_ICONV
+#include <iconv.h>
+#else
+#ifndef WIN32
+#include <glib.h>
+#endif
+#endif
+
+static char* cdCheckUtf8Buffer(char* utf8_buffer, int *utf8_buffer_max, int len)
+{
+  if (!utf8_buffer)
+  {
+    utf8_buffer = malloc(len + 1);
+    *utf8_buffer_max = len;
+  }
+  else if (*utf8_buffer_max < len)
+  {
+    utf8_buffer = realloc(utf8_buffer, len + 1);
+    *utf8_buffer_max = len;
+  }
+
+  return utf8_buffer;
+}
+
+static char* cdStrCopyToUtf8Buffer(const char* str, int len, char* utf8_buffer, int *utf8_buffer_max)
+{
+  utf8_buffer = cdCheckUtf8Buffer(utf8_buffer, utf8_buffer_max, len);
+  memcpy(utf8_buffer, str, len);
+  utf8_buffer[len] = 0;
+  return utf8_buffer;
+}
+
+char* cdStrConvertToUTF8(const char* str, int len, char* utf8_buffer, int *utf8_buffer_max, int utf8mode)
+{
+  if (utf8mode || cdStrIsAscii(str)) /* string is already utf8 or is ascii */
+    return cdStrCopyToUtf8Buffer(str, len, utf8_buffer, utf8_buffer_max);
+
+#ifdef WIN32
+  {
+    int mlen;
+    wchar_t* wstr;
+    int wlen = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
+    if (!wlen)
+      return cdStrCopyToUtf8Buffer(str, len, utf8_buffer, utf8_buffer_max);
+
+    wstr = (wchar_t*)calloc((wlen + 1), sizeof(wchar_t));
+    MultiByteToWideChar(CP_ACP, 0, str, len, wstr, wlen);
+    wstr[wlen] = 0;
+
+    mlen = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
+    if (!mlen)
+    {
+      free(wstr);
+      return cdStrCopyToUtf8Buffer(str, len, utf8_buffer, utf8_buffer_max);
+    }
+
+    utf8_buffer = cdCheckUtf8Buffer(utf8_buffer, utf8_buffer_max, mlen);
+
+    WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, utf8_buffer, mlen, NULL, NULL);
+    utf8_buffer[mlen] = 0;
+
+    free(wstr);
+  }
+#else
+#ifdef USE_ICONV
+  {
+    size_t ulen = (size_t)len;
+    size_t mlen = ulen * 2;
+    iconv_t cd_iconv = iconv_open("UTF-8", "ISO-8859-1");
+
+    if (cd_iconv == (iconv_t)-1)
+      return cdStrCopyToUtf8Buffer(str, len, utf8_buffer, utf8_buffer_max);
+
+    utf8_buffer = cdCheckUtf8Buffer(utf8_buffer, utf8_buffer_max, mlen);
+
+    iconv(cd_iconv, (char**)&str, &ulen, &utf8_buffer, &mlen);
+    utf8_buffer[mlen] = 0;
+
+    iconv_close(cd_iconv);
+  }
+#else
+  {
+    int mlen;
+    char* g_buffer;
+
+    const char *charset = NULL;
+    if (g_get_charset(&charset) == TRUE)  /* current locale is already UTF-8 */
+    {
+      if (g_utf8_validate(str, len, NULL))
+        return cdStrCopyToUtf8Buffer(str, len, utf8_buffer, utf8_buffer_max);
+
+      charset = "ISO8859-1";  /* if string is not UTF-8, assume ISO8859-1 */
+    }
+
+    if (!charset)
+      charset = "ISO8859-1";  /* if charset not found, assume ISO8859-1 */
+
+    g_buffer = g_convert(str, len, "UTF-8", charset, NULL, NULL, NULL);   
+    if (!g_buffer) 
+      return cdStrCopyToUtf8Buffer(str, len, utf8_buffer, utf8_buffer_max);
+
+    mlen = (int)strlen(g_buffer);
+    utf8_buffer = cdCheckUtf8Buffer(utf8_buffer, utf8_buffer_max, mlen);
+    memcpy(utf8_buffer, g_buffer, mlen);
+    utf8_buffer[mlen] = 0;
+
+    g_free(g_buffer);
+  }
+#endif
+#endif
+
+  return utf8_buffer;
 }

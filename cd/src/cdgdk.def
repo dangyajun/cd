@@ -220,6 +220,7 @@ EXPORTS
   cdGetFontSizePoints
   cdStrEqualNoCase
   cdStrIsAscii
+  cdStrConvertToUTF8
   cdSetPaperSize
   cdGetArcPath
   cdfGetArcPath

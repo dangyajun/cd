@@ -11,8 +11,6 @@
 
 #ifdef WIN32
 #include <windows.h>
-#else
-#include <iconv.h>
 #endif
 
 #if defined (__APPLE__) || defined (OSX)
@@ -58,11 +56,6 @@ typedef struct _cdglFontCache
   FTGLfont *font;
 } cdglFontCache;
 
-
-#ifndef WIN32
-static int gl_canvas_count = 0;
-static iconv_t cdgl_iconv = (iconv_t)-1;
-#endif
 
 struct _cdCtxImage
 {
@@ -135,79 +128,10 @@ static FTGLfont* cdglGetFont(cdCtxCanvas *ctxcanvas, const char* filename, int s
   return font;
 }
 
-static void cdglCheckUtf8Buffer(cdCtxCanvas *ctxcanvas, int len)
-{
-  if (!ctxcanvas->utf8_buffer)
-  {
-    ctxcanvas->utf8_buffer = malloc(len + 1);
-    ctxcanvas->utf8_buffer_len = len;
-  }
-  else if (ctxcanvas->utf8_buffer_len < len)
-  {
-    ctxcanvas->utf8_buffer = realloc(ctxcanvas->utf8_buffer, len + 1);
-    ctxcanvas->utf8_buffer_len = len;
-  }
-}
-
 static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
 {
   /* FTGL multibyte strings are always UTF-8 */
-
-  if (ctxcanvas->utf8mode || cdStrIsAscii(str))
-  {
-    cdglCheckUtf8Buffer(ctxcanvas, len);
-    memcpy(ctxcanvas->utf8_buffer, str, len);
-    ctxcanvas->utf8_buffer[len] = 0;
-    return;
-  }
-
-#ifdef WIN32
-  {
-    wchar_t* wstr;
-    int wlen = MultiByteToWideChar(CP_ACP, 0, str, len, NULL, 0);
-    if (!wlen)
-    {
-      cdglCheckUtf8Buffer(ctxcanvas, 1);
-      ctxcanvas->utf8_buffer[0] = 0;
-      return;
-    }
-
-    wstr = (wchar_t*)calloc((wlen+1), sizeof(wchar_t));
-    MultiByteToWideChar(CP_ACP, 0, str, len, wstr, wlen);
-    wstr[wlen] = 0;
-
-    len = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
-    if (!len)
-    {
-      cdglCheckUtf8Buffer(ctxcanvas, 1);
-      ctxcanvas->utf8_buffer[0] = 0;
-      free(wstr);
-      return;
-    }
-
-    cdglCheckUtf8Buffer(ctxcanvas, len);
-    WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, ctxcanvas->utf8_buffer, len, NULL, NULL);
-    ctxcanvas->utf8_buffer[len] = 0;
-
-    free(wstr);
-  }
-#else
-  {
-    size_t ulen = (size_t)len;
-    size_t utf8len = ulen*2;
-
-    if (cdgl_iconv == (iconv_t)-1)
-    {
-      cdglCheckUtf8Buffer(ctxcanvas, 1);
-      ctxcanvas->utf8_buffer[0] = 0;
-      return;
-    }
-
-    cdglCheckUtf8Buffer(ctxcanvas, utf8len);
-
-    iconv(cdgl_iconv, (char**)&str, &ulen, &(ctxcanvas->utf8_buffer), &utf8len);
-  }
-#endif
+  ctxcanvas->utf8_buffer = cdStrConvertToUTF8(str, len, ctxcanvas->utf8_buffer, &(ctxcanvas->utf8_buffer_len), ctxcanvas->utf8mode);
 }
 
 static void cdglGetImageData(GLubyte* glImage, unsigned char *r, unsigned char *g, unsigned char *b, int w, int h)
@@ -553,16 +477,6 @@ static int cdactivate(cdCtxCanvas *ctxcanvas)
 
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
-#ifndef WIN32
-  gl_canvas_count--;
-  if (gl_canvas_count == 0) /* last canvas */
-  {
-    if (cdgl_iconv != (iconv_t)-1)
-      iconv_close(cdgl_iconv);
-    cdgl_iconv = (iconv_t)-1;
-  }
-#endif
-
   if (ctxcanvas->gl_fonts)
   {
     int i;
@@ -1768,15 +1682,6 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   ctxcanvas = (cdCtxCanvas *)malloc(sizeof(cdCtxCanvas));
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
-
-#ifndef WIN32
-  gl_canvas_count++;
-  if (gl_canvas_count == 1) /* first canvas */
-  {
-    if (cdgl_iconv == (iconv_t)-1)
-      cdgl_iconv = iconv_open("UTF-8", "ISO-8859-1");
-  }
-#endif
 
   canvas->w = w;
   canvas->h = h;

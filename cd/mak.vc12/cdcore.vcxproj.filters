@@ -242,8 +242,5 @@
     <ClInclude Include="..\src\minizip\zip.h">
       <Filter>DRV\MINIZIP</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\minizip\crypt.h">
-      <Filter>DRV\MINIZIP</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
