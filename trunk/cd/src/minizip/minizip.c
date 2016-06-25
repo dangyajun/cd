@@ -20,7 +20,7 @@ Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef _WIN32
+#ifdef WIN32
 # include <windows.h>
 # include <direct.h>
 # include <io.h>
@@ -41,7 +41,7 @@ static uLong filetime(const char *filename, tm_zip *tmzip, uLong *dt)
                /* dt - dostime */
 {
   int ret = 0;
-#ifdef _WIN32
+#ifdef WIN32
   FILETIME ftLocal;
   HANDLE hFind;
   WIN32_FIND_DATAA ff32;

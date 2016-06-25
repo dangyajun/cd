@@ -11,7 +11,7 @@
 #include <memory.h>
 #include <math.h>
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #else
 #include <sys/stat.h>
@@ -808,7 +808,7 @@ int cdStrTmpFileName(char* filename)
 
 int cdMakeDirectory(const char *path)
 {
-#ifdef _WIN32
+#ifdef WIN32
   return CreateDirectoryA(path, NULL);
 #else
   if (mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP |
@@ -821,7 +821,7 @@ int cdMakeDirectory(const char *path)
 
 int cdRemoveDirectory(const char *path)
 {
-#ifdef _WIN32
+#ifdef WIN32
   return RemoveDirectoryA(path);
 #else
   if (rmdir(path) != 0)
@@ -833,7 +833,7 @@ int cdRemoveDirectory(const char *path)
 
 int cdIsDirectory(const char* path)
 {
-#ifdef _WIN32   
+#ifdef WIN32   
   DWORD fattrib = GetFileAttributesA(path);
   if ((fattrib != INVALID_FILE_ATTRIBUTES) && (fattrib & FILE_ATTRIBUTE_DIRECTORY))
     return 1;

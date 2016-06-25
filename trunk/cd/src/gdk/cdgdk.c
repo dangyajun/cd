@@ -73,7 +73,7 @@ static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
           g_free(ctxcanvas->utf8_buffer);
         ctxcanvas->utf8_buffer = gtkStrToUTF8(str, *len, "ISO8859-1");   /* if string is not UTF-8, assume ISO8859-1 */
         if (!ctxcanvas->utf8_buffer) return (char*)str;
-        *len = strlen(ctxcanvas->utf8_buffer);
+        *len = (int)strlen(ctxcanvas->utf8_buffer);
         return ctxcanvas->utf8_buffer;
       }
     }
@@ -87,7 +87,7 @@ static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
           g_free(ctxcanvas->utf8_buffer);
         ctxcanvas->utf8_buffer = gtkStrToUTF8(str, *len, charset);
         if (!ctxcanvas->utf8_buffer) return (char*)str;
-        *len = strlen(ctxcanvas->utf8_buffer);
+        *len = (int)strlen(ctxcanvas->utf8_buffer);
         return ctxcanvas->utf8_buffer;
       }
     }
