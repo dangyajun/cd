@@ -35,85 +35,12 @@ struct _cdCtxCanvas
 
   char* utf8_buffer;
   int utf8mode, utf8_buffer_len;
-
-#ifndef WIN32
-  iconv_t cdgl_iconv;
-#endif
 };
-
-static void cdglCheckUtf8Buffer(cdCtxCanvas *ctxcanvas, int len)
-{
-  if (!ctxcanvas->utf8_buffer)
-  {
-    ctxcanvas->utf8_buffer = malloc(len + 1);
-    ctxcanvas->utf8_buffer_len = len;
-  }
-  else if (ctxcanvas->utf8_buffer_len < len)
-  {
-    ctxcanvas->utf8_buffer = realloc(ctxcanvas->utf8_buffer, len + 1);
-    ctxcanvas->utf8_buffer_len = len;
-  }
-}
 
 static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
 {
-  /* FTGL multibyte strings are always UTF-8 */
-
-  if (ctxcanvas->utf8mode || cdStrIsAscii(str))
-  {
-    cdglCheckUtf8Buffer(ctxcanvas, len);
-    memcpy(ctxcanvas->utf8_buffer, str, len);
-    ctxcanvas->utf8_buffer[len] = 0;
-    return;
-  }
-
-#ifdef WIN32
-  {
-    wchar_t* wstr;
-    int wlen = MultiByteToWideChar(0, 0, str, len, NULL, 0);
-    if (!wlen)
-    {
-      cdglCheckUtf8Buffer(ctxcanvas, 1);
-      ctxcanvas->utf8_buffer[0] = 0;
-      return;
-    }
-
-    wstr = (wchar_t*)calloc((wlen + 1), sizeof(wchar_t));
-    MultiByteToWideChar(0, 0, str, len, wstr, wlen);
-    wstr[wlen] = 0;
-
-    len = WideCharToMultiByte(65001, 0, wstr, wlen, NULL, 0, NULL, NULL);
-    if (!len)
-    {
-      cdglCheckUtf8Buffer(ctxcanvas, 1);
-      ctxcanvas->utf8_buffer[0] = 0;
-      free(wstr);
-      return;
-    }
-
-    cdglCheckUtf8Buffer(ctxcanvas, len);
-    WideCharToMultiByte(65001, 0, wstr, wlen, ctxcanvas->utf8_buffer, len, NULL, NULL);
-    ctxcanvas->utf8_buffer[len] = 0;
-
-    free(wstr);
-  }
-#else
-  {
-    size_t ulen = (size_t)len;
-    size_t utf8len = ulen * 2;
-
-    if (ctxcanvas->cdgl_iconv == (iconv_t)-1)
-    {
-      cdglCheckUtf8Buffer(ctxcanvas, 1);
-      ctxcanvas->utf8_buffer[0] = 0;
-      return;
-    }
-
-    cdglCheckUtf8Buffer(ctxcanvas, utf8len);
-
-    iconv(ctxcanvas->cdgl_iconv, (char**)&str, &ulen, &(ctxcanvas->utf8_buffer), &utf8len);
-  }
-#endif
+  /* PPTX multibyte strings are always UTF-8 */
+  ctxcanvas->utf8_buffer = cdStrConvertToUTF8(str, len, ctxcanvas->utf8_buffer, &(ctxcanvas->utf8_buffer_len), ctxcanvas->utf8mode);
 }
 
 static const char* getHatchStyles(int style)
@@ -250,11 +177,6 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
   pptxKillPresentation(ctxcanvas->presentation, ctxcanvas->filename);
-
-#ifndef WIN32
-  if (ctxcanvas->cdgl_iconv != (iconv_t)-1)
-    iconv_close(ctxcanvas->cdgl_iconv);
-#endif
 
   if (ctxcanvas->dashes)
     free(ctxcanvas->dashes);
@@ -1076,9 +998,6 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
 
   ctxcanvas->nDashes = 0;
   ctxcanvas->dashes = NULL;
-#ifndef WIN32
-  ctxcanvas->cdgl_iconv = iconv_open("UTF-8", "ISO-8859-1");
-#endif
 
   strcpy(ctxcanvas->filename, filename);
 

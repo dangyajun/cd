@@ -50,11 +50,6 @@ static GdkColor cdColorToGdk(unsigned long rgb)
 
 /******************************************************/
 
-static char* gtkStrToUTF8(const char *str, int len, const char* charset)
-{
-  return g_convert(str, len, "UTF-8", charset, NULL, NULL, NULL);
-}
-
 static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
 {
   if (!str || *str == 0)
@@ -71,7 +66,7 @@ static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
       {
         if (ctxcanvas->utf8_buffer)
           g_free(ctxcanvas->utf8_buffer);
-        ctxcanvas->utf8_buffer = gtkStrToUTF8(str, *len, "ISO8859-1");   /* if string is not UTF-8, assume ISO8859-1 */
+        ctxcanvas->utf8_buffer = g_convert(str, *len, "UTF-8", "ISO8859-1", NULL, NULL, NULL);   /* if string is not UTF-8, assume ISO8859-1 */
         if (!ctxcanvas->utf8_buffer) return (char*)str;
         *len = (int)strlen(ctxcanvas->utf8_buffer);
         return ctxcanvas->utf8_buffer;
@@ -85,7 +80,7 @@ static char* cdgStrToSystem(const char* str, int *len, cdCtxCanvas *ctxcanvas)
       {
         if (ctxcanvas->utf8_buffer)
           g_free(ctxcanvas->utf8_buffer);
-        ctxcanvas->utf8_buffer = gtkStrToUTF8(str, *len, charset);
+        ctxcanvas->utf8_buffer = g_convert(str, *len, "UTF-8", charset, NULL, NULL, NULL);
         if (!ctxcanvas->utf8_buffer) return (char*)str;
         *len = (int)strlen(ctxcanvas->utf8_buffer);
         return ctxcanvas->utf8_buffer;

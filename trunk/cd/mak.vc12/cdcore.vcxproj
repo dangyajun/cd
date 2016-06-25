@@ -199,7 +199,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\drv\pptx.h" />
-    <ClInclude Include="..\src\minizip\crypt.h" />
     <ClInclude Include="..\src\minizip\ioapi.h" />
     <ClInclude Include="..\src\minizip\zip.h" />
     <ClInclude Include="..\src\sim\cd_truetype.h" />
