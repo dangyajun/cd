@@ -6,8 +6,6 @@
 
 #ifdef WIN32
 #include <windows.h>
-#else
-#include <iconv.h>
 #endif
 
 #include <stdio.h> 

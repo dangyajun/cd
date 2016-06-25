@@ -114,6 +114,7 @@ ifdef USE_GDK
 else
   ifdef USE_X11
     DEFINES += USE_ICONV
+    LIBS += iconv
     SRC += $(SRCX11) $(SRCNULL)
     ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
       LIBS += fontconfig
