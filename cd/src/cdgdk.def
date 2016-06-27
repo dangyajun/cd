@@ -16,6 +16,7 @@ EXPORTS
   cdContextPicture
   cdContextDebug
   cdContextSVG
+  cdContextPPTX
 
   cdRedImage
   cdGreenImage
