@@ -468,6 +468,9 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int l
   int xmin, xmax, ymin, ymax;
   int px, py;
   int width, height;
+  double rotAngle;
+  char *str;
+  int line_height, ascent, baseline;
 
   long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
 
@@ -491,11 +494,11 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int l
   if (style&CD_UNDERLINE)
     underline = 1;
 
-  double rotAngle = ctxcanvas->canvas->text_orientation;
+  rotAngle = ctxcanvas->canvas->text_orientation;
 
   ctxcanvas->canvas->text_orientation = 0.;
 
-  char *str = cdStrDupN(text, len);
+  str = cdStrDupN(text, len);
 
   cdCanvasGetTextBox(ctxcanvas->canvas, x, y, str, &xmin, &xmax, &ymin, &ymax);
 
@@ -508,7 +511,6 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int l
   width = (xmax - xmin) + 1;
   height = (ymax - ymin) + 1;
 
-  int line_height, ascent, baseline;
   cdCanvasGetFontDim(ctxcanvas->canvas, NULL, &line_height, &ascent, NULL);
   baseline = line_height - ascent;
 
