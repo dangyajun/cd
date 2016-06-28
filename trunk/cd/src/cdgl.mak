@@ -19,7 +19,7 @@ ifneq ($(findstring Win, $(TEC_SYSNAME)), )
 endif
 
 ifneq ($(findstring MacOS, $(TEC_UNAME)), )
-  INCLUDES += $(X11_INC)
+  STDINCS = $(X11_INC)
   ifneq ($(TEC_SYSMINOR), 4)
     BUILD_DYLIB=Yes
   endif

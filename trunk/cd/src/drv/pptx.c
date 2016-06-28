@@ -1,4 +1,4 @@
-﻿/** \file
+/** \file
  * \brief PPTX library
  *
  * See Copyright Notice in cd.h
