@@ -96,10 +96,10 @@ ifdef USE_GDK
 #    ifeq ($(findstring MacOS, $(TEC_UNAME)), )     (TODO: handle GTK using Darwin)
       SRC += cairo/cdcairoprn_unix.c
       ifdef USE_GTK3
-        INCLUDES += $(GTK)/include/gtk-3.0/unix-print
+        STDINCS = $(GTK)/include/gtk-3.0/unix-print
         SRC += drv/cd0emf.c
       else
-        INCLUDES += $(GTK)/include/gtk-unix-print-2.0
+        STDINCS = $(GTK)/include/gtk-unix-print-2.0
       endif 
 #    endif
     ifneq ($(findstring Linux26g4, $(TEC_UNAME)), )
@@ -168,7 +168,7 @@ ifneq ($(findstring MacOS, $(TEC_UNAME)), )
   ifneq ($(TEC_SYSMINOR), 4)
     BUILD_DYLIB=Yes
   endif
-  INCLUDES += /sw/include
+  STDINCS += /sw/include
 endif
 
 LDIR = ../lib/$(TEC_UNAME)
