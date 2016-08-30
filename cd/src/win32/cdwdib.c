@@ -183,6 +183,7 @@ HBITMAP cdwCreateDIBSection(cdwDIB* dib, HDC hDC)
   bmi->bmiHeader.biClrUsed = 0;
   bmi->bmiHeader.biClrImportant = 0;
 
+  /* ATTENTION: You cannot paste a DIB section from one application into another application. */
   hbitmap = CreateDIBSection(hDC, bmi, DIB_RGB_COLORS, &pvBits, NULL, 0x0);
 
   if (hbitmap)
