@@ -483,6 +483,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
     bmi.bmiHeader.biClrUsed = 0;
     bmi.bmiHeader.biClrImportant = 0;
     
+    /* ATTENTION: You cannot paste a DIB section from one application into another application.
+                  So we must duplicate the handle before copying. */
     hBitmapClip = CreateDIBSection(hDC, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
     
     ReleaseDC(NULL, ScreenDC);
