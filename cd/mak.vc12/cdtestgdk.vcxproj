@@ -75,7 +75,7 @@
       <Culture>0x0416</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>gtk-win32-2.0.lib;gdk-win32-2.0.lib;gdk_pixbuf-2.0.lib;pangocairo-1.0.lib;cairo.lib;pango-1.0.lib;pangowin32-1.0.lib;gobject-2.0.lib;gmodule-2.0.lib;glib-2.0.lib;freetype6.lib;comctl32.lib;cdgdk.lib;iupcd.lib;iupgtk.lib;cdpdf.lib;pdflib.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -110,7 +110,7 @@
       <Culture>0x0416</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>gtk-win32-2.0.lib;gdk-win32-2.0.lib;gdk_pixbuf-2.0.lib;pangocairo-1.0.lib;cairo.lib;pango-1.0.lib;pangowin32-1.0.lib;gobject-2.0.lib;gmodule-2.0.lib;glib-2.0.lib;freetype6.lib;comctl32.lib;cdgdk.lib;iupcd.lib;iupgtk.lib;cdpdf.lib;pdflib.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
