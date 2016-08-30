@@ -11,6 +11,7 @@
 /*- Inclusao das bibliotecas IUP e CD: ------------------------------------*/
 #include <iup.h>
 #include <cd.h>
+#include <cd_old.h>
 #include <cdiup.h>
 
 /*- Prototypes e declaracoes do CDTest: -----------------------------------*/
