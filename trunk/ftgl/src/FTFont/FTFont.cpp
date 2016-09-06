@@ -143,6 +143,12 @@ void FTFont::UseDisplayList(bool useList)
 }
 
 //TECGRAF
+bool FTFont::SetEncoding (FT_Encoding e)
+{
+  return impl->SetEncoding(e);
+}
+
+//TECGRAF
 void FTFont::SetEnableBlend(bool enable)
 {
   impl->SetEnableBlend(enable);
@@ -391,6 +397,11 @@ void FTFontImpl::UseDisplayList(bool useList)
     useDisplayLists = useList;
 }
 
+//TECGRAF
+bool FTFontImpl::SetEncoding (FT_Encoding e)
+{
+  return glyphList->CharMap(e);
+}
 
 //TECGRAF
 void FTFontImpl::SetEnableBlend(bool enable)

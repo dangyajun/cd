@@ -201,6 +201,14 @@ class FTGL_EXPORT FTFont
         virtual void UseDisplayList(bool useList);
 
         /** TECGRAF
+        * Sets the CharMap encoding for spcific character in string.
+        *
+        * @param  e CharMap encoding
+        * @return bool If encoding was valid for current font.
+        */
+        virtual bool FTFont::SetEncoding (FT_Encoding e);
+
+        /** TECGRAF
         * Enable or disable the use of blending
         *
         * @param  useBlend <code>true</code> turns ON blending.
