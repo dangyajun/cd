@@ -62,6 +62,9 @@ class FTFontImpl
         virtual void UseDisplayList(bool useList);
 
         //TECGRAF
+        virtual bool SetEncoding (FT_Encoding e);
+
+        //TECGRAF
         virtual void SetEnableBlend(bool enable);
 
         //TECGRAF
