@@ -206,7 +206,7 @@ class FTGL_EXPORT FTFont
         * @param  e CharMap encoding
         * @return bool If encoding was valid for current font.
         */
-        virtual bool FTFont::SetEncoding (FT_Encoding e);
+        virtual bool SetEncoding (FT_Encoding e);
 
         /** TECGRAF
         * Enable or disable the use of blending
