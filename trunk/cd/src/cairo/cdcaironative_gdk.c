@@ -102,7 +102,8 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
    ReleaseDC(hWnd, hDC);  */
 #elif defined(GTK_QUARTZ)
 
-  // ?????????????????
+  /* TODO: INCOMPLETE */
+  
   surface = cairo_quartz_surface_create (cairo_format_t format, canvas->w, canvas->h);
 
   surface = cairo_quartz_surface_create_for_cg_context(CGContextRef cgContext, canvas->w, canvas->h);
