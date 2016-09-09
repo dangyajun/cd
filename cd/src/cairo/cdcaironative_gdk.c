@@ -65,9 +65,12 @@ void cdGetScreenSize(int *width, int *height, double *width_mm, double *height_m
 #endif
 
 #if GTK_CHECK_VERSION(3, 0, 0)
-#ifdef WIN32
+#if defined(WIN32)
 #include <gdk/gdkwin32.h>
 #include <cairo-win32.h>
+#elif defined(GTK_QUARTZ)
+#include <gdk/gdkquartz.h>
+#include <cairo-quartz.h>
 #else
 #include <gdk/gdkx.h>
 #include <cairo-xlib.h>
@@ -79,8 +82,14 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
 #if GTK_CHECK_VERSION(3, 0, 0)
 	cairo_t* cr;
 	cairo_surface_t* surface;
-#ifdef WIN32
-  /* TOD: UNTESTED */
+
+#if 0
+  /* this also does not work for GTK3 */
+  surface = gdk_window_create_similar_surface(window, CAIRO_CONTENT_COLOR_ALPHA, canvas->w, canvas->h);
+#endif
+
+#if defined(WIN32)
+  /* TODO: UNTESTED */
   HWND hWnd = GDK_WINDOW_HWND(window);
   HDC hDC = GetDC(hWnd);
   /* initial clip extents controls size */
@@ -88,8 +97,16 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
   SelectClipRgn(hDC, clip_hrgn);
   surface = cairo_win32_surface_create(hDC);
   DeleteObject(clip_hrgn);
-  /* TODO: HDC cairo_win32_surface_get_dc(cairo_surface_t *surface);
-   ReleaseDC(GDK_WINDOW_HWND(window), ctxcanvas->hDC);  */
+  /* TODO: 
+   HDC hDC = cairo_win32_surface_get_dc(surface);
+   ReleaseDC(hWnd, hDC);  */
+#elif defined(GTK_QUARTZ)
+
+  // ?????????????????
+  surface = cairo_quartz_surface_create (cairo_format_t format, canvas->w, canvas->h);
+
+  surface = cairo_quartz_surface_create_for_cg_context(CGContextRef cgContext, canvas->w, canvas->h);
+
 #else
   XWindowAttributes wa;
   GdkDisplay* display = gdk_display_get_default();
@@ -98,12 +115,13 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
   XGetWindowAttributes(dpy, wnd, &wa);
   surface = cairo_xlib_surface_create(dpy, wnd, wa.visual, canvas->w, canvas->h);
 #endif
+
   cr = cairo_create(surface);
   cairo_surface_destroy(surface);
   return cr;
 #else
   (void)canvas;
-  return gdk_cairo_create(window);  /* this does not works for GTK3 because of the new paint stack they implemented */
+  return gdk_cairo_create(window);  /* this does not work for GTK3 because of the new paint stack they implemented */
 #endif
 }
 
