@@ -33,6 +33,8 @@ struct _cdCtxCanvas
 
   char* utf8_buffer;
   int utf8mode, utf8_buffer_len;
+
+  int isMasterSlide;
 };
 
 static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
@@ -188,6 +190,9 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 
 static void cdflush(cdCtxCanvas* ctxcanvas)
 {
+  if (ctxcanvas->isMasterSlide)
+    return;
+
   pptxCloseSlide(ctxcanvas->presentation);
 
   pptxOpenSlide(ctxcanvas->presentation);
@@ -960,6 +965,35 @@ static cdAttribute utf8mode_attrib =
   get_utf8mode_attrib
 };
 
+static void set_master_slide_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data && data[0]=='1' && ctxcanvas->isMasterSlide == 0)
+  {
+    ctxcanvas->isMasterSlide = 1;
+    pptsBeginMasterFile(ctxcanvas->presentation);
+  }
+  else if (ctxcanvas->isMasterSlide == 1)
+  {
+    ctxcanvas->isMasterSlide = 0;
+    pptsEndMasterFile(ctxcanvas->presentation);
+  }
+}
+
+static char* get_master_slide_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->isMasterSlide)
+    return "1";
+  else
+    return "0";
+}
+
+static cdAttribute master_slide_attrib =
+{
+  "MASTERSLIDE",
+  set_master_slide_attrib,
+  get_master_slide_attrib,
+};
+
 static void cdcreatecanvas(cdCanvas *canvas, void *data)
 {
   char filename[10240] = "";
@@ -996,9 +1030,6 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
     return;
   }
 
-  ctxcanvas->nDashes = 0;
-  ctxcanvas->dashes = NULL;
-
   strcpy(ctxcanvas->filename, filename);
 
   /* store the base canvas */
@@ -1006,6 +1037,7 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
   canvas->ctxcanvas = ctxcanvas;
 
   cdRegisterAttribute(canvas, &utf8mode_attrib);
+  cdRegisterAttribute(canvas, &master_slide_attrib);
 }
 
 static void cdinittable(cdCanvas* canvas)

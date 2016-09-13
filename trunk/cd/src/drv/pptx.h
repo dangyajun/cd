@@ -15,6 +15,9 @@ int pptxKillPresentation(pptxPresentation *presentation, const char* filename);
 int pptxOpenSlide(pptxPresentation *presentation);
 void pptxCloseSlide(pptxPresentation *presentation);
 
+void pptsBeginMasterFile(pptxPresentation *presentation);
+void pptsEndMasterFile(pptxPresentation *presentation);
+
 void pptxBeginPath(pptxPresentation *presentation, int xmin, int ymin, int w, int h);
 void pptxMoveTo(pptxPresentation *presentation, int x, int y);
 void pptxLineTo(pptxPresentation *presentation, int x, int y);
