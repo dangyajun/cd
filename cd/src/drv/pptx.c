@@ -22,7 +22,12 @@ struct _pptxPresentation
 
   FILE* slideFile;
   FILE* slideRelsFile;
+  FILE* masterSlideFile;
+  FILE* masterSlideRelsFile;
   FILE* presentationFile;
+
+  FILE *tmpFile;
+  FILE *tmpRelsFile;
 
   int slideHeight;
   int slideWidth;
@@ -183,7 +188,7 @@ static void printLayoutFile(FILE* layoutFile)
   fprintf(layoutFile, rels);
 }
 
-static void printMasterRelsFile(FILE* masterRelsFile)
+static void printOpenMasterRelsFile(FILE* masterRelsFile)
 {
   const char *rels =
   {
@@ -191,13 +196,22 @@ static void printMasterRelsFile(FILE* masterRelsFile)
     "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n"
     "   <Relationship Id=\"rId11\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout1.xml\"/>\n"
     "   <Relationship Id=\"rId12\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme1.xml\"/>\n"
+  };
+
+  fprintf(masterRelsFile, rels);
+}
+
+static void printCloseMasterRelsFile(FILE* masterRelsFile)
+{
+  const char *rels =
+  {
     "</Relationships>\n"
   };
 
   fprintf(masterRelsFile, rels);
 }
 
-static void printMasterFile(FILE* masterFile)
+static void printOpenMasterFile(FILE* masterFile)
 {
   const char *rels =
   {
@@ -229,6 +243,15 @@ static void printMasterFile(FILE* masterFile)
     "               <a:chExt cx=\"0\" cy=\"0\"/>\n"
     "            </a:xfrm>\n"
     "         </p:grpSpPr>\n"
+  };
+
+  fprintf(masterFile, rels);
+}
+
+static void printCloseMasterFile(FILE* masterFile)
+{
+  const char *rels =
+  {
     "      </p:spTree>\n"
     "   </p:cSld>\n"
     "   <p:clrMap accent1=\"accent4\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" bg1=\"lt1\" bg2=\"dk2\" tx1=\"dk1\" tx2=\"lt2\" folHlink=\"folHlink\" "
@@ -650,7 +673,6 @@ static void printSlideRels(pptxPresentation *presentation)
   fprintf(presentation->slideRelsFile, rels, presentation->imageId, presentation->mediaNum);
 }
 
-
 /**************************************  FILE OPEN/CLOSE   ******************************************************/
 
 
@@ -746,26 +768,42 @@ void pptxWriteLayout(pptxPresentation *presentation)
   fclose(layoutRels);
 }
 
-void pptxWriteMasterRels(pptxPresentation *presentation)
+void pptxOpenWriteMasterRels(pptxPresentation *presentation)
 {
-  FILE *masterRels = openFile(presentation, PPTX_SLIDE_MASTER_RELS);
-  if (!masterRels)
+ presentation->masterSlideRelsFile = openFile(presentation, PPTX_SLIDE_MASTER_RELS);
+ if (!presentation->masterSlideRelsFile)
     return;
 
-  printMasterRelsFile(masterRels);
-
-  fclose(masterRels);
+ printOpenMasterRelsFile(presentation->masterSlideRelsFile);
 }
 
-void pptxWriteMaster(pptxPresentation *presentation)
+void pptxCloseWriteMasterRels(pptxPresentation *presentation)
 {
-  FILE *master = openFile(presentation, PPTX_SLIDE_MASTER_FILE);
-  if (!master)
+  if (!presentation->masterSlideRelsFile)
     return;
 
-  printMasterFile(master);
+  printCloseMasterRelsFile(presentation->masterSlideRelsFile);
 
-  fclose(master);
+  fclose(presentation->masterSlideRelsFile);
+}
+
+void pptxOpenWriteMaster(pptxPresentation *presentation)
+{
+  presentation->masterSlideFile = openFile(presentation, PPTX_SLIDE_MASTER_FILE);
+  if (!presentation->masterSlideFile)
+    return;
+
+  printOpenMasterFile(presentation->masterSlideFile);
+}
+
+void pptxCloseWriteMaster(pptxPresentation *presentation)
+{
+  if (!presentation->masterSlideFile)
+    return;
+
+  printCloseMasterFile(presentation->masterSlideFile);
+
+  fclose(presentation->masterSlideFile);
 }
 
 void pptxWriteTheme(pptxPresentation *presentation)
@@ -1389,9 +1427,9 @@ pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int 
 
   pptxWriteLayout(presentation);
 
-  pptxWriteMasterRels(presentation);
+  pptxOpenWriteMasterRels(presentation);
 
-  pptxWriteMaster(presentation);
+  pptxOpenWriteMaster(presentation);
 
   pptxWriteTheme(presentation);
 
@@ -1401,6 +1439,10 @@ pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int 
 static void closePresentation(pptxPresentation *presentation)
 {
   pptxWritePresentation(presentation);
+
+  pptxCloseWriteMasterRels(presentation);
+
+  pptxCloseWriteMaster(presentation);
 
   pptxWriteContentTypes(presentation);
 
@@ -1485,4 +1527,21 @@ int pptxKillPresentation(pptxPresentation *presentation, const char* filename)
   free(presentation);
 
   return ret;
+}
+
+void pptsBeginMasterFile(pptxPresentation *presentation)
+{
+  presentation->tmpFile = presentation->slideFile;
+  presentation->tmpRelsFile = presentation->slideRelsFile;
+
+  presentation->slideFile = presentation->masterSlideFile;
+  presentation->slideRelsFile = presentation->masterSlideRelsFile;
+
+}
+
+void pptsEndMasterFile(pptxPresentation *presentation)
+{
+  presentation->slideFile = presentation->tmpFile;
+  presentation->slideRelsFile = presentation->tmpRelsFile;
+
 }
