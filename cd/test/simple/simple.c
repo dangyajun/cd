@@ -4,9 +4,9 @@
   Shows the same picture on several canvas. Used to quick test the CD library and
   to demonstrate the use of CD library functions.
 
-  This module uses only the CD library, 
+  This module uses only the CD library,
   there is another module to initialize the Window and its menus.
-*/
+  */
 
 
 #include "cd.h"
@@ -53,7 +53,7 @@ int use_transform = 0;
 int simulate = 0;
 int use_opengl = 0;
 
-enum {DRAW_ALL, DRAW_TEXTFONTS, DRAW_TEXTALIGN, DRAW_TEST};
+enum { DRAW_ALL, DRAW_TEXTFONTS, DRAW_TEXTALIGN, DRAW_TEST };
 
 #define STYLE_SIZE 10 /* A small pattern and stipple size */
 long pattern[STYLE_SIZE*STYLE_SIZE];          /* Pattern buffer */
@@ -74,8 +74,8 @@ void SimpleInitAlpha(int width, int height, unsigned char* _alpha)
   int c, l;
   /* initialize the alpha image buffer with a degrade from transparent to opaque */
   for (l = 0; l < height; l++)
-    for (c = 0; c < width; c++)
-      _alpha[l*width + c] = (unsigned char)((c*255)/(width-1));
+  for (c = 0; c < width; c++)
+    _alpha[l*width + c] = (unsigned char)((c * 255) / (width - 1));
 }
 
 void SimpleCreateCanvasWindow(void)
@@ -91,39 +91,39 @@ void SimpleCreateCanvas(char* data)
 {
   int c, l;
 
-  memset(pattern, 0xFF, STYLE_SIZE*STYLE_SIZE*4);
+  memset(pattern, 0xFF, STYLE_SIZE*STYLE_SIZE * 4);
 
   pattern[11] = CD_RED;   /*------------*/
-  pattern[21] = CD_RED;   /*  0123456789*/               
-  pattern[31] = CD_RED;   /*            */               
-  pattern[41] = CD_RED;   /*9 WWWWWWWWWW*/               
-  pattern[51] = CD_RED;   /*8 WWWWGGGGGW*/               
-  pattern[12] = CD_RED;   /*7 WWWGGGGGBW*/                                         
-  pattern[22] = CD_RED;   /*6 WWGGGGGBBW*/                                         
-  pattern[32] = CD_RED;   /*5 WrrrrrBBBW*/                                         
-  pattern[42] = CD_RED;   /*4 WrrrrrBBBW*/                                         
-  pattern[52] = CD_RED;   /*3 WrrrrrBBWW*/                                         
-  pattern[13] = CD_RED;   /*2 WrrrrrBWWW*/                                         
-  pattern[23] = CD_RED;   /*1 WrrrrrWWWW*/                                         
-  pattern[33] = CD_RED;   /*0 WWWWWWWWWW*/                                         
-  pattern[43] = CD_RED;   /*------------*/                                         
-  pattern[53] = CD_RED;                                            
+  pattern[21] = CD_RED;   /*  0123456789*/
+  pattern[31] = CD_RED;   /*            */
+  pattern[41] = CD_RED;   /*9 WWWWWWWWWW*/
+  pattern[51] = CD_RED;   /*8 WWWWGGGGGW*/
+  pattern[12] = CD_RED;   /*7 WWWGGGGGBW*/
+  pattern[22] = CD_RED;   /*6 WWGGGGGBBW*/
+  pattern[32] = CD_RED;   /*5 WrrrrrBBBW*/
+  pattern[42] = CD_RED;   /*4 WrrrrrBBBW*/
+  pattern[52] = CD_RED;   /*3 WrrrrrBBWW*/
+  pattern[13] = CD_RED;   /*2 WrrrrrBWWW*/
+  pattern[23] = CD_RED;   /*1 WrrrrrWWWW*/
+  pattern[33] = CD_RED;   /*0 WWWWWWWWWW*/
+  pattern[43] = CD_RED;   /*------------*/
+  pattern[53] = CD_RED;
   pattern[14] = CD_RED;   pattern[15] = CD_RED;
   pattern[24] = CD_RED;   pattern[25] = CD_RED;
   pattern[34] = CD_RED;   pattern[35] = CD_RED;
   pattern[44] = CD_RED;   pattern[45] = CD_RED;
   pattern[54] = CD_RED;   pattern[55] = CD_RED;
-  
+
   pattern[26] = CD_BLUE;  pattern[37] = CD_BLUE;
   pattern[36] = CD_BLUE;  pattern[47] = CD_BLUE;
   pattern[46] = CD_BLUE;  pattern[57] = CD_BLUE;
   pattern[56] = CD_BLUE;  pattern[67] = CD_BLUE;
-  
+
   pattern[48] = CD_BLUE;  pattern[62] = CD_GREEN;
   pattern[58] = CD_BLUE;  pattern[63] = CD_GREEN;
   pattern[68] = CD_BLUE;  pattern[64] = CD_GREEN;
   pattern[78] = CD_BLUE;  pattern[65] = CD_GREEN;
-                               pattern[66] = CD_GREEN;
+  pattern[66] = CD_GREEN;
 
   pattern[73] = CD_GREEN; pattern[84] = CD_GREEN;
   pattern[74] = CD_GREEN; pattern[85] = CD_GREEN;
@@ -133,8 +133,8 @@ void SimpleCreateCanvas(char* data)
 
   /* initialize the stipple buffer with cross pattern */
   for (l = 0; l < STYLE_SIZE; l++)
-    for (c = 0; c < STYLE_SIZE; c++)
-      stipple[l*STYLE_SIZE + c] = (c % 4) == 0? 1: 0;
+  for (c = 0; c < STYLE_SIZE; c++)
+    stipple[l*STYLE_SIZE + c] = (c % 4) == 0 ? 1 : 0;
 
   SimpleInitAlpha(IMAGE_SIZE, IMAGE_SIZE, alpha);
 
@@ -168,9 +168,9 @@ void PlayCanvasDriver(cdContext* ctx, char* StrData)
   cdCanvasBackground(curCanvas, CD_WHITE);
   cdCanvasClear(curCanvas);
   cdCanvasGetSize(curCanvas, &w, &h, 0, 0);
-//  cdCanvasPlay(curCanvas, ctx, 100, w-100, 100, h-100, StrData);
+  //  cdCanvasPlay(curCanvas, ctx, 100, w-100, 100, h-100, StrData);
   cdCanvasPlay(curCanvas, ctx, 0, w - 1, 0, h - 1, StrData);
-//  cdCanvasPlay(curCanvas, ctx, 0, 0, 0, 0, StrData);
+  //  cdCanvasPlay(curCanvas, ctx, 0, 0, 0, 0, StrData);
 }
 
 int SimplePlayClipboard(void)
@@ -226,7 +226,7 @@ int SimpleDrawWindow(void)
 void DrawCanvasDriver(cdContext* ctx, char* StrData)
 {
   cdCanvas* tmpCanvas = cdCreateCanvas(ctx, StrData);
-  if (tmpCanvas == NULL) 
+  if (tmpCanvas == NULL)
   {
     printf("CreateCanvas(%s) - Failed!\n", StrData);
     return;
@@ -246,9 +246,9 @@ void DrawCanvasDriverSize(cdContext* ctx, char* name, int pixels, const char* op
   if (pixels == 1)  /* WMF and EMF */
     sprintf(StrData, "%s %dx%d %s", name, w, h, opt);
   else if (pixels == 2)  /* PDF and PS */
-    sprintf(StrData, "%s -w%g -h%g -s%g %s", name, w_mm, h_mm, ((double)w/w_mm)*25.4, opt);
+    sprintf(StrData, "%s -w%g -h%g -s%g %s", name, w_mm, h_mm, ((double)w / w_mm)*25.4, opt);
   else  /* others */
-    sprintf(StrData, "%s %gx%g %g %s", name, w_mm, h_mm, (double)w/w_mm, opt);
+    sprintf(StrData, "%s %gx%g %g %s", name, w_mm, h_mm, (double)w / w_mm, opt);
   DrawCanvasDriver(ctx, StrData);
 }
 
@@ -463,7 +463,7 @@ void* CreateImageRGBA(int w, int h)
   void* myImage;
   unsigned char * _alpha = malloc(w * h);
   SimpleInitAlpha(w, h, _alpha);
-  cdCanvasSetAttribute(curCanvas, "IMAGEALPHA", (char*)_alpha);    
+  cdCanvasSetAttribute(curCanvas, "IMAGEALPHA", (char*)_alpha);
   cdCanvasSetAttribute(curCanvas, "IMAGEFORMAT", "32");    // afetara´ o proximo cdCreateImage
   myImage = cdCanvasCreateImage(curCanvas, w, h);
   cdCanvasSetAttribute(curCanvas, "IMAGEFORMAT", NULL);    // remove o atributo para nao afetar outros cdCreateImage
@@ -512,7 +512,7 @@ int SimpleDrawGL(void)
 
   cdCanvasGetSize(curCanvas, &w, &h, &w_mm, &h_mm);
 
-  sprintf(StrData, "%dx%d %g", w, h, ((double)w/w_mm));
+  sprintf(StrData, "%dx%d %g", w, h, ((double)w / w_mm));
 
   if (dbCanvas) cdKillCanvas(dbCanvas);
 
@@ -572,6 +572,25 @@ void SimpleDraw(cdCanvas* canvas)
   /* refresh CD canvas size, when window size has changed */
   cdCanvasActivate(canvas);
 
+  if (cdCanvasGetContext(canvas) == CD_PPTX)
+  {
+    int width, height, dx, dy;
+
+    cdCanvasSetAttribute(canvas, "MASTERSLIDE", "1");
+
+    cdCanvasGetSize(canvas, &width, &height, NULL, NULL);
+    dx = width / 10;
+    dy = height / 10;
+
+    cdCanvasForeground(canvas, cdEncodeColor(220, 220, 255));
+    cdCanvasBox(canvas, dx, width - dx, dy, height - dy);
+    cdCanvasLineWidth(canvas, 10);
+    cdCanvasForeground(canvas, cdEncodeColor(120, 120, 255));
+    cdCanvasRect(canvas, dx, width - dx, dy, height - dy);
+
+    cdCanvasSetAttribute(canvas, "MASTERSLIDE", NULL);
+  }
+
   if (simple_draw == DRAW_TEXTFONTS)
     SimpleDrawTextFonts(canvas);
   else if (simple_draw == DRAW_TEXTALIGN)
@@ -581,7 +600,7 @@ void SimpleDraw(cdCanvas* canvas)
   else
     SimpleDrawAll(canvas);
 
-  /* Adds a new page, or 
+  /* Adds a new page, or
      flushes the file, or
      flushes the screen, or
      swap the double buffer. */
@@ -597,10 +616,10 @@ void SimpleDrawAll(cdCanvas* canvas)
 {
   int w, h;
   cdCanvasGetSize(canvas, &w, &h, NULL, NULL);
-  
+
   /* Clear the background to be white */
   cdCanvasBackground(canvas, CD_WHITE);
-//  cdBackground(CD_GREEN);
+  //  cdBackground(CD_GREEN);
   cdCanvasClear(canvas);
 
   /* Draw a reactangle and a polyline at the bottom-left area,
@@ -619,26 +638,26 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasVertex(canvas, 340, 200);
   cdCanvasVertex(canvas, 310, 210);
   cdCanvasEnd(canvas);
-  
-  /* Draw the red diagonal line with a custom line style. 
+
+  /* Draw the red diagonal line with a custom line style.
      Observe that line styles are not supported in the IMAGERGB driver. */
   cdCanvasForeground(canvas, CD_RED);
   cdCanvasLineWidth(canvas, 3);
   {
-    int dashes[] = {20, 15, 5, 5};
+    int dashes[] = { 20, 15, 5, 5 };
     cdCanvasLineStyleDashes(canvas, dashes, 4);
   }
   cdCanvasLineStyle(canvas, CD_CUSTOM);
-  cdCanvasLine(canvas, 0, 0, w-1, h-1);
+  cdCanvasLine(canvas, 0, 0, w - 1, h - 1);
 
   /* Draw the blue diagonal line with a pre-defined line style.
      Observe that the pre-defined line style is dependent on the driver. */
   cdCanvasForeground(canvas, CD_BLUE);
   cdCanvasLineWidth(canvas, 10);
   cdCanvasLineStyle(canvas, CD_DOTTED);
-  cdCanvasLine(canvas, 0, h-1, w-1, 0);
+  cdCanvasLine(canvas, 0, h - 1, w - 1, 0);
 
-  switch(clipping)
+  switch (clipping)
   {
   case CD_CLIPOFF:
     cdCanvasClip(canvas, CD_CLIPOFF);
@@ -664,22 +683,22 @@ void SimpleDrawAll(cdCanvas* canvas)
     cdCanvasBegin(canvas, CD_REGION);
     cdCanvasRegionCombineMode(canvas, CD_UNION);
     cdCanvasBox(canvas, 100, 200, 100, 200);
-    cdCanvasSector(canvas, w/2-50, h/2+50, 150, 150, 0, 360);
-    cdCanvasSector(canvas, w/2-50, h/2-50, 150, 150, 0, 360);
-    cdCanvasSector(canvas, w/2+50, h/2+50, 150, 150, 0, 360);
-    cdCanvasSector(canvas, w/2+50, h/2-50, 150, 150, 0, 360);
-    cdCanvasRegionCombineMode(canvas, CD_DIFFERENCE); 
-    cdCanvasText(canvas, w/2, h/2, "TEXT");
+    cdCanvasSector(canvas, w / 2 - 50, h / 2 + 50, 150, 150, 0, 360);
+    cdCanvasSector(canvas, w / 2 - 50, h / 2 - 50, 150, 150, 0, 360);
+    cdCanvasSector(canvas, w / 2 + 50, h / 2 + 50, 150, 150, 0, 360);
+    cdCanvasSector(canvas, w / 2 + 50, h / 2 - 50, 150, 150, 0, 360);
+    cdCanvasRegionCombineMode(canvas, CD_DIFFERENCE);
+    cdCanvasText(canvas, w / 2, h / 2, "TEXT");
     cdCanvasEnd(canvas);
-//    cdCanvasOffsetRegion(canvas, -50, 50);
+    //    cdCanvasOffsetRegion(canvas, -50, 50);
     cdCanvasClip(canvas, CD_CLIPREGION);
 
     cdCanvasForeground(canvas, CD_DARK_RED);
-    cdCanvasBox(canvas, 0,w,0,h);
+    cdCanvasBox(canvas, 0, w, 0, h);
     break;
   }
 
-  switch(write_mode)
+  switch (write_mode)
   {
   case CD_REPLACE:
     cdCanvasWriteMode(canvas, CD_REPLACE);
@@ -695,35 +714,35 @@ void SimpleDrawAll(cdCanvas* canvas)
   if (use_transform)
   {
     cdCanvasTransform(canvas, NULL);
-    cdCanvasTransformTranslate(canvas, w/2, h/2);
+    cdCanvasTransformTranslate(canvas, w / 2, h / 2);
     cdCanvasTransformRotate(canvas, 30);
     cdCanvasTransformScale(canvas, 0.5, 0.5);
-    cdCanvasTransformTranslate(canvas, -w/2, -h/2);
+    cdCanvasTransformTranslate(canvas, -w / 2, -h / 2);
   }
 
-//  cdSetfAttribute("ROTATE", "15 %d %d", w/2, h/2);
+  //  cdSetfAttribute("ROTATE", "15 %d %d", w/2, h/2);
 
   /* Reset line style and width */
   cdCanvasLineStyle(canvas, CD_CONTINUOUS);
   cdCanvasLineWidth(canvas, 1);
-  cdCanvasBackOpacity(canvas, CD_TRANSPARENT); 
-                   
+  cdCanvasBackOpacity(canvas, CD_TRANSPARENT);
+
   /* Draw an arc at bottom-left, and a sector at bottom-right.
      Notice that counter-clockwise orientation of both. */
   cdCanvasInteriorStyle(canvas, CD_SOLID);
   cdCanvasForeground(canvas, CD_MAGENTA);
-  cdCanvasSector(canvas, w-100, 100, 100, 100, 50, 180);
+  cdCanvasSector(canvas, w - 100, 100, 100, 100, 50, 180);
   cdCanvasForeground(canvas, CD_RED);
   cdCanvasArc(canvas, 100, 100, 100, 100, 50, 180);
 
   /* Draw a solid filled rectangle at center. */
   cdCanvasForeground(canvas, CD_YELLOW);
-  cdCanvasBox(canvas, w/2 - 100, w/2 + 100, h/2 - 100, h/2 + 100); 
+  cdCanvasBox(canvas, w / 2 - 100, w / 2 + 100, h / 2 - 100, h / 2 + 100);
 
   /* Prepare font for text. */
-    cdCanvasTextAlignment(canvas, CD_CENTER);
-    cdCanvasTextOrientation(canvas, 70);
-    cdCanvasFont(canvas, "Times", CD_BOLD, 24);
+  cdCanvasTextAlignment(canvas, CD_CENTER);
+  cdCanvasTextOrientation(canvas, 70);
+  cdCanvasFont(canvas, "Times", CD_BOLD, 24);
   //  cdCanvasSetAttribute(canvas, "ADDFONTMAP", "MyWingDings=wingxing");
   //  cdCanvasFont(canvas, "MyWingDings", CD_PLAIN, 24);
   //  cdCanvasFont(canvas, "wingxing", CD_PLAIN, 24); // Current folder
@@ -731,18 +750,18 @@ void SimpleDrawAll(cdCanvas* canvas)
   //  cdCanvasFont(canvas, "Purisa", CD_PLAIN, 24); // Native System - Linux
   //  cdCanvasFont(canvas, "../../test/simple/wingxing.ttf", CD_PLAIN, 24); // Full path
 
-//  cdCanvasSetAttribute(canvas, "UTF8MODE", "1");
-  /* Draw text at center, with orientation, 
-     and draw its bounding box. 
+  //  cdCanvasSetAttribute(canvas, "UTF8MODE", "1");
+  /* Draw text at center, with orientation,
+     and draw its bounding box.
      Notice that in some drivers the bounding box is not precise. */
   {
     int rect[8];
     char* mode = cdCanvasGetAttribute(canvas, "UTF8MODE");
-    int utf8mode = mode? (mode[0]=='1'? 1: 0): 0;
-    if(utf8mode)
-      cdCanvasGetTextBounds(canvas, w/2, h/2, "Simple Draw (p8-Ã§Ã£Ã­)­\nSecond Line", rect);
+    int utf8mode = mode ? (mode[0] == '1' ? 1 : 0) : 0;
+    if (utf8mode)
+      cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p8-Ã§Ã£Ã­)­\nSecond Line", rect);
     else
-      cdCanvasGetTextBounds(canvas, w/2, h/2, "Simple Draw (p-çãí)\nSecond Line", rect);
+      cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p-çãí)\nSecond Line", rect);
     cdCanvasForeground(canvas, CD_RED);
     cdCanvasBegin(canvas, CD_CLOSED_LINES);
     cdCanvasVertex(canvas, rect[0], rect[1]);
@@ -754,18 +773,18 @@ void SimpleDrawAll(cdCanvas* canvas)
 
     cdCanvasForeground(canvas, CD_BLUE);
     if (utf8mode)
-      cdCanvasText(canvas, w/2, h/2, "Simple Draw (p8-Ã§Ã£Ã­)\nSecond Line");
+      cdCanvasText(canvas, w / 2, h / 2, "Simple Draw (p8-Ã§Ã£Ã­)\nSecond Line");
     else
-      cdCanvasText(canvas, w/2, h/2, "Simple Draw (p-çãí)\nSecond Line");
+      cdCanvasText(canvas, w / 2, h / 2, "Simple Draw (p-çãí)\nSecond Line");
     cdCanvasTextOrientation(canvas, 0);
   }
 
   /* Prepare World Coordinates */
-  wdCanvasViewport(canvas, 0,w-1,0,h-1);
-  if (w>h)
-    wdCanvasWindow(canvas, 0,(double)w/(double)h,0,1);
+  wdCanvasViewport(canvas, 0, w - 1, 0, h - 1);
+  if (w > h)
+    wdCanvasWindow(canvas, 0, (double)w / (double)h, 0, 1);
   else
-    wdCanvasWindow(canvas, 0,1,0,(double)h/(double)w);
+    wdCanvasWindow(canvas, 0, 1, 0, (double)h / (double)w);
 
   /* Draw a filled blue rectangle in WC */
   wdCanvasBox(canvas, 0.20, 0.30, 0.40, 0.50);
@@ -773,12 +792,12 @@ void SimpleDrawAll(cdCanvas* canvas)
   /* Draw the diagonal of that rectangle in WC */
   wdCanvasLine(canvas, 0.20, 0.40, 0.30, 0.50);
 
-//  wdVectorTextDirection(0, 0, 1, 1);
+  //  wdVectorTextDirection(0, 0, 1, 1);
   /* Prepare Vector Text in WC. */
   wdCanvasVectorCharSize(canvas, 0.07);
 
-//  wdVectorText(0.1, 0.4, "ñç áéíóú àèìòù âêîôû äëïöü");
-//  wdVectorText(0.1, 0.2, "ÑÇ ÁÉÍÓÚ ÀÈÌÒÙ ÂÊÎÔÛ ÄËÏÖÜ");
+  //  wdVectorText(0.1, 0.4, "ñç áéíóú àèìòù âêîôû äëïöü");
+  //  wdVectorText(0.1, 0.2, "ÑÇ ÁÉÍÓÚ ÀÈÌÒÙ ÂÊÎÔÛ ÄËÏÖÜ");
   //{
   //  int i;
   //  char t[2];
@@ -805,7 +824,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   //  }
   //}
 
-  /* Draw vector text, and draw its bounding box. 
+  /* Draw vector text, and draw its bounding box.
      We also use this text to show when we are using a contextplus driver. */
   {
     double rect[8];
@@ -830,32 +849,32 @@ void SimpleDrawAll(cdCanvas* canvas)
     cdCanvasLineWidth(canvas, 1);
   }
 
-  /* Draw a filled path at center-right (looks like a weird fish). 
+  /* Draw a filled path at center-right (looks like a weird fish).
      Notice that in PDF the arc is necessarily a circle arc, and not an ellipse. */
   cdCanvasInteriorStyle(canvas, CD_HATCH);
   cdCanvasHatch(canvas, CD_DIAGCROSS);
   cdCanvasForeground(canvas, CD_GREEN);
   cdCanvasBegin(canvas, CD_PATH);
   cdCanvasPathSet(canvas, CD_PATH_MOVETO);
-  cdCanvasVertex(canvas, w/2 + 200, h/2);
+  cdCanvasVertex(canvas, w / 2 + 200, h / 2);
   cdCanvasPathSet(canvas, CD_PATH_LINETO);
-  cdCanvasVertex(canvas, w/2 + 230, h/2 + 50);
+  cdCanvasVertex(canvas, w / 2 + 230, h / 2 + 50);
   cdCanvasPathSet(canvas, CD_PATH_LINETO);
-  cdCanvasVertex(canvas, w/2 + 250, h/2 + 50);
+  cdCanvasVertex(canvas, w / 2 + 250, h / 2 + 50);
   cdCanvasPathSet(canvas, CD_PATH_CURVETO);
-  cdCanvasVertex(canvas, w/2+150+150, h/2+200-50); /* control point for start */
-  cdCanvasVertex(canvas, w/2+150+180, h/2+250-50); /* control point for end */
-  cdCanvasVertex(canvas, w/2+150+180, h/2+200-50); /* end point */
+  cdCanvasVertex(canvas, w / 2 + 150 + 150, h / 2 + 200 - 50); /* control point for start */
+  cdCanvasVertex(canvas, w / 2 + 150 + 180, h / 2 + 250 - 50); /* control point for end */
+  cdCanvasVertex(canvas, w / 2 + 150 + 180, h / 2 + 200 - 50); /* end point */
   cdCanvasPathSet(canvas, CD_PATH_CURVETO);
-  cdCanvasVertex(canvas, w/2+150+180, h/2+150-50); 
-  cdCanvasVertex(canvas, w/2+150+150, h/2+100-50); 
-  cdCanvasVertex(canvas, w/2+150+300, h/2+100-50); 
+  cdCanvasVertex(canvas, w / 2 + 150 + 180, h / 2 + 150 - 50);
+  cdCanvasVertex(canvas, w / 2 + 150 + 150, h / 2 + 100 - 50);
+  cdCanvasVertex(canvas, w / 2 + 150 + 300, h / 2 + 100 - 50);
   cdCanvasPathSet(canvas, CD_PATH_LINETO);
-  cdCanvasVertex(canvas, w/2+150+300, h/2-50);
+  cdCanvasVertex(canvas, w / 2 + 150 + 300, h / 2 - 50);
   cdCanvasPathSet(canvas, CD_PATH_ARC);
-  cdCanvasVertex(canvas, w/2+300, h/2);  /* center */
+  cdCanvasVertex(canvas, w / 2 + 300, h / 2);  /* center */
   cdCanvasVertex(canvas, 200, 100);  /* width, height */
-  cdCanvasVertex(canvas, -30*1000, -170*1000);  /* start angle, end angle (degrees / 1000) */
+  cdCanvasVertex(canvas, -30 * 1000, -170 * 1000);  /* start angle, end angle (degrees / 1000) */
   //cdCanvasPathSet(canvas, CD_PATH_CLOSE);
   //cdCanvasPathSet(canvas, CD_PATH_STROKE);
   //cdCanvasPathSet(canvas, CD_PATH_FILL);
@@ -888,7 +907,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasMarkType(canvas, CD_DIAMOND);
   cdCanvasMark(canvas, w - 200, h - 200);
 
-  /* Draw all the line style possibilities at bottom. 
+  /* Draw all the line style possibilities at bottom.
      Notice that they have some small differences between drivers. */
   cdCanvasLineWidth(canvas, 1);
   cdCanvasLineStyle(canvas, CD_CONTINUOUS);
@@ -904,80 +923,80 @@ void SimpleDrawAll(cdCanvas* canvas)
 
   /* Draw all the hatch style possibilities in the top-left corner.
      Notice that they have some small differences between drivers. */
-  cdCanvasHatch(canvas, CD_HORIZONTAL); 
+  cdCanvasHatch(canvas, CD_HORIZONTAL);
   cdCanvasBox(canvas, 0, 50, h - 60, h);
-  cdCanvasHatch(canvas, CD_VERTICAL); 
+  cdCanvasHatch(canvas, CD_VERTICAL);
   cdCanvasBox(canvas, 50, 100, h - 60, h);
-  cdCanvasHatch(canvas, CD_FDIAGONAL); 
+  cdCanvasHatch(canvas, CD_FDIAGONAL);
   cdCanvasBox(canvas, 100, 150, h - 60, h);
-  cdCanvasHatch(canvas, CD_BDIAGONAL); 
+  cdCanvasHatch(canvas, CD_BDIAGONAL);
   cdCanvasBox(canvas, 150, 200, h - 60, h);
-  cdCanvasHatch(canvas, CD_CROSS); 
+  cdCanvasHatch(canvas, CD_CROSS);
   cdCanvasBox(canvas, 200, 250, h - 60, h);
-  cdCanvasHatch(canvas, CD_DIAGCROSS); 
+  cdCanvasHatch(canvas, CD_DIAGCROSS);
   cdCanvasBox(canvas, 250, 300, h - 60, h);
 
   /* Draw 4 regions, in diamond shape,
-     at top, bottom, left, right, 
+     at top, bottom, left, right,
      using different interior styles. */
 
   /* At top, not filled polygon, notice that the last line style is used. */
   cdCanvasBegin(canvas, CD_CLOSED_LINES);
-  cdCanvasVertex(canvas, w/2, h - 100); 
-  cdCanvasVertex(canvas, w/2 + 50, h - 150); 
-  cdCanvasVertex(canvas, w/2, h - 200); 
-  cdCanvasVertex(canvas, w/2 - 50, h - 150); 
+  cdCanvasVertex(canvas, w / 2, h - 100);
+  cdCanvasVertex(canvas, w / 2 + 50, h - 150);
+  cdCanvasVertex(canvas, w / 2, h - 200);
+  cdCanvasVertex(canvas, w / 2 - 50, h - 150);
   cdCanvasEnd(canvas);
 
   /* At left, hatch filled polygon */
-  cdCanvasHatch(canvas, CD_DIAGCROSS); 
+  cdCanvasHatch(canvas, CD_DIAGCROSS);
   cdCanvasBegin(canvas, CD_FILL);
-  cdCanvasVertex(canvas, 100, h/2); 
-  cdCanvasVertex(canvas, 150, h/2 + 50); 
-  cdCanvasVertex(canvas, 200, h/2); 
-  cdCanvasVertex(canvas, 150, h/2 - 50); 
+  cdCanvasVertex(canvas, 100, h / 2);
+  cdCanvasVertex(canvas, 150, h / 2 + 50);
+  cdCanvasVertex(canvas, 200, h / 2);
+  cdCanvasVertex(canvas, 150, h / 2 - 50);
   cdCanvasEnd(canvas);
 
   /* At right, pattern filled polygon */
   cdCanvasPattern(canvas, STYLE_SIZE, STYLE_SIZE, pattern);
   cdCanvasBegin(canvas, CD_FILL);
-  cdCanvasVertex(canvas, w - 100, h/2); 
-  cdCanvasVertex(canvas, w - 150, h/2 + 50); 
-  cdCanvasVertex(canvas, w - 200, h/2); 
-  cdCanvasVertex(canvas, w - 150, h/2 - 50); 
+  cdCanvasVertex(canvas, w - 100, h / 2);
+  cdCanvasVertex(canvas, w - 150, h / 2 + 50);
+  cdCanvasVertex(canvas, w - 200, h / 2);
+  cdCanvasVertex(canvas, w - 150, h / 2 - 50);
   cdCanvasEnd(canvas);
-  
+
   /* At bottom, stipple filled polygon */
   cdCanvasStipple(canvas, STYLE_SIZE, STYLE_SIZE, stipple);
   cdCanvasBegin(canvas, CD_FILL);
-  cdCanvasVertex(canvas, w/2, 100); 
-  cdCanvasVertex(canvas, w/2 + 50, 150); 
-  cdCanvasVertex(canvas, w/2, 200); 
-  cdCanvasVertex(canvas, w/2 - 50, 150); 
+  cdCanvasVertex(canvas, w / 2, 100);
+  cdCanvasVertex(canvas, w / 2 + 50, 150);
+  cdCanvasVertex(canvas, w / 2, 200);
+  cdCanvasVertex(canvas, w / 2 - 50, 150);
   cdCanvasEnd(canvas);
 
   /* Draw two beziers at bottom-left */
   cdCanvasBegin(canvas, CD_BEZIER);
-  cdCanvasVertex(canvas, 100, 100); 
-  cdCanvasVertex(canvas, 150, 200); 
-  cdCanvasVertex(canvas, 180, 250); 
-  cdCanvasVertex(canvas, 180, 200); 
-  cdCanvasVertex(canvas, 180, 150); 
-  cdCanvasVertex(canvas, 150, 100); 
-  cdCanvasVertex(canvas, 300, 100); 
+  cdCanvasVertex(canvas, 100, 100);
+  cdCanvasVertex(canvas, 150, 200);
+  cdCanvasVertex(canvas, 180, 250);
+  cdCanvasVertex(canvas, 180, 200);
+  cdCanvasVertex(canvas, 180, 150);
+  cdCanvasVertex(canvas, 150, 100);
+  cdCanvasVertex(canvas, 300, 100);
   cdCanvasEnd(canvas);
 
   /* Initialize the image buffer contents */
-//#define IMAGE_SIZE 16
-  memset(red, 0xFF, IMAGE_SIZE*IMAGE_SIZE/2);
-  memset(green, 0x5F, IMAGE_SIZE*IMAGE_SIZE/2);
-  memset(blue, 0x5F, IMAGE_SIZE*IMAGE_SIZE/2);
-  memset(red+IMAGE_SIZE*IMAGE_SIZE/2, 0x5F, IMAGE_SIZE*IMAGE_SIZE/2);
-  memset(green+IMAGE_SIZE*IMAGE_SIZE/2, 0x8F, IMAGE_SIZE*IMAGE_SIZE/2);
-  memset(blue+IMAGE_SIZE*IMAGE_SIZE/2, 0x5F, IMAGE_SIZE*IMAGE_SIZE/2);
-  memset(red+IMAGE_SIZE*(IMAGE_SIZE-1), 0, IMAGE_SIZE);
-  memset(green+IMAGE_SIZE*(IMAGE_SIZE-1), 0, IMAGE_SIZE);
-  memset(blue+IMAGE_SIZE*(IMAGE_SIZE-1), 0, IMAGE_SIZE);
+  //#define IMAGE_SIZE 16
+  memset(red, 0xFF, IMAGE_SIZE*IMAGE_SIZE / 2);
+  memset(green, 0x5F, IMAGE_SIZE*IMAGE_SIZE / 2);
+  memset(blue, 0x5F, IMAGE_SIZE*IMAGE_SIZE / 2);
+  memset(red + IMAGE_SIZE*IMAGE_SIZE / 2, 0x5F, IMAGE_SIZE*IMAGE_SIZE / 2);
+  memset(green + IMAGE_SIZE*IMAGE_SIZE / 2, 0x8F, IMAGE_SIZE*IMAGE_SIZE / 2);
+  memset(blue + IMAGE_SIZE*IMAGE_SIZE / 2, 0x5F, IMAGE_SIZE*IMAGE_SIZE / 2);
+  memset(red + IMAGE_SIZE*(IMAGE_SIZE - 1), 0, IMAGE_SIZE);
+  memset(green + IMAGE_SIZE*(IMAGE_SIZE - 1), 0, IMAGE_SIZE);
+  memset(blue + IMAGE_SIZE*(IMAGE_SIZE - 1), 0, IMAGE_SIZE);
   memset(red, 0, IMAGE_SIZE);
   memset(green, 0, IMAGE_SIZE);
   memset(blue, 0, IMAGE_SIZE);
@@ -989,16 +1008,16 @@ void SimpleDrawAll(cdCanvas* canvas)
       red[offset] = 0;
       green[offset] = 0;
       blue[offset] = 0;
-      red[offset+IMAGE_SIZE-1] = 0;
-      green[offset+IMAGE_SIZE-1] = 0;
-      blue[offset+IMAGE_SIZE-1] = 0;
+      red[offset + IMAGE_SIZE - 1] = 0;
+      green[offset + IMAGE_SIZE - 1] = 0;
+      blue[offset + IMAGE_SIZE - 1] = 0;
     }
   }
 
-    cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
-//  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
-//  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
-//  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
+  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
+  //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
+  //  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
+  //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
 
   cdCanvasSetAttribute(canvas, "ROTATE", NULL);
   //cdCanvasSetAttribute(canvas, "ANTIALIAS", "0");
@@ -1196,13 +1215,13 @@ void DrawTextFont(cdCanvas* canvas, const char* font, int size, int xoff, int yo
   DrawTextBox(canvas, xoff, yoff, text);
 
   cdCanvasFont(canvas, font, CD_BOLD, size);
-  DrawTextBox(canvas, 2*xoff, yoff, text);
+  DrawTextBox(canvas, 2 * xoff, yoff, text);
 
   cdCanvasFont(canvas, font, CD_ITALIC, size);
-  DrawTextBox(canvas, 3*xoff, yoff, text);
+  DrawTextBox(canvas, 3 * xoff, yoff, text);
 
   cdCanvasFont(canvas, font, CD_BOLD_ITALIC, size);
-  DrawTextBox(canvas, 4*xoff, yoff, text);
+  DrawTextBox(canvas, 4 * xoff, yoff, text);
 }
 
 void SimpleDrawTextFonts(cdCanvas* canvas)
@@ -1214,7 +1233,7 @@ void SimpleDrawTextFonts(cdCanvas* canvas)
 
   xoff = 470;
   yoff = 150;
-//  size = -30;
+  //  size = -30;
   xoff = 270;
   size = 10;
 
@@ -1224,25 +1243,25 @@ void SimpleDrawTextFonts(cdCanvas* canvas)
 
   cdCanvasTextOrientation(canvas, 0);
   DrawTextFont(canvas, "Courier", size, xoff, yoff, "Courier");
-  DrawTextFont(canvas, "Times", size, xoff, 2*yoff, "Times");
+  DrawTextFont(canvas, "Times", size, xoff, 2 * yoff, "Times");
   cdCanvasTextOrientation(canvas, 45);
   DrawTextFont(canvas, "Helvetica", size, xoff, 3 * yoff, "Helvetica");
   DrawTextFont(canvas, "Calibri", size, xoff, 4 * yoff, "Calibri");
   DrawTextFont(canvas, "Segoe UI", size, xoff, 5 * yoff, "Segoe UI");
 
   {
-//    static char native[50] = "Tecmedia, -60";
-//    static char native[50] = "-*-helvetica-medium-r-*-*-8-*";
-//    static char native[50] = "Edwardian Script ITC, 24";
-//    cdSetAttribute("ADDFONTMAP","Edwardian Script ITC=ITCEDSCR");
+    //    static char native[50] = "Tecmedia, -60";
+    //    static char native[50] = "-*-helvetica-medium-r-*-*-8-*";
+    //    static char native[50] = "Edwardian Script ITC, 24";
+    //    cdSetAttribute("ADDFONTMAP","Edwardian Script ITC=ITCEDSCR");
 
-//    char native[50] = "Book Antiqua, 24";
-//    cdSetAttribute("ADDFONTMAP", "Book Antiqua=BKANT");
+    //    char native[50] = "Book Antiqua, 24";
+    //    cdSetAttribute("ADDFONTMAP", "Book Antiqua=BKANT");
 
-//    cdNativeFont("-d");
-//    cdNativeFont(native);
-//    DrawTextBox(xoff, yoff, native);
-//    DrawTextBox(xoff, yoff, "The quick brown fox.");
+    //    cdNativeFont("-d");
+    //    cdNativeFont(native);
+    //    DrawTextBox(xoff, yoff, native);
+    //    DrawTextBox(xoff, yoff, "The quick brown fox.");
   }
 
   //cdNativeFont("Tecmedia, 36");
@@ -1270,40 +1289,40 @@ void SimpleDrawTest1(cdCanvas* canvas)
   int w, h;
   int xmin, xmax, ymin, ymax;
 
-/* notice that if we are not using world coordinates 
-   it is harder to position all the objetcs we want. */
+  /* notice that if we are not using world coordinates
+     it is harder to position all the objetcs we want. */
   cdCanvasGetSize(canvas, &w, &h, 0, 0);
 
   cdCanvasBackground(canvas, CD_WHITE);
   cdCanvasClear(canvas);
 
-/* pattern initialization */
-  pattern[0]  = CD_RED;    pattern[1]  = CD_RED;    /* first line */
-  pattern[2]  = CD_YELLOW; pattern[3]  = CD_YELLOW;
-  pattern[4]  = CD_RED;    pattern[5]  = CD_RED;    /* second line */
-  pattern[6]  = CD_YELLOW; pattern[7]  = CD_YELLOW;
-  pattern[8]  = CD_YELLOW; pattern[9]  = CD_YELLOW; /* third line */
+  /* pattern initialization */
+  pattern[0] = CD_RED;    pattern[1] = CD_RED;    /* first line */
+  pattern[2] = CD_YELLOW; pattern[3] = CD_YELLOW;
+  pattern[4] = CD_RED;    pattern[5] = CD_RED;    /* second line */
+  pattern[6] = CD_YELLOW; pattern[7] = CD_YELLOW;
+  pattern[8] = CD_YELLOW; pattern[9] = CD_YELLOW; /* third line */
   pattern[10] = CD_YELLOW; pattern[11] = CD_YELLOW;
   pattern[12] = CD_YELLOW; pattern[13] = CD_YELLOW; /* fourth line */
   pattern[14] = CD_YELLOW; pattern[15] = CD_YELLOW;
 
-/* set the line attributes */
+  /* set the line attributes */
   cdCanvasLineWidth(canvas, 4);
   cdCanvasLineStyle(canvas, CD_CONTINUOUS);
 
-/* in the center draw a pattern pizza 
-   with a slice mising */
+  /* in the center draw a pattern pizza
+     with a slice mising */
   cdCanvasPattern(canvas, 4, 4, pattern);
-  cdCanvasSector(canvas, w/2, h/2, w/2, h/2, 45, 0);
-/* draws a dark red border */
+  cdCanvasSector(canvas, w / 2, h / 2, w / 2, h / 2, 45, 0);
+  /* draws a dark red border */
   cdCanvasForeground(canvas, CD_DARK_RED);
   cdCanvasInteriorStyle(canvas, CD_HOLLOW);
   cdCanvasSector(canvas, w/2, h/2, w/2, h/2, 45, 0);
 
-/* on the left a red hash diamond */
-/* notice the the default back opacity is transparent
-   and the pattern of the sector will still be visible
-   inside the hatch where the two objects intersect */
+  /* on the left a red hash diamond */
+  /* notice the the default back opacity is transparent
+     and the pattern of the sector will still be visible
+     inside the hatch where the two objects intersect */
   cdCanvasForeground(canvas, CD_RED);
   cdCanvasHatch(canvas, CD_DIAGCROSS); 
   cdCanvasBegin(canvas, CD_FILL);
@@ -1313,13 +1332,13 @@ void SimpleDrawTest1(cdCanvas* canvas)
   cdCanvasVertex(canvas, w/8, h/2); 
   cdCanvasEnd(canvas);
 
-/* draws a blue roof.*/
+  /* draws a blue roof.*/
   cdCanvasForeground(canvas, CD_BLUE);
   cdCanvasLine(canvas, w/8, h/2, w/4, 3*h/4);
   cdCanvasLine(canvas, w/4, 3*h/4, w/2-w/8, h/2);
 
-/* draws a dashed ribbon on the right 
-   with a custom color */
+  /* draws a dashed ribbon on the right 
+     with a custom color */
   cdCanvasForeground(canvas, cdEncodeColor(100, 25, 200));
   cdCanvasLineStyle(canvas, CD_DASH_DOT);
   cdCanvasBegin(canvas, CD_BEZIER);
@@ -1348,10 +1367,10 @@ void draw_wd(void)
   cdLineStyle(CD_CONTINUOUS);
   cdLineWidth(1);
 
-//  wdVectorTextDirection(0, 0, 1, 1);
+  //  wdVectorTextDirection(0, 0, 1, 1);
   cdTextAlignment(CD_NORTH_WEST);
 
-//  text = "Vector Text";
+  //  text = "Vector Text";
   text = "Vector Text\nSecond Line\nThird Line";
   x = 0.25;
   y = 0.40;
@@ -1383,7 +1402,7 @@ void SimpleDrawTestHardCopy(cdCanvas* canvas)
 {
   int w, h;
   cdGetCanvasSize(&w, &h, 0, 0);
-  
+
   wdViewport(0,w-1,0,h-1);
   if (w>h)
     wdWindow(0,(double)w/(double)h,0,1);
@@ -1424,8 +1443,8 @@ void SimpleDrawVectorFont(cdCanvas* canvas)
   cdLineStyle(CD_CONTINUOUS);
   cdLineWidth(1);
 
-//  wdVectorText(0.1, 0.4, "ãõñç áéíóú àèìòù âêîôû äëïöü");
-//  wdVectorText(0.1, 0.2, "ÃÕÑÇ ÁÉÍÓÚ ÀÈÌÒÙ ÂÊÎÔÛ ÄËÏÖÜ ");
+  //  wdVectorText(0.1, 0.4, "ãõñç áéíóú àèìòù âêîôû äëïöü");
+  //  wdVectorText(0.1, 0.2, "ÃÕÑÇ ÁÉÍÓÚ ÀÈÌÒÙ ÂÊÎÔÛ ÄËÏÖÜ ");
   cdVectorFont("../etc/vectorfont26.txt"); /* original Simplex II */
   {
     int i;
@@ -1434,8 +1453,8 @@ void SimpleDrawVectorFont(cdCanvas* canvas)
     int x = 10;
     int y = 600;
     t[1] = 0;
-  cdFont(CD_COURIER, CD_BOLD, 14);
-  cdVectorCharSize(25);
+    cdFont(CD_COURIER, CD_BOLD, 14);
+    cdVectorCharSize(25);
     for (i = 128; i < 256; i++)
     {
       int dx = 30;
@@ -1443,10 +1462,10 @@ void SimpleDrawVectorFont(cdCanvas* canvas)
       sprintf(s, "%3d", i);
       cdForeground(CD_DARK_RED);
       cdText(x, y, s);
-//      cdText(x+dx, y, t);
+      //      cdText(x+dx, y, t);
       cdForeground(CD_BLACK);
       cdVectorText(x+2*dx-10, y, t);
-      
+
       x += 3*dx;
       if ((i+1) % 8 == 0)
       {
@@ -1454,24 +1473,24 @@ void SimpleDrawVectorFont(cdCanvas* canvas)
         y -= 30;
       }
     }
-  //cdFont(CD_TIMES_ROMAN, CD_PLAIN, 24);
-  //cdVectorCharSize(24);
-  //  for (i = 192; i < 256; i++)
-  //  {
-  //    int dx = 92;
-  //    t[0] = (char)i;
-  //    sprintf(s, "%d", i);
-  //    cdText(x, y, s);
-  //    cdText(x+dx, y, t);
-  //    cdVectorText(x+2*dx, y, t);
-  //    
-  //    x += 3*dx + 2*dx/3;
-  //    if ((i+1) % 4 == 0)
-  //    {
-  //      x = 30;
-  //      y += 52;
-  //    }
-  //  }
+    //cdFont(CD_TIMES_ROMAN, CD_PLAIN, 24);
+    //cdVectorCharSize(24);
+    //  for (i = 192; i < 256; i++)
+    //  {
+    //    int dx = 92;
+    //    t[0] = (char)i;
+    //    sprintf(s, "%d", i);
+    //    cdText(x, y, s);
+    //    cdText(x+dx, y, t);
+    //    cdVectorText(x+2*dx, y, t);
+    //    
+    //    x += 3*dx + 2*dx/3;
+    //    if ((i+1) % 4 == 0)
+    //    {
+    //      x = 30;
+    //      y += 52;
+    //    }
+    //  }
   }
 }
 
@@ -1492,13 +1511,13 @@ void SimpleDrawPoly(cdCanvas* canvas)
   cdLine(0, 0, 200, 200);
 
   cdBegin(CD_BEZIER);
-  cdVertex(100, 100); 
-  cdVertex(150, 200); 
-  cdVertex(180, 250); 
-  cdVertex(180, 200); 
-  cdVertex(180, 150); 
-  cdVertex(150, 100); 
-  cdVertex(300, 100); 
+  cdVertex(100, 100);
+  cdVertex(150, 200);
+  cdVertex(180, 250);
+  cdVertex(180, 200);
+  cdVertex(180, 150);
+  cdVertex(150, 100);
+  cdVertex(300, 100);
   cdEnd();
 
 
@@ -1519,30 +1538,30 @@ void SimpleDrawTestImageRGB(cdCanvas* canvas1)
   }
 
   cdCanvasBegin(canvas, CD_FILL);
-  cdCanvasVertex(canvas,279,81);
-  cdCanvasVertex(canvas,280,81);
-  cdCanvasVertex(canvas,281,81);
-  cdCanvasVertex(canvas,282,81);
-  cdCanvasVertex(canvas,283,81);
-  cdCanvasVertex(canvas,284,82);
-  cdCanvasVertex(canvas,284,81);
-  cdCanvasVertex(canvas,286,81);
-  cdCanvasVertex(canvas,287,81);
-  cdCanvasVertex(canvas,288,80);
-  cdCanvasVertex(canvas,288,79);
-  cdCanvasVertex(canvas,288,77);
-  cdCanvasVertex(canvas,288,76);
-  cdCanvasVertex(canvas,286,76);
-  cdCanvasVertex(canvas,285,76);
-  cdCanvasVertex(canvas,284,76);
-  cdCanvasVertex(canvas,283,76);
-  cdCanvasVertex(canvas,282,77);
-  cdCanvasVertex(canvas,281,77);
-  cdCanvasVertex(canvas,279,78);
-  cdCanvasVertex(canvas,279,79);
-  cdCanvasVertex(canvas,280,80);
-  cdCanvasVertex(canvas,280,81);
-  cdCanvasVertex(canvas,279,81);
+  cdCanvasVertex(canvas, 279, 81);
+  cdCanvasVertex(canvas, 280, 81);
+  cdCanvasVertex(canvas, 281, 81);
+  cdCanvasVertex(canvas, 282, 81);
+  cdCanvasVertex(canvas, 283, 81);
+  cdCanvasVertex(canvas, 284, 82);
+  cdCanvasVertex(canvas, 284, 81);
+  cdCanvasVertex(canvas, 286, 81);
+  cdCanvasVertex(canvas, 287, 81);
+  cdCanvasVertex(canvas, 288, 80);
+  cdCanvasVertex(canvas, 288, 79);
+  cdCanvasVertex(canvas, 288, 77);
+  cdCanvasVertex(canvas, 288, 76);
+  cdCanvasVertex(canvas, 286, 76);
+  cdCanvasVertex(canvas, 285, 76);
+  cdCanvasVertex(canvas, 284, 76);
+  cdCanvasVertex(canvas, 283, 76);
+  cdCanvasVertex(canvas, 282, 77);
+  cdCanvasVertex(canvas, 281, 77);
+  cdCanvasVertex(canvas, 279, 78);
+  cdCanvasVertex(canvas, 279, 79);
+  cdCanvasVertex(canvas, 280, 80);
+  cdCanvasVertex(canvas, 280, 81);
+  cdCanvasVertex(canvas, 279, 81);
   cdCanvasEnd(canvas);
 
   if (canvas != canvas1)
