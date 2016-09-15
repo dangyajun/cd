@@ -55,6 +55,8 @@ a temporary folder structure that later is compressed in a zip file.</p>
   <li><a href="../func/other.html#cdPlay">
   <font face="Courier"><strong>Play</strong></font></a>: does nothing, returns
   <font face="Courier">CD_ERROR</font>.</li>
+	<li><a href="../func/control.html#cdFlush"><font face="Courier"><strong>Flush</strong></font></a>: 
+  changes to a new slide, preserving the previous one. </li>
 	<li><a href="../func/control.html#cdClear">
 	<font face="Courier"><strong>Clear</strong></font></a>: does nothing.</li>
 </dir>
@@ -106,6 +108,13 @@ a temporary folder structure that later is compressed in a zip file.</p>
 <ul>
     <li><b><font face="Courier">&quot;UTF8MODE&quot;: </font></b>enables the usage 
   of the UTF-8 encoding for strings. It can have the following 
+  values: &quot;1&quot; or &quot;0&quot;. Default is &quot;0&quot;.</li>
+</ul>
+
+<ul>
+    <li><b><font face="Courier">&quot;MASTERSLIDE&quot;: </font></b>all the 
+	drawing will be re-directed to the master slide. cdCanvasFlush will be 
+	disabled until the master slide is closed. It can be done only once. It can have the following 
   values: &quot;1&quot; or &quot;0&quot;. Default is &quot;0&quot;.</li>
 </ul>
 
