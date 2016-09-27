@@ -337,7 +337,7 @@ int SimpleDrawWMF(void)
 
 int SimpleDrawPPTX(void)
 {
-  DrawCanvasDriverSize(CD_PPTX, "simple.pptx", 3, "");
+  DrawCanvasDriverSize(CD_PPTX, "simple.pptx", 0, "");
   return 0;
 }
 
@@ -572,6 +572,7 @@ void SimpleDraw(cdCanvas* canvas)
   /* refresh CD canvas size, when window size has changed */
   cdCanvasActivate(canvas);
 
+#if 0
   if (cdCanvasGetContext(canvas) == CD_PPTX)
   {
     int width, height, dx, dy;
@@ -590,6 +591,7 @@ void SimpleDraw(cdCanvas* canvas)
 
     cdCanvasSetAttribute(canvas, "MASTERSLIDE", NULL);
   }
+#endif
 
   if (simple_draw == DRAW_TEXTFONTS)
     SimpleDrawTextFonts(canvas);
