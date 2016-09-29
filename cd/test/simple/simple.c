@@ -572,9 +572,10 @@ void SimpleDraw(cdCanvas* canvas)
   /* refresh CD canvas size, when window size has changed */
   cdCanvasActivate(canvas);
 
-#if 0
+#if 1
   if (cdCanvasGetContext(canvas) == CD_PPTX)
   {
+#if 0
     int width, height, dx, dy;
 
     cdCanvasSetAttribute(canvas, "MASTERSLIDE", "1");
@@ -590,8 +591,12 @@ void SimpleDraw(cdCanvas* canvas)
     cdCanvasRect(canvas, dx, width - dx, dy, height - dy);
 
     cdCanvasSetAttribute(canvas, "MASTERSLIDE", NULL);
-  }
+#else
+    cdCanvasSetAttribute(canvas, "MASTERSLIDEFILE", "master.pptx");
 #endif
+}
+#endif
+
 
   if (simple_draw == DRAW_TEXTFONTS)
     SimpleDrawTextFonts(canvas);

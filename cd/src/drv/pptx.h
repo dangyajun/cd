@@ -17,6 +17,7 @@ void pptxCloseSlide(pptxPresentation *presentation);
 
 void pptsBeginMasterFile(pptxPresentation *presentation);
 void pptsEndMasterFile(pptxPresentation *presentation);
+void pptxSetImportedMasterSlideFile(pptxPresentation* presentation, char* masterSlideFile);
 
 void pptxBeginPath(pptxPresentation *presentation, int xmin, int ymin, int w, int h);
 void pptxMoveTo(pptxPresentation *presentation, int x, int y);
@@ -36,6 +37,5 @@ void pptxText(pptxPresentation *presentation, int xmin, int ymin, int w, int h, 
 void pptxPixel(pptxPresentation *presentation, int x, int y, int width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 void pptxImageRGB(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgb_data, int x, int y, int w, int h);
 void pptxImageRGBA(pptxPresentation *presentation, int iw, int ih, const unsigned char *rgba_data, int x, int y, int w, int h);
-
 
 #endif

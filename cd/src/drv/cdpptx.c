@@ -35,6 +35,8 @@ struct _cdCtxCanvas
   int utf8mode, utf8_buffer_len;
 
   int isMasterSlide;
+
+  char* masterSlideFile;
 };
 
 static void cdglStrConvertToUTF8(cdCtxCanvas *ctxcanvas, const char* str, int len)
@@ -105,68 +107,68 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
     break;
   case CD_PATTERN:
   {
-    int width, height;
-    long *pattern = cdCanvasGetPattern(ctxcanvas->canvas, &width, &height);
-    int plane_size = width*height;
-    unsigned char* rgb = (unsigned char*)malloc(plane_size * 3);
-    int lin, col;
+                   int width, height;
+                   long *pattern = cdCanvasGetPattern(ctxcanvas->canvas, &width, &height);
+                   int plane_size = width*height;
+                   unsigned char* rgb = (unsigned char*)malloc(plane_size * 3);
+                   int lin, col;
 
-    for (lin = 0; lin < width; lin++)
-    {
-      for (col = 0; col < height; col++)
-      {
-        int ind = ((height - 1 - lin)*width + col) * 3;
-        int i = width*lin + col;
-        rgb[ind + 0] = cdRed(pattern[i]);
-        rgb[ind + 1] = cdGreen(pattern[i]);
-        rgb[ind + 2] = cdBlue(pattern[i]);
-      }
-    }
+                   for (lin = 0; lin < width; lin++)
+                   {
+                     for (col = 0; col < height; col++)
+                     {
+                       int ind = ((height - 1 - lin)*width + col) * 3;
+                       int i = width*lin + col;
+                       rgb[ind + 0] = cdRed(pattern[i]);
+                       rgb[ind + 1] = cdGreen(pattern[i]);
+                       rgb[ind + 2] = cdBlue(pattern[i]);
+                     }
+                   }
 
-    pptxPattern(ctxcanvas->presentation, rgb, width, height);
+                   pptxPattern(ctxcanvas->presentation, rgb, width, height);
 
-    free(rgb);
-    break;
+                   free(rgb);
+                   break;
   }
   case CD_STIPPLE:
   {
-    int width, height;
-    unsigned char *stipple = cdCanvasGetStipple(ctxcanvas->canvas, &width, &height);
-    long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
-    long background = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
-    int lin, col;
-    int plane_size = width*height;
-    unsigned char* rgba = (unsigned char*)malloc(plane_size * 4);
+                   int width, height;
+                   unsigned char *stipple = cdCanvasGetStipple(ctxcanvas->canvas, &width, &height);
+                   long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
+                   long background = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
+                   int lin, col;
+                   int plane_size = width*height;
+                   unsigned char* rgba = (unsigned char*)malloc(plane_size * 4);
 
-    for (lin = 0; lin < width; lin++)
-    {
-      for (col = 0; col < height; col++)
-      {
-        int ind = ((height-1 - lin)*width + col) * 4;
-        if (stipple[width*lin + col] == 0)
-        {
-          rgba[ind+0] = cdRed(background);
-          rgba[ind+1] = cdGreen(background);
-          rgba[ind+2] = cdBlue(background);
-          if (backopacity == CD_TRANSPARENT)
-            rgba[ind+3] = 0;
-          else
-            rgba[ind+3] = 255;
-        }
-        else
-        {
-          rgba[ind+0] = cdRed(foreground);
-          rgba[ind+1] = cdGreen(foreground);
-          rgba[ind+2] = cdBlue(foreground);
-          rgba[ind+3] = 255;
-        }
-      }
-    }
+                   for (lin = 0; lin < width; lin++)
+                   {
+                     for (col = 0; col < height; col++)
+                     {
+                       int ind = ((height - 1 - lin)*width + col) * 4;
+                       if (stipple[width*lin + col] == 0)
+                       {
+                         rgba[ind + 0] = cdRed(background);
+                         rgba[ind + 1] = cdGreen(background);
+                         rgba[ind + 2] = cdBlue(background);
+                         if (backopacity == CD_TRANSPARENT)
+                           rgba[ind + 3] = 0;
+                         else
+                           rgba[ind + 3] = 255;
+                       }
+                       else
+                       {
+                         rgba[ind + 0] = cdRed(foreground);
+                         rgba[ind + 1] = cdGreen(foreground);
+                         rgba[ind + 2] = cdBlue(foreground);
+                         rgba[ind + 3] = 255;
+                       }
+                     }
+                   }
 
-    pptxStipple(ctxcanvas->presentation, rgba, width, height);
+                   pptxStipple(ctxcanvas->presentation, rgba, width, height);
 
-    free(rgba);
-    break;
+                   free(rgba);
+                   break;
   }
   default: /* CD_HOLLOW */
     pptxNoFill(ctxcanvas->presentation);
@@ -177,6 +179,9 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
 static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
 {
   pptxKillPresentation(ctxcanvas->presentation, ctxcanvas->filename);
+
+  if (ctxcanvas->masterSlideFile)
+    free(ctxcanvas->masterSlideFile);
 
   if (ctxcanvas->dashes)
     free(ctxcanvas->dashes);
@@ -598,33 +603,33 @@ static void getPolyBBox(cdCtxCanvas *ctxcanvas, cdPoint* poly, int n, int mode, 
         break;
       case CD_PATH_ARC:
       {
-        int xc, yc, w, h;
-        double a1, a2;
-        int xmn, xmx, ymn, ymx;
+                        int xc, yc, w, h;
+                        double a1, a2;
+                        int xmn, xmx, ymn, ymx;
 
-        if (i + 3 > n) return;
+                        if (i + 3 > n) return;
 
-        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
-          return;
+                        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
+                          return;
 
-        cdGetArcBox(xc, yc, w, h, a1, a2, &xmn, &xmx, &ymn, &ymx);
+                        cdGetArcBox(xc, yc, w, h, a1, a2, &xmn, &xmx, &ymn, &ymx);
 
-        x = xmn;
-        y = ymn;
-        _BBOX();
-        x = xmx;
-        y = ymn;
-        _BBOX();
-        x = xmx;
-        y = ymx;
-        _BBOX();
-        x = xmn;
-        y = ymx;
-        _BBOX();
+                        x = xmn;
+                        y = ymn;
+                        _BBOX();
+                        x = xmx;
+                        y = ymn;
+                        _BBOX();
+                        x = xmx;
+                        y = ymx;
+                        _BBOX();
+                        x = xmn;
+                        y = ymx;
+                        _BBOX();
 
 
-        i += 3;
-        break;
+                        i += 3;
+                        break;
       }
       case CD_PATH_CURVETO:
         if (i + 3 > n) return;
@@ -711,7 +716,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
     end_path = 0;
 
     i = 0;
-    for (p = 0; p<ctxcanvas->canvas->path_n; p++)
+    for (p = 0; p < ctxcanvas->canvas->path_n; p++)
     {
       switch (ctxcanvas->canvas->path[p])
       {
@@ -739,30 +744,30 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
         break;
       case CD_PATH_ARC:
       {
-        int xc, yc, w, h;
-        double a1, a2, angle1, angle2;
-        int arcStartX, arcStartY, arcEndX, arcEndY;
+                        int xc, yc, w, h;
+                        double a1, a2, angle1, angle2;
+                        int arcStartX, arcStartY, arcEndX, arcEndY;
 
-        if (i + 3 > n) return;
+                        if (i + 3 > n) return;
 
-        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
-          return;
+                        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
+                          return;
 
-        i += 3;
+                        i += 3;
 
-        if (ctxcanvas->canvas->invert_yaxis)
-          cdGetArcStartEnd(xc, yc, w, h, -a1, -a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
-        else
-          cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
+                        if (ctxcanvas->canvas->invert_yaxis)
+                          cdGetArcStartEnd(xc, yc, w, h, -a1, -a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
+                        else
+                          cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
 
-        angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
-        angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
-        angle2 -= angle1;
+                        angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
+                        angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
+                        angle2 -= angle1;
 
-        pptxLineTo(ctxcanvas->presentation, (int)arcStartX - xmin, (int)arcStartY - ymin);
+                        pptxLineTo(ctxcanvas->presentation, (int)arcStartX - xmin, (int)arcStartY - ymin);
 
-        pptxArcTo(ctxcanvas->presentation, h / 2, w / 2, angle1, angle2);
-        break;
+                        pptxArcTo(ctxcanvas->presentation, h / 2, w / 2, angle1, angle2);
+                        break;
       }
       case CD_PATH_CURVETO:
         if (i + 3 > n) return;
@@ -880,7 +885,7 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   rh = ymax - ymin + 1;
 
   rgb = (unsigned char*)malloc(3 * rw*rh);
-  if (!rgb) 
+  if (!rgb)
     return;
 
   d = 0;
@@ -967,7 +972,7 @@ static cdAttribute utf8mode_attrib =
 
 static void set_master_slide_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
-  if (data && data[0]=='1' && ctxcanvas->isMasterSlide == 0)
+  if (data && data[0] == '1' && ctxcanvas->isMasterSlide == 0)
   {
     ctxcanvas->isMasterSlide = 1;
     pptsBeginMasterFile(ctxcanvas->presentation);
@@ -994,13 +999,37 @@ static cdAttribute master_slide_attrib =
   get_master_slide_attrib,
 };
 
+static void set_master_slide_file_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data)
+  {
+    if (ctxcanvas->masterSlideFile)
+      free(ctxcanvas->masterSlideFile);
+    ctxcanvas->masterSlideFile = cdStrDup(data);
+
+    pptxSetImportedMasterSlideFile(ctxcanvas->presentation, data);
+  }
+};
+
+static char* get_master_slide_file_attrib(cdCtxCanvas* ctxcanvas)
+{
+  return ctxcanvas->masterSlideFile;
+}
+
+static cdAttribute master_slide_file_attrib =
+{
+  "MASTERSLIDEFILE",
+  set_master_slide_file_attrib,
+  get_master_slide_file_attrib,
+};
+
 static void cdcreatecanvas(cdCanvas *canvas, void *data)
 {
   char filename[10240] = "";
   char* strdata = (char*)data;
   double res = 3.78;
   double w_mm = INT_MAX*res,
-         h_mm = INT_MAX*res;
+    h_mm = INT_MAX*res;
   cdCtxCanvas* ctxcanvas;
 
   strdata += cdGetFileName(strdata, filename);
@@ -1038,6 +1067,7 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
 
   cdRegisterAttribute(canvas, &utf8mode_attrib);
   cdRegisterAttribute(canvas, &master_slide_attrib);
+  cdRegisterAttribute(canvas, &master_slide_file_attrib);
 }
 
 static void cdinittable(cdCanvas* canvas)
