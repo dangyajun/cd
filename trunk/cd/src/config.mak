@@ -31,7 +31,7 @@ endif
 SRCSVG = base64.c lodepng.c cdsvg.c
 SRCSVG := $(addprefix svg/, $(SRCSVG))
 
-SRCMINIZIP = ioapi.c minizip.c zip.c
+SRCMINIZIP = ioapi.c minizip.c zip.c miniunzip.c unzip.c 
 SRCMINIZIP := $(addprefix minizip/, $(SRCMINIZIP))
 
 SRCINTCGM = cd_intcgm.c cgm_bin_get.c cgm_bin_parse.c cgm_list.c \

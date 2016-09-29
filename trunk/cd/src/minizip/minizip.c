@@ -78,7 +78,7 @@ static uLong filetime(const char *filename, tm_zip *tmzip, uLong *dt)
 int minizip(const char *filename, const char *dirname, const char **files, int nFiles)
 {
   int i;
-  int err = 0;
+  int err = ZIP_OK;
   int size_buf = WRITEBUFFERSIZE;
   void* buf = NULL;
   zipFile zf;

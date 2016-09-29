@@ -13,9 +13,14 @@
 
 #ifdef WIN32
 #include <windows.h>
+#include <io.h>
 #else
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 #endif
 
 #include "cd.h"
@@ -861,6 +866,164 @@ int cdIsDirectory(const char* path)
   if (S_ISDIR(status.st_mode))
     return 1;
   return 0;
+#endif
+}
+
+int cdDirIter(cdDirData * dirData) 
+{
+#ifdef WIN32
+  struct _finddata_t c_file;
+
+  if (!dirData->handle) 
+  { 
+    /* first entry */
+    char pattern[10240];
+    sprintf(pattern, "%s/*", dirData->path);
+
+    dirData->handle = (void*)_findfirst(pattern, &c_file);
+    if (dirData->handle == (void*)-1L)
+    {
+      dirData->closed = 1;
+      return 2;
+    }
+    else 
+    {
+      strcpy(dirData->filename, c_file.name);
+      dirData->isDir = (c_file.attrib & _A_SUBDIR) ? 1 : 0;
+      return 1;
+    }
+  }
+  else 
+  { 
+    /* next entry */
+    if (_findnext((intptr_t)dirData->handle, &c_file) == -1L) 
+    {
+      /* no more entries => close directory */
+      _findclose((intptr_t)dirData->handle);
+      dirData->closed = 1;
+      return 2;
+    }
+    else 
+    {
+      strcpy(dirData->filename, c_file.name);
+      dirData->isDir = (c_file.attrib & _A_SUBDIR) ? 1 : 0;
+      return 1;
+    }
+  }
+#else
+  struct dirent *entry = readdir((DIR*)dirData->handle);
+  if (entry) 
+  {
+    strcpy(dirData->filename, entry->d_name);
+    dirData->isDir = (entry->d_type==DT_DIR) ? 1 : 0;
+    return 1;
+  }
+  else 
+  {
+    /* no more entries => close directory */
+    closedir(dirData->handle);
+    dirData->closed = 1;
+    return 2;
+  }
+#endif
+}
+
+void cdDirClose(cdDirData* dirData) 
+{
+#ifdef WIN32
+  if (!dirData->closed && dirData->handle) 
+    _findclose((intptr_t)dirData->handle);
+#else
+  if (!dirData->closed && dirData->handle) 
+    closedir(dirData->handle);
+#endif
+  dirData->closed = 1;
+  free(dirData);
+}
+
+cdDirData* cdDirIterOpen(const char *path)
+{
+  cdDirData *dirData = (cdDirData *) malloc(sizeof(cdDirData));
+  memset(dirData, 0, sizeof(cdDirData));
+  dirData->path = path;
+#ifndef WIN32
+  dirData->handle = opendir(path);
+  if (!dirData->handle)
+  {
+    free(dirData);
+    return NULL;
+  }
+#endif
+  return dirData;
+}
+
+#ifndef WIN32
+static int cp(const char *from, const char *to)
+{
+  int fd_to, fd_from;
+  char buf[4096];
+  ssize_t nread;
+  int saved_errno;
+
+  fd_from = open(from, O_RDONLY);
+  if (fd_from < 0)
+    return -1;
+
+  fd_to = open(to, O_WRONLY | O_CREAT | O_EXCL, 0666);
+  if (fd_to < 0)
+    goto out_error;
+
+  while (nread = read(fd_from, buf, sizeof buf), nread > 0)
+  {
+    char *out_ptr = buf;
+    ssize_t nwritten;
+
+    do {
+      nwritten = write(fd_to, out_ptr, nread);
+
+      if (nwritten >= 0)
+      {
+        nread -= nwritten;
+        out_ptr += nwritten;
+      }
+      else if (errno != EINTR)
+      {
+        goto out_error;
+      }
+    } while (nread > 0);
+  }
+
+  if (nread == 0)
+  {
+    if (close(fd_to) < 0)
+    {
+      fd_to = -1;
+      goto out_error;
+    }
+    close(fd_from);
+
+    /* Success! */
+    return 0;
+  }
+
+out_error:
+  saved_errno = errno;
+
+  close(fd_from);
+  if (fd_to >= 0)
+    close(fd_to);
+
+  errno = saved_errno;
+  return -1;
+}
+#endif
+
+void cdCopyFile(const char* srcFile, const char* destFile)
+{
+#ifdef WIN32
+  CopyFile(srcFile, destFile, 0);
+#else
+  cp(srcFile, destFile);
 #endif
 }
 

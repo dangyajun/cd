@@ -38,6 +38,8 @@ struct _pptxPresentation
   int objectNum;
   int mediaNum;
   int imageId;
+
+  char* importMasterSlideFile;
 };
 
 #define PPTX_PPT_DIR          "ppt"
@@ -50,12 +52,13 @@ struct _pptxPresentation
 #define PPTX_SLIDES_RELS_DIR  "ppt/slides/_rels"
 #define PPTX_THEME_DIR        "ppt/theme"
 #define PPTX_MEDIA_DIR        "ppt/media"
+#define PPTX_MEDIA_MEDIA_DIR  "ppt/media/media"
 #define PPTX_RELS_DIR         "_rels"
 
 #define PPTX_CONTENT_TYPES_FILE     "[Content_Types].xml"
 #define PPTX_PRESENTATION_FILE      "ppt/presentation.xml"
 #define PPTX_PRES_PROPS_FILE        "ppt/presProps.xml"
-#define PPTX_IMAGE_FILE             "ppt/media/image%d.png"
+#define PPTX_IMAGE_FILE             "ppt/media/media/image%d.png"
 #define PPTX_SLIDE_LAYOUT_FILE      "ppt/slideLayouts/slideLayout1.xml"
 #define PPTX_SLIDE_LAYOUT_RELS_FILE "ppt/slideLayouts/_rels/slideLayout1.xml.rels"
 #define PPTX_SLIDE_MASTER_FILE      "ppt/slideMasters/slideMaster1.xml"
@@ -68,6 +71,7 @@ struct _pptxPresentation
 
 
 int minizip(const char *filename, const char *dirname, const char **files, const int nFiles);
+int miniunzip(const char *filename, const char *dirname);
 
 
 /************************************  PRINT  ******************************************************/
@@ -117,10 +121,10 @@ static void printPresProps(FILE* presPropsFile)
   {
     "<?xml version = \"1.0\" encoding = \"UTF-8\" standalone = \"yes\"?>\n"
     "<p:presentationPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
-                      "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
-                      "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
-                      "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
-                      "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\"/>\n"
+    "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
+    "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+    "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
+    "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\"/>\n"
   };
 
   fprintf(presPropsFile, presProps);
@@ -158,10 +162,10 @@ static void printLayoutFile(FILE* layoutFile)
   {
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
     "   <p:sldLayout xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
-                    "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
-                    "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
-                    "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
-                    "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" type=\"blank\">\n"
+    "xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:mv=\"urn:schemas-microsoft-com:mac:vml\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" "
+    "xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+    "xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:pvml=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:com=\"http://schemas.openxmlformats.org/drawingml/2006/compatibility\" "
+    "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" type=\"blank\">\n"
     "   <p:cSld name=\"Blank\">\n"
     "      <p:spTree>\n"
     "         <p:nvGrpSpPr>\n"
@@ -587,22 +591,23 @@ static void printContentTypes(FILE* ctFile, int nSlides)
     "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\n"
     "   <Default Extension=\"png\" ContentType=\"image/png\"/>\n"
     "   <Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>\n"
-    "   <Default ContentType=\"application/xml\" Extension = \"xml\"/>\n"
-    "   <Default ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" Extension=\"rels\"/>\n"
-    "   <Override ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\" PartName=\"/ppt/slideLayouts/slideLayout1.xml\"/>\n"
-    "   <Override ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml\" PartName=\"/ppt/slideMasters/slideMaster1.xml\"/>\n"
+    "   <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\n"
+    "   <Default Extension=\"xml\" ContentType=\"application/xml\"/>\n"
+    "   <Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>\n"
+    "   <Override PartName=\"/ppt/slideMasters/slideMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml\"/>\n"
+    "   <Override PartName=\"/ppt/slideLayouts/slideLayout1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\"/>\n"
   };
 
   const char *slide =
   {
-    "   <Override ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slide+xml\" PartName=\"/ppt/slides/slide%d.xml\"/>\n"
+    "   <Override PartName=\"/ppt/slides/slide%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slide+xml\"/>\n"
   };
 
   const char *contentTypesSuffix =
   {
-    "   <Override ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" PartName=\"/ppt/presentation.xml\"/>\n"
-    "   <Override ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" PartName=\"/ppt/presProps.xml\"/>\n"
-    "   <Override ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\" PartName=\"/ppt/theme/theme1.xml\"/>\n"
+    "   <Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\"/>\n"
+    "   <Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\"/>\n"
+    "   <Override PartName=\"/ppt/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>\n"
     "</Types>\n"
   };
 
@@ -667,7 +672,7 @@ static void printSlideRels(pptxPresentation *presentation)
 {
   const char *rels =
   {
-    "   <Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"../media/image%d.png\"/>\n"
+    "   <Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"../media/media/image%d.png\"/>\n"
   };
 
   fprintf(presentation->slideRelsFile, rels, presentation->imageId, presentation->mediaNum);
@@ -770,11 +775,11 @@ void pptxWriteLayout(pptxPresentation *presentation)
 
 void pptxOpenWriteMasterRels(pptxPresentation *presentation)
 {
- presentation->masterSlideRelsFile = openFile(presentation, PPTX_SLIDE_MASTER_RELS);
- if (!presentation->masterSlideRelsFile)
+  presentation->masterSlideRelsFile = openFile(presentation, PPTX_SLIDE_MASTER_RELS);
+  if (!presentation->masterSlideRelsFile)
     return;
 
- printOpenMasterRelsFile(presentation->masterSlideRelsFile);
+  printOpenMasterRelsFile(presentation->masterSlideRelsFile);
 }
 
 void pptxCloseWriteMasterRels(pptxPresentation *presentation)
@@ -1074,10 +1079,10 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
     fprintf(presentation->slideFile, style, lineStyle);
   else
   {                                   /*012345678901234567| - line style ident (18) */
-    fprintf(presentation->slideFile,   "                  <a:custDash>\n");
+    fprintf(presentation->slideFile, "                  <a:custDash>\n");
     for (i = 0; i < nDashes; i += 2)
-      fprintf(presentation->slideFile, "                     <a:ds d=\"%d%%\" sp=\"%d%%\"/>\n", dashes[i], dashes[i+1]);
-    fprintf(presentation->slideFile,   "                  </a:custDash>\n");
+      fprintf(presentation->slideFile, "                     <a:ds d=\"%d%%\" sp=\"%d%%\"/>\n", dashes[i], dashes[i + 1]);
+    fprintf(presentation->slideFile, "                  </a:custDash>\n");
   }
 
   fprintf(presentation->slideFile, lineEndSuffix, lineStyle);
@@ -1244,7 +1249,7 @@ void pptxPixel(pptxPresentation *presentation, int x, int y, int width, unsigned
     "         </p:sp>\n"
   };
 
-  fprintf(presentation->slideFile, pixel, presentation->objectNum, presentation->objectNum, x*presentation->slide_xfactor, y*presentation->slide_yfactor, 
+  fprintf(presentation->slideFile, pixel, presentation->objectNum, presentation->objectNum, x*presentation->slide_xfactor, y*presentation->slide_yfactor,
           w, w, w, w, w, w, w, w, w, red, green, blue, alphaPct);
 
   presentation->objectNum++;
@@ -1376,8 +1381,9 @@ static void removeFile(const char* dirname, const char* file)
 pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int width, int height)
 {
   pptxPresentation *presentation = (pptxPresentation*)malloc(sizeof(pptxPresentation));
+  memset(presentation, 0, sizeof(pptxPresentation));
 
-  /* Units are in EMU (English Metric Units) min=914400 max=51206400. 
+  /* Units are in EMU (English Metric Units) min=914400 max=51206400.
      1 emu = 1 / 914400 in = 1 / 360000 cm */
   presentation->slideHeight = (int)(height_mm * 36000);
   presentation->slideWidth = (int)(width_mm * 36000);
@@ -1406,6 +1412,7 @@ pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int 
   createSubDirectory(presentation->baseDir, PPTX_SLIDES_RELS_DIR);
   createSubDirectory(presentation->baseDir, PPTX_THEME_DIR);
   createSubDirectory(presentation->baseDir, PPTX_MEDIA_DIR);
+  createSubDirectory(presentation->baseDir, PPTX_MEDIA_MEDIA_DIR);
   createSubDirectory(presentation->baseDir, PPTX_RELS_DIR);
 
   presentation->slideNum = 0;
@@ -1460,6 +1467,7 @@ static void removeTempFiles(const char* dirname, const char **files, int nFiles)
 
   /* must be removed in this order (reverse from creation) */
   removeSubDirectory(dirname, PPTX_RELS_DIR);
+  removeSubDirectory(dirname, PPTX_MEDIA_MEDIA_DIR);
   removeSubDirectory(dirname, PPTX_MEDIA_DIR);
   removeSubDirectory(dirname, PPTX_THEME_DIR);
   removeSubDirectory(dirname, PPTX_SLIDES_RELS_DIR);
@@ -1477,8 +1485,10 @@ static void removeTempFiles(const char* dirname, const char **files, int nFiles)
 static int writeZipFile(pptxPresentation *presentation, const char* dirname, const char* filename)
 {
   char **files;
+  char mediadir[10240];
+  cdDirData* dirData;
   int i, j, k, ret,
-    count = presentation->mediaNum + 2 * presentation->slideNum + 10;
+    count = presentation->mediaNum + 2 * presentation->slideNum + 10 + 10;
 
   files = malloc(count * sizeof(char*));
   for (i = 0; i < count; ++i)
@@ -1498,35 +1508,55 @@ static int writeZipFile(pptxPresentation *presentation, const char* dirname, con
   strcpy(files[i], PPTX_SLIDE_MASTER_RELS); i++;
   for (k = 0; k < presentation->slideNum; k++)
   {
-    sprintf(files[i], PPTX_SLIDE_FILE, k+1); i++;
-    sprintf(files[i], PPTX_SLIDE_RELS_FILE, k+1); i++;
+    sprintf(files[i], PPTX_SLIDE_FILE, k + 1); i++;
+    sprintf(files[i], PPTX_SLIDE_RELS_FILE, k + 1); i++;
   }
   strcpy(files[i], PPTX_THEME_FILE); i++;
   strcpy(files[i], PPTX_PRESENTATION_RELS); i++;
   strcpy(files[i], PPTX_RELS_FILE); i++;
 
-  ret = minizip(filename, dirname, files, count);
+  strcpy(mediadir, dirname);
+  strcat(mediadir, "/");
+  strcat(mediadir, PPTX_MEDIA_DIR);
 
-  removeTempFiles(dirname, files, count);
+  dirData = cdDirIterOpen(mediadir);
+  if (!dirData)
+    return 0;
+
+  if (cdDirIter(dirData) == 2)
+    return 0;
+
+  while (cdDirIter(dirData) == 1)
+  {
+    if (dirData->isDir == 0)
+    {
+      strcpy(files[i], PPTX_MEDIA_DIR);
+      strcat(files[i], "/");
+      strcat(files[i], dirData->filename);
+      i++;
+    }
+
+    if (i == count)
+    {
+      int buff = 10;
+      files = realloc(files, (count + buff) * sizeof(char*));
+      for (i = count; i < count + buff; ++i)
+        files[i] = malloc(80);
+      count =+ buff;
+    }
+  }
+
+  cdDirClose(dirData);
+
+  ret = minizip(filename, dirname, files, i);
+
+  removeTempFiles(dirname, files, i);
 
   for (i = 0; i < count; ++i)
     free(files[i]);
   free(files);
 
-  return ret;
-}
-
-int pptxKillPresentation(pptxPresentation *presentation, const char* filename)
-{
-  int ret;
-
-  closePresentation(presentation);
-
-  ret = writeZipFile(presentation, presentation->baseDir, filename);
-
-  free(presentation);
-
-  return ret;
+  return ret == 0;
 }
 
 void pptsBeginMasterFile(pptxPresentation *presentation)
@@ -1545,3 +1575,129 @@ void pptsEndMasterFile(pptxPresentation *presentation)
   presentation->slideRelsFile = presentation->tmpRelsFile;
 
 }
+
+void pptxSetImportedMasterSlideFile(pptxPresentation* presentation, char* importedMasterSlideFile)
+{
+  presentation->importMasterSlideFile = cdStrDup(importedMasterSlideFile);
+}
+
+static void pptxCopyFile(char *unzippedDir, char *baseDir, char *fileName)
+{
+  char srcFile[1024];
+  char destFile[1024];
+
+  strcpy(srcFile, unzippedDir);
+  strcat(srcFile, "//");
+  strcat(srcFile, fileName);
+
+  strcpy(destFile, baseDir);
+  strcat(destFile, "//");
+  strcat(destFile, fileName);
+
+  cdCopyFile(srcFile, destFile);
+}
+
+static void pptxCopyMediaFiles(pptxPresentation* presentation, char* unzippedDir)
+{
+  char path[1024];
+  char destDir[1024];
+  cdDirData* dirData;
+
+  strcpy(path, unzippedDir);
+  strcat(path, "//");
+  strcat(path, PPTX_MEDIA_DIR);
+
+  strcpy(destDir, presentation->baseDir);
+  strcat(destDir, "//");
+  strcat(destDir, PPTX_MEDIA_DIR);
+
+  dirData = cdDirIterOpen(path);
+  if (!dirData)
+    return;
+
+  if (cdDirIter(dirData) == 2)
+    return;
+
+  if (dirData->isDir == 0)
+    pptxCopyFile(path, destDir, dirData->filename);
+
+  while (cdDirIter(dirData) == 1)
+  {
+    if (dirData->isDir == 0)
+      pptxCopyFile(path, destDir, dirData->filename);
+  }
+
+  cdDirClose(dirData);
+}
+
+static void removeFilesFromDir(const char *dir)
+{
+  cdDirData* dirData = cdDirIterOpen(dir);
+  if (!dirData)
+    return;
+
+  while (cdDirIter(dirData) == 1)
+  {
+    if (strcmp(dirData->filename, ".") == 0 || strcmp(dirData->filename, "..") == 0)
+      continue;
+
+    if (dirData->isDir == 1)
+      removeFilesFromDir(dirData->filename);
+    else
+      removeFile(dir, dirData->filename);
+  }
+
+  cdDirClose(dirData);
+}
+
+static void pptxImportMasterSlide(pptxPresentation* presentation)
+{
+  char unzippedDir[10240];
+
+  cdStrTmpFileName(unzippedDir);
+#ifdef WIN32
+  remove(unzippedDir);
+#endif
+  if (!cdMakeDirectory(unzippedDir))
+    return;
+
+  if (miniunzip(presentation->importMasterSlideFile, unzippedDir) == 0)
+  {
+    removeFile(presentation->baseDir, PPTX_THEME_FILE);
+    pptxCopyFile(unzippedDir, presentation->baseDir, PPTX_THEME_FILE);
+    removeFile(presentation->baseDir, PPTX_SLIDE_LAYOUT_RELS_FILE);
+    pptxCopyFile(unzippedDir, presentation->baseDir, PPTX_SLIDE_LAYOUT_RELS_FILE);
+    removeFile(presentation->baseDir, PPTX_SLIDE_LAYOUT_FILE);
+    pptxCopyFile(unzippedDir, presentation->baseDir, PPTX_SLIDE_LAYOUT_FILE);
+    removeFile(presentation->baseDir, PPTX_SLIDE_MASTER_RELS);
+    pptxCopyFile(unzippedDir, presentation->baseDir, PPTX_SLIDE_MASTER_RELS);
+    removeFile(presentation->baseDir, PPTX_SLIDE_MASTER_FILE);
+    pptxCopyFile(unzippedDir, presentation->baseDir, PPTX_SLIDE_MASTER_FILE);
+
+    pptxCopyMediaFiles(presentation, unzippedDir);
+  }
+
+  removeFilesFromDir(unzippedDir);
+
+  cdRemoveDirectory(unzippedDir);
+}
+
+int pptxKillPresentation(pptxPresentation *presentation, const char* filename)
+{
+  int ret;
+
+  closePresentation(presentation);
+
+  if (presentation->importMasterSlideFile)
+    pptxImportMasterSlide(presentation);
+
+  ret = writeZipFile(presentation, presentation->baseDir, filename);
+
+  if (presentation->importMasterSlideFile)
+    free(presentation->importMasterSlideFile);
+
+  free(presentation);
+
+  return ret == 0;
+}
+
