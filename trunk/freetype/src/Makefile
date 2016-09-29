@@ -4,8 +4,7 @@ else
   TECMAKE_CMD = $(MAKE) --no-print-directory -f ../tecmake.mak
 endif
 
-.PHONY: do_all freetype
-do_all:        freetype
+.PHONY: do_all
 
-freetype:
-	@$(TECMAKE_CMD)
+do_all:
+	@$(TECMAKE_CMD) 
