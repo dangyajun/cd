@@ -43,9 +43,9 @@ ifdef USE_OPENGL
 endif
 
 ifneq ($(findstring Win, $(TEC_SYSNAME)), )
-  LIBS = cdpdf pdflib
+  LIBS = cdpdf pdflib cdcontextplus
   ifndef GDK_CAIRO
-    LIBS += cdcontextplus gdiplus
+    LIBS += gdiplus
   endif
   ifdef USE_OPENGL
     LIBS += ftgl cdgl
@@ -57,9 +57,8 @@ else
     CDLIB = $(CD)/lib/$(TEC_UNAME)
   endif  
 
-  SLIB = $(CDLIB)/libcdpdf.a $(CDLIB)/libpdflib.a 
+  SLIB = $(CDLIB)/libcdpdf.a $(CDLIB)/libpdflib.a $(CDLIB)/libcdcontextplus.a
   ifndef GDK_CAIRO
-    SLIB += $(CDLIB)/libcdcontextplus.a
     LIBS = Xrender Xft
 #    USE_CAIRO=Yes
   endif
