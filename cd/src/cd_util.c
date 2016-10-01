@@ -869,6 +869,22 @@ int cdIsDirectory(const char* path)
 #endif
 }
 
+#ifndef WIN32
+static int dirent_is_directory(struct dirent *entry)
+{
+#ifdef _DIRENT_HAVE_D_TYPE
+  return entry->d_type==DT_DIR;
+#else
+  struct stat status;
+  if (stat(entry->d_name, &status) != 0)
+    return 0;
+  if (S_ISDIR(status.st_mode))
+    return 1;
+  return 0;
+#endif
+}
+#endif
+
 int cdDirIter(cdDirData * dirData) 
 {
 #ifdef WIN32
@@ -915,7 +931,7 @@ int cdDirIter(cdDirData * dirData)
   if (entry) 
   {
     strcpy(dirData->filename, entry->d_name);
-    dirData->isDir = (entry->d_type==DT_DIR) ? 1 : 0;
+    dirData->isDir = dirent_is_directory(entry);
     return 1;
   }
   else 
