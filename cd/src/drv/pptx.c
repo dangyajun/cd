@@ -1385,7 +1385,7 @@ pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int 
 
   /* Units are in EMU (English Metric Units) min=914400 max=51206400.
      1 emu = 1 / 914400 in = 1 / 360000 cm */
-  presentation->slideHeight = (int)(height_mm * 36000);
+  presentation->slideHeight = (int)(height_mm * 36000);  /* min=25mm max=1422mm */
   presentation->slideWidth = (int)(width_mm * 36000);
 
   presentation->slide_xfactor = presentation->slideWidth / width;

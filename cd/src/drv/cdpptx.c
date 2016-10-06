@@ -1027,9 +1027,8 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
 {
   char filename[10240] = "";
   char* strdata = (char*)data;
-  double res = 3.78;
-  double w_mm = INT_MAX*res,
-    h_mm = INT_MAX*res;
+  double res = 11.81; /* 300 DPI in pixels/mm */
+  double w_mm = 297, h_mm = 210;  /* A4 size in mm */
   cdCtxCanvas* ctxcanvas;
 
   strdata += cdGetFileName(strdata, filename);
@@ -1040,6 +1039,7 @@ static void cdcreatecanvas(cdCanvas *canvas, void *data)
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
 
   sscanf(strdata, "%lgx%lg %lg", &w_mm, &h_mm, &res);
+
   canvas->w = (int)(w_mm * res);
   canvas->h = (int)(h_mm * res);
   canvas->w_mm = w_mm;
