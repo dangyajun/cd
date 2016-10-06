@@ -39,10 +39,14 @@ MiniZIP</a> module by Gilles Vollant.</p>
   
   <p>Only the parameter <font face="Courier">filename</font> is required. The filename must be inside double quotes (&quot;) 
   if it has spaces.<font face="Courier"> width_mm</font> and <font face="Courier">height_mm</font> are provided in millimeters 
-  (note the lowercase &quot;x&quot; between them), and their default value in pixels is <font face="Courier">INT_MAX</font> for 
-  both dimensions. <font face="Courier">Resolution </font>is the number of pixels per millimeter; its default value is 
-  &quot;3.78 pixels/mm&quot; (96 DPI). <font face="Courier">Width</font>, <font face="Courier">height</font> and
-  <font face="Courier">resolution</font> are real values.</p>
+  (note the lowercase &quot;x&quot; between them), and their default value in mm is 
+  297mm x 210mm (size of an A4 page in landscape) for 
+  both dimensions. <font face="Courier">Resolution </font>is the number of pixels per 
+  millimeter; its default value is 
+  &quot;11.81 pixels/mm&quot; (300 DPI). <font face="Courier">Width</font>, <font face="Courier">height</font> and
+  <font face="Courier">resolution</font> are real values. PPTX has some 
+  restrictions for the canvas size in mm, the minimum value is 25mm and the 
+  maximum value is 1422mm.</p>
   <p>Any amount of such canvases may exist simultaneously. It is important to note that a call to function
   <a href="../func/init.html#cdKillCanvas"><font face="Courier"><strong>
   cdKillCanvas</strong></font></a> is required to <b>close</b> the file properly.</p>

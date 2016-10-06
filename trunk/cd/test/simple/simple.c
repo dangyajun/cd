@@ -572,7 +572,7 @@ void SimpleDraw(cdCanvas* canvas)
   /* refresh CD canvas size, when window size has changed */
   cdCanvasActivate(canvas);
 
-#if 1
+#if 0
   if (cdCanvasGetContext(canvas) == CD_PPTX)
   {
 #if 0
