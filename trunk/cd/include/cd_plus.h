@@ -102,6 +102,10 @@ namespace cd
 
     cdCanvas* GetHandle() const { return canvas; }
 
+    bool Failed() const {
+      return canvas == 0;
+    }
+
     Context GetContext() { return cdCanvasGetContext(canvas); }
     int Activate() { return cdCanvasActivate(canvas); }
     void Deactivate() { cdCanvasDeactivate(canvas); }
