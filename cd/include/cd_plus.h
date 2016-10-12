@@ -95,7 +95,7 @@ namespace cd
 
   public:
     Canvas(cdCanvas* ref_canvas) { canvas = ref_canvas; }
-    ~Canvas() { 
+    virtual ~Canvas() { 
       if (canvas) 
         cdKillCanvas(canvas); 
     }
