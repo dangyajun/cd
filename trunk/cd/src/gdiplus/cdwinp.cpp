@@ -703,12 +703,13 @@ static void sFixAngles(cdCanvas* canvas, double *a1, double *a2, double w, doubl
   {
     *a2 = atan2((h/2.0)*sin(*a2*CD_DEG2RAD), (w/2.0)*cos(*a2*CD_DEG2RAD))*CD_RAD2DEG;
     if (*a2 < 0) *a2 += 360;
+    if (*a2 < *a1) *a2 += 360;
   }
 
   // GDI+ angles are clock-wise by default, in degrees
 
   /* if NOT inverted means a transformation is set, 
-     so the angle will follow the transformation that includes the axis invertion,
+     so the angle will follow the transformation that includes the axis inversion,
      then it is already counter-clockwise */
   if (canvas->invert_yaxis)
   {
