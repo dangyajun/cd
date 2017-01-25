@@ -42,6 +42,8 @@ static void cdkillcanvasCLIPBDMF (cdCtxCanvas* ctxcanvas)
   GlobalUnlock(Handle);
   
   CloseHandle(hFile);
+
+  /* no need to remove(filename), create with delete-on-close */
   
   SetClipboardData(CF_TEXT, Handle);
   
