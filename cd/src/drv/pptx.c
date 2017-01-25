@@ -1392,9 +1392,7 @@ pptxPresentation* pptxCreatePresentation(double width_mm, double height_mm, int 
   presentation->slide_yfactor = presentation->slideHeight / height;
 
   cdStrTmpFileName(presentation->baseDir);
-#ifdef WIN32
   remove(presentation->baseDir);
-#endif
   if (!cdMakeDirectory(presentation->baseDir))
   {
     free(presentation);
@@ -1655,9 +1653,7 @@ static void pptxImportMasterSlide(pptxPresentation* presentation)
   char unzippedDir[10240];
 
   cdStrTmpFileName(unzippedDir);
-#ifdef WIN32
   remove(unzippedDir);
-#endif
   if (!cdMakeDirectory(unzippedDir))
     return;
 

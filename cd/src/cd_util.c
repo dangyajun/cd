@@ -807,22 +807,31 @@ int cdGetFontFileName(const char* type_face, char* filename)
 
 /**************************************************************************************/
 
-
 int cdStrTmpFileName(char* filename)
 {
+  /* a file with the result name is created and must be removed after use */
 #ifdef WIN32
   char tmpPath[10240];
   if (GetTempPathA(10240, tmpPath)==0)
     return 0;
   if (GetTempFileNameA(tmpPath, "~cd", 0, filename)==0)
     return 0;
-#else
-/* OLD: tmpnam(filename)  */
+#elif OLD2
+/* OLD1: tmpnam(filename)  */
   char* tmp = tempnam(NULL, "~cd");
   if (!tmp)
     return 0;
   strcpy(filename, tmp);
   free(tmp);
+#else
+  char* dirname = getenv("TMPDIR");
+  if (!dirname) dirname = "/tmp";
+  strcpy(filename, dirname);
+  strcat(filename, "/~cdXXXXXX");
+  int fd = mkstemp(filename);
+  if (fd == -1)
+    return 0;
+  close(fd);
 #endif
   return 1;
 }
