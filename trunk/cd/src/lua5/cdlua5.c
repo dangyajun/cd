@@ -26,7 +26,7 @@
 
 static const char* cdlua_key = "cdlua5";
 
-static void cdlua_SetState(lua_State * L, cdluaLuaState* cdL)
+static void cdlua_setstate(lua_State * L, cdluaLuaState* cdL)
 {
   lua_pushlightuserdata(L, (void*)cdlua_key);
   lua_pushlightuserdata(L, (void*)cdL);
@@ -1949,21 +1949,25 @@ void cdlua_register_funcs(lua_State *L, const luaL_Reg* funcs)
 
 int cdlua_open (lua_State *L)
 {                                  
-  cdluaLuaState* cdL = malloc(sizeof(cdluaLuaState));
-  memset(cdL, 0, sizeof(cdluaLuaState));
-  cdlua_SetState(L, cdL);
+  cdluaLuaState* cdL = cdlua_getstate(L);
+  if (!cdL)
+  {
+    cdL = malloc(sizeof(cdluaLuaState));
+    memset(cdL, 0, sizeof(cdluaLuaState));
+    cdlua_setstate(L, cdL);
 
-  initmetatables(L);
+    initmetatables(L);
 
-  cdlua_register_lib(L, cdlib);   /* leave cd table at the top of the stack */
-  setinfo(L);
+    cdlua_register_lib(L, cdlib);   /* leave cd table at the top of the stack */
+    setinfo(L);
 
-  cdlua_open_active(L, cdL);
-  cdlua_open_canvas(L);
+    cdlua_open_active(L, cdL);
+    cdlua_open_canvas(L);
 
-  cdlua_initdrivers(L, cdL);
-  initconst(L);
-  initcolor(L);
+    cdlua_initdrivers(L, cdL);
+    initconst(L);
+    initcolor(L);
+  }
 
   return 1;
 }
@@ -1973,7 +1977,8 @@ int cdlua_close(lua_State *L)
   cdluaLuaState* cdL = cdlua_getstate(L);
   if (cdL)
   {
-    cdKillCanvas(cdL->void_canvas);
+    cdlua_close_active(cdL);
+    cdlua_setstate(L, NULL);
     free(cdL);
   }
   return 0;
