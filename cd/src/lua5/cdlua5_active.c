@@ -2159,3 +2159,10 @@ void cdlua_open_active (lua_State *L, cdluaLuaState* cdL)
   cdlua_setvoidstate(cdL->void_canvas, L);
   cdActivate(cdL->void_canvas);
 }
+
+void cdlua_close_active(cdluaLuaState* cdL)
+{
+  cdActivate(NULL);
+  cdKillCanvas(cdL->void_canvas);
+  cdL->void_canvas = NULL;
+}
