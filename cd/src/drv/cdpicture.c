@@ -449,7 +449,9 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long int color)
   prim->param.pixel.x = x;
   prim->param.pixel.y = y;
   prim->param.pixel.color = color;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, x, y, 0);
 }
 
@@ -459,7 +461,9 @@ static void cdfpixel(cdCtxCanvas *ctxcanvas, double x, double y, long int color)
   prim->param.pixelf.x = x;
   prim->param.pixelf.y = y;
   prim->param.pixelf.color = color;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBoxF(ctxcanvas, x, y, 0);
 }
 
@@ -471,7 +475,9 @@ static void cdline(cdCtxCanvas *ctxcanvas, int x1, int y1, int x2, int y2)
   prim->param.lineboxrect.y1 = y1;
   prim->param.lineboxrect.x2 = x2;
   prim->param.lineboxrect.y2 = y2;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, x1, y1, ctxcanvas->canvas->line_width);
   picUpdateBBox(ctxcanvas, x2, y2, ctxcanvas->canvas->line_width);
 }
@@ -484,7 +490,9 @@ static void cdfline(cdCtxCanvas *ctxcanvas, double x1, double y1, double x2, dou
   prim->param.lineboxrectf.y1 = y1;
   prim->param.lineboxrectf.x2 = x2;
   prim->param.lineboxrectf.y2 = y2;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBoxF(ctxcanvas, x1, y1, ctxcanvas->canvas->line_width);
   picUpdateBBoxF(ctxcanvas, x2, y2, ctxcanvas->canvas->line_width);
 }
@@ -497,7 +505,9 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
   prim->param.lineboxrect.y1 = ymin;
   prim->param.lineboxrect.x2 = xmax;
   prim->param.lineboxrect.y2 = ymax;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, xmin, ymin, ctxcanvas->canvas->line_width);
   picUpdateBBox(ctxcanvas, xmax, ymax, ctxcanvas->canvas->line_width);
 }
@@ -510,7 +520,9 @@ static void cdfrect(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymi
   prim->param.lineboxrectf.y1 = ymin;
   prim->param.lineboxrectf.x2 = xmax;
   prim->param.lineboxrectf.y2 = ymax;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBoxF(ctxcanvas, xmin, ymin, ctxcanvas->canvas->line_width);
   picUpdateBBoxF(ctxcanvas, xmax, ymax, ctxcanvas->canvas->line_width);
 }
@@ -523,7 +535,9 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
   prim->param.lineboxrect.y1 = ymin;
   prim->param.lineboxrect.x2 = xmax;
   prim->param.lineboxrect.y2 = ymax;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, xmin, ymin, 0);
   picUpdateBBox(ctxcanvas, xmax, ymax, 0);
 }
@@ -536,7 +550,9 @@ static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin
   prim->param.lineboxrectf.y1 = ymin;
   prim->param.lineboxrectf.x2 = xmax;
   prim->param.lineboxrectf.y2 = ymax;
+
   picAddPrim(ctxcanvas, prim);
+
   picUpdateBBoxF(ctxcanvas, xmin, ymin, 0);
   picUpdateBBoxF(ctxcanvas, xmax, ymax, 0);
 }
@@ -552,7 +568,9 @@ static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a
   prim->param.arcsectorchord.h = h;
   prim->param.arcsectorchord.angle1 = a1;
   prim->param.arcsectorchord.angle2 = a2;
+
   picAddPrim(ctxcanvas, prim);
+
   cdGetArcBox(xc, yc, w, h, a1, a2, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, ctxcanvas->canvas->line_width);
   picUpdateBBox(ctxcanvas, xmax, ymax, ctxcanvas->canvas->line_width);
@@ -569,7 +587,9 @@ static void cdfarc(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, doubl
   prim->param.arcsectorchordf.h = h;
   prim->param.arcsectorchordf.angle1 = a1;
   prim->param.arcsectorchordf.angle2 = a2;
+
   picAddPrim(ctxcanvas, prim);
+
   cdGetArcBox(_cdRound(xc), _cdRound(yc), _cdRound(w), _cdRound(h), a1, a2, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, ctxcanvas->canvas->line_width);
   picUpdateBBox(ctxcanvas, xmax, ymax, ctxcanvas->canvas->line_width);
@@ -586,7 +606,9 @@ static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, doubl
   prim->param.arcsectorchord.h = h;
   prim->param.arcsectorchord.angle1 = a1;
   prim->param.arcsectorchord.angle2 = a2;
+
   picAddPrim(ctxcanvas, prim);
+
   cdGetArcBox(xc, yc, w, h, a1, a2, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, 0);
   picUpdateBBox(ctxcanvas, xmax, ymax, 0);
@@ -604,7 +626,9 @@ static void cdfsector(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, do
   prim->param.arcsectorchordf.h = h;
   prim->param.arcsectorchordf.angle1 = a1;
   prim->param.arcsectorchordf.angle2 = a2;
+
   picAddPrim(ctxcanvas, prim);
+
   cdGetArcBox(_cdRound(xc), _cdRound(yc), _cdRound(w), _cdRound(h), a1, a2, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, 0);
   picUpdateBBox(ctxcanvas, xmax, ymax, 0);
@@ -622,7 +646,9 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
   prim->param.arcsectorchord.h = h;
   prim->param.arcsectorchord.angle1 = a1;
   prim->param.arcsectorchord.angle2 = a2;
+
   picAddPrim(ctxcanvas, prim);
+
   cdGetArcBox(xc, yc, w, h, a1, a2, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, 0);
   picUpdateBBox(ctxcanvas, xmax, ymax, 0);
@@ -639,7 +665,9 @@ static void cdfchord(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, dou
   prim->param.arcsectorchordf.h = h;
   prim->param.arcsectorchordf.angle1 = a1;
   prim->param.arcsectorchordf.angle2 = a2;
+
   picAddPrim(ctxcanvas, prim);
+
   cdGetArcBox(_cdRound(xc), _cdRound(yc), _cdRound(w), _cdRound(h), a1, a2, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, 0);
   picUpdateBBox(ctxcanvas, xmax, ymax, 0);
@@ -654,7 +682,9 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int l
   prim->param.text.y = y;
   prim->param.text.s = cdStrDupN(text, len);
   prim->param_buffer = prim->param.text.s;
+
   picAddPrim(ctxcanvas, prim);
+
   cdCanvasGetTextBox(ctxcanvas->canvas, x, y, prim->param.text.s, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBox(ctxcanvas, xmin, ymin, 0);
   picUpdateBBox(ctxcanvas, xmax, ymax, 0);
@@ -669,7 +699,9 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *text
   prim->param.textf.y = y;
   prim->param.textf.s = cdStrDupN(text, len);
   prim->param_buffer = prim->param.textf.s;
+
   picAddPrim(ctxcanvas, prim);
+
   cdfCanvasGetTextBox(ctxcanvas->canvas, x, y, prim->param.text.s, &xmin, &xmax, &ymin, &ymax);
   picUpdateBBoxF(ctxcanvas, xmin, ymin, 0);
   picUpdateBBoxF(ctxcanvas, xmax, ymax, 0);
@@ -745,6 +777,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
   prim->param.poly.points = malloc(n * sizeof(cdPoint));
   memcpy(prim->param.poly.points, poly, n * sizeof(cdPoint));
   prim->param_buffer = prim->param.poly.points;
+
   picAddPrim(ctxcanvas, prim);
 
   for (i = 0; i < n; i++)
@@ -826,6 +859,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
   prim->param.polyf.points = malloc(n * sizeof(cdfPoint));
   memcpy(prim->param.polyf.points, poly, n * sizeof(cdfPoint));
   prim->param_buffer = prim->param.polyf.points;
+
   picAddPrim(ctxcanvas, prim);
 
   for (i = 0; i < n; i++)
@@ -880,6 +914,8 @@ static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
     db += offset;
   }
 
+  picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, x, y, 0);
   picUpdateBBox(ctxcanvas, x+prim->param.imagergba.iw-1, y+prim->param.imagergba.ih-1, 0);
 
@@ -929,6 +965,8 @@ static void cdfputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
     dg += offset;
     db += offset;
   }
+
+  picAddPrim(ctxcanvas, prim);
 
   picUpdateBBoxF(ctxcanvas, x, y, 0);
   picUpdateBBoxF(ctxcanvas, x + prim->param.imagergbaf.iw - 1, y + prim->param.imagergbaf.ih - 1, 0);
@@ -986,6 +1024,8 @@ static void cdputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
     da += offset;
   }
 
+  picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, x, y, 0);
   picUpdateBBox(ctxcanvas, x+prim->param.imagergba.iw-1, y+prim->param.imagergba.ih-1, 0);
 
@@ -1042,6 +1082,8 @@ static void cdfputimagerectrgba(cdCtxCanvas *ctxcanvas, int iw, int ih, const un
     da += offset;
   }
 
+  picAddPrim(ctxcanvas, prim);
+
   picUpdateBBoxF(ctxcanvas, x, y, 0);
   picUpdateBBoxF(ctxcanvas, x + prim->param.imagergbaf.iw - 1, y + prim->param.imagergbaf.ih - 1, 0);
 
@@ -1092,6 +1134,8 @@ static void cdputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsi
   for (c = 0; c < n; c++)
     dcolors[c] = colors[c];
 
+  picAddPrim(ctxcanvas, prim);
+
   picUpdateBBox(ctxcanvas, x, y, 0);
   picUpdateBBox(ctxcanvas, x+prim->param.imagemap.iw-1, y+prim->param.imagemap.ih-1, 0);
 
@@ -1141,6 +1185,8 @@ static void cdfputimagerectmap(cdCtxCanvas *ctxcanvas, int iw, int ih, const uns
 
   for (c = 0; c < n; c++)
     dcolors[c] = colors[c];
+
+  picAddPrim(ctxcanvas, prim);
 
   picUpdateBBoxF(ctxcanvas, x, y, 0);
   picUpdateBBoxF(ctxcanvas, x + prim->param.imagemapf.iw - 1, y + prim->param.imagemapf.ih - 1, 0);
