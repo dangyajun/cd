@@ -263,12 +263,12 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
 
   pptxBeginPath(ctxcanvas->presentation, xmin, ymin, (xmax - xmin) + 1, (ymax - ymin) + 1);
 
-  pptxMoveTo(ctxcanvas->presentation, xmin - xmin, ymin - ymin);
+  pptxMoveTo(ctxcanvas->presentation, 0, 0);
 
-  pptxLineTo(ctxcanvas->presentation, xmax - xmin, ymin - ymin);
+  pptxLineTo(ctxcanvas->presentation, xmax - xmin, 0);
   pptxLineTo(ctxcanvas->presentation, xmax - xmin, ymax - ymin);
-  pptxLineTo(ctxcanvas->presentation, xmin - xmin, ymax - ymin);
-  pptxLineTo(ctxcanvas->presentation, xmin - xmin, ymin - ymin);
+  pptxLineTo(ctxcanvas->presentation, 0, ymax - ymin);
+  pptxLineTo(ctxcanvas->presentation, 0, 0);
 
   pptxClosePath(ctxcanvas->presentation);
 
@@ -298,13 +298,12 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 
   pptxBeginPath(ctxcanvas->presentation, xmin, ymin, (xmax - xmin) + 1, (ymax - ymin) + 1);
 
-  pptxMoveTo(ctxcanvas->presentation, xmin - xmin, ymin - ymin);
+  pptxMoveTo(ctxcanvas->presentation, 0, 0);
 
-  pptxLineTo(ctxcanvas->presentation, xmin - xmin, ymin - ymin);
-  pptxLineTo(ctxcanvas->presentation, xmax - xmin, ymin - ymin);
+  pptxLineTo(ctxcanvas->presentation, xmax - xmin, 0);
   pptxLineTo(ctxcanvas->presentation, xmax - xmin, ymax - ymin);
-  pptxLineTo(ctxcanvas->presentation, xmin - xmin, ymax - ymin);
-  pptxLineTo(ctxcanvas->presentation, xmin - xmin, ymin - ymin);
+  pptxLineTo(ctxcanvas->presentation, 0, ymax - ymin);
+  pptxLineTo(ctxcanvas->presentation, 0, 0);
 
   pptxClosePath(ctxcanvas->presentation);
 
