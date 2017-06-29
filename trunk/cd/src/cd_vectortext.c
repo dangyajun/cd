@@ -4777,11 +4777,8 @@ char *cdCanvasVectorFont(cdCanvas* canvas, const char *file)
   assert(file);
   if (!_cdCheckCanvas(canvas)) return NULL;
 
-  if (file[0] == 0)
-    return NULL;
-
   vector_font = canvas->vector_font;
-  if (!file) 
+  if (!file || file[0] == 0)
   {
     vf_setdefaultfont(vector_font);
     vector_font->file_name[0] = 0;

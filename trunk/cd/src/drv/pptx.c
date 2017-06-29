@@ -1488,6 +1488,20 @@ static int writeZipFile(pptxPresentation *presentation, const char* dirname, con
   int i, j, k, ret,
     count = presentation->mediaNum + 2 * presentation->slideNum + 10 + 10;
 
+  strcpy(mediadir, dirname);
+  strcat(mediadir, "/");
+  strcat(mediadir, PPTX_MEDIA_DIR);
+
+  dirData = cdDirIterOpen(mediadir);
+  if (!dirData)
+    return 0;
+
+  if (cdDirIter(dirData) == 2)
+  {
+    cdDirClose(dirData);
+    return 0;
+  }
+
   files = malloc(count * sizeof(char*));
   for (i = 0; i < count; ++i)
     files[i] = malloc(80);
@@ -1512,17 +1526,6 @@ static int writeZipFile(pptxPresentation *presentation, const char* dirname, con
   strcpy(files[i], PPTX_THEME_FILE); i++;
   strcpy(files[i], PPTX_PRESENTATION_RELS); i++;
   strcpy(files[i], PPTX_RELS_FILE); i++;
-
-  strcpy(mediadir, dirname);
-  strcat(mediadir, "/");
-  strcat(mediadir, PPTX_MEDIA_DIR);
-
-  dirData = cdDirIterOpen(mediadir);
-  if (!dirData)
-    return 0;
-
-  if (cdDirIter(dirData) == 2)
-    return 0;
 
   while (cdDirIter(dirData) == 1)
   {

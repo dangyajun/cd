@@ -1580,7 +1580,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   ctxcanvas->tl=12;
 
   /* cores */
-  memset(ctxcanvas->colortable, 0, 1024); 
+  memset(ctxcanvas->colortable, 0, 256*sizeof(long));
   ctxcanvas->colortable[0] = CD_BLACK;
   ctxcanvas->num_colors = 1;
 
