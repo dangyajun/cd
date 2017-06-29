@@ -344,6 +344,8 @@ static void sfElipse(cdCtxCanvas* ctxcanvas, double xc, double yc, double width,
   cdfPoint* poly = NULL;
 
   poly = sfPolyAddArc(canvas, poly, &n, xc, yc, width, height, angle1, angle2, NULL);
+  if (!poly)
+    return;
 
   if (poly[n-1].x != poly[0].x || 
       poly[n-1].y != poly[0].y)

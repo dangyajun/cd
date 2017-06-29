@@ -776,11 +776,10 @@ static int cdlinestyle(cdCtxCanvas *ctxcanvas, int style)
       break;
     case CD_CUSTOM:
       {
-        int i;
-        sprintf(ctxcanvas->linestyle, "%d", ctxcanvas->canvas->line_dashes[0]);
-
-        for (i = 1; i < ctxcanvas->canvas->line_dashes_count; i++)
-          sprintf(ctxcanvas->linestyle, "%s, %d", ctxcanvas->linestyle, ctxcanvas->canvas->line_dashes[i]);
+        int i, c;
+        c = sprintf(ctxcanvas->linestyle, "%d", ctxcanvas->canvas->line_dashes[0]);
+        for (i = 1; i < ctxcanvas->canvas->line_dashes_count && c < 50; i++)
+          c += sprintf(ctxcanvas->linestyle + c, ", %d", ctxcanvas->canvas->line_dashes[i]);
       }
       break;
   }

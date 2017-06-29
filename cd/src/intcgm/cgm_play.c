@@ -144,7 +144,6 @@ static unsigned char get_value(unsigned long value, unsigned long min, unsigned 
 {
   unsigned long v = ((value-min)*255)/(max-min);
   if (v > 255) v = 255;
-  if (v < 0) v = 0;
   return (unsigned char)v;
 }
 

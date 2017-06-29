@@ -161,7 +161,7 @@ int cgm_txt_get_s(tCGM* cgm, char **str)
   do
   {
     c = (char)fgetc(cgm->fp);
-    if (c==EOF)
+    if (c == (char)EOF)
     {
       ok = 0;
       return feof(cgm->fp)? CGM_OK: CGM_ERR_READ;
@@ -170,7 +170,7 @@ int cgm_txt_get_s(tCGM* cgm, char **str)
     if(c==delim)
     {
       c=(char)fgetc(cgm->fp);
-      if (c==EOF)
+      if (c == (char)EOF)
       {
         ok = 0;
         return feof(cgm->fp)? CGM_OK: CGM_ERR_READ;

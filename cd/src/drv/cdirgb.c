@@ -995,16 +995,10 @@ static void cdputimagerectrgba_matrix(cdCtxCanvas* ctxcanvas, int iw, int ih, co
         if (topdown)  /* image is top-bottom */
           i_y = ih-1 - i_y;
 
-        if (t_x == 350 && t_y == 383)
-          t_x = 350;
-
         sr = cdBilinearInterpolation(iw, ih, r, i_x, i_y);
         sg = cdBilinearInterpolation(iw, ih, g, i_x, i_y);
         sb = cdBilinearInterpolation(iw, ih, b, i_x, i_y);
         if (a) sa = cdBilinearInterpolation(iw, ih, a, i_x, i_y);
-
-        if (sr > 210 && sg > 210 && sb > 210)
-          sr = sr;
 
         sCombineRGB(ctxcanvas, t_x + dst_offset, sr, sg, sb, sa);
       }

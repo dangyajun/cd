@@ -204,7 +204,10 @@ static int do_extract_currentfile(unzFile uf, const char *dirname, const int* po
 
     err = unzOpenCurrentFilePassword(uf, password);
     if (err != UNZ_OK)
+    {
+      free(buf);
       return err;
+    }
 
     if ((skip == 0) && (err == UNZ_OK))
     {
@@ -221,7 +224,10 @@ static int do_extract_currentfile(unzFile uf, const char *dirname, const int* po
       }
 
       if (fout == NULL)
+      {
+        free(buf);
         return 1;
+      }
     }
 
     if (fout != NULL)
@@ -250,7 +256,10 @@ static int do_extract_currentfile(unzFile uf, const char *dirname, const int* po
     {
       err = unzCloseCurrentFile(uf);
       if (err != UNZ_OK)
+      {
+        free(buf);
         return err;
+      }
     }
     else
       unzCloseCurrentFile(uf); /* don't lose the error */
