@@ -629,6 +629,8 @@ void SimpleDrawAll(cdCanvas* canvas)
   //  cdBackground(CD_GREEN);
   cdCanvasClear(canvas);
 
+//  cdCanvasSetAttribute(canvas, "ANTIALIAS", "0");
+
   /* Draw a reactangle and a polyline at the bottom-left area,
      using a thick line with transparency.
      Observe that transparency is only supported in a few drivers,
