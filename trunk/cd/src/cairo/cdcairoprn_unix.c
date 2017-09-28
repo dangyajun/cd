@@ -126,7 +126,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
     response = gtk_dialog_run(GTK_DIALOG(dialog));
 
-    if (response == GTK_RESPONSE_CANCEL)
+    if (response != GTK_RESPONSE_OK && response != GTK_RESPONSE_APPLY)
     {
       gtk_widget_destroy(GTK_WIDGET(dialog));  
       return;
