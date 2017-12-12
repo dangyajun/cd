@@ -748,7 +748,7 @@ static int cdcgm_Counter(double percent, cdCGM* cd_cgm)
   if (cdcgmcountercb)
   {
     int ret = cdcgmcountercb(cd_cgm->canvas, percent);
-    if (ret == CD_ABORT);
+    if (ret == CD_ABORT)
       return CGM_ABORT_COUNTER;
   }
 
