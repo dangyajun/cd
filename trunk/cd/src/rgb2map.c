@@ -406,14 +406,18 @@ have_c2max:
                           
                           ccount = 0;
                           for (c0 = c0min; c0 <= c0max; c0++)
-                            for (c1 = c1min; c1 <= c1max; c1++) {
+                          {
+                            for (c1 = c1min; c1 <= c1max; c1++) 
+                            {
                               histp = & histogram[c0][c1][c2min];
                               for (c2 = c2min; c2 <= c2max; c2++, histp++)
-                                if (*histp != 0) {
+                              {
+                                if (*histp != 0)
                                   ccount++;
-                                }
+                              }
                             }
-                            boxp->colorcount = ccount;
+                          }
+                          boxp->colorcount = ccount;
 }
 
 
@@ -491,10 +495,14 @@ static void compute_color (boxptr boxp, int icolor)
   c2min = boxp->c2min;  c2max = boxp->c2max;
   
   for (c0 = c0min; c0 <= c0max; c0++)
-    for (c1 = c1min; c1 <= c1max; c1++) {
+  {
+    for (c1 = c1min; c1 <= c1max; c1++) 
+    {
       histp = & histogram[c0][c1][c2min];
-      for (c2 = c2min; c2 <= c2max; c2++) {
-        if ((count = *histp++) != 0) {
+      for (c2 = c2min; c2 <= c2max; c2++) 
+      {
+        if ((count = *histp++) != 0) 
+        {
           total += count;
           c0total += ((c0 << C0_SHIFT) + ((1<<C0_SHIFT)>>1)) * count;
           c1total += ((c1 << C1_SHIFT) + ((1<<C1_SHIFT)>>1)) * count;
@@ -502,10 +510,11 @@ static void compute_color (boxptr boxp, int icolor)
         }
       }
     }
+  }
     
-    sl_colormap[0][icolor] = (JSAMPLE) ((c0total + (total>>1)) / total);
-    sl_colormap[1][icolor] = (JSAMPLE) ((c1total + (total>>1)) / total);
-    sl_colormap[2][icolor] = (JSAMPLE) ((c2total + (total>>1)) / total);
+  sl_colormap[0][icolor] = (JSAMPLE) ((c0total + (total>>1)) / total);
+  sl_colormap[1][icolor] = (JSAMPLE) ((c1total + (total>>1)) / total);
+  sl_colormap[2][icolor] = (JSAMPLE) ((c2total + (total>>1)) / total);
 }
 
 
