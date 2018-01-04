@@ -1658,11 +1658,12 @@ static void RGB_to_HSB (unsigned char r, unsigned char g, unsigned char b,
   delta   = maximum - minimum;
 
   *bright = maximum*100;
-  *sat    = 0;
+  *sat  = 0;
+  *hue = 0;      /* if color is greyscale (hue is meaningless) */
 
   if (maximum != 0)     /* sat from 0 to 100 */
     *sat = (delta*100)/maximum;
-
+  
   if (*sat != 0)        /* hue from 0 to 359 */
   {
     if (red   == maximum) *hue = (green - blue)/delta;
@@ -1671,8 +1672,6 @@ static void RGB_to_HSB (unsigned char r, unsigned char g, unsigned char b,
     *hue *= 60;
     if (*hue < 0) *hue += 360;
   }
-  else
-    *hue = 0;           /* color is greyscale (hue is meaningless) */
 }
 
 static int HSB_to_AutoCAD_Palette (double hue, double sat, double bright)
