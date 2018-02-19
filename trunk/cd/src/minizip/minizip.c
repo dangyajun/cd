@@ -84,11 +84,16 @@ int minizip(const char *filename, const char *dirname, const char **files, int n
   zipFile zf;
   char filenameinzip[10240];
 
+  buf = (void*)malloc(size_buf);
+  if (buf == NULL)
+    return ZIP_INTERNALERROR;
+
   zf = zipOpen(filename, 0);
   if (zf == NULL)
+  {
+    free(buf);
     return ZIP_ERRNO;
-
-  buf = (void*)malloc(size_buf);
+  }
 
   for (i = 0; (i < nFiles) && (err == ZIP_OK); i++)
   {
