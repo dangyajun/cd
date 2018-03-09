@@ -44,8 +44,9 @@
 extern "C" {
 #endif
 
-//#define HAVE_BZIP2
+/* #define HAVE_BZIP2 */
 
+/* CD: no crypt library */
 #define NOCRYPT 1
 #define NOUNCRYPT 1
 
