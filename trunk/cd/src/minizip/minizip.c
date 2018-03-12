@@ -21,14 +21,14 @@ Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 #include <fcntl.h>
 
 #ifdef WIN32
-# include <windows.h>
-# include <direct.h>
-# include <io.h>
+#include <windows.h>
+#include <direct.h>
+#include <io.h>
 #else
-# include <unistd.h>
-# include <utime.h>
-# include <sys/types.h>
-# include <sys/stat.h>
+#include <unistd.h>
+#include <utime.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif
 
 #include "zip.h"
@@ -97,7 +97,7 @@ int minizip(const char *filename, const char *dirname, const char **files, int n
 
   for (i = 0; (i < nFiles) && (err == ZIP_OK); i++)
   {
-    FILE * fin;
+    FILE * fin = NULL;
     int size_read;
     zip_fileinfo zi;
 

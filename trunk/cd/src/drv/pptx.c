@@ -112,7 +112,7 @@ static void printOpenSlideRels(FILE* slideRelsFile)
     "   <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout1.xml\"/>\n"
   };
 
-  fprintf(slideRelsFile, rels);
+  fprintf(slideRelsFile, "%s", rels);
 }
 
 static void printPresProps(FILE* presPropsFile)
@@ -127,7 +127,7 @@ static void printPresProps(FILE* presPropsFile)
     "xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\"/>\n"
   };
 
-  fprintf(presPropsFile, presProps);
+  fprintf(presPropsFile, "%s", presProps);
 }
 
 static void printRels(FILE* relsFile)
@@ -140,7 +140,7 @@ static void printRels(FILE* relsFile)
     "</Relationships>\n"
   };
 
-  fprintf(relsFile, rels);
+  fprintf(relsFile, "%s", rels);
 }
 
 static void printLayoutRelsFile(FILE* layoutRelsFile)
@@ -153,7 +153,7 @@ static void printLayoutRelsFile(FILE* layoutRelsFile)
     "</Relationships>\n"
   };
 
-  fprintf(layoutRelsFile, rels);
+  fprintf(layoutRelsFile, "%s", rels);
 }
 
 static void printLayoutFile(FILE* layoutFile)
@@ -189,7 +189,7 @@ static void printLayoutFile(FILE* layoutFile)
     "</p:sldLayout>\n"
   };
 
-  fprintf(layoutFile, rels);
+  fprintf(layoutFile, "%s", rels);
 }
 
 static void printOpenMasterRelsFile(FILE* masterRelsFile)
@@ -202,7 +202,7 @@ static void printOpenMasterRelsFile(FILE* masterRelsFile)
     "   <Relationship Id=\"rId12\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme1.xml\"/>\n"
   };
 
-  fprintf(masterRelsFile, rels);
+  fprintf(masterRelsFile, "%s", rels);
 }
 
 static void printCloseMasterRelsFile(FILE* masterRelsFile)
@@ -212,7 +212,7 @@ static void printCloseMasterRelsFile(FILE* masterRelsFile)
     "</Relationships>\n"
   };
 
-  fprintf(masterRelsFile, rels);
+  fprintf(masterRelsFile, "%s", rels);
 }
 
 static void printOpenMasterFile(FILE* masterFile)
@@ -249,7 +249,7 @@ static void printOpenMasterFile(FILE* masterFile)
     "         </p:grpSpPr>\n"
   };
 
-  fprintf(masterFile, rels);
+  fprintf(masterFile, "%s", rels);
 }
 
 static void printCloseMasterFile(FILE* masterFile)
@@ -267,7 +267,7 @@ static void printCloseMasterFile(FILE* masterFile)
     "</p:sldMaster>\n"
   };
 
-  fprintf(masterFile, rels);
+  fprintf(masterFile, "%s", rels);
 }
 
 static void printThemeFile(FILE* themeFile)
@@ -545,7 +545,7 @@ static void printThemeFile(FILE* themeFile)
     "</a:theme>\n"
   };
 
-  fprintf(themeFile, rels);
+  fprintf(themeFile, "%s", rels);
 }
 
 static void printPresentation(FILE* presentationFile, int nSlides, int height, int width)
@@ -611,10 +611,10 @@ static void printContentTypes(FILE* ctFile, int nSlides)
     "</Types>\n"
   };
 
-  fprintf(ctFile, contentTypesPrefix);
+  fprintf(ctFile, "%s", contentTypesPrefix);
   for (i = 0; i < nSlides; i++)
     fprintf(ctFile, slide, i + 1);
-  fprintf(ctFile, contentTypesSuffix);
+  fprintf(ctFile, "%s", contentTypesSuffix);
 }
 
 static void printPptRelsFile(FILE* pptRelsFile, int nSlides)
@@ -640,10 +640,10 @@ static void printPptRelsFile(FILE* pptRelsFile, int nSlides)
     "</Relationships>\n"
   };
 
-  fprintf(pptRelsFile, relsPrefix);
+  fprintf(pptRelsFile, "%s", relsPrefix);
   for (i = 0; i < nSlides; i++)
     fprintf(pptRelsFile, slides, i + 4, i + 1);
-  fprintf(pptRelsFile, relsSuffix);
+  fprintf(pptRelsFile, "%s", relsSuffix);
 }
 
 static void printCloseSlide(FILE* slideFile)
@@ -655,7 +655,7 @@ static void printCloseSlide(FILE* slideFile)
     "</p:sld>\n"
   };
 
-  fprintf(slideFile, suffix);
+  fprintf(slideFile, "%s", suffix);
 }
 
 static void printCloseSlideRels(FILE* slideRelsFile)
@@ -665,7 +665,7 @@ static void printCloseSlideRels(FILE* slideRelsFile)
     "</Relationships>\n"
   };
 
-  fprintf(slideRelsFile, rels);
+  fprintf(slideRelsFile, "%s", rels);
 }
 
 static void printSlideRels(pptxPresentation *presentation)
@@ -941,7 +941,7 @@ void pptxClosePath(pptxPresentation *presentation)
     "               </a:custGeom>\n"
   };
 
-  fprintf(presentation->slideFile, lineSuffix);
+  fprintf(presentation->slideFile, "%s", lineSuffix);
 }
 
 void pptxNoFill(pptxPresentation *presentation)
@@ -951,7 +951,7 @@ void pptxNoFill(pptxPresentation *presentation)
     "               <a:noFill/>\n"
   };
 
-  fprintf(presentation->slideFile, noFill);
+  fprintf(presentation->slideFile, "%s", noFill);
 }
 
 void pptxSolidFill(pptxPresentation *presentation, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
@@ -1079,10 +1079,10 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
     fprintf(presentation->slideFile, style, lineStyle);
   else
   {                                   /*012345678901234567| - line style ident (18) */
-    fprintf(presentation->slideFile, "                  <a:custDash>\n");
+    fprintf(presentation->slideFile, "%s", "                  <a:custDash>\n");
     for (i = 0; i < nDashes; i += 2)
       fprintf(presentation->slideFile, "                     <a:ds d=\"%d%%\" sp=\"%d%%\"/>\n", dashes[i], dashes[i + 1]);
-    fprintf(presentation->slideFile, "                  </a:custDash>\n");
+    fprintf(presentation->slideFile, "%s", "                  </a:custDash>\n");
   }
 
   fprintf(presentation->slideFile, lineEndSuffix, lineStyle);
@@ -1098,7 +1098,7 @@ void pptxEndFill(pptxPresentation *presentation)
     "         </p:sp>\n"
   };
 
-  fprintf(presentation->slideFile, fillEnd);
+  fprintf(presentation->slideFile, "%s", fillEnd);
 
   presentation->objectNum++;
 }
