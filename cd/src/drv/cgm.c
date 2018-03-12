@@ -574,10 +574,10 @@ static void cgmb_putu32 ( CGM *cgm, unsigned long b )
 static void cgmb_putfl32 ( CGM *cgm, float b )
 {
   union {
-    float func;
-    long  l;
+    float f;
+    int   l;
   } r;
-  r.func = b;
+  r.f = b;
   cgmb_putb ( cgm, r.l >> 24 );
   cgmb_putb ( cgm, r.l >> 16 );
   cgmb_putb ( cgm, r.l >>  8 );
@@ -588,7 +588,7 @@ static void cgmb_putfl64 ( CGM *cgm, double b )
 {
   union {
     double d;
-    long   l[2];
+    int   l[2];
   } r;
   r.d = b;
   cgmb_putb ( cgm, r.l[1] >> 24 );
@@ -1238,7 +1238,7 @@ CGM *cgm_begin_metafile ( char *file, int mode, char *header )
 
   cgm->op = -1;
 
-  len = strlen(header);
+  len = (int)strlen(header);
   cgm->func->wch  ( cgm, 0, 1, len+1 );
 
   cgm->func->s    ( cgm, header, len );
@@ -1270,7 +1270,7 @@ int cgm_end_metafile ( CGM *cgm )
 
 int cgm_begin_picture (CGM *cgm, const char *s )
 {
-  int len = strlen(s);
+  int len = (int)strlen(s);
   cgm->func->wch ( cgm, 0, 3, len+1 );
   cgm->func->s   ( cgm, s, len );
   return cgm->func->term(cgm);
@@ -1303,7 +1303,7 @@ int cgm_metafile_version ( CGM *cgm, long version )
 
 int cgm_metafile_description ( CGM *cgm, const char *s )
 {
-  int len = strlen(s);
+  int len = (int)strlen(s);
   cgm->func->wch ( cgm, 1, 2, 1+len);
   cgm->func->s   ( cgm, s, len );
   return cgm->func->term(cgm);
@@ -1534,7 +1534,7 @@ int cgm_font_list ( CGM *cgm, const char *fl[] )
   {
     cgm->func->nl ( cgm );
     cgm->func->align ( cgm, 10 );
-    cgm->func->s ( cgm, fl[i], strlen(fl[i]) );
+    cgm->func->s(cgm, fl[i], (int)strlen(fl[i]));
   }
 
   return cgm->func->term(cgm);
@@ -2283,8 +2283,8 @@ int cgm_asfs ( CGM *cgm, int n, const int *asfts, const int* asfvs )
 int cgm_message ( CGM *cgm, int action, const char *s)
 {
   static const char *ac[] = { "NOACTION", "ACTION" };
-  cgm->func->wch ( cgm, 7, 2, 2 + strlen(s)+1 );
+  cgm->func->wch(cgm, 7, 2, 2 + (int)strlen(s) + 1);
   cgm->func->e   ( cgm, action, ac );
-  cgm->func->s   ( cgm, s, strlen(s) );
+  cgm->func->s(cgm, s, (int)strlen(s));
   return cgm->func->term(cgm);
 }

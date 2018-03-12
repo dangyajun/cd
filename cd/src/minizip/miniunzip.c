@@ -20,14 +20,14 @@
 #include <fcntl.h>
 
 #ifdef _WIN32
-# include <windows.h>
-# include <direct.h>
-# include <io.h>
+#include <windows.h>
+#include <direct.h>
+#include <io.h>
 #else
-# include <unistd.h>
-# include <utime.h>
+#include <unistd.h>
+#include <utime.h>
+#include <sys/stat.h>
 #endif
-
 
 #include "unzip.h"
 
