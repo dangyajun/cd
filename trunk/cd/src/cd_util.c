@@ -175,20 +175,27 @@ int cdCalcZoom(int canvas_size,
 
 int cdGetFileName(const char* strdata, char* filename)
 {
+  int i = 0;
   const char* start = strdata;
   if (!strdata || strdata[0] == 0) return 0;
   
   if (strdata[0] == '\"')
   {   
     strdata++; /* the first " */
-    while(*strdata && *strdata != '\"')
+    while (*strdata && *strdata != '\"' && i < 10240)
+    {
       *filename++ = *strdata++;
+      i++;
+    }
     strdata++; /* the last " */
   }
   else
   {
-    while(*strdata && *strdata != ' ')
+    while (*strdata && *strdata != ' ' && i < 10240)
+    {
       *filename++ = *strdata++;
+      i++;
+    }
   }
 
   if (*strdata == ' ')
