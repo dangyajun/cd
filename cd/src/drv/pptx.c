@@ -575,7 +575,7 @@ static void printPresentation(FILE* presentationFile, int nSlides, int height, i
     "</p:presentation>\n"
   };
 
-  fprintf(presentationFile, presentationPrefix);
+  fprintf(presentationFile, "%s", presentationPrefix);
   for (i = 0; i < nSlides; i++)
     fprintf(presentationFile, slides, i + 256, i + 4);
   fprintf(presentationFile, presentationSuffix, width, height, height, width);  /* Notes size is swapped */
