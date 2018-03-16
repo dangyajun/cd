@@ -992,7 +992,7 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
     "               </a:pattFill>\n"
   };
 
-  fprintf(presentation->slideFile, patt, style, red, green, blue, alphaPct, bRed, bGreen, bBlue, bAlphaPct);
+  fprintf(presentation->slideFile, patt, style, red, green, blue, alphaPct, bRed, bGreen, bBlue);
 }
 
 void pptxPattern(pptxPresentation *presentation, const unsigned char* rgb_data, int width, int height)
@@ -1073,7 +1073,7 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
     "         </p:sp>\n"
   };
 
-  fprintf(presentation->slideFile, lineEndPrefix, line_width*presentation->slide_xfactor, red, green, blue, alphaPct, lineStyle);
+  fprintf(presentation->slideFile, lineEndPrefix, line_width*presentation->slide_xfactor, red, green, blue, alphaPct);
 
   if (strcmp(lineStyle, "custom") != 0)
     fprintf(presentation->slideFile, style, lineStyle);
@@ -1085,7 +1085,7 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
     fprintf(presentation->slideFile, "%s", "                  </a:custDash>\n");
   }
 
-  fprintf(presentation->slideFile, lineEndSuffix, lineStyle);
+  fprintf(presentation->slideFile, lineEndSuffix);
 
   presentation->objectNum++;
 }
