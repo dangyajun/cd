@@ -177,7 +177,10 @@ int cdGetFileName(const char* strdata, char* filename)
 {
   int i = 0;
   const char* start = strdata;
-  if (!strdata || strdata[0] == 0) return 0;
+  char* start_fn = filename;
+
+  if (!strdata || strdata[0] == 0) 
+    return 0;
   
   if (strdata[0] == '\"')
   {   
@@ -196,6 +199,12 @@ int cdGetFileName(const char* strdata, char* filename)
       *filename++ = *strdata++;
       i++;
     }
+  }
+
+  if (i == 10240)
+  {
+    *start_fn = 0;
+    return 0;
   }
 
   if (*strdata == ' ')
@@ -833,6 +842,8 @@ int cdStrTmpFileName(char* filename)
 #else
   char* dirname = getenv("TMPDIR");
   if (!dirname) dirname = "/tmp";
+  if (strlen(dirname) > 10240-10)
+    return 0;
   strcpy(filename, dirname);
   strcat(filename, "/~cdXXXXXX");
   int fd = mkstemp(filename);
