@@ -842,7 +842,7 @@ int cdStrTmpFileName(char* filename)
 #else
   char* dirname = getenv("TMPDIR");
   if (!dirname) dirname = "/tmp";
-  if (strlen(dirname) > 10240-10)
+  if (strlen(dirname) >= 10240-10)
     return 0;
   strcpy(filename, dirname);
   strcat(filename, "/~cdXXXXXX");
