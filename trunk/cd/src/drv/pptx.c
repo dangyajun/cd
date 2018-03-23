@@ -974,7 +974,6 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
                    unsigned char bRed, unsigned char bGreen, unsigned char bBlue, unsigned char bAlpha)
 {
   int alphaPct = (int)(((double)alpha / 255.) * 100 * 1000);
-  int bAlphaPct = (int)(((double)bAlpha / 255.) * 100 * 1000);
 
   const char *patt =
   {/*012345678901234| - path style ident (15) */
@@ -1085,7 +1084,7 @@ void pptxEndLine(pptxPresentation *presentation, int line_width, unsigned char r
     fprintf(presentation->slideFile, "%s", "                  </a:custDash>\n");
   }
 
-  fprintf(presentation->slideFile, lineEndSuffix);
+  fprintf(presentation->slideFile, "%s", lineEndSuffix);
 
   presentation->objectNum++;
 }
