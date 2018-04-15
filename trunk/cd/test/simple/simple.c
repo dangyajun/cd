@@ -1577,7 +1577,7 @@ void SimpleDrawTestImageRGB(cdCanvas* canvas1)
     cdKillCanvas(canvas);
 }
 
-void SimpleDrawTest(cdCanvas* canvas)
+void SimpleDrawTest2(cdCanvas* canvas)
 {
   cdCanvasBackground(canvas, CD_WHITE);
   cdCanvasClear(canvas);
@@ -1595,4 +1595,78 @@ void SimpleDrawTest(cdCanvas* canvas)
   cdCanvasBox(canvas, 300, 400, 100, 200);
   cdCanvasForeground(canvas, CD_RED);
   cdCanvasRect(canvas, 300, 400, 100, 200);
+}
+
+void cdCanvasSectorXY(cdCanvas* canvas, int x1, int y1, int x2, int y2, double angle1, double angle2)
+{
+  int xc = (x2 + x1) / 2;
+  int yc = (y2 + y1) / 2;
+  int w = x2 - x1 + 1;
+  int h = y2 - y1 + 1;
+  cdCanvasSector(canvas, xc, yc, w, h, angle1, angle2);
+}
+
+void SimpleDrawTest(cdCanvas* canvas)
+{
+  /* white background */
+  cdCanvasBackground(canvas, CD_WHITE);
+  cdCanvasClear(canvas);
+
+  cdCanvasInteriorStyle(canvas, CD_SOLID);
+  cdCanvasLineStyle(canvas, CD_CONTINUOUS);
+  cdCanvasLineWidth(canvas, 1);
+
+  /* Guide Lines */
+  cdCanvasForeground(canvas, cdEncodeColor(255, 0, 0));
+  cdCanvasLine(canvas, 10, 5, 10, 19);
+  cdCanvasLine(canvas, 14, 5, 14, 19);
+  cdCanvasLine(canvas, 5, 10, 19, 10);
+  cdCanvasLine(canvas, 5, 14, 19, 14);
+
+  /* Stroke Rectangle, must cover guide lines */
+  cdCanvasForeground(canvas, cdEncodeColor(0, 0, 0));
+  cdCanvasRect(canvas, 10, 14, 10, 14);
+
+  /* Guide Lines */
+  cdCanvasForeground(canvas, cdEncodeColor(255, 0, 0));
+  cdCanvasLine(canvas, 10, 5 + 30, 10, 19 + 30);
+  cdCanvasLine(canvas, 14, 5 + 30, 14, 19 + 30);
+  cdCanvasLine(canvas, 5, 10 + 30, 19, 10 + 30);
+  cdCanvasLine(canvas, 5, 14 + 30, 19, 14 + 30);
+
+  /* Fill Rectangle, must cover guide lines */
+  cdCanvasForeground(canvas, cdEncodeColor(0, 0, 0));
+  cdCanvasBox(canvas, 10, 14, 10 + 30, 14 + 30);
+
+  cdCanvasForeground(canvas, cdEncodeColor(255, 0, 0));
+  cdCanvasBox(canvas, 30, 50, 10, 30);
+
+  cdCanvasForeground(canvas, cdEncodeColor(0, 0, 0));
+  cdCanvasSectorXY(canvas, 30, 10, 50, 30, 0, 360);
+
+  cdCanvasForeground(canvas, cdEncodeColor(255, 0, 0));
+  cdCanvasBox(canvas, 60, 80, 10, 30);
+
+  cdCanvasForeground(canvas, cdEncodeColor(0, 0, 0));
+  cdCanvasSectorXY(canvas, 60, 10, 80, 30, 0, 360);
+
+
+  cdCanvasForeground(canvas, cdEncodeColor(255, 0, 0));
+  cdCanvasBox(canvas, 30, 50, 10 + 30, 30 + 30);
+
+  cdCanvasForeground(canvas, cdEncodeColor(0, 0, 0));
+  cdCanvasSectorXY(canvas, 30, 10 + 30, 50, 30 + 30, 45, 135);
+
+  cdCanvasForeground(canvas, cdEncodeColor(255, 0, 0));
+  cdCanvasBox(canvas, 60, 80, 10 + 30, 30 + 30);
+
+  cdCanvasForeground(canvas, cdEncodeColor(0, 0, 0));
+  cdCanvasSectorXY(canvas, 60, 10 + 30, 80, 30 + 30, 45, 135);
+
+  cdCanvasLine(canvas, 20, 70 - 2, 20, 70 + 2);
+  cdCanvasLine(canvas, 20 - 2, 70, 20 + 2, 70);
+
+  cdCanvasTextAlignment(canvas, CD_SOUTH_WEST);
+  cdCanvasFont(canvas, "Helvetica", CD_PLAIN, -30);
+  cdCanvasText(canvas, 20, 70, "Text");
 }
