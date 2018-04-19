@@ -1342,7 +1342,7 @@ static void cdgettextsize(cdCtxCanvas* ctxcanvas, const char *s, int len, int *w
   RectF boundingBox;
 
   WCHAR* wstr = cdwpStringToUnicodeLen(s, &len, ctxcanvas->utf8mode);
-  ctxcanvas->graphics->MeasureString(wstr, len, ctxcanvas->font, PointF(0,0), &boundingBox);
+  ctxcanvas->graphics->MeasureString(wstr, len, ctxcanvas->font, PointF(0, 0), &boundingBox);
   if (width)  
     *width  = (int)boundingBox.Width;
   
@@ -1357,9 +1357,7 @@ static void sTextBox(cdCtxCanvas* ctxcanvas, WCHAR *ws, int len, int x, int y, i
     ydir = -1;
 
   RectF boundingBox;
-  ctxcanvas->graphics->MeasureString(ws, len, 
-                                     ctxcanvas->font, PointF(0,0),
-                                     &boundingBox);
+  ctxcanvas->graphics->MeasureString(ws, len, ctxcanvas->font, PointF(0, 0), &boundingBox);
   *w = (int)boundingBox.Width;
   *h = (int)boundingBox.Height - cdwpCompensateHeight(ctxcanvas->fontinfo.height);
 
@@ -2706,13 +2704,18 @@ static cdAttribute img_points_attrib =
   get_img_points_attrib
 }; 
 
+#ifdef _MSC_VER
+/* warning C4996: 'GetVersionExW': was declared deprecated */
+#pragma warning( disable : 4996 )
+#endif
+
 /* check IUP code from iupwin_info.c for Windows 8.1 compatibility */
 static BOOL Is_WinXP_or_WinSrv03(void) 
 {
   OSVERSIONINFO osvi;
   ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-  GetVersionEx (&osvi);
+  GetVersionEx(&osvi);
 
   BOOL bIsWindowsXP = 
     (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
