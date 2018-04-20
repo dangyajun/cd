@@ -1332,22 +1332,31 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
   ctxcanvas->dirty = 1;
 }
 
-static int cdwpCompensateHeight(int height)
+static int cdwpCompensateHeight(int font_height)
 {
-  return (int)floor(height/10. + 0.5);  /* 10% */
+  return cdRound(font_height / 10.);  /* 10% */
+}
+
+static int cdwpCompensateWidth(int font_height)
+{
+  return cdRound(font_height / 2.);  /* 50% */
+}
+
+static int cdwpCompensatePosX(int font_height)
+{
+  return cdRound(font_height / 7.);  /* 15% */
 }
 
 static void cdgettextsize(cdCtxCanvas* ctxcanvas, const char *s, int len, int *width, int *height)
 {
   RectF boundingBox;
-
   WCHAR* wstr = cdwpStringToUnicodeLen(s, &len, ctxcanvas->utf8mode);
   ctxcanvas->graphics->MeasureString(wstr, len, ctxcanvas->font, PointF(0, 0), &boundingBox);
   if (width)  
-    *width  = (int)boundingBox.Width;
+    *width = cdRound(boundingBox.Width) - cdwpCompensateWidth(ctxcanvas->fontinfo.height);
   
   if (height) 
-    *height = (int)boundingBox.Height - cdwpCompensateHeight(ctxcanvas->fontinfo.height);
+    *height = cdRound(boundingBox.Height) - cdwpCompensateHeight(ctxcanvas->fontinfo.height);
 }
 
 static void sTextBox(cdCtxCanvas* ctxcanvas, WCHAR *ws, int len, int x, int y, int *w, int *h, int *xmin, int *ymin)
@@ -1358,8 +1367,8 @@ static void sTextBox(cdCtxCanvas* ctxcanvas, WCHAR *ws, int len, int x, int y, i
 
   RectF boundingBox;
   ctxcanvas->graphics->MeasureString(ws, len, ctxcanvas->font, PointF(0, 0), &boundingBox);
-  *w = (int)boundingBox.Width;
-  *h = (int)boundingBox.Height - cdwpCompensateHeight(ctxcanvas->fontinfo.height);
+  *w = cdRound(boundingBox.Width) - cdwpCompensateWidth(ctxcanvas->fontinfo.height);
+  *h = cdRound(boundingBox.Height) - cdwpCompensateHeight(ctxcanvas->fontinfo.height);
 
   // distance from bottom to baseline
   int baseline = ctxcanvas->fontinfo.height - ctxcanvas->fontinfo.ascent; 
@@ -1461,6 +1470,8 @@ static void cdtext(cdCtxCanvas* ctxcanvas, int x, int y, const char *s, int len)
 
     if (use_transform)
       path.Transform(&transformMatrix);
+    else
+      x -= cdwpCompensatePosX(ctxcanvas->fontinfo.height);
 
     FontFamily family;
     ctxcanvas->font->GetFamily(&family);
@@ -1475,6 +1486,8 @@ static void cdtext(cdCtxCanvas* ctxcanvas, int x, int y, const char *s, int len)
 
   if (use_transform)
     ctxcanvas->graphics->SetTransform(&transformMatrix);
+  else
+    x -= cdwpCompensatePosX(ctxcanvas->fontinfo.height);
 
   ctxcanvas->graphics->DrawString(ws, len,
                                   ctxcanvas->font, PointF((REAL)x, (REAL)y),  
@@ -1653,10 +1666,8 @@ static void cdgetfontdim(cdCtxCanvas* ctxcanvas, int *max_width, int *line_heigh
   if (max_width)  
   {
     RectF boundingBox;
-    ctxcanvas->graphics->MeasureString(L"W", 1, 
-                                       ctxcanvas->font, PointF(0,0),
-                                       &boundingBox);
-    *max_width = cdRound(boundingBox.Width);
+    ctxcanvas->graphics->MeasureString(L"W", 1, ctxcanvas->font, PointF(0,0), &boundingBox);
+    *max_width = cdRound(boundingBox.Width) - cdwpCompensateWidth(ctxcanvas->fontinfo.height);
   }
   
   if (line_height) 

@@ -1667,6 +1667,6 @@ void SimpleDrawTest(cdCanvas* canvas)
   cdCanvasLine(canvas, 20 - 2, 70, 20 + 2, 70);
 
   cdCanvasTextAlignment(canvas, CD_SOUTH_WEST);
-  cdCanvasFont(canvas, "Helvetica", CD_PLAIN, -30);
+  cdCanvasFont(canvas, "Helvetica", CD_PLAIN, -80);
   cdCanvasText(canvas, 20, 70, "Text");
 }
