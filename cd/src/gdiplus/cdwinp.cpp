@@ -1821,15 +1821,15 @@ static void sAlpha2Bitmap(Bitmap& image, int width, int height, const unsigned c
 }
 
 /*
-GDI+ does not natively work with palettized images.
+GDI+ does not natively work with palletized images.
 
-GDI+ will not try to draw on a palettized image as it would
+GDI+ will not try to draw on a palletized image as it would
 require color reducing the drawing result.
 
 GDI+ will work natively with 32bpp image data behind the scenes anyway so
 there is no economy in trying to work with 8bpp images.
 
-Full support for palettized images was on the feature list but it did not
+Full support for palletized images was on the feature list but it did not
 make the cut for version 1 of GDI+.
 */
 
