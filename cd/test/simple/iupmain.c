@@ -111,6 +111,7 @@ int main(int argc, char** argv)
 #ifdef USE_OPENGL
   IupSetFunction("SimpleDrawGL", (Icallback) SimpleDrawGL);
 #endif
+  IupSetFunction("SimpleDrawIupDraw", (Icallback)SimpleDrawIupDraw);
 
   IupSetFunction("SimpleNotXor", (Icallback) SimpleNotXor);
   IupSetFunction("SimpleXor", (Icallback) SimpleXor);

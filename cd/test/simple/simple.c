@@ -30,6 +30,7 @@
 #include "wd.h"
 #include "cdgdiplus.h"
 #include "cdgl.h"
+#include <iupdraw_cd.h>
 
 #include "simple.h"
 
@@ -525,6 +526,19 @@ int SimpleDrawGL(void)
   return 0;
 }
 #endif
+
+int SimpleDrawIupDraw(void)
+{
+  if (dbCanvas) cdKillCanvas(dbCanvas);
+
+  dbCanvas = cdCreateCanvas(CD_IUPDRAW, winData);
+
+  curCanvas = dbCanvas;
+
+  SimpleDraw(curCanvas);
+
+  return 0;
+}
 
 int SimpleDrawSimulate(void)
 {
