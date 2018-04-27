@@ -40,6 +40,7 @@ int SimpleDrawImage(void);
 int SimpleDrawImageRGB(void);
 int SimpleDrawSimulate(void);
 int SimpleDrawGL(void);
+int SimpleDrawIupDraw(void);
 
 int SimpleNotXor(void);
 int SimpleXor(void);
