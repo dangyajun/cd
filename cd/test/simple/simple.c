@@ -748,6 +748,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   /* Reset line style and width */
   cdCanvasLineStyle(canvas, CD_CONTINUOUS);
   cdCanvasLineWidth(canvas, 1);
+  cdCanvasBackOpacity(canvas, CD_OPAQUE);
   cdCanvasBackOpacity(canvas, CD_TRANSPARENT);
 
   /* Draw an arc at bottom-left, and a sector at bottom-right.
@@ -763,6 +764,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasBox(canvas, w / 2 - 100, w / 2 + 100, h / 2 - 100, h / 2 + 100);
 
   /* Prepare font for text. */
+  cdCanvasTextAlignment(canvas, CD_NORTH);
   cdCanvasTextAlignment(canvas, CD_CENTER);
   cdCanvasTextOrientation(canvas, 70);
   cdCanvasFont(canvas, "Times", CD_BOLD, 24);
