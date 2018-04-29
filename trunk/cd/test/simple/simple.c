@@ -1157,7 +1157,7 @@ void SimpleDrawTextAlign(cdCanvas* canvas)
     CD_BASE_LEFT
   };
 
-#if 0
+#if 1
   char* text_aligment_str[] = {
     "North (Ãyj)\nSecond Line (Ãyj)\nThird Line",
     "South (Ãyj)\nSecond Line (Ãyj)\nThird Line",
