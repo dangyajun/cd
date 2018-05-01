@@ -424,17 +424,23 @@ EXPORTS
   cdInitContextPlusList
   cdGetContextPlus
   
+  cdfRotatePoint
+  cdSimPolyPath
   cdfSimPolyPath
   cdSimArc
-  cdSimPolyPath
-  cdfRotatePoint
-  cdSimSector
   cdfSimArc
+  cdSimSector
   cdfSimSector
-  cdfSimChord
   cdSimChord
-  cdfSimBox
+  cdfSimChord
   cdSimBox
+  cdfSimBox
+  cdSimPolyBezier
+  cdfSimPolyBezier
+  cdSimRect
+  cdfSimRect
+  cdSimLine
+  cdfSimLine
 
   wdCanvasPlay
   wdCanvasGetImageRGB
