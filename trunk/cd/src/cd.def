@@ -220,6 +220,7 @@ EXPORTS
   cdGetFontSizePixels
   cdGetFontSizePoints
   cdStrEqualNoCase
+  cdStrLineCount
   cdStrIsAscii
   cdStrConvertToUTF8
   cdSetPaperSize
@@ -416,10 +417,12 @@ EXPORTS
   cdfCanvasTransformPoint
   cdRound
   cdStrDup
+  cdStrDupN
   cdStrTmpFileName
   cdMakeDirectory
   cdRemoveDirectory
   cdIsDirectory
+  cdCopyFile
   
   cdInitContextPlusList
   cdGetContextPlus
@@ -454,3 +457,46 @@ EXPORTS
   cdwInitTable
   cdwKillCanvas
   cdwRestoreDC
+
+  cdCreateVectorFont
+  cdKillVectorFont
+  wdSetDefaults
+  cdCheckBoxSize
+  cdfCheckBoxSize
+  cdNormalizeLimits
+  cdDirIterOpen
+  cdDirIter
+  cdDirClose
+  cdPoly
+  cdMatrixTransformPoint
+  cdfMatrixTransformPoint
+  cdMatrixMultiply
+  cdMatrixInverse
+  cdRotatePoint
+  cdMovePoint
+  cdfMovePoint
+  cdgetfontdimEX
+  cdgettextsizeEX
+  cdZeroOrderInterpolation
+  cdBilinearInterpolation
+  cdImageRGBInitInverseTransform
+  cdImageRGBInverseTransform
+  cdImageRGBCalcDstLimits
+  cdRGB2Gray
+  cdGetZoomTable
+  cdCalcZoom
+  cdCreateSimulation
+  cdKillSimulation
+  cdSimulationInitText
+  cdSimulationText
+  cdSimulationFont
+  cdSimulationGetFontDim
+  cdSimulationGetTextSize
+  cdfSimulationPoly
+  cdSimulationPoly
+  cdSimMark
+  cdfSimMark
+  cdSimPutImageRectRGBA
+  cdSimPutImageRectRGB
+  cdfSimPutImageRectRGB
+  cdfSimPutImageRectRGBA
