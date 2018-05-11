@@ -1064,7 +1064,7 @@ out_error:
 void cdCopyFile(const char* srcFile, const char* destFile)
 {
 #ifdef WIN32
-  CopyFile(srcFile, destFile, 0);
+  CopyFileA(srcFile, destFile, 0);
 #else
   cp(srcFile, destFile);
 #endif
