@@ -55,12 +55,6 @@ struct _cdCtxCanvas
   HBRUSH   hOldBrush;   /* brush anterior selecionado                   */
   HBRUSH   hBkBrush;    /* handle para o pincel com a cor de fundo      */
   
-  HDC      hDCMemPat;
-  HBITMAP  hOldBitmapPat,hBitmapPat;
-  
-  HDC      hDCMemStip;
-  HBITMAP  hOldBitmapStip,hBitmapStip;
-  
   HFONT    hFont;          /* handle para o fonte corrente              */
   HFONT    hOldFont;
   

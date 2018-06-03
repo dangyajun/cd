@@ -27,7 +27,7 @@ static void cdkillcanvas (cdCtxCanvas *ctxcanvas)
   
   cdwKillCanvas(ctxcanvas);
   
-  DeleteDC(ctxcanvas->hDC);
+  DeleteDC(ctxcanvas->hDC);  /* Use DeleteDC for printer */
 
   if (ctxcanvas->filename)
     free(ctxcanvas->filename);

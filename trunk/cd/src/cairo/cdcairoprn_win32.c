@@ -28,7 +28,7 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
   cairo_surface_finish(surface);
 
   EndDoc(hDC);
-  DeleteDC(hDC);
+  DeleteDC(hDC);  /* Use DeleteDC for printer */
 
   if (ctxcanvas->printername)
     free(ctxcanvas->printername);
