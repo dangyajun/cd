@@ -46,7 +46,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\..\freetype\include;..\src\intcgm;..\src\iup;..\src\sim;d:\lng\gtk2\include\atk-1.0;d:\lng\gtk2\include\cairo;d:\lng\gtk2\include\glib-2.0;d:\lng\gtk2\include\pango-1.0;d:\lng\gtk2\include\gdk-pixbuf-2.0;d:\lng\gtk2\include\gtk-2.0;d:\lng\gtk2\lib\glib-2.0\include;d:\lng\gtk2\lib\gtk-2.0\include;D:\LNG\x11inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\..\freetype\include;..\src\intcgm;..\src\iup;..\src\sim;\lng\gtk2\include\atk-1.0;\lng\gtk2\include\cairo;\lng\gtk2\include\glib-2.0;\lng\gtk2\include\pango-1.0;\lng\gtk2\include\gdk-pixbuf-2.0;\lng\gtk2\include\gtk-2.0;\lng\gtk2\lib\glib-2.0\include;\lng\gtk2\lib\gtk-2.0\include;\LNG\x11inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -71,7 +71,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\..\freetype\include;..\src\intcgm;..\src\iup;..\src\sim;d:\lng\gtk2\include\atk-1.0;d:\lng\gtk2\include\cairo;d:\lng\gtk2\include\glib-2.0;d:\lng\gtk2\include\pango-1.0;d:\lng\gtk2\include\gdk-pixbuf-2.0;d:\lng\gtk2\include\gtk-2.0;d:\lng\gtk2\lib\glib-2.0\include;d:\lng\gtk2\lib\gtk-2.0\include;D:\LNG\x11inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\drv;..\..\freetype\include;..\src\intcgm;..\src\iup;..\src\sim;\lng\gtk2\include\atk-1.0;\lng\gtk2\include\cairo;\lng\gtk2\include\glib-2.0;\lng\gtk2\include\pango-1.0;\lng\gtk2\include\gdk-pixbuf-2.0;\lng\gtk2\include\gtk-2.0;\lng\gtk2\lib\glib-2.0\include;\lng\gtk2\lib\gtk-2.0\include;\LNG\x11inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
