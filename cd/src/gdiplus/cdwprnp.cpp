@@ -22,7 +22,7 @@ static void cdkillcanvas (cdCtxCanvas* ctxcanvas)
   EndDoc(ctxcanvas->hDC);
 
   ClosePrinter(ctxcanvas->printerHandle);
-  DeleteDC(ctxcanvas->hDC);
+  DeleteDC(ctxcanvas->hDC);  /* Use DeleteDC for printer */
   
   delete ctxcanvas;
 }

@@ -120,14 +120,6 @@ void cdwKillCanvas(cdCtxCanvas* ctxcanvas)
   if (ctxcanvas->clip_hrgn) DeleteObject(ctxcanvas->clip_hrgn);
   if (ctxcanvas->new_rgn) DeleteObject(ctxcanvas->new_rgn);
 
-  if (ctxcanvas->hOldBitmapPat) SelectObject(ctxcanvas->hDCMemPat, ctxcanvas->hOldBitmapPat);
-  if (ctxcanvas->hBitmapPat) DeleteObject(ctxcanvas->hBitmapPat);
-  if (ctxcanvas->hDCMemPat) DeleteDC(ctxcanvas->hDCMemPat);
-  
-  if (ctxcanvas->hOldBitmapStip) SelectObject(ctxcanvas->hDCMemStip, ctxcanvas->hOldBitmapStip);
-  if (ctxcanvas->hBitmapStip) DeleteObject(ctxcanvas->hBitmapStip);
-  if (ctxcanvas->hDCMemStip) DeleteDC(ctxcanvas->hDCMemStip);
-
   if (ctxcanvas->img_mask) DeleteObject(ctxcanvas->img_mask);
   
   SelectObject(ctxcanvas->hDC, ctxcanvas->hOldFont);
@@ -1385,7 +1377,7 @@ static void sTextOutBlt(cdCtxCanvas* ctxcanvas, int px, int py, const char* s, i
   SelectObject(hBitmapDC, hOldBitmap);
   
   DeleteObject(hBitmap);
-  DeleteDC(hBitmapDC);
+  DeleteDC(hBitmapDC);  /* to match CreateCompatibleDC */
 }
 
 static void cdgettextsize (cdCtxCanvas* ctxcanvas, const char *s, int len, int *width, int *height)
@@ -1852,7 +1844,7 @@ static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *red, unsigned c
   {
     SelectObject(hDCMem, hOldBitmap);
     DeleteObject(hBitmap);
-    DeleteDC(hDCMem);
+    DeleteDC(hDCMem);  /* to match CreateCompatibleDC */
     return;
   }
   
@@ -1860,7 +1852,7 @@ static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *red, unsigned c
   
   SelectObject(hDCMem, hOldBitmap);
   DeleteObject(hBitmap);
-  DeleteDC(hDCMem);
+  DeleteDC(hDCMem);  /* to match CreateCompatibleDC */
   
   cdwDIBDecodeRGB(&dib, red, green, blue);
   
@@ -1989,7 +1981,7 @@ static void cdputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, co
     hBitmap = cdwCreateDIBSection(&dib, hDCMem);
     if (!hBitmap)
     {
-      DeleteDC(hDCMem);
+      DeleteDC(hDCMem);  /* to match CreateCompatibleDC */
       return;
     }
 
@@ -2022,7 +2014,7 @@ static void cdputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, co
     hBitmap = CreateCompatibleBitmap(ctxcanvas->hDC, ew, eh); /* captura do tamanho do destino */
     if (!hBitmap)
     {
-      DeleteDC(hDCMem);
+      DeleteDC(hDCMem);  /* to match CreateCompatibleDC */
       return;
     }
     
@@ -2038,7 +2030,7 @@ static void cdputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, co
     {
       SelectObject(hDCMem, hOldBitmap);
       DeleteObject(hBitmap);
-      DeleteDC(hDCMem);
+      DeleteDC(hDCMem);  /* to match CreateCompatibleDC */
       return;
     }
     
@@ -2054,7 +2046,7 @@ static void cdputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, co
 
   SelectObject(hDCMem, hOldBitmap);
   DeleteObject(hBitmap);
-  DeleteDC(hDCMem);
+  DeleteDC(hDCMem);  /* to match CreateCompatibleDC */
   cdwKillDIB(&dib);
 }
 
@@ -2207,7 +2199,7 @@ static void  cdkillimage(cdCtxImage *ctximage)
 {
   SelectObject(ctximage->hDC, ctximage->hOldBitmap);
   DeleteObject(ctximage->hBitmap);
-  DeleteDC(ctximage->hDC);
+  DeleteDC(ctximage->hDC);  /* to match CreateCompatibleDC */
   free(ctximage);
 }
 

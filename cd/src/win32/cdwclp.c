@@ -389,7 +389,7 @@ static void cdkillcanvas (cdCtxCanvas *ctxcanvas)
     HENHMETAFILE hmf = CloseEnhMetaFile(ctxcanvas->hDC);
     SetClipboardData(CF_ENHMETAFILE, hmf);
   }
-  else
+  else  /* CDW_BMP */
   {
     HANDLE hDib;
 
@@ -399,7 +399,7 @@ static void cdkillcanvas (cdCtxCanvas *ctxcanvas)
 
     SelectObject(ctxcanvas->hDC, ctxcanvas->hOldBitmapClip);
     DeleteObject(ctxcanvas->hBitmapClip);
-    DeleteDC(ctxcanvas->hDC);
+    DeleteDC(ctxcanvas->hDC);  /* to match CreateCompatibleDC */
 
     SetClipboardData(CF_DIB, hDib);
   }
