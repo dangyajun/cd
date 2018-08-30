@@ -214,10 +214,10 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
   {
     ctxcanvas->canvas->clip_mode = CD_CLIPAREA;
 
-    setcliprect(ctxcanvas, (double)ctxcanvas->canvas->clip_rect.xmin, 
-                           (double)ctxcanvas->canvas->clip_rect.ymin, 
-                           (double)ctxcanvas->canvas->clip_rect.xmax, 
-                           (double)ctxcanvas->canvas->clip_rect.ymax);
+    setcliprect(ctxcanvas, ctxcanvas->canvas->clip_frect.xmin, 
+                           ctxcanvas->canvas->clip_frect.ymin, 
+                           ctxcanvas->canvas->clip_frect.xmax, 
+                           ctxcanvas->canvas->clip_frect.ymax);
   }
   else if (mode == CD_CLIPPOLYGON)
   {

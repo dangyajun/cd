@@ -121,11 +121,6 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
 {
   double x, y, w, h;
 
-  ctxcanvas->canvas->clip_rect.xmin = (int)xmin;
-  ctxcanvas->canvas->clip_rect.ymin = (int)ymin;
-  ctxcanvas->canvas->clip_rect.xmax = (int)xmax;
-  ctxcanvas->canvas->clip_rect.ymax = (int)ymax;
-
   x = xmin;
   y = ymin;
   w = xmax - xmin + 1;

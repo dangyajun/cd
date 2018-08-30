@@ -275,15 +275,14 @@ static void cdpalette(cdCtxCanvas* ctxcanvas, int pal_size, const long int *colo
 */
 /*********************************************************************/
 
-static void sClipRect(cdCtxCanvas* ctxcanvas)
+static void sClipRect(cdCtxCanvas* ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
   if (ctxcanvas->clip_region)
     delete ctxcanvas->clip_region;
 
-  Rect rect(ctxcanvas->canvas->clip_rect.xmin, 
-            ctxcanvas->canvas->clip_rect.ymin,
-            ctxcanvas->canvas->clip_rect.xmax-ctxcanvas->canvas->clip_rect.xmin+1, 
-            ctxcanvas->canvas->clip_rect.ymax-ctxcanvas->canvas->clip_rect.ymin+1);  
+  RectF rect((REAL)xmin, (REAL)ymin,
+             (REAL)(xmax - xmin + 1),
+             (REAL)(ymax - ymin + 1));
                                                  
   ctxcanvas->clip_region = new Region(rect);
 
@@ -317,7 +316,10 @@ static int cdclip(cdCtxCanvas* ctxcanvas, int clip_mode)
     ctxcanvas->clip_region = NULL;
     break;
   case CD_CLIPAREA:
-    sClipRect(ctxcanvas);
+    sClipRect(ctxcanvas, ctxcanvas->canvas->clip_frect.xmin, 
+                         ctxcanvas->canvas->clip_frect.xmax,
+                         ctxcanvas->canvas->clip_frect.ymin,
+                         ctxcanvas->canvas->clip_frect.ymax);
     break;
   case CD_CLIPPOLYGON:
     sClipPoly(ctxcanvas);
@@ -333,17 +335,10 @@ static int cdclip(cdCtxCanvas* ctxcanvas, int clip_mode)
   return clip_mode;
 }
 
-static void cdcliparea(cdCtxCanvas* ctxcanvas, int xmin, int xmax, int ymin, int ymax)
+static void cdfcliparea(cdCtxCanvas* ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
   if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA) 
-  {
-    ctxcanvas->canvas->clip_rect.xmin = xmin;
-    ctxcanvas->canvas->clip_rect.xmax = xmax;
-    ctxcanvas->canvas->clip_rect.ymin = ymin;
-    ctxcanvas->canvas->clip_rect.ymax = ymax;
-
-    sClipRect(ctxcanvas);
-  }
+    sClipRect(ctxcanvas, xmin, xmax, ymin, ymax);
 }
 
 static void cdnewregion(cdCtxCanvas* ctxcanvas)
@@ -3072,7 +3067,7 @@ void cdwpInitTable(cdCanvas* canvas)
   canvas->cxFPutImageRectMap = cdfputimagerectmap;
 
   canvas->cxClip = cdclip;
-  canvas->cxClipArea = cdcliparea; 
+  canvas->cxFClipArea = cdfcliparea; 
   canvas->cxBackOpacity = cdbackopacity;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineWidth = cdlinewidth;
