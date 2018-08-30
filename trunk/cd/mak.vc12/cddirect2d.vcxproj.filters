@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\direct2d\cdwdirect2d.c" />
+    <ClCompile Include="..\src\direct2d\cdwin_d2d.c" />
+    <ClCompile Include="..\src\direct2d\cdwnative_d2d.c" />
+    <ClCompile Include="..\src\direct2d\cd_d2d.c" />
+    <ClCompile Include="..\src\direct2d\cd_d2d_draw.c" />
+    <ClCompile Include="..\src\direct2d\cd_d2d_image.c" />
+    <ClCompile Include="..\src\direct2d\cd_d2d_text.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\direct2d\cd_d2d.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\direct2d\cdwin_d2d.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\direct2d\cdcontextplus.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="inc">
+      <UniqueIdentifier>{7365cf65-92ba-49db-9b56-7bb22e6f2869}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

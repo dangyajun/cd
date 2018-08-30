@@ -110,7 +110,7 @@
       <Culture>0x0416</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>freetype6.lib;cd.lib;iupcd.lib;iup.lib;comctl32.lib;cdcontextplus.lib;gdiplus.lib;cdpdf.lib;pdflib.lib;iupgl.lib;opengl32.lib;glu32.lib;cdgl.lib;ftgl.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype6.lib;cd.lib;iupcd.lib;iup.lib;comctl32.lib;cdcontextplus_d2d.lib;gdiplus.lib;cdpdf.lib;pdflib.lib;iupgl.lib;opengl32.lib;glu32.lib;cdgl.lib;ftgl.lib;zlib1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\lib\Debug_64\;..\..\iup\lib\Debug_64;..\..\freetype\lib\Debug_64;..\..\ftgl\lib\Debug_64;..\..\zlib\lib\Debug_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
