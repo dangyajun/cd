@@ -153,15 +153,6 @@ static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double
   cairo_clip(ctxcanvas->cr);
 }
 
-static void cdcliparea(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
-{
-  /* try to include the last integer line */
-  if (!ctxcanvas->canvas->use_matrix)
-    cdfcliparea(ctxcanvas, (double)xmin, (double)xmax + 0.75, (double)ymin, (double)ymax + 0.75);
-  else
-    cdfcliparea(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
-}
-
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
 {
   switch (mode)
@@ -2411,7 +2402,6 @@ void cdcairoInitTable(cdCanvas* canvas)
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;
-  canvas->cxClipArea = cdcliparea;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineWidth = cdlinewidth;
   canvas->cxLineCap = cdlinecap;

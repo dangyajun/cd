@@ -155,8 +155,8 @@ static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
   cgm_clip_indicator ( ctxcanvas->cgm, mode );
 
   if (mode == CD_CLIPAREA)
-    cgm_clip_rectangle ( ctxcanvas->cgm, (double) ctxcanvas->canvas->clip_rect.xmin, (double) ctxcanvas->canvas->clip_rect.ymin,
-                                         (double) ctxcanvas->canvas->clip_rect.xmax, (double) ctxcanvas->canvas->clip_rect.ymax );
+    cgm_clip_rectangle ( ctxcanvas->cgm, ctxcanvas->canvas->clip_frect.xmin, ctxcanvas->canvas->clip_frect.ymin,
+                                         ctxcanvas->canvas->clip_frect.xmax, ctxcanvas->canvas->clip_frect.ymax );
 
   return mode;
 }

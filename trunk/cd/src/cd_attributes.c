@@ -71,18 +71,42 @@ void cdCanvasClipArea(cdCanvas* canvas, int xmin, int xmax, int ymin, int ymax)
     return;
 
   if (canvas->cxClipArea)
+  {
     canvas->cxClipArea(canvas->ctxcanvas, xmin, xmax, ymin, ymax);
+
+    canvas->clip_frect.xmin = (double)xmin;
+    canvas->clip_frect.xmax = (double)xmax;
+    canvas->clip_frect.ymin = (double)ymin;
+    canvas->clip_frect.ymax = (double)ymax;
+  }
   else if (canvas->cxFClipArea)
-    canvas->cxFClipArea(canvas->ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
+  {
+    double xmin_d = (double)xmin;
+    double xmax_d = (double)xmax;
+    double ymin_d = (double)ymin;
+    double ymax_d = (double)ymax;
+
+    /* try to include the integer lines in half pixel */
+    if (!canvas->use_matrix)
+    { 
+      xmin_d -= 0.5;
+      ymin_d -= 0.5;
+      xmax_d += 0.5;
+      ymax_d += 0.5;
+    }
+
+    canvas->cxFClipArea(canvas->ctxcanvas, xmin_d, xmax_d, ymin_d, ymax_d);
+
+    canvas->clip_frect.xmin = xmin_d;
+    canvas->clip_frect.xmax = xmax_d;
+    canvas->clip_frect.ymin = ymin_d;
+    canvas->clip_frect.ymax = ymax_d;
+  }
 
   canvas->clip_rect.xmin = xmin;
   canvas->clip_rect.xmax = xmax;
   canvas->clip_rect.ymin = ymin;
   canvas->clip_rect.ymax = ymax;
-  canvas->clip_frect.xmin = (double)xmin;
-  canvas->clip_frect.xmax = (double)xmax;
-  canvas->clip_frect.ymin = (double)ymin;
-  canvas->clip_frect.ymax = (double)ymax;
 }
 
 int cdCanvasGetClipArea(cdCanvas* canvas, int *xmin, int *xmax, int *ymin, int *ymax)
@@ -152,16 +176,16 @@ void cdfCanvasClipArea(cdCanvas* canvas, double xmin, double xmax, double ymin, 
   if (canvas->cxFClipArea)
     canvas->cxFClipArea(canvas->ctxcanvas, xmin, xmax, ymin, ymax);
   else if (canvas->cxClipArea)
-    canvas->cxClipArea(canvas->ctxcanvas, _cdRound(xmin), _cdRound(xmax), _cdRound(ymin), _cdRound(ymax));
+    canvas->cxClipArea(canvas->ctxcanvas, (int)floor(xmin), (int)ceil(xmax), (int)floor(ymin), (int)ceil(ymax));
 
   canvas->clip_frect.xmin = xmin;
   canvas->clip_frect.xmax = xmax;
   canvas->clip_frect.ymin = ymin;
   canvas->clip_frect.ymax = ymax;
-  canvas->clip_rect.xmin = _cdRound(xmin);
-  canvas->clip_rect.xmax = _cdRound(xmax);
-  canvas->clip_rect.ymin = _cdRound(ymin);
-  canvas->clip_rect.ymax = _cdRound(ymax);
+  canvas->clip_rect.xmin = (int)floor(xmin);
+  canvas->clip_rect.xmax = (int)ceil(xmax);
+  canvas->clip_rect.ymin = (int)floor(ymin);
+  canvas->clip_rect.ymax = (int)ceil(ymax);
 }
 
 int cdfCanvasGetClipArea(cdCanvas* canvas, double *xmin, double *xmax, double *ymin, double *ymax)
