@@ -29,6 +29,10 @@ struct _cdCtxCanvas
 
   int font_angle;
   int utf8mode;
+
+  double rotate_angle;
+  int    rotate_center_x,
+         rotate_center_y;
 };
 
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc);

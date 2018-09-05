@@ -2,12 +2,10 @@
 #include "cd_d2d.h"
 #include "cd.h"
 
-#define LINECAP_FLAT 0    /* default */
-#define LINEJOIN_MITER 0   /* default */
 
 #define checkSwapCoord(_c1, _c2) { if (_c1 > _c2) { float t = _c2; _c2 = _c1; _c1 = t; } }   /* make sure _c1 is smaller than _c2 */
 
-static void d2d_cd_init_color(dummy_D2D1_COLOR_F* c, long color)
+void d2dInitColor(dummy_D2D1_COLOR_F* c, long color)
 {
   unsigned char red, green, blue, alpha;
   cdDecodeColorAlpha(color, &red, &green, &blue, &alpha);
@@ -83,7 +81,7 @@ static dummy_ID2D1Geometry* create_arc_geometry(float cx, float cy, float rx, fl
   return (dummy_ID2D1Geometry*)g;
 }
 
-static dummy_ID2D1StrokeStyle* createStrokeStyle(const float* dashes, UINT dashesCount, UINT lineCap, UINT lineJoin)
+static dummy_ID2D1StrokeStyle* createStrokeStyleDashed(const float* dashes, UINT dashesCount, UINT lineCap, UINT lineJoin)
 {
   HRESULT hr;
   dummy_D2D1_STROKE_STYLE_PROPERTIES p;
@@ -105,30 +103,54 @@ static dummy_ID2D1StrokeStyle* createStrokeStyle(const float* dashes, UINT dashe
   return s;
 }
 
-dummy_ID2D1StrokeStyle *d2dSetLineStyle(int style)
+static dummy_ID2D1StrokeStyle* createStrokeStyle(UINT lineCap, UINT lineJoin)
 {
-  if (style == CD_DASHED)
+  HRESULT hr;
+  dummy_D2D1_STROKE_STYLE_PROPERTIES p;
+  dummy_ID2D1StrokeStyle *s;
+
+  p.startCap = (dummy_D2D1_CAP_STYLE)0;
+  p.endCap = (dummy_D2D1_CAP_STYLE)lineCap;
+  p.dashCap = (dummy_D2D1_CAP_STYLE)lineCap;
+  p.lineJoin = (dummy_D2D1_LINE_JOIN)lineJoin;
+  p.miterLimit = 1.0f;
+  p.dashStyle = dummy_D2D1_DASH_STYLE_SOLID;
+  p.dashOffset = 0.0f;
+
+  hr = dummy_ID2D1Factory_CreateStrokeStyle(d2d_cd_factory, &p, NULL, 0, &s);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+
+  return s;
+}
+
+dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_join)
+{
+  if (line_style == CD_DASHED)
   {
     float dashes[2] = { 9.0f, 3.0f };
-    return createStrokeStyle(dashes, 2, LINECAP_FLAT, LINEJOIN_MITER);
+    return createStrokeStyleDashed(dashes, 2, line_cap, line_join);  /* CD and D2D line cap and line join use the same definitions */
   }
-  else if (style == CD_DOTTED)
+  else if (line_style == CD_DOTTED)
   {
     float dashes[2] = { 1.0f, 2.0f };
-    return createStrokeStyle(dashes, 2, LINECAP_FLAT, LINEJOIN_MITER);
+    return createStrokeStyleDashed(dashes, 2, line_cap, line_join);
   }
-  else if (style == CD_DASH_DOT)
+  else if (line_style == CD_DASH_DOT)
   {
     float dashes[4] = { 7.0f, 3.0f, 1.0f, 3.0f };
-    return createStrokeStyle(dashes, 4, LINECAP_FLAT, LINEJOIN_MITER);
+    return createStrokeStyleDashed(dashes, 4, line_cap, line_join);
   }
-  else if (style == CD_DASH_DOT_DOT)
+  else if (line_style == CD_DASH_DOT_DOT)
   {
     float dashes[6] = { 7.0f, 3.0f, 1.0f, 3.0f, 1.0f, 3.0f };
-    return createStrokeStyle(dashes, 6, LINECAP_FLAT, LINEJOIN_MITER);
+    return createStrokeStyleDashed(dashes, 6, line_cap, line_join);
   }
-  else
-    return NULL;
+  else if (line_cap != CD_CAPFLAT || line_join != CD_MITER)
+    return createStrokeStyle(line_cap, line_join);
+
+  return NULL;
 }
 
 dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long color)
@@ -137,7 +159,7 @@ dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long colo
    dummy_D2D1_COLOR_F clr;
    HRESULT hr;
 
-   d2d_cd_init_color(&clr, color);
+   d2dInitColor(&clr, color);
 
    hr = dummy_ID2D1RenderTarget_CreateSolidColorBrush(target, &clr, NULL, &b);
    if (FAILED(hr)) {
@@ -213,8 +235,8 @@ void d2dDrawRect(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float
 
 void d2dDrawLine(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
-  dummy_D2D1_POINT_2F pt0 = { (float)x0, (float)y0 };
-  dummy_D2D1_POINT_2F pt1 = { (float)x1, (float)y1 };
+  dummy_D2D1_POINT_2F pt0 = { x0, y0 };
+  dummy_D2D1_POINT_2F pt1 = { x1, y1 };
   dummy_ID2D1RenderTarget_DrawLine(target, pt0, pt1, brush, fStrokeWidth, hStrokeStyle);
 }
 

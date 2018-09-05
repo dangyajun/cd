@@ -33,6 +33,49 @@ static void setClipRect(d2dCanvas *canvas, double x1, double y1, double x2, doub
   d2dSetClip(canvas, &rect);
 }
 
+static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix);
+
+static void set_rotate_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  /* ignore ROTATE if transform is set,
+  because there is native support for transformations */
+  if (ctxcanvas->canvas->use_matrix)
+    return;
+
+  if (data)
+  {
+    sscanf(data, "%lg %d %d", &ctxcanvas->rotate_angle,
+           &ctxcanvas->rotate_center_x,
+           &ctxcanvas->rotate_center_y);
+  }
+  else
+  {
+    ctxcanvas->rotate_angle = 0;
+    ctxcanvas->rotate_center_x = 0;
+    ctxcanvas->rotate_center_y = 0;
+  }
+
+  cdtransform(ctxcanvas, NULL);
+}
+
+static char* get_rotate_attrib(cdCtxCanvas* ctxcanvas)
+{
+  static char data[100];
+
+  sprintf(data, "%g %d %d", ctxcanvas->rotate_angle,
+          ctxcanvas->rotate_center_x,
+          ctxcanvas->rotate_center_y);
+
+  return data;
+}
+
+static cdAttribute rotate_attrib =
+{
+  "ROTATE",
+  set_rotate_attrib,
+  get_rotate_attrib
+};
+
 static void set_utf8mode_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (!data || data[0] == '0')
@@ -72,6 +115,7 @@ cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
   ctxcanvas->d2d_canvas = NULL;
 
   cdRegisterAttribute(canvas, &utf8mode_attrib);
+  cdRegisterAttribute(canvas, &rotate_attrib);
 
   return ctxcanvas;
 }
@@ -98,50 +142,96 @@ void cdwd2dUpdateCanvas(cdCtxCanvas* ctxcanvas)
   if (ctxcanvas->stroke_style)
     dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
-  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style);
+  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
+
+  cdtransform(ctxcanvas, ctxcanvas->canvas->use_matrix ? ctxcanvas->canvas->matrix : NULL);
+}
+
+static void sSetTransform(cdCtxCanvas *ctxcanvas, const double* matrix)
+{
+  if (matrix)
+  {
+    dummy_D2D1_MATRIX_3X2_F mtx;
+
+    /* configure a bottom-up coordinate system */
+    mtx._11 = 1.0f; mtx._12 = 0.0f;
+    mtx._21 = 0.0f; mtx._22 = -1.0f;
+    mtx._31 = 0.0f; mtx._32 = (float)(ctxcanvas->canvas->h - 1);
+    d2dApplyTransform(ctxcanvas->d2d_canvas->target, &mtx);
+
+    mtx._11 = (float)matrix[0]; mtx._12 = (float)matrix[1];
+    mtx._21 = (float)matrix[2]; mtx._22 = (float)matrix[3];
+    mtx._31 = (float)matrix[4]; mtx._32 = (float)matrix[5];
+    d2dApplyTransform(ctxcanvas->d2d_canvas->target, &mtx);
+  }
+  else if (ctxcanvas->rotate_angle)
+  {
+    /* rotation = translate to point + rotation + translate back */
+    /* the rotation must be corrected because of the Y axis orientation */
+    d2dRotateWorld(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->rotate_center_x, (float)_cdInvertYAxis(ctxcanvas->canvas, ctxcanvas->rotate_center_y), (float)-ctxcanvas->rotate_angle);
+  }
+}
+
+static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
+{
+  /* reset to identity */
+  d2dResetTransform(ctxcanvas->d2d_canvas->target);
+
+  if (matrix)
+    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis inversion */
+  else
+    ctxcanvas->canvas->invert_yaxis = 1;
+
+  sSetTransform(ctxcanvas, matrix);
 }
 
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode);
 
 static void cdclear(cdCtxCanvas* ctxcanvas)
 {
-  dummy_ID2D1Brush *brush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, ctxcanvas->canvas->background);
-
-  if (ctxcanvas->canvas->clip_mode != CD_CLIPOFF)
-    cdclip(ctxcanvas, CD_CLIPOFF);
-  
-  d2dFillRect(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, -0.5f, -0.5f, (float)ctxcanvas->canvas->w - 1 + 0.5f, (float)ctxcanvas->canvas->h - 1 + 0.5f);
-
-  if (ctxcanvas->canvas->clip_mode != CD_CLIPOFF)
-    cdclip(ctxcanvas, ctxcanvas->canvas->clip_mode);
-
-  dummy_ID2D1Brush_Release(brush);
+  dummy_D2D1_COLOR_F c;
+  d2dInitColor(&c, ctxcanvas->canvas->background);
+  dummy_ID2D1RenderTarget_Clear(ctxcanvas->d2d_canvas->target, &c);
 }
 
 static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
 {
-  if (!ctxcanvas->brush)
-    ctxcanvas->brush = (dummy_ID2D1Brush*)d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
-  else if (color != ctxcanvas->canvas->foreground)
-  {
+  if (ctxcanvas->brush)
     dummy_ID2D1Brush_Release(ctxcanvas->brush);
-    ctxcanvas->brush = (dummy_ID2D1Brush*)d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
-  }
+
+  ctxcanvas->brush = (dummy_ID2D1Brush*)d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
 
   return color;
 }
 
 static int cdlinestyle(cdCtxCanvas* ctxcanvas, int style)
 {
-  if (!ctxcanvas->stroke_style)
-    ctxcanvas->stroke_style = d2dSetLineStyle(style);
-  else if (style != ctxcanvas->canvas->line_style)
-  {
+  if (ctxcanvas->stroke_style)
     dummy_ID2D1Brush_Release(ctxcanvas->stroke_style);
-    ctxcanvas->stroke_style = d2dSetLineStyle(style);
-  }
+
+  ctxcanvas->stroke_style = d2dSetLineStyle(style, ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
 
   return style;
+}
+
+static int cdlinecap(cdCtxCanvas* ctxcanvas, int cap)
+{
+  if (ctxcanvas->stroke_style)
+    dummy_ID2D1Brush_Release(ctxcanvas->stroke_style);
+
+  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, cap, ctxcanvas->canvas->line_join);
+
+  return cap;
+}
+
+static int cdlinejoin(cdCtxCanvas* ctxcanvas, int join)
+{
+  if (ctxcanvas->stroke_style)
+    dummy_ID2D1Brush_Release(ctxcanvas->stroke_style);
+
+  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, ctxcanvas->canvas->line_cap, join);
+
+  return join;
 }
 
 static void cdfpixel(cdCtxCanvas* ctxcanvas, double x, double y, long int color)
@@ -556,7 +646,7 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
 
   /* restore settings */
   if (ctxcanvas->canvas->text_orientation)
-    d2dResetTransform(ctxcanvas->d2d_canvas->target);
+    cdtransform(ctxcanvas, ctxcanvas->canvas->use_matrix ? ctxcanvas->canvas->matrix : NULL);
 }
 
 static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *s, int len)
@@ -690,13 +780,15 @@ void cdwd2dInitTable(cdCanvas* canvas)
   canvas->cxFClipArea = cdfcliparea;
   canvas->cxForeground = cdforeground;
   canvas->cxLineStyle = cdlinestyle;
+  canvas->cxLineCap = cdlinecap;
+  canvas->cxLineJoin = cdlinejoin;
+  canvas->cxTransform = cdtransform;
 }
 
-//TODO (ver cairo ou pdf)
-// canvas->cxTransform = cdtransform;
-// 1) line join, line cap
-// 2) polygon - CD_PATH, CD_BEZIER, FillRule?, holes
-// 3) clip - CD_CLIPPOLYGON
+//TODO
+// warning C4204: nonstandard extension used : non-constant aggregate initializer
+// polygon - CD_PATH, CD_BEZIER, FillRule?, holes
+// clip - CD_CLIPPOLYGON
 // hatch, pattern e stipple?
-// LINEGRADIENT, RADIALGRADIENT, IMGINTERP, ROTATE
+// LINEGRADIENT, RADIALGRADIENT, IMGINTERP, ANTIALIAS
 // regions?
