@@ -173,7 +173,7 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
     fprintf(ctxcanvas->file, "<g transform=\"matrix(%g %g %g %g %g %g)\">\n", xmatrix[0], xmatrix[1], xmatrix[2], xmatrix[3], xmatrix[4], xmatrix[5]);
     ctxcanvas->transform_control = 1;
 
-    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis invertion */
+    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis inversion */
   }
   else
     ctxcanvas->canvas->invert_yaxis = 1;

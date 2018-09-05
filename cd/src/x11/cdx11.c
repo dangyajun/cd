@@ -2248,7 +2248,7 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
     ctxcanvas->xmatrix[5] = (ctxcanvas->canvas->h-1); 
     cdMatrixMultiply(matrix, ctxcanvas->xmatrix);
 
-    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis invertion */
+    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis inversion */
     /* but this is different than a native transformation support,
        because does not affect native functions */
   }

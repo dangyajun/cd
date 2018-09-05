@@ -1681,7 +1681,7 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
   ctxcanvas->graphics->ResetTransform(); // reset to the identity.
 
   if (matrix)
-    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis invertion */
+    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis inversion */
   else
     ctxcanvas->canvas->invert_yaxis = 1;
 
