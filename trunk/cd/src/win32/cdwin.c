@@ -1144,7 +1144,7 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
     xForm.eDy  = (FLOAT)(ctxcanvas->canvas->h-1); 
     ModifyWorldTransform(ctxcanvas->hDC, &xForm, MWT_LEFTMULTIPLY);
 
-    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis invertion */
+    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis inversion */
 
     xForm.eM11 = (FLOAT)matrix[0]; 
     xForm.eM12 = (FLOAT)matrix[1];

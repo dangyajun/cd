@@ -645,9 +645,10 @@ static void sSetTransform(cdCtxCanvas *ctxcanvas, const double* matrix)
 static void cdclear(cdCtxCanvas* ctxcanvas)
 {
   cairo_save (ctxcanvas->cr);
-  cairo_identity_matrix(ctxcanvas->cr);
 
+  cairo_identity_matrix(ctxcanvas->cr);
   cairo_reset_clip(ctxcanvas->cr);
+
   sCairoRectangleWH(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
   cairo_clip(ctxcanvas->cr);
   cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), cdCairoGetAlpha(ctxcanvas->canvas->background));
@@ -1888,7 +1889,7 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
     cairo_scale(ctxcanvas->cr, 0.25, 0.25);  /* ??? */
 
   if (matrix)
-    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis invertion */
+    ctxcanvas->canvas->invert_yaxis = 0;  /* let the transformation do the axis inversion */
   else
     ctxcanvas->canvas->invert_yaxis = 1;
 
