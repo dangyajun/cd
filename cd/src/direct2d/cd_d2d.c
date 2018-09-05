@@ -273,7 +273,7 @@ static void matrix_mult(dummy_D2D1_MATRIX_3X2_F* res, const dummy_D2D1_MATRIX_3X
   res->_32 = a->_31 * b->_12 + a->_32 * b->_22 + b->_32;
 }
 
-static void apply_transform(dummy_ID2D1RenderTarget* target, const dummy_D2D1_MATRIX_3X2_F* matrix)
+void d2dApplyTransform(dummy_ID2D1RenderTarget* target, const dummy_D2D1_MATRIX_3X2_F* matrix)
 {
   dummy_D2D1_MATRIX_3X2_F res;
   dummy_D2D1_MATRIX_3X2_F old_matrix;
@@ -286,6 +286,7 @@ static void apply_transform(dummy_ID2D1RenderTarget* target, const dummy_D2D1_MA
 void d2dRotateWorld(dummy_ID2D1RenderTarget *target, float cx, float cy, float fAngle)
 {
   dummy_D2D1_MATRIX_3X2_F m;
+
   float a_rads = fAngle * (PI / 180.0f);
   float a_sin = sinf(a_rads);
   float a_cos = cosf(a_rads);
@@ -294,7 +295,8 @@ void d2dRotateWorld(dummy_ID2D1RenderTarget *target, float cx, float cy, float f
   m._21 = -a_sin; m._22 = a_cos;
   m._31 = cx - cx*a_cos + cy*a_sin;
   m._32 = cy - cx*a_sin - cy*a_cos;
-  apply_transform(target, &m);
+
+  d2dApplyTransform(target, &m);
 }
 
 void d2dResetClip(d2dCanvas* c)

@@ -68,6 +68,7 @@ void d2dShutdown(void);
 d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl);
 void d2dResetTransform(dummy_ID2D1RenderTarget* target);
 void d2dRotateWorld(dummy_ID2D1RenderTarget *target, float cx, float cy, float fAngle);
+void d2dApplyTransform(dummy_ID2D1RenderTarget* target, const dummy_D2D1_MATRIX_3X2_F* matrix);
 void d2dSetClip(d2dCanvas *canvas, const dummy_D2D1_RECT_F* pRect);
 void d2dResetClip(d2dCanvas* c);
 
@@ -82,7 +83,8 @@ void d2dFontGetMetrics(d2dFont *font, d2dFontMetrics *pMetrics);
 void d2dFontMeasureString(d2dFont *hFont, const WCHAR* pszText, int iTextLength, int *w, int *h);
 
 dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long color);
-dummy_ID2D1StrokeStyle *d2dSetLineStyle(int style);
+dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_join);
+void d2dInitColor(dummy_D2D1_COLOR_F* c, long color);
 
 void d2dDrawText(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x, float y, float w, float h, const WCHAR* pszText, int iTextLength, d2dFont *font);
 void d2dDrawLine(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
