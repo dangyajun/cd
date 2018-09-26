@@ -1022,6 +1022,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
         SetPolyFillMode(ctxcanvas->hDC, ctxcanvas->canvas->fill_mode==CD_EVENODD?ALTERNATE:WINDING);
         EndPath(ctxcanvas->hDC);
         SelectClipPath(ctxcanvas->hDC, RGN_AND);
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }

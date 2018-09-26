@@ -1166,6 +1166,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
       case CD_PATH_CLIP:
         cairo_set_fill_rule(ctxcanvas->cr, ctxcanvas->canvas->fill_mode==CD_EVENODD? CAIRO_FILL_RULE_EVEN_ODD: CAIRO_FILL_RULE_WINDING);
         cairo_clip(ctxcanvas->cr);
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }
@@ -1321,6 +1322,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
       case CD_PATH_CLIP:
         cairo_set_fill_rule(ctxcanvas->cr, ctxcanvas->canvas->fill_mode==CD_EVENODD? CAIRO_FILL_RULE_EVEN_ODD: CAIRO_FILL_RULE_WINDING);
         cairo_clip(ctxcanvas->cr);
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }

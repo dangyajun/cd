@@ -1494,6 +1494,7 @@ static const struct cdlua5_constant cdlibconstant[] = {
   {"CLIPAREA"   , CD_CLIPAREA},
   {"CLIPPOLYGON", CD_CLIPPOLYGON},
   {"CLIPREGION" , CD_CLIPREGION},
+  {"CLIPPATH"   , CD_CLIPPATH },
 
   /* region combine mode */
   {"UNION"       , CD_UNION},

@@ -990,6 +990,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
           break;
         case CD_PATH_CLIP:
           ctxcanvas->graphics->SetClip(graphics_path, CombineModeIntersect);
+          ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
           break;
         }
       }
@@ -1214,6 +1215,7 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
           break;
         case CD_PATH_CLIP:
           ctxcanvas->graphics->SetClip(graphics_path, CombineModeIntersect);
+          ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
           break;
         }
       }

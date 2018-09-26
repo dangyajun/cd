@@ -1189,6 +1189,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
           fprintf(ctxcanvas->file, "closepath eoclip\n");
         else
           fprintf(ctxcanvas->file, "closepath clip\n");
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }
@@ -1381,6 +1382,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
           fprintf(ctxcanvas->file, "C eoclip\n");
         else
           fprintf(ctxcanvas->file, "C clip\n");
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }

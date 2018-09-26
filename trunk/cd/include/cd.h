@@ -279,7 +279,8 @@ enum {                          /* clip mode */
  CD_CLIPOFF,
  CD_CLIPAREA,
  CD_CLIPPOLYGON,
- CD_CLIPREGION
+ CD_CLIPREGION,
+ CD_CLIPPATH
 };
 
 enum {                          /* region combine mode */

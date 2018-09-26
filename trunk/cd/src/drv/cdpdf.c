@@ -635,6 +635,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
         break;
       case CD_PATH_CLIP:
         PDF_clip(ctxcanvas->pdf);
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }
@@ -805,6 +806,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
         break;
       case CD_PATH_CLIP:
         PDF_clip(ctxcanvas->pdf);
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         break;
       }
     }

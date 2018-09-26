@@ -22,7 +22,7 @@
 
 canvas:Clip(mode: number) -&gt; (old_mode: number) [in Lua]</pre>
     <p>Activates or deactivates clipping. Returns the previous status. Values: <b>CD_CLIPAREA, 
-        CD_CLIPPOLYGON, CD_CLIPREGION</b> or <b>CD_CLIPOFF</b>. The value <b>CD_QUERY</b>
+        CD_CLIPPOLYGON, CD_CLIPREGION, CD_CLIPPATH</b> (read-only) or <b>CD_CLIPOFF</b>. The value <b>CD_QUERY</b>
       simply returns the current status. Default value: <b>CD_CLIPOFF</b>.</p>
     <p>The value <b>CD_CLIPAREA</b> activates a rectangular area as the clipping 
       region.
@@ -35,6 +35,8 @@ canvas:Clip(mode: number) -&gt; (old_mode: number) [in Lua]</pre>
       polygon.</p>
     <p>The value <b>CD_CLIPREGION</b> activates a complex clipping region. See the 
       documentation of <a href="region.html">Regions</a>.</p>
+		<p>The value <b>CD_CLIPPATH</b> is set only when a Path is created and 
+		ends with a <strong>CD_PATH_CLIP.</strong> (since 5.12)</p>
 	<p>The defined clipping area, polygon and complex regions are stored 
 	internally, so you may define them independently and switch between area, 
 	polygon and complex region without having to define them again. Also if the 
