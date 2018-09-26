@@ -129,7 +129,8 @@ canvas:PathSet(action: number) [in Lua]</pre>
 	attributes, strokes the path with the current line attributes, then the path 
 	is discarded.</li>
 	<li><strong>CD_PATH_CLIP</strong> - use the path as a clipping area to be 
-	intersected with the current clipping area, then the path is discarded.</li>
+	intersected with the current clipping area, then the path is discarded. This 
+	will also set the current clip mode to CD_CLIPPATH (since 5.12)</li>
 	</ul>
 	
 

@@ -524,6 +524,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
         fprintf(ctxcanvas->file, "</clipPath>\n");
         ctxcanvas->clip_polygon = 1;
         cdclip(ctxcanvas, CD_CLIPPOLYGON);
+        ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
         end_path = 1;
         break;
       }

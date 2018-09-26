@@ -22,14 +22,14 @@ int cdCanvasClip(cdCanvas* canvas, int mode)
   int clip_mode;
 
   assert(canvas);
-  assert(mode==CD_QUERY || (mode>=CD_CLIPOFF && mode<=CD_CLIPREGION));
+  assert(mode == CD_QUERY || (mode >= CD_CLIPOFF && mode <= CD_CLIPPATH));
   if (!_cdCheckCanvas(canvas)) return CD_ERROR;
-  if (mode<CD_QUERY || mode>CD_CLIPREGION) return CD_ERROR;
+  if (mode<CD_QUERY || mode>CD_CLIPPATH) return CD_ERROR;
 
   clip_mode = canvas->clip_mode;
 
   if (mode == CD_QUERY || 
-      mode == clip_mode || 
+      mode == clip_mode || mode == CD_CLIPPATH ||
       (mode == CD_CLIPPOLYGON && !canvas->clip_poly && !canvas->clip_fpoly))
     return clip_mode;
 
