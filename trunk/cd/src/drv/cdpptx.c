@@ -602,33 +602,32 @@ static void getPolyBBox(cdCtxCanvas *ctxcanvas, cdPoint* poly, int n, int mode, 
         break;
       case CD_PATH_ARC:
       {
-                        int xc, yc, w, h;
-                        double a1, a2;
-                        int xmn, xmx, ymn, ymx;
+        int xc, yc, w, h;
+        double a1, a2;
+        int xmn, xmx, ymn, ymx;
 
-                        if (i + 3 > n) return;
+        if (i + 3 > n) return;
 
-                        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
-                          return;
+        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
+          return;
 
-                        cdGetArcBox(xc, yc, w, h, a1, a2, &xmn, &xmx, &ymn, &ymx);
+        cdGetArcBox(xc, yc, w, h, a1, a2, &xmn, &xmx, &ymn, &ymx);
 
-                        x = xmn;
-                        y = ymn;
-                        _BBOX();
-                        x = xmx;
-                        y = ymn;
-                        _BBOX();
-                        x = xmx;
-                        y = ymx;
-                        _BBOX();
-                        x = xmn;
-                        y = ymx;
-                        _BBOX();
+        x = xmn;
+        y = ymn;
+        _BBOX();
+        x = xmx;
+        y = ymn;
+        _BBOX();
+        x = xmx;
+        y = ymx;
+        _BBOX();
+        x = xmn;
+        y = ymx;
+        _BBOX();
 
-
-                        i += 3;
-                        break;
+        i += 3;
+        break;
       }
       case CD_PATH_CURVETO:
         if (i + 3 > n) return;
@@ -743,30 +742,30 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
         break;
       case CD_PATH_ARC:
       {
-                        int xc, yc, w, h;
-                        double a1, a2, angle1, angle2;
-                        int arcStartX, arcStartY, arcEndX, arcEndY;
+        int xc, yc, w, h;
+        double a1, a2, angle1, angle2;
+        int arcStartX, arcStartY, arcEndX, arcEndY;
 
-                        if (i + 3 > n) return;
+        if (i + 3 > n) return;
 
-                        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
-                          return;
+        if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
+          return;
 
-                        i += 3;
+        i += 3;
 
-                        if (ctxcanvas->canvas->invert_yaxis)
-                          cdGetArcStartEnd(xc, yc, w, h, -a1, -a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
-                        else
-                          cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
+        if (ctxcanvas->canvas->invert_yaxis)
+          cdGetArcStartEnd(xc, yc, w, h, -a1, -a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
+        else
+          cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
 
-                        angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
-                        angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
-                        angle2 -= angle1;
+        angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
+        angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
+        angle2 -= angle1;
 
-                        pptxLineTo(ctxcanvas->presentation, (int)arcStartX - xmin, (int)arcStartY - ymin);
+        pptxLineTo(ctxcanvas->presentation, (int)arcStartX - xmin, (int)arcStartY - ymin);
 
-                        pptxArcTo(ctxcanvas->presentation, h / 2, w / 2, angle1, angle2);
-                        break;
+        pptxArcTo(ctxcanvas->presentation, h / 2, w / 2, angle1, angle2);
+        break;
       }
       case CD_PATH_CURVETO:
         if (i + 3 > n) return;

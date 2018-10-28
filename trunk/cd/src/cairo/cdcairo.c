@@ -1284,6 +1284,8 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
             cairo_scale(ctxcanvas->cr, w/h, 1.0);
             cairo_translate(ctxcanvas->cr, -xc, -yc);
 
+            /* cairo_arc already includes an initial line segment */
+
             if ((a2-a1)<0)
               cairo_arc_negative(ctxcanvas->cr, xc, yc, 0.5*h, a1, a2);
             else

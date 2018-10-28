@@ -889,7 +889,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
   {
   case CD_PATH:
     {
-      int p, i, current_x = 0, current_y = 0, current_set = 0;
+      int p, i, current_pt_x = 0, current_pt_y = 0, current_pt_set = 0;
       GraphicsPath* graphics_path;
       PointF lastPoint;
 
@@ -904,22 +904,22 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
         case CD_PATH_NEW:
           graphics_path->Reset();
           graphics_path->SetFillMode(ctxcanvas->canvas->fill_mode==CD_EVENODD?FillModeAlternate:FillModeWinding);
-          current_set = 0;
+          current_pt_set = 0;
           break;
         case CD_PATH_MOVETO:
           if (i+1 > n) break;
-          current_x = poly[i].x;
-          current_y = poly[i].y;
-          current_set = 1;
+          current_pt_x = poly[i].x;
+          current_pt_y = poly[i].y;
+          current_pt_set = 1;
           i++;
           break;
         case CD_PATH_LINETO:
           if (i+1 > n) break;
-          if (current_set)
-            graphics_path->AddLine(current_x, current_y, poly[i].x, poly[i].y);
-          current_x = poly[i].x;
-          current_y = poly[i].y;
-          current_set = 1;
+          if (current_pt_set)
+            graphics_path->AddLine(current_pt_x, current_pt_y, poly[i].x, poly[i].y);
+          current_pt_x = poly[i].x;
+          current_pt_y = poly[i].y;
+          current_pt_set = 1;
           i++;
           break;
         case CD_PATH_ARC:
@@ -932,7 +932,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
             if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
               return;
 
-            if (current_set)
+            if (current_pt_set)
             {
               int StartX, StartY;
 
@@ -941,7 +941,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
               else
                 cdGetArcStartEnd(xc, yc, w, h, a1, a2, &StartX, &StartY, NULL, NULL);
 
-              graphics_path->AddLine(current_x, current_y, StartX, StartY);
+              graphics_path->AddLine(current_pt_x, current_pt_y, StartX, StartY);
             }
 
             Rect rect(xc - w/2, yc - h/2, w, h);
@@ -954,25 +954,25 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
             }
 
             graphics_path->GetLastPoint(&lastPoint);
-            current_x = (int)lastPoint.X;
-            current_y = (int)lastPoint.Y;
-            current_set = 1;
+            current_pt_x = (int)lastPoint.X;
+            current_pt_y = (int)lastPoint.Y;
+            current_pt_set = 1;
 
             i += 3;
           }
           break;
         case CD_PATH_CURVETO:
           if (i+3 > n) break;
-          if (!current_set)
+          if (!current_pt_set)
           {
-            current_x = poly[i].x;
-            current_y = poly[i].y;
+            current_pt_x = poly[i].x;
+            current_pt_y = poly[i].y;
           }
-          graphics_path->AddBezier(current_x, current_y, poly[i].x, poly[i].y, poly[i+1].x, poly[i+1].y, poly[i+2].x, poly[i+2].y);
+          graphics_path->AddBezier(current_pt_x, current_pt_y, poly[i].x, poly[i].y, poly[i+1].x, poly[i+1].y, poly[i+2].x, poly[i+2].y);
           graphics_path->GetLastPoint(&lastPoint);
-          current_x = (int)lastPoint.X;
-          current_y = (int)lastPoint.Y;
-          current_set = 1;
+          current_pt_x = (int)lastPoint.X;
+          current_pt_y = (int)lastPoint.Y;
+          current_pt_set = 1;
           i += 3;
           break;
         case CD_PATH_CLOSE:
@@ -1113,8 +1113,8 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
   {
   case CD_PATH:
     {
-      int p, i, current_set = 0;
-      double current_x = 0, current_y = 0;
+      int p, i, current_pt_set = 0;
+      double current_pt_x = 0, current_pt_y = 0;
       GraphicsPath* graphics_path;
       PointF lastPoint;
 
@@ -1129,22 +1129,22 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
         case CD_PATH_NEW:
           graphics_path->Reset();
           graphics_path->SetFillMode(ctxcanvas->canvas->fill_mode==CD_EVENODD?FillModeAlternate:FillModeWinding);
-          current_set = 0;
+          current_pt_set = 0;
           break;
         case CD_PATH_MOVETO:
           if (i+1 > n) break;
-          current_x = poly[i].x;
-          current_y = poly[i].y;
-          current_set = 1;
+          current_pt_x = poly[i].x;
+          current_pt_y = poly[i].y;
+          current_pt_set = 1;
           i++;
           break;
         case CD_PATH_LINETO:
           if (i+1 > n) break;
-          if (current_set)
-            graphics_path->AddLine((REAL)current_x, (REAL)current_y, (REAL)poly[i].x, (REAL)poly[i].y);
-          current_x = poly[i].x;
-          current_y = poly[i].y;
-          current_set = 1;
+          if (current_pt_set)
+            graphics_path->AddLine((REAL)current_pt_x, (REAL)current_pt_y, (REAL)poly[i].x, (REAL)poly[i].y);
+          current_pt_x = poly[i].x;
+          current_pt_y = poly[i].y;
+          current_pt_set = 1;
           i++;
           break;
         case CD_PATH_ARC:
@@ -1157,7 +1157,7 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
             if (!cdfGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
               return;
 
-            if (current_set)
+            if (current_pt_set)
             {
               double StartX, StartY;
 
@@ -1166,7 +1166,7 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
               else
                 cdfGetArcStartEnd(xc, yc, w, h, a1, a2, &StartX, &StartY, NULL, NULL);
 
-              graphics_path->AddLine((REAL)current_x, (REAL)current_y, (REAL)StartX, (REAL)StartY);
+              graphics_path->AddLine((REAL)current_pt_x, (REAL)current_pt_y, (REAL)StartX, (REAL)StartY);
             }
 
             RectF rect((REAL)(xc - w/2.0), (REAL)(yc - h/2.0), (REAL)w, (REAL)h);
@@ -1179,25 +1179,25 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
             }
 
             graphics_path->GetLastPoint(&lastPoint);
-            current_x = lastPoint.X;
-            current_y = lastPoint.Y;
-            current_set = 1;
+            current_pt_x = lastPoint.X;
+            current_pt_y = lastPoint.Y;
+            current_pt_set = 1;
 
             i += 3;
           }
           break;
         case CD_PATH_CURVETO:
           if (i+3 > n) break;
-          if (!current_set)
+          if (!current_pt_set)
           {
-            current_x = poly[i].x;
-            current_y = poly[i].y;
+            current_pt_x = poly[i].x;
+            current_pt_y = poly[i].y;
           }
-          graphics_path->AddBezier((REAL)current_x, (REAL)current_y, (REAL)poly[i].x, (REAL)poly[i].y, (REAL)poly[i+1].x, (REAL)poly[i+1].y, (REAL)poly[i+2].x, (REAL)poly[i+2].y);
+          graphics_path->AddBezier((REAL)current_pt_x, (REAL)current_pt_y, (REAL)poly[i].x, (REAL)poly[i].y, (REAL)poly[i+1].x, (REAL)poly[i+1].y, (REAL)poly[i+2].x, (REAL)poly[i+2].y);
           graphics_path->GetLastPoint(&lastPoint);
-          current_x = lastPoint.X;
-          current_y = lastPoint.Y;
-          current_set = 1;
+          current_pt_x = lastPoint.X;
+          current_pt_y = lastPoint.Y;
+          current_pt_set = 1;
           i += 3;
           break;
         case CD_PATH_CLOSE:

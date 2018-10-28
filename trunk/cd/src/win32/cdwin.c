@@ -931,11 +931,11 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
 
   if (mode == CD_PATH)
   {
-    int p, current_set;
+    int p, current_pt_set;
 
     /* if there is any current path, remove it */
     BeginPath(ctxcanvas->hDC);
-    current_set = 0;
+    current_pt_set = 0;
 
     i = 0;
     for (p=0; p<ctxcanvas->canvas->path_n; p++)
@@ -945,18 +945,18 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
       case CD_PATH_NEW:
         EndPath(ctxcanvas->hDC);
         BeginPath(ctxcanvas->hDC);
-        current_set = 0;
+        current_pt_set = 0;
         break;
       case CD_PATH_MOVETO:
         if (i+1 > n) return;
         MoveToEx(ctxcanvas->hDC, poly[i].x, poly[i].y, NULL);
-        current_set = 1;
+        current_pt_set = 1;
         i++;
         break;
       case CD_PATH_LINETO:
         if (i+1 > n) return;
         LineTo(ctxcanvas->hDC, poly[i].x, poly[i].y);
-        current_set = 1;
+        current_pt_set = 1;
         i++;
         break;
       case CD_PATH_ARC:
@@ -972,12 +972,12 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
 
           sCalcArc(ctxcanvas->canvas, xc, yc, w, h, a1, a2, &arc, 0);
 
-          if (current_set)
+          if (current_pt_set)
             LineTo(ctxcanvas->hDC, arc.XStartArc, arc.YStartArc);
           
           if ((a2-a1)<0) /* can be clockwise */
           {
-            /* Arc behave diferent when GM_ADVANCED is set */
+            /* Arc behave different when GM_ADVANCED is set */
             old_arcmode = SetArcDirection(ctxcanvas->hDC, ctxcanvas->canvas->invert_yaxis? AD_CLOCKWISE: AD_COUNTERCLOCKWISE);
           }
 
@@ -986,7 +986,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
           if (old_arcmode) /* restore */
             SetArcDirection(ctxcanvas->hDC, old_arcmode);
 
-          current_set = 1;
+          current_pt_set = 1;
 
           i += 3;
         }
@@ -994,7 +994,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
       case CD_PATH_CURVETO:
         if (i+3 > n) return;
         PolyBezierTo(ctxcanvas->hDC, (POINT*)(poly + i), 3);
-        current_set = 1;
+        current_pt_set = 1;
         i += 3;
         break;
       case CD_PATH_CLOSE:
