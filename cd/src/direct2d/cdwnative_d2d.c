@@ -91,7 +91,7 @@ static d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFla
   return c;
 }
 
-static void cddeactivate(cdCtxCanvas *ctxcanvas)
+static void d2dReleaseTarget(cdCtxCanvas *ctxcanvas)
 {
   if (ctxcanvas->d2d_canvas)
   {
@@ -109,7 +109,7 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
   if (!ctxcanvas->hWnd && !ctxcanvas->hDC)
     return CD_ERROR;
 
-  cddeactivate(ctxcanvas);
+  d2dReleaseTarget(ctxcanvas);
 
   if (ctxcanvas->hWnd)
   {
@@ -160,7 +160,7 @@ static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
   if (ctxcanvas->hDC && ctxcanvas->release_dc)
     ReleaseDC(NULL, ctxcanvas->hDC);  /* to match GetDC(NULL) */
 
-  cddeactivate(ctxcanvas);
+  d2dReleaseTarget(ctxcanvas);
 
   cdwd2dKillCanvas(ctxcanvas);
 }
@@ -225,7 +225,6 @@ static void cdinittable(cdCanvas* canvas)
 
   canvas->cxKillCanvas = cdkillcanvas;
   canvas->cxActivate = cdactivate;
-  canvas->cxDeactivate = cddeactivate;
   canvas->cxFlush = cdflush;
 }
 
