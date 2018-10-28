@@ -33,6 +33,10 @@ struct _cdCtxCanvas
   double rotate_angle;
   int    rotate_center_x,
          rotate_center_y;
+
+  dummy_ID2D1PathGeometry* clip_poly;
+  dummy_ID2D1PathGeometry *new_rgn;
+
 };
 
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc);

@@ -13,21 +13,22 @@
 static d2dCanvas* d2dCreateCanvasWithPaintStruct(HWND hWnd, DWORD dwFlags)
 {
   RECT rect;
-
-  GetClientRect(hWnd, &rect);
-
-  dummy_D2D1_RENDER_TARGET_PROPERTIES props = {
-    dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT,
-    { dummy_DXGI_FORMAT_B8G8R8A8_UNORM, dummy_D2D1_ALPHA_MODE_PREMULTIPLIED },
-    0.0f, 0.0f,
-    ((dwFlags & CANVAS_NOGDICOMPAT) ?
-    0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE),
-    dummy_D2D1_FEATURE_LEVEL_DEFAULT
-  };
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   dummy_D2D1_HWND_RENDER_TARGET_PROPERTIES props2;
   d2dCanvas* c;
   dummy_ID2D1HwndRenderTarget* target;
   HRESULT hr;
+
+  GetClientRect(hWnd, &rect);
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ?
+                 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
   props2.hwnd = hWnd;
   props2.pixelSize.width = rect.right - rect.left;
@@ -53,17 +54,19 @@ static d2dCanvas* d2dCreateCanvasWithPaintStruct(HWND hWnd, DWORD dwFlags)
 
 static d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
 {
-  dummy_D2D1_RENDER_TARGET_PROPERTIES props = {
-    dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT,
-    { dummy_DXGI_FORMAT_B8G8R8A8_UNORM, dummy_D2D1_ALPHA_MODE_PREMULTIPLIED },
-    0.0f, 0.0f,
-    ((dwFlags & CANVAS_NOGDICOMPAT) ?
-    0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE),
-    dummy_D2D1_FEATURE_LEVEL_DEFAULT
-  };
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   d2dCanvas* c;
   dummy_ID2D1DCRenderTarget* target;
   HRESULT hr;
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ?
+                 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
   hr = dummy_ID2D1Factory_CreateDCRenderTarget(d2d_cd_factory, &props, &target);
   if (FAILED(hr)) {
@@ -146,11 +149,10 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
 
 static void cdflush(cdCtxCanvas *ctxcanvas)
 {
-  HRESULT hr;
-
+  //TODO: why need this?
   d2dResetClip(ctxcanvas->d2d_canvas);
 
-  hr = dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+  dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
 }
 
 static void cdkillcanvas(cdCtxCanvas* ctxcanvas)

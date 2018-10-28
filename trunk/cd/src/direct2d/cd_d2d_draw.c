@@ -15,29 +15,45 @@ void d2dInitColor(dummy_D2D1_COLOR_F* c, long color)
   c->a = alpha / 255.0f;
 }
 
-static void d2d_cd_setup_arc_segment(dummy_D2D1_ARC_SEGMENT* arc_seg, float cx, float cy, float rx, float ry,
-                                     float base_angle, float sweep_angle)
+dummy_ID2D1PathGeometry* d2dCreateBoxGeometry(double xmin, double xmax, double ymin, double ymax)
 {
-  float sweep_rads = (base_angle + sweep_angle) * (PI / 180.0f);
+  HRESULT hr;
+  dummy_ID2D1GeometrySink *sink;
+  dummy_D2D1_POINT_2F pt;
+  dummy_ID2D1PathGeometry* g;
 
-  arc_seg->point.x = cx + rx * cosf(sweep_rads);
-  arc_seg->point.y = cy + ry * sinf(sweep_rads);
-  arc_seg->size.width = rx;
-  arc_seg->size.height = ry;
-  arc_seg->rotationAngle = 0.0f;
+  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+  if (FAILED(hr)) {
+    return NULL;
+  }
 
-  if (sweep_angle >= 0.0f)
-    arc_seg->sweepDirection = dummy_D2D1_SWEEP_DIRECTION_CLOCKWISE;
-  else
-    arc_seg->sweepDirection = dummy_D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
+  dummy_ID2D1PathGeometry_Open(g, &sink);
 
-  if (sweep_angle >= 180.0f)
-    arc_seg->arcSize = dummy_D2D1_ARC_SIZE_LARGE;
-  else
-    arc_seg->arcSize = dummy_D2D1_ARC_SIZE_SMALL;
+  pt.x = type2float(xmin);
+  pt.y = type2float(ymin);
+  dummy_ID2D1GeometrySink_BeginFigure(sink, pt, dummy_D2D1_FIGURE_BEGIN_FILLED);
+
+  pt.x = type2float(xmax);
+  pt.y = type2float(ymin);
+  dummy_ID2D1GeometrySink_AddLine(sink, pt);
+
+  pt.x = type2float(xmax);
+  pt.y = type2float(ymax);
+  dummy_ID2D1GeometrySink_AddLine(sink, pt);
+
+  pt.x = type2float(xmin);
+  pt.y = type2float(ymax);
+  dummy_ID2D1GeometrySink_AddLine(sink, pt);
+
+  dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+
+  dummy_ID2D1GeometrySink_Close(sink);
+  dummy_ID2D1GeometrySink_Release(sink);
+
+  return g;
 }
 
-static dummy_ID2D1Geometry* create_arc_geometry(float cx, float cy, float rx, float ry, float base_angle, float sweep_angle, int pie)
+dummy_ID2D1PathGeometry* d2dCreateArcGeometry(float cx, float cy, float rx, float ry, float base_angle, float sweep_angle, int pie)
 {
   dummy_ID2D1PathGeometry* g = NULL;
   dummy_ID2D1GeometrySink* s;
@@ -50,17 +66,14 @@ static dummy_ID2D1Geometry* create_arc_geometry(float cx, float cy, float rx, fl
   if (FAILED(hr)) {
     return NULL;
   }
-  hr = dummy_ID2D1PathGeometry_Open(g, &s);
-  if (FAILED(hr)) {
-    dummy_ID2D1PathGeometry_Release(g);
-    return NULL;
-  }
+
+  dummy_ID2D1PathGeometry_Open(g, &s);
 
   pt.x = cx + rx * cosf(base_rads);
   pt.y = cy + ry * sinf(base_rads);
   dummy_ID2D1GeometrySink_BeginFigure(s, pt, dummy_D2D1_FIGURE_BEGIN_FILLED);
 
-  d2d_cd_setup_arc_segment(&arc_seg, cx, cy, rx, ry, base_angle, sweep_angle);
+  d2dInitArcSegment(&arc_seg, cx, cy, rx, ry, base_angle, sweep_angle);
   dummy_ID2D1GeometrySink_AddArc(s, &arc_seg);
 
   if (pie == 2)
@@ -78,7 +91,7 @@ static dummy_ID2D1Geometry* create_arc_geometry(float cx, float cy, float rx, fl
   dummy_ID2D1GeometrySink_Close(s);
   dummy_ID2D1GeometrySink_Release(s);
 
-  return (dummy_ID2D1Geometry*)g;
+  return g;
 }
 
 static dummy_ID2D1StrokeStyle* createStrokeStyleDashed(const float* dashes, UINT dashesCount, UINT lineCap, UINT lineJoin)
@@ -154,89 +167,109 @@ dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_j
 }
 
 dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long color)
- {
-   dummy_ID2D1SolidColorBrush* b;
-   dummy_D2D1_COLOR_F clr;
-   HRESULT hr;
+{
+  dummy_ID2D1SolidColorBrush* b;
+  dummy_D2D1_COLOR_F clr;
+  HRESULT hr;
 
-   d2dInitColor(&clr, color);
+  d2dInitColor(&clr, color);
 
-   hr = dummy_ID2D1RenderTarget_CreateSolidColorBrush(target, &clr, NULL, &b);
-   if (FAILED(hr)) {
-     return NULL;
-   }
-   return (dummy_ID2D1Brush*)b;
- }
+  hr = dummy_ID2D1RenderTarget_CreateSolidColorBrush(target, &clr, NULL, &b);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+  return (dummy_ID2D1Brush*)b;
+}
 
 static void d2dFillEllipse(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry)
 {
-  dummy_D2D1_ELLIPSE e = { { cx, cy }, rx, ry };
+  dummy_D2D1_ELLIPSE e;
+
+  e.point.x = cx;
+  e.point.y = cy;
+  e.radiusX = rx;
+  e.radiusY = ry;
+
   dummy_ID2D1RenderTarget_FillEllipse(target, &e, brush);
 }
 
 static void d2dFillEllipsePie(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry,
-                    float fBaseAngle, float fSweepAngle)
+                              float fBaseAngle, float fSweepAngle)
 {
-  dummy_ID2D1Geometry* g = create_arc_geometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 1);
+  dummy_ID2D1PathGeometry* g = d2dCreateArcGeometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 1);
   if (g == NULL)
     return;
-  dummy_ID2D1RenderTarget_FillGeometry(target, g, brush, NULL);
-  dummy_ID2D1Geometry_Release(g);
+  dummy_ID2D1RenderTarget_FillGeometry(target, (dummy_ID2D1Geometry*)g, brush, NULL);
+  dummy_ID2D1PathGeometry_Release(g);
 }
 
 static void d2dFillEllipseChord(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry,
-                              float fBaseAngle, float fSweepAngle)
+                                float fBaseAngle, float fSweepAngle)
 {
-  dummy_ID2D1Geometry* g = create_arc_geometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 2);
+  dummy_ID2D1PathGeometry* g = d2dCreateArcGeometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 2);
   if (g == NULL)
     return;
-  dummy_ID2D1RenderTarget_FillGeometry(target, g, brush, NULL);
-  dummy_ID2D1Geometry_Release(g);
+  dummy_ID2D1RenderTarget_FillGeometry(target, (dummy_ID2D1Geometry*)g, brush, NULL);
+  dummy_ID2D1PathGeometry_Release(g);
 }
 
 static void d2dDrawEllipse(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry,
-                       float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+                           float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
-  dummy_D2D1_ELLIPSE e = { { cx, cy }, rx, ry };
+  dummy_D2D1_ELLIPSE e;
+
+  e.point.x = cx;
+  e.point.y = cy;
+  e.radiusX = rx;
+  e.radiusY = ry;
+
   dummy_ID2D1RenderTarget_DrawEllipse(target, &e, brush, fStrokeWidth, hStrokeStyle);
 }
 
 static void d2dDrawEllipseArc(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry,
-                          float fBaseAngle, float fSweepAngle, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
-{
-  dummy_ID2D1Geometry* g = create_arc_geometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 0);
-  if (g == NULL)
-    return;
-  dummy_ID2D1RenderTarget_DrawGeometry(target, g, brush, fStrokeWidth, hStrokeStyle);
-  dummy_ID2D1Geometry_Release(g);
-}
-
-static void d2dDrawEllipseChord(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry,
                               float fBaseAngle, float fSweepAngle, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
-  dummy_ID2D1Geometry* g = create_arc_geometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 2);
+  dummy_ID2D1PathGeometry* g = d2dCreateArcGeometry(cx, cy, rx, ry, fBaseAngle, fSweepAngle, 0);
   if (g == NULL)
     return;
-  dummy_ID2D1RenderTarget_DrawGeometry(target, g, brush, fStrokeWidth, hStrokeStyle);
-  dummy_ID2D1Geometry_Release(g);
+  dummy_ID2D1RenderTarget_DrawGeometry(target, (dummy_ID2D1Geometry*)g, brush, fStrokeWidth, hStrokeStyle);
+  dummy_ID2D1PathGeometry_Release(g);
 }
 
 void d2dFillRect(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1)
 {
-  dummy_D2D1_RECT_F r = { x0, y0, x1, y1 };
+  dummy_D2D1_RECT_F r;
+
+  r.left = x0;
+  r.top = y0;
+  r.right = x1;
+  r.bottom = y1;
+
   dummy_ID2D1RenderTarget_FillRectangle(target, &r, brush);
 }
 
 void d2dDrawRect(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
-  dummy_D2D1_RECT_F r = { x0, y0, x1, y1 };
+  dummy_D2D1_RECT_F r;
+
+  r.left = x0;
+  r.top = y0;
+  r.right = x1;
+  r.bottom = y1;
+
   dummy_ID2D1RenderTarget_DrawRectangle(target, &r, brush, fStrokeWidth, hStrokeStyle);
 }
 
 void d2dDrawLine(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
-  dummy_D2D1_POINT_2F pt0 = { x0, y0 };
-  dummy_D2D1_POINT_2F pt1 = { x1, y1 };
+  dummy_D2D1_POINT_2F pt0;
+  dummy_D2D1_POINT_2F pt1;
+
+  pt0.x = x0;
+  pt0.y = y0;
+  pt1.x = x1;
+  pt1.y = y1;
+
   dummy_ID2D1RenderTarget_DrawLine(target, pt0, pt1, brush, fStrokeWidth, hStrokeStyle);
 }
 
@@ -264,9 +297,7 @@ void d2dFillArc(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float 
     d2dFillEllipseChord(target, brush, xc, yc, w / 2.0f, h / 2.0f, baseAngle, sweepAngle);
 }
 
-#define type2float(_x) ((float)(_x))
-
-void d2dDrawPolygon(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, int* points, int count, int mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+dummy_ID2D1PathGeometry* d2dCreatePolygonGeometry(int* points, int count, int mode, int fill_mode)
 {
   dummy_ID2D1PathGeometry* g;
   dummy_ID2D1GeometrySink* sink;
@@ -275,21 +306,40 @@ void d2dDrawPolygon(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, in
   int i;
 
   hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-  if (FAILED(hr)) {
-    return;
-  }
-  hr = dummy_ID2D1PathGeometry_Open(g, &sink);
+  if (FAILED(hr))
+    return NULL;
+
+  dummy_ID2D1PathGeometry_Open(g, &sink);
+  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
 
   pt.x = type2float(points[0]);
   pt.y = type2float(points[1]);
   dummy_ID2D1GeometrySink_BeginFigure(sink, pt, dummy_D2D1_FIGURE_BEGIN_FILLED);
 
-  for (i = 2; i < count * 2; i = i + 2)
+  if (mode == CD_BEZIER)
   {
-    pt.x = type2float(points[i]);
-    pt.y = type2float(points[i + 1]);
-    dummy_ID2D1GeometrySink_AddLine(sink, pt);
+    for (i = 2; i < count * 2; i = i + 6)
+    {
+      dummy_D2D1_BEZIER_SEGMENT segment;
+      segment.point1.x = type2float(points[i]);
+      segment.point1.y = type2float(points[i + 1]);
+      segment.point2.x = type2float(points[i + 2]);
+      segment.point2.y = type2float(points[i + 3]);
+      segment.point3.x = type2float(points[i + 4]);
+      segment.point3.y = type2float(points[i + 5]);
+      dummy_ID2D1GeometrySink_AddBezier(sink, &segment);
+    }
   }
+  else
+  {
+    for (i = 2; i < count * 2; i = i + 2)
+    {
+      pt.x = type2float(points[i]);
+      pt.y = type2float(points[i + 1]);
+      dummy_ID2D1GeometrySink_AddLine(sink, pt);
+    }
+  }
+
 
   if (mode == CD_CLOSED_LINES || mode == CD_FILL)
   {
@@ -299,16 +349,14 @@ void d2dDrawPolygon(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, in
   }
 
   dummy_ID2D1GeometrySink_EndFigure(sink, (0 ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN));
+
   dummy_ID2D1GeometrySink_Close(sink);
   dummy_ID2D1GeometrySink_Release(sink);
 
-  if (mode == CD_FILL)
-    dummy_ID2D1RenderTarget_FillGeometry(target, (dummy_ID2D1Geometry*)g, brush, NULL);
-  else
-    dummy_ID2D1RenderTarget_DrawGeometry(target, (dummy_ID2D1Geometry*)g, brush, fStrokeWidth, hStrokeStyle);
+  return g;
 }
 
-void d2dDrawPolygonF(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, double* points, int count, int mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+dummy_ID2D1PathGeometry* d2dCreatePolygonGeometryF(double* points, int count, int mode, int fill_mode)
 {
   dummy_ID2D1PathGeometry* g;
   dummy_ID2D1GeometrySink* sink;
@@ -317,21 +365,40 @@ void d2dDrawPolygonF(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, d
   int i;
 
   hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-  if (FAILED(hr)) {
-    return;
-  }
-  hr = dummy_ID2D1PathGeometry_Open(g, &sink);
+  if (FAILED(hr))
+    return NULL;
+
+  dummy_ID2D1PathGeometry_Open(g, &sink);
+  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
   pt.x = type2float(points[0]);
   pt.y = type2float(points[1]);
   dummy_ID2D1GeometrySink_BeginFigure(sink, pt, dummy_D2D1_FIGURE_BEGIN_FILLED);
 
-  for (i = 2; i < count * 2; i = i + 2)
+  if (mode == CD_BEZIER)
   {
-    pt.x = type2float(points[i]);
-    pt.y = type2float(points[i + 1]);
-    dummy_ID2D1GeometrySink_AddLine(sink, pt);
+    for (i = 2; i < count * 2; i = i + 6)
+    {
+      dummy_D2D1_BEZIER_SEGMENT segment;
+      segment.point1.x = type2float(points[i]);
+      segment.point1.y = type2float(points[i + 1]);
+      segment.point2.x = type2float(points[i + 2]);
+      segment.point2.y = type2float(points[i + 3]);
+      segment.point3.x = type2float(points[i + 4]);
+      segment.point3.y = type2float(points[i + 5]);
+      dummy_ID2D1GeometrySink_AddBezier(sink, &segment);
+    }
   }
+  else
+  {
+    for (i = 2; i < count * 2; i = i + 2)
+    {
+      pt.x = type2float(points[i]);
+      pt.y = type2float(points[i + 1]);
+      dummy_ID2D1GeometrySink_AddLine(sink, pt);
+    }
+  }
+
 
   if (mode == CD_CLOSED_LINES || mode == CD_FILL)
   {
@@ -341,11 +408,453 @@ void d2dDrawPolygonF(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, d
   }
 
   dummy_ID2D1GeometrySink_EndFigure(sink, (0 ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN));
+
   dummy_ID2D1GeometrySink_Close(sink);
   dummy_ID2D1GeometrySink_Release(sink);
 
-  if (mode == CD_FILL)
-    dummy_ID2D1RenderTarget_FillGeometry(target, (dummy_ID2D1Geometry*)g, brush, NULL);
-  else
-    dummy_ID2D1RenderTarget_DrawGeometry(target, (dummy_ID2D1Geometry*)g, brush, fStrokeWidth, hStrokeStyle);
+  return g;
 }
+
+static dummy_D2D1_FIGURE_BEGIN getFigureBegin(int *path, int path_n, int current_p)
+{
+  int p;
+
+  for (p = current_p + 1; p < path_n; p++)
+  {
+    if (path[p] == CD_PATH_NEW || path[p] == CD_PATH_STROKE)
+      break;
+    if (path[p] == CD_PATH_CLOSE || path[p] == CD_PATH_FILL || path[p] == CD_PATH_FILLSTROKE || path[p] == CD_PATH_CLIP)
+      return dummy_D2D1_FIGURE_BEGIN_FILLED;
+  }
+  return dummy_D2D1_FIGURE_BEGIN_HOLLOW;
+}
+
+void d2dDrawGeometry(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, dummy_ID2D1PathGeometry* g, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+{
+  dummy_ID2D1RenderTarget_DrawGeometry(target, (dummy_ID2D1Geometry*)g, brush, fStrokeWidth, hStrokeStyle);
+}
+
+void d2dFillGeometry(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, dummy_ID2D1PathGeometry* g)
+{
+  dummy_ID2D1RenderTarget_FillGeometry(target, (dummy_ID2D1Geometry*)g, brush, NULL);
+}
+
+int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+{
+  dummy_ID2D1PathGeometry* g;
+  dummy_ID2D1GeometrySink* sink;
+  dummy_D2D1_POINT_2F pt;
+  dummy_D2D1_FIGURE_BEGIN figureBegin = dummy_D2D1_FIGURE_BEGIN_HOLLOW;
+  dummy_D2D1_ARC_SEGMENT arc_seg;
+  dummy_D2D1_BEZIER_SEGMENT segment;
+  HRESULT hr;
+  float cx, cy, w, h, a1, a2;
+  float baseAngle, sweepAngle, base_rads;
+  int i, begin_picture = 0, p, n = 2 * points_n, ret = 0;
+
+  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+  if (FAILED(hr))
+    return 0;
+
+  dummy_ID2D1PathGeometry_Open(g, &sink);
+  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
+
+  i = 0;
+  for (p = 0; p<path_n; p++)
+  {
+    switch (path[p])
+    {
+    case CD_PATH_NEW:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        dummy_ID2D1PathGeometry_Release(g); /* discard current path */
+        sink = NULL;
+        g = NULL;
+      }
+
+      if (g)
+        dummy_ID2D1PathGeometry_Release(g);
+
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
+
+      break;
+    case CD_PATH_MOVETO:
+      if (i + 1*2 > n) return ret;
+      pt.x = type2float(points[i++]);
+      pt.y = type2float(points[i++]);
+
+      /* if BeginFigure called, then call EndFigure */
+      if (begin_picture)
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+
+      /* there is no MoveTo, so BeginFigure acts as one */
+      figureBegin = getFigureBegin(path, path_n, p);
+      dummy_ID2D1GeometrySink_BeginFigure(sink, pt, figureBegin);
+      begin_picture = 1;
+      break;
+    case CD_PATH_LINETO:
+      if (i + 1*2 > n) return ret;
+      pt.x = type2float(points[i++]);
+      pt.y = type2float(points[i++]);
+
+      if (begin_picture)
+        dummy_ID2D1GeometrySink_AddLine(sink, pt);
+      else
+      {
+        figureBegin = getFigureBegin(path, path_n, p);
+        dummy_ID2D1GeometrySink_BeginFigure(sink, pt, figureBegin);
+        begin_picture = 1;
+      }
+      break;
+    case CD_PATH_ARC:
+      if (i + 3*2 > n) return ret;
+      cx = type2float(points[i++]);
+      cy = type2float(points[i++]);
+      w = type2float(points[i++]);
+      h = type2float(points[i++]);
+      a1 = type2float(points[i++] / 1000.);
+      a2 = type2float(points[i++] / 1000.);
+      if (invert_yaxis)
+      {
+        a1 *= -1;
+        a2 *= -1;
+      }
+      baseAngle = (float)(a1);
+      sweepAngle = (float)(a2 - a1);
+      base_rads = baseAngle * (PI / 180.0f);
+
+      /* arc start point */
+      pt.x = cx + (w / 2.f) * cosf(base_rads);
+      pt.y = cy + (h / 2.f) * sinf(base_rads);
+
+      if (begin_picture)
+        dummy_ID2D1GeometrySink_AddLine(sink, pt);
+      else
+      {
+        figureBegin = getFigureBegin(path, path_n, p);
+        dummy_ID2D1GeometrySink_BeginFigure(sink, pt, figureBegin);
+        begin_picture = 1;
+      }
+
+      d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, sweepAngle);
+      dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      break;
+    case CD_PATH_CURVETO:
+      if (i + 3*2 > n) return ret;
+      segment.point1.x = type2float(points[i++]);
+      segment.point1.y = type2float(points[i++]);
+
+      if (!begin_picture)
+      {
+        figureBegin = getFigureBegin(path, path_n, p);
+        dummy_ID2D1GeometrySink_BeginFigure(sink, segment.point1, figureBegin);
+        begin_picture = 1;
+      }
+
+      segment.point2.x = type2float(points[i++]);
+      segment.point2.y = type2float(points[i++]);
+      segment.point3.x = type2float(points[i++]);
+      segment.point3.y = type2float(points[i++]);
+
+      dummy_ID2D1GeometrySink_AddBezier(sink, &segment);
+      break;
+    case CD_PATH_CLOSE:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+      break;
+    case CD_PATH_CLIP:
+      d2dSetClipGeometry(canvas, g);
+      ret = 1;
+      break;
+    case CD_PATH_FILL: 
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
+      d2dFillGeometry(canvas->target, brush, g);
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+      break;
+    case CD_PATH_FILLSTROKE:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
+      d2dFillGeometry(canvas->target, brush, g);
+      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+      break;
+    case CD_PATH_STROKE:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
+      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+      break;
+    }
+  }
+
+  if (sink)
+    dummy_ID2D1GeometrySink_Release(sink);
+  if (g)
+    dummy_ID2D1PathGeometry_Release(g);
+
+  return ret;
+}
+
+int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *brush, double* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+{
+  dummy_ID2D1PathGeometry* g;
+  dummy_ID2D1GeometrySink* sink;
+  dummy_D2D1_POINT_2F pt;
+  dummy_D2D1_FIGURE_BEGIN figureBegin = dummy_D2D1_FIGURE_BEGIN_HOLLOW;
+  dummy_D2D1_ARC_SEGMENT arc_seg;
+  dummy_D2D1_BEZIER_SEGMENT segment;
+  HRESULT hr;
+  float cx, cy, w, h, a1, a2;
+  float baseAngle, sweepAngle, base_rads;
+  int i, begin_picture = 0, p, n = 2 * points_n, ret = 0;
+
+  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+  if (FAILED(hr))
+    return 0;
+
+  dummy_ID2D1PathGeometry_Open(g, &sink);
+  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
+  i = 0;
+  for (p = 0; p<path_n; p++)
+  {
+    switch (path[p])
+    {
+    case CD_PATH_NEW:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        dummy_ID2D1PathGeometry_Release(g); /* discard current path */
+        sink = NULL;
+        g = NULL;
+      }
+
+      if (g)
+        dummy_ID2D1PathGeometry_Release(g);
+
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
+      break;
+    case CD_PATH_MOVETO:
+      if (i + 1 * 2 > n) return ret;
+      pt.x = type2float(points[i++]);
+      pt.y = type2float(points[i++]);
+
+      /* if BeginFigure called, then call EndFigure */
+      if (begin_picture)
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+
+      /* there is no MoveTo, so BeginFigure acts as one */
+      figureBegin = getFigureBegin(path, path_n, p);
+      dummy_ID2D1GeometrySink_BeginFigure(sink, pt, figureBegin);
+      begin_picture = 1;
+      break;
+    case CD_PATH_LINETO:
+      if (i + 1 * 2 > n) return ret;
+      pt.x = type2float(points[i++]);
+      pt.y = type2float(points[i++]);
+
+      if (begin_picture)
+        dummy_ID2D1GeometrySink_AddLine(sink, pt);
+      else
+      {
+        figureBegin = getFigureBegin(path, path_n, p);
+        dummy_ID2D1GeometrySink_BeginFigure(sink, pt, figureBegin);
+        begin_picture = 1;
+      }
+      break;
+    case CD_PATH_ARC:
+      if (i + 3 * 2 > n) return ret;
+      cx = type2float(points[i++]);
+      cy = type2float(points[i++]);
+      w = type2float(points[i++]);
+      h = type2float(points[i++]);
+      a1 = type2float(points[i++] / 1000.);
+      a2 = type2float(points[i++] / 1000.);
+      if (invert_yaxis)
+      {
+        a1 *= -1;
+        a2 *= -1;
+      }
+      baseAngle = (float)(a1);
+      sweepAngle = (float)(a2 - a1);
+      base_rads = baseAngle * (PI / 180.0f);
+
+      /* arc start point */
+      pt.x = cx + (w / 2.f) * cosf(base_rads);
+      pt.y = cy + (h / 2.f) * sinf(base_rads);
+
+      if (begin_picture)
+        dummy_ID2D1GeometrySink_AddLine(sink, pt);
+      else
+      {
+        figureBegin = getFigureBegin(path, path_n, p);
+        dummy_ID2D1GeometrySink_BeginFigure(sink, pt, figureBegin);
+        begin_picture = 1;
+      }
+
+      d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, sweepAngle);
+      dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      break;
+    case CD_PATH_CURVETO:
+      if (i + 3 * 2 > n) return ret;
+      segment.point1.x = type2float(points[i++]);
+      segment.point1.y = type2float(points[i++]);
+
+      if (!begin_picture)
+      {
+        figureBegin = getFigureBegin(path, path_n, p);
+        dummy_ID2D1GeometrySink_BeginFigure(sink, segment.point1, figureBegin);
+        begin_picture = 1;
+      }
+
+      segment.point2.x = type2float(points[i++]);
+      segment.point2.y = type2float(points[i++]);
+      segment.point3.x = type2float(points[i++]);
+      segment.point3.y = type2float(points[i++]);
+
+      dummy_ID2D1GeometrySink_AddBezier(sink, &segment);
+      break;
+    case CD_PATH_CLOSE:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+      break;
+    case CD_PATH_CLIP:
+      d2dSetClipGeometry(canvas, g);
+      ret = 1;
+      break;
+    case CD_PATH_FILL:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
+      d2dFillGeometry(canvas->target, brush, g);
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+      break;
+    case CD_PATH_FILLSTROKE:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
+      d2dFillGeometry(canvas->target, brush, g);
+      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+      break;
+    case CD_PATH_STROKE:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
+      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+      if (FAILED(hr))
+        return ret;
+      break;
+    }
+  }
+
+  if (sink)
+    dummy_ID2D1GeometrySink_Release(sink);
+  if (g)
+    dummy_ID2D1PathGeometry_Release(g);
+
+  return ret;
+}
+
+//TODO
+//if (figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED)  Porque precisava disso????
+//  dummy_ID2D1GeometrySink_AddLine(sink, initial_pt);

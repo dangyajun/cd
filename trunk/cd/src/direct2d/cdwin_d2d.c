@@ -15,23 +15,9 @@
 #include <tchar.h>
 #include <malloc.h>
 
-#define type2float(_x) ((float)(_x))
-
 TCHAR* cdwStrToSystem(const char* str, int utf8mode);
 char* cdwStrFromSystem(const TCHAR* wstr, int utf8mode);
 TCHAR* cdwStrToSystemLen(const char* str, int *len, int utf8mode);
-
-static void setClipRect(d2dCanvas *canvas, double x1, double y1, double x2, double y2)
-{
-  dummy_D2D1_RECT_F rect;
-
-  rect.left = type2float(x1);
-  rect.top = type2float(y1);
-  rect.right = type2float(x2);
-  rect.bottom = type2float(y2);
-
-  d2dSetClip(canvas, &rect);
-}
 
 static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix);
 
@@ -113,6 +99,7 @@ cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
   ctxcanvas->hWnd = hWnd;
   ctxcanvas->hDC = hDc;
   ctxcanvas->d2d_canvas = NULL;
+  ctxcanvas->new_rgn = NULL;
 
   cdRegisterAttribute(canvas, &utf8mode_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
@@ -127,6 +114,9 @@ void cdwd2dKillCanvas(cdCtxCanvas* ctxcanvas)
 
   if (ctxcanvas->stroke_style)
     dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
+
+  if (ctxcanvas->new_rgn)
+    dummy_ID2D1PathGeometry_Release(ctxcanvas->new_rgn);
 
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
   free(ctxcanvas);
@@ -185,7 +175,28 @@ static void cdtransform(cdCtxCanvas *ctxcanvas, const double* matrix)
   sSetTransform(ctxcanvas, matrix);
 }
 
-static int cdclip(cdCtxCanvas *ctxcanvas, int mode);
+static void cdnewregion(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->new_rgn)
+    dummy_ID2D1Geometry_Release(ctxcanvas->new_rgn);
+  ctxcanvas->new_rgn = d2dCreateBoxGeometry(0, 0, 0, 0);  /* create an empty region */
+}
+
+static int cdispointinregion(cdCtxCanvas* ctxcanvas, int x, int y)
+{
+  dummy_D2D1_POINT_2F pt;
+  int contains = 0;
+
+  if (!ctxcanvas->new_rgn)
+    return 0;
+
+  pt.x = type2float(x);
+  pt.y = type2float(y);
+
+  dummy_ID2D1PathGeometry_FillContainsPoint(ctxcanvas->new_rgn, pt, NULL, &contains);
+
+  return contains;
+}
 
 static void cdclear(cdCtxCanvas* ctxcanvas)
 {
@@ -238,7 +249,7 @@ static void cdfpixel(cdCtxCanvas* ctxcanvas, double x, double y, long int color)
 {
   dummy_ID2D1Brush *brush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
 
-  d2dFillArc(ctxcanvas->d2d_canvas->target, brush, (float)x, (float)y, (float)x, (float)y, 0.0f, 360.0f, 0);
+  d2dFillArc(ctxcanvas->d2d_canvas->target, brush, (float)x, (float)y, 1.0f, 1.0f, 0.0f, 360.0f, 0);
 
   dummy_ID2D1Brush_Release(brush);
 }
@@ -287,9 +298,61 @@ static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int yma
     cdfrect(ctxcanvas, (double)xmin, (double)xmax, (double)ymin, (double)ymax);
 }
 
+static dummy_D2D1_COMBINE_MODE getCombineMode(int combineMode)
+{
+  switch (combineMode)
+  {
+    case CD_UNION:
+      return dummy_D2D1_COMBINE_MODE_UNION;
+      break;
+    case CD_INTERSECT:
+      return dummy_D2D1_COMBINE_MODE_INTERSECT;
+      break;
+    case CD_DIFFERENCE:
+      return dummy_D2D1_COMBINE_MODE_EXCLUDE;
+      break;
+    case CD_NOTINTERSECT:
+      return dummy_D2D1_COMBINE_MODE_XOR;
+      break;
+  }
+  return dummy_D2D1_COMBINE_MODE_UNION;
+}
+
+static void regionCombineGeometry(cdCtxCanvas *ctxcanvas, dummy_ID2D1PathGeometry* g)
+{
+  dummy_ID2D1GeometrySink *sink;
+  dummy_ID2D1PathGeometry* combined;
+
+  HRESULT hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &combined);
+  if (FAILED(hr))
+    return;
+
+  dummy_ID2D1PathGeometry_Open(combined, &sink);
+
+  dummy_ID2D1PathGeometry_CombineWithGeometry(ctxcanvas->new_rgn, (dummy_ID2D1Geometry*)g, getCombineMode(ctxcanvas->canvas->combine_mode), NULL, 0.25f, sink);
+
+  dummy_ID2D1GeometrySink_Close(sink);
+  dummy_ID2D1GeometrySink_Release(sink);
+
+  if (ctxcanvas->new_rgn)
+    dummy_ID2D1PathGeometry_Release(ctxcanvas->new_rgn);
+  ctxcanvas->new_rgn = combined;
+}
+
 static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
-  d2dFillRect(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xmin, (float)ymin, (float)xmax, (float)ymax);
+  if (ctxcanvas->canvas->new_region)
+  {
+    dummy_ID2D1PathGeometry* g = d2dCreateBoxGeometry(xmin, xmax, ymin, ymax);
+    if (!g)
+      return;
+
+    regionCombineGeometry(ctxcanvas, g);
+
+    dummy_ID2D1PathGeometry_Release(g);
+  }
+  else
+    d2dFillRect(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xmin, (float)ymin, (float)xmax, (float)ymax);
 }
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
@@ -313,7 +376,22 @@ static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a
 
 static void cdfsector(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, double h, double a1, double a2)
 {
-  d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 1);
+  if (ctxcanvas->canvas->new_region)
+  {
+    dummy_ID2D1PathGeometry* g;
+    float baseAngle = (float)(360.0 - a2);
+    float sweepAngle = (float)(a2 - a1);
+
+    g = d2dCreateArcGeometry((float)xc, (float)yc, (float)w / 2.f, (float)h / 2.f, baseAngle, sweepAngle, 2);
+    if (!g)
+      return;
+
+    regionCombineGeometry(ctxcanvas, g);
+
+    dummy_ID2D1PathGeometry_Release(g);
+  }
+  else
+    d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 1);
 }
 
 static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -323,7 +401,22 @@ static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, doubl
 
 static void cdfchord(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, double h, double a1, double a2)
 {
-  d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 2);
+  if (ctxcanvas->canvas->new_region)
+  {
+    dummy_ID2D1PathGeometry* g;
+    float baseAngle = (float)(360.0 - a2);
+    float sweepAngle = (float)(a2 - a1);
+
+    g = d2dCreateArcGeometry((float)xc, (float)yc, (float)w / 2, (float)h / 2, baseAngle, sweepAngle, 2);
+    if (!g)
+      return;
+
+    regionCombineGeometry(ctxcanvas, g);
+
+    dummy_ID2D1PathGeometry_Release(g);
+  }
+  else
+    d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 2);
 }
 
 static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -333,18 +426,68 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
 
 static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 {
-  if (mode == CD_CLIP)
-    return;
+  if (mode == CD_PATH)
+  {
+    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->brush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    if (clip_set)
+      ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
+  }
+  else
+  {
+    dummy_ID2D1PathGeometry* g = d2dCreatePolygonGeometry((int*)poly, n, mode, ctxcanvas->canvas->fill_mode);
+    if (!g)
+      return;
 
-  d2dDrawPolygon(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (int*)poly, n, mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    if (mode == CD_CLIP)
+    {
+      if (ctxcanvas->clip_poly)
+        dummy_ID2D1PathGeometry_Release(ctxcanvas->clip_poly);
+      ctxcanvas->clip_poly = g;
+      g = NULL;
+    }
+    else if (mode == CD_FILL && ctxcanvas->canvas->new_region)
+      regionCombineGeometry(ctxcanvas, g);
+    else if (mode == CD_FILL)
+      d2dFillGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g);
+    else
+      d2dDrawGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+
+    if (g)
+      dummy_ID2D1Geometry_Release(g);
+  }
 }
 
 static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 {
-  if (mode == CD_CLIP)
-    return;
+  if (mode == CD_PATH)
+  {
+    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->brush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    if (clip_set)
+      ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
+  }
+  else
+  {
+    dummy_ID2D1PathGeometry* g = d2dCreatePolygonGeometryF((double*)poly, n, mode, ctxcanvas->canvas->fill_mode);
+    if (!g)
+      return;
 
-  d2dDrawPolygonF(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (double*)poly, n, mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    if (mode == CD_CLIP)
+    {
+      if (ctxcanvas->clip_poly)
+        dummy_ID2D1PathGeometry_Release(ctxcanvas->clip_poly);
+      ctxcanvas->clip_poly = g;
+      g = NULL;
+    }
+    else if (mode == CD_FILL && ctxcanvas->canvas->new_region)
+      regionCombineGeometry(ctxcanvas, g);
+    else if (mode == CD_FILL)
+      d2dFillGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g);
+    else
+      d2dDrawGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+
+    if (g)
+      dummy_ID2D1Geometry_Release(g);
+  }
 }
 
 static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int size)
@@ -400,7 +543,7 @@ static int cdfont(cdCtxCanvas* ctxcanvas, const char *type_face, int style, int 
   ctxcanvas->font = new_font;
 
   return 1;
-}                                                                           
+}
 
 static int cdnativefont(cdCtxCanvas* ctxcanvas, const char* nativefont)
 {
@@ -550,24 +693,26 @@ static void cdgetfontdim(cdCtxCanvas* ctxcanvas, int *max_width, int *line_heigh
 }
 
 static void cdgettextsize(cdCtxCanvas* ctxcanvas, const char *s, int len, int *width, int *height)
-{                         
+{
   d2dFontMeasureString(ctxcanvas->font, cdwStrToSystem(s, ctxcanvas->utf8mode), len, width, height);
 }
 
 static void cdfcliparea(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
   if (ctxcanvas->canvas->clip_mode == CD_CLIPAREA)
-    setClipRect(ctxcanvas->d2d_canvas, xmin, ymin, xmax, ymax);
+    d2dSetClipRect(ctxcanvas->d2d_canvas, xmin, ymin, xmax, ymax);
 }
 
 static int cdclip(cdCtxCanvas *ctxcanvas, int mode)
 {
   if (mode == CD_CLIPAREA)
-    setClipRect(ctxcanvas->d2d_canvas, ctxcanvas->canvas->clip_frect.xmin, ctxcanvas->canvas->clip_frect.ymin, ctxcanvas->canvas->clip_frect.xmax, ctxcanvas->canvas->clip_frect.ymax);
+    d2dSetClipRect(ctxcanvas->d2d_canvas, ctxcanvas->canvas->clip_frect.xmin, ctxcanvas->canvas->clip_frect.ymin, ctxcanvas->canvas->clip_frect.xmax, ctxcanvas->canvas->clip_frect.ymax);
+  else if (mode == CD_CLIPPOLYGON)
+    d2dSetClipGeometry(ctxcanvas->d2d_canvas, ctxcanvas->clip_poly);
   else if (mode == CD_CLIPOFF)
-    d2dSetClip(ctxcanvas->d2d_canvas, NULL);
-  else if (mode == CD_CLIPPOLYGON || mode == CD_CLIPREGION)
-    return ctxcanvas->canvas->clip_mode;
+    d2dResetClip(ctxcanvas->d2d_canvas);
+  else if (mode == CD_CLIPREGION)
+    d2dSetClipGeometry(ctxcanvas->d2d_canvas, ctxcanvas->new_rgn);
   return mode;
 }
 
@@ -700,7 +845,7 @@ static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, co
   d2dDestroyImage(bitmap);
 }
 
-static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index, 
+static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index,
                                const long int *colors, double x, double y, double w, double h, int xmin, int xmax, int ymin, int ymax)
 {
   dummy_D2D1_RECT_F destRect;
@@ -767,7 +912,9 @@ void cdwd2dInitTable(cdCanvas* canvas)
 
   canvas->cxFont = cdfont;
   canvas->cxGetFontDim = cdgetfontdim;
-  canvas->cxGetTextSize = cdgettextsize; 
+  canvas->cxGetTextSize = cdgettextsize;
+  canvas->cxNewRegion = cdnewregion;
+  canvas->cxIsPointInRegion = cdispointinregion;
 
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
@@ -786,9 +933,8 @@ void cdwd2dInitTable(cdCanvas* canvas)
 }
 
 //TODO
-// warning C4204: nonstandard extension used : non-constant aggregate initializer
-// polygon - CD_PATH, CD_BEZIER, FillRule?, holes
-// clip - CD_CLIPPOLYGON
+// why call d2dResetClip in cdflush in cdwnative_d2d.c
 // hatch, pattern e stipple?
-// LINEGRADIENT, RADIALGRADIENT, IMGINTERP, ANTIALIAS
-// regions?
+// LINEGRADIENT, RADIALGRADIENT, IMGINTERP, holes
+// IMAGE driver
+// PRINTER, EMF, CLIPBOARD driver using HDC
