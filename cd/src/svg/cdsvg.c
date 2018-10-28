@@ -420,7 +420,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 
   if (mode == CD_PATH)
   {
-    int i, p, clip_path = 0, end_path, current_set;
+    int i, p, clip_path = 0, end_path, current_pt_set;
 
     for (p=0; p<ctxcanvas->canvas->path_n; p++)
     {
@@ -437,7 +437,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
     /* starts a new path */
     fprintf(ctxcanvas->file, "<path d=\"");
     end_path = 0;
-    current_set = 0;
+    current_pt_set = 0;
 
     i = 0;
     for (p=0; p<ctxcanvas->canvas->path_n; p++)
@@ -450,18 +450,18 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 
         fprintf(ctxcanvas->file, "<path d=\"");
         end_path = 0;
-        current_set = 0;
+        current_pt_set = 0;
         break;
       case CD_PATH_MOVETO:
         if (i+1 > n) return;
         fprintf(ctxcanvas->file, "M %g %g ", poly[i].x, poly[i].y);
-        current_set = 1;
+        current_pt_set = 1;
         i++;
         break;
       case CD_PATH_LINETO:
         if (i+1 > n) return;
         fprintf(ctxcanvas->file, "L %g %g ", poly[i].x, poly[i].y);
-        current_set = 1;
+        current_pt_set = 1;
         i++;
         break;
       case CD_PATH_ARC:
@@ -480,14 +480,14 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
           if (ctxcanvas->canvas->invert_yaxis && (a2-a1)<0) /* can be clockwise */
             sweep = 1;
 
-          if (current_set)
+          if (current_pt_set)
             fprintf(ctxcanvas->file, "L %g %g A %g %g 0 %d %d %g %g ",
                     arcStartX, arcStartY, w/2, h/2, largeArc, sweep, arcEndX, arcEndY);
           else
             fprintf(ctxcanvas->file, "M %g %g A %g %g 0 %d %d %g %g ",
                     arcStartX, arcStartY, w/2, h/2, largeArc, sweep, arcEndX, arcEndY);
 
-          current_set = 1;
+          current_pt_set = 1;
           i += 3;
         }
         break;
@@ -496,7 +496,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
         fprintf(ctxcanvas->file, "C %g %g %g %g %g %g ", poly[i].x,   poly[i].y, 
                                                          poly[i+1].x, poly[i+1].y, 
                                                          poly[i+2].x, poly[i+2].y);
-        current_set = 1;
+        current_pt_set = 1;
         i += 3;
         break;
       case CD_PATH_CLOSE:
@@ -588,7 +588,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
   if (mode == CD_PATH)
   {
-    int i, p, clip_path = 0, end_path, current_set;
+    int i, p, clip_path = 0, end_path, current_pt_set;
 
     for (p=0; p<ctxcanvas->canvas->path_n; p++)
     {
@@ -605,7 +605,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
     /* starts a new path */
     fprintf(ctxcanvas->file, "<path d=\"");
     end_path = 0;
-    current_set = 0;
+    current_pt_set = 0;
 
     i = 0;
     for (p=0; p<ctxcanvas->canvas->path_n; p++)
@@ -618,18 +618,18 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 
         fprintf(ctxcanvas->file, "<path d=\"");
         end_path = 0;
-        current_set = 0;
+        current_pt_set = 0;
         break;
       case CD_PATH_MOVETO:
         if (i+1 > n) return;
         fprintf(ctxcanvas->file, "M %d %d ", poly[i].x, poly[i].y);
-        current_set = 1;
+        current_pt_set = 1;
         i++;
         break;
       case CD_PATH_LINETO:
         if (i+1 > n) return;
         fprintf(ctxcanvas->file, "L %d %d ", poly[i].x, poly[i].y);
-        current_set = 1;
+        current_pt_set = 1;
         i++;
         break;
       case CD_PATH_ARC:
@@ -649,14 +649,14 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
           if (ctxcanvas->canvas->invert_yaxis && (a2-a1)<0) /* can be clockwise */
             sweep = 1;
 
-          if (current_set)
+          if (current_pt_set)
             fprintf(ctxcanvas->file, "L %g %g A %d %d 0 %d %d %g %g ",
                     arcStartX, arcStartY, w/2, h/2, largeArc, sweep, arcEndX, arcEndY);
           else
             fprintf(ctxcanvas->file, "M %g %g A %d %d 0 %d %d %g %g ",
                     arcStartX, arcStartY, w/2, h/2, largeArc, sweep, arcEndX, arcEndY);
 
-          current_set = 1;
+          current_pt_set = 1;
           i += 3;
         }
         break;
@@ -665,7 +665,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
         fprintf(ctxcanvas->file, "C %d %d %d %d %d %d ", poly[i].x,   poly[i].y, 
                                                          poly[i+1].x, poly[i+1].y, 
                                                          poly[i+2].x, poly[i+2].y);
-        current_set = 1;
+        current_pt_set = 1;
         i += 3;
         break;
       case CD_PATH_CLOSE:
