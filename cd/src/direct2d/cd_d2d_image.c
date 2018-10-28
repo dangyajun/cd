@@ -22,11 +22,11 @@ static void bufferRGB2Bitmap(BYTE* Scan0, INT dstStride, UINT channels, UINT wid
 
     for (i = 0; i < width; i++)
     {
-      int offset = i * 3;
       int offset_data = i * channels;
-      unsigned char r = r_line[offset];
-      unsigned char g = g_line[offset];
-      unsigned char b = b_line[offset];
+
+      unsigned char r = r_line[i];
+      unsigned char g = g_line[i];
+      unsigned char b = b_line[i];
 
       line_data[offset_data + 0] = b;  /* Blue */
       line_data[offset_data + 1] = g;  /* Green */
@@ -50,6 +50,7 @@ static void bufferMap2Bitmap(BYTE* Scan0, INT dstStride, UINT channels, UINT wid
 
     for (i = 0; i < width; i++)
     {
+
       int map_index = map_line[i];
       long color = palette[map_index];
 

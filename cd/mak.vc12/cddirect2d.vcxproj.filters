@@ -16,6 +16,12 @@
     <ClInclude Include="..\src\direct2d\cdwin_d2d.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\direct2d\dummy\d2d1.h">
+      <Filter>dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\direct2d\dummy\dwrite.h">
+      <Filter>dummy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\direct2d\cdcontextplus.def" />
@@ -23,6 +29,9 @@
   <ItemGroup>
     <Filter Include="inc">
       <UniqueIdentifier>{7365cf65-92ba-49db-9b56-7bb22e6f2869}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dummy">
+      <UniqueIdentifier>{27ec3a06-ed9d-4a2d-9ce9-7b3b0b47215f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

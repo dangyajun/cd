@@ -25,12 +25,15 @@
 #define CANVAS_LAYOUTRTL         0x0004
 
 #define D2D_CANVASFLAG_RECTCLIP     0x1
-#define D2D_CANVASFLAG_RTL          0x2
+#define D2D_CANVASFLAG_POLYCLIP     0x2
+#define D2D_CANVASFLAG_RTL          0x3
 
 #define D2D_BASEDELTA_X             0.5f
 #define D2D_BASEDELTA_Y             0.5f
 
 #define PI 3.14159265358979323846f
+
+#define type2float(_x) ((float)(_x))
 
 extern HMODULE d2d_cd_dll;
 extern HMODULE wic_cd_dll;
@@ -44,7 +47,6 @@ typedef struct _d2dCanvas {
   WORD type;    /* D2D_CANVASTYPE_* */
   WORD flags;    /* D2D_CANVASFLAG_* */
   dummy_ID2D1RenderTarget* target;
-  dummy_ID2D1Layer* clip_layer;
 } d2dCanvas;
 
 
@@ -61,6 +63,8 @@ typedef struct _d2dFontMetrics {
                           /* Usually: fEmHeight < fAscent + fDescent <= fLeading */
 } d2dFontMetrics;
 
+FLOAT d2dFloatMax();
+dummy_D2D1_RECT_F d2dInfiniteRect();
 
 void d2dStartup(void);
 void d2dShutdown(void);
@@ -69,8 +73,10 @@ d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl)
 void d2dResetTransform(dummy_ID2D1RenderTarget* target);
 void d2dRotateWorld(dummy_ID2D1RenderTarget *target, float cx, float cy, float fAngle);
 void d2dApplyTransform(dummy_ID2D1RenderTarget* target, const dummy_D2D1_MATRIX_3X2_F* matrix);
-void d2dSetClip(d2dCanvas *canvas, const dummy_D2D1_RECT_F* pRect);
+void d2dSetClipRect(d2dCanvas *canvas, double x1, double y1, double x2, double y2);
+void d2dSetClipGeometry(d2dCanvas *canvas, dummy_ID2D1PathGeometry* g);
 void d2dResetClip(d2dCanvas* c);
+void d2dInitArcSegment(dummy_D2D1_ARC_SEGMENT* arc_seg, float cx, float cy, float rx, float ry, float base_angle, float sweep_angle);
 
 IWICBitmap* d2dCreateImageFromBufferRGB(UINT uWidth, UINT uHeight, const unsigned char *red, const unsigned char *green, const unsigned char *blue, const unsigned char *alpha);
 IWICBitmap* d2dCreateImageFromBufferMap(UINT uWidth, UINT uHeight, const unsigned char *map, const long* cPalette);
@@ -86,14 +92,21 @@ dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long colo
 dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_join);
 void d2dInitColor(dummy_D2D1_COLOR_F* c, long color);
 
+dummy_ID2D1PathGeometry* d2dCreateArcGeometry(float cx, float cy, float rx, float ry, float base_angle, float sweep_angle, int pie);
+dummy_ID2D1PathGeometry* d2dCreatePolygonGeometry(int* points, int count, int mode, int fill_mode);
+dummy_ID2D1PathGeometry* d2dCreatePolygonGeometryF(double* points, int count, int mode, int fill_mode);
+dummy_ID2D1PathGeometry* d2dCreateBoxGeometry(double xmin, double xmax, double ymin, double ymax);
+
 void d2dDrawText(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x, float y, float w, float h, const WCHAR* pszText, int iTextLength, d2dFont *font);
 void d2dDrawLine(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
 void d2dDrawRect(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
 void d2dFillRect(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float x0, float y0, float x1, float y1);
 void d2dDrawArc(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float xc, float yc, float w, float h, double a1, double a2, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
 void d2dFillArc(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float xc, float yc, float w, float h, double a1, double a2, int pie);
-void d2dDrawPolygon(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, int* points, int count, int mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
-void d2dDrawPolygonF(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, double* points, int count, int mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
+void d2dDrawGeometry(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, dummy_ID2D1PathGeometry* g, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
+void d2dFillGeometry(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, dummy_ID2D1PathGeometry* g);
 
+int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
+int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *brush, double* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle);
 
 #endif

@@ -38,7 +38,7 @@ static HMODULE d2d_cd_load_system_dll(const TCHAR* dll_name)
   dll_kernel32 = GetModuleHandle(_T("KERNEL32.DLL"));
   if (dll_kernel32 != NULL  &&
       GetProcAddress(dll_kernel32, "AddDllDirectory") != NULL)
-    dll = LoadLibraryEx(dll_name, NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+      dll = LoadLibraryEx(dll_name, NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
   else {
     TCHAR path[MAX_PATH];
     UINT dllname_len;
@@ -184,7 +184,7 @@ static int dwrite_init(void)
   * Direct2D and DirectWrite). */
   dll_kernel32 = GetModuleHandle(_T("KERNEL32.DLL"));
   if (dll_kernel32 != NULL) {
-      GetProcAddress(dll_kernel32, "GetUserDefaultLocaleName");
+    GetProcAddress(dll_kernel32, "GetUserDefaultLocaleName");
   }
 
   /* Success. */
@@ -223,6 +223,19 @@ void d2dShutdown(void)
     wic_cd_fini();
     dwrite_cd_fini();
   }
+}
+
+FLOAT d2dFloatMax() {
+  return 3.402823466e+38f;
+}
+
+dummy_D2D1_RECT_F d2dInfiniteRect() {
+  dummy_D2D1_RECT_F r;
+  r.left = -d2dFloatMax();
+  r.top = -d2dFloatMax();
+  r.right = d2dFloatMax();
+  r.bottom = d2dFloatMax();
+  return r;
 }
 
 d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl)
@@ -299,33 +312,78 @@ void d2dRotateWorld(dummy_ID2D1RenderTarget *target, float cx, float cy, float f
   d2dApplyTransform(target, &m);
 }
 
-void d2dResetClip(d2dCanvas* c)
+void d2dInitArcSegment(dummy_D2D1_ARC_SEGMENT* arc_seg, float cx, float cy, float rx, float ry,
+                              float base_angle, float sweep_angle)
 {
-  if (c->clip_layer != NULL) 
-  {
-    dummy_ID2D1RenderTarget_PopLayer(c->target);
-    dummy_ID2D1Layer_Release(c->clip_layer);
-    c->clip_layer = NULL;
-  }
+  float sweep_rads = (base_angle + sweep_angle) * (PI / 180.0f);
 
-  if (c->flags & D2D_CANVASFLAG_RECTCLIP) 
+  arc_seg->point.x = cx + rx * cosf(sweep_rads);
+  arc_seg->point.y = cy + ry * sinf(sweep_rads);
+  arc_seg->size.width = rx;
+  arc_seg->size.height = ry;
+  arc_seg->rotationAngle = 0.0f;
+
+  if (sweep_angle >= 0.0f && sweep_angle < 360.f)
+    arc_seg->sweepDirection = dummy_D2D1_SWEEP_DIRECTION_CLOCKWISE;
+  else
+    arc_seg->sweepDirection = dummy_D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
+
+  if (sweep_angle >= 180.0f)
+    arc_seg->arcSize = dummy_D2D1_ARC_SIZE_LARGE;
+  else
+    arc_seg->arcSize = dummy_D2D1_ARC_SIZE_SMALL;
+}
+
+void d2dSetClipGeometry(d2dCanvas *canvas, dummy_ID2D1PathGeometry *g)
+{
+  d2dResetClip(canvas);
+
+  if (g != NULL)
   {
-    dummy_ID2D1RenderTarget_PopAxisAlignedClip(c->target);
-    c->flags &= ~D2D_CANVASFLAG_RECTCLIP;
+    dummy_D2D1_LAYER_PARAMETERS params;
+    dummy_D2D1_MATRIX_3X2_F m;
+    params.geometricMask = (dummy_ID2D1Geometry*)g;
+    params.contentBounds = d2dInfiniteRect();
+    params.maskAntialiasMode = dummy_D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+    m._11 = 1.0f;   m._12 = 0.0f;
+    m._21 = 0.0f;   m._22 = 1.0f;
+    m._31 = 0.0f;   m._32 = 0.0f;
+    params.maskTransform = m;
+    params.opacity = 1.0;
+    params.opacityBrush = NULL;
+    params.layerOptions = dummy_D2D1_LAYER_OPTIONS_NONE;
+
+    dummy_ID2D1RenderTarget_PushLayer(canvas->target, &params, NULL);
+    canvas->flags |= D2D_CANVASFLAG_POLYCLIP;
   }
 }
 
-void d2dSetClip(d2dCanvas *canvas, const dummy_D2D1_RECT_F* pRect)
+void d2dSetClipRect(d2dCanvas *canvas, double x1, double y1, double x2, double y2)
 {
-  if (canvas->flags & D2D_CANVASFLAG_RECTCLIP)
+  dummy_D2D1_RECT_F rect;
+
+  d2dResetClip(canvas);
+
+  rect.left = type2float(x1);
+  rect.top = type2float(y1);
+  rect.right = type2float(x2);
+  rect.bottom = type2float(y2);
+
+  dummy_ID2D1RenderTarget_PushAxisAlignedClip(canvas->target, &rect, dummy_D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+  canvas->flags |= D2D_CANVASFLAG_RECTCLIP;
+}
+
+void d2dResetClip(d2dCanvas* c)
+{
+  if (c->flags & D2D_CANVASFLAG_POLYCLIP)
   {
-    dummy_ID2D1RenderTarget_PopAxisAlignedClip(canvas->target);
-    canvas->flags &= ~D2D_CANVASFLAG_RECTCLIP;
+    dummy_ID2D1RenderTarget_PopLayer(c->target);
+    c->flags &= ~D2D_CANVASFLAG_POLYCLIP;
   }
 
-  if (pRect != NULL)
+  if (c->flags & D2D_CANVASFLAG_RECTCLIP)
   {
-    dummy_ID2D1RenderTarget_PushAxisAlignedClip(canvas->target, pRect, dummy_D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-    canvas->flags |= D2D_CANVASFLAG_RECTCLIP;
+    dummy_ID2D1RenderTarget_PopAxisAlignedClip(c->target);
+    c->flags &= ~D2D_CANVASFLAG_RECTCLIP;
   }
 }

@@ -60,6 +60,7 @@ typedef struct dummy_ID2D1GeometrySink_tag              dummy_ID2D1GeometrySink;
 typedef struct dummy_ID2D1HwndRenderTarget_tag          dummy_ID2D1HwndRenderTarget;
 typedef struct dummy_ID2D1Layer_tag                     dummy_ID2D1Layer;
 typedef struct dummy_ID2D1PathGeometry_tag              dummy_ID2D1PathGeometry;
+typedef struct dummy_ID2D1EllipseGeometry_tag           dummy_ID2D1EllipseGeometry;
 typedef struct dummy_ID2D1RenderTarget_tag              dummy_ID2D1RenderTarget;
 typedef struct dummy_ID2D1SolidColorBrush_tag           dummy_ID2D1SolidColorBrush;
 
@@ -176,6 +177,22 @@ enum dummy_D2D1_LINE_JOIN_tag {
   dummy_D2D1_LINE_JOIN_ROUND = 2
 };
 
+typedef enum dummy_D2D1_FILL_MODE_tag dummy_D2D1_FILL_MODE;
+enum dummy_D2D1_FILL_MODE_tag {
+  dummy_D2D1_FILL_MODE_ALTERNATE = 0,
+  dummy_D2D1_FILL_MODE_WINDING = 1,
+  dummy_D2D1_FILL_MODE_FORCE_DWORD = 2
+};
+
+typedef enum dummy_D2D1_COMBINE_MODE_tag dummy_D2D1_COMBINE_MODE;
+enum dummy_D2D1_COMBINE_MODE_tag {
+  dummy_D2D1_COMBINE_MODE_UNION = 0,
+  dummy_D2D1_COMBINE_MODE_INTERSECT = 1,
+  dummy_D2D1_COMBINE_MODE_XOR = 2,
+  dummy_D2D1_COMBINE_MODE_EXCLUDE = 3,
+  dummy_D2D1_COMBINE_MODE_FORCE_DWORD = 4
+};
+
 
 /*************************
  ***  Helper Typedefs  ***
@@ -251,13 +268,20 @@ struct dummy_D2D1_STROKE_STYLE_PROPERTIES_tag {
 
 typedef struct dummy_D2D1_LAYER_PARAMETERS_tag dummy_D2D1_LAYER_PARAMETERS;
 struct dummy_D2D1_LAYER_PARAMETERS_tag {
-    dummy_D2D1_RECT_F contentBounds;
-    dummy_ID2D1Geometry* geometricMask;
-    dummy_D2D1_ANTIALIAS_MODE maskAntialiasMode;
-    dummy_D2D1_MATRIX_3X2_F maskTransform;
-    FLOAT opacity;
-    dummy_ID2D1Brush* opacityBrush;
-    unsigned layerOptions;
+  dummy_D2D1_RECT_F contentBounds;
+  dummy_ID2D1Geometry* geometricMask;
+  dummy_D2D1_ANTIALIAS_MODE maskAntialiasMode;
+  dummy_D2D1_MATRIX_3X2_F maskTransform;
+  FLOAT opacity;
+  dummy_ID2D1Brush* opacityBrush;
+  unsigned layerOptions;
+};
+
+typedef struct dummy_D2D1_BEZIER_SEGMENT_tag dummy_D2D1_BEZIER_SEGMENT;
+struct dummy_D2D1_BEZIER_SEGMENT_tag {
+  dummy_D2D1_POINT_2F point1;
+  dummy_D2D1_POINT_2F point2;
+  dummy_D2D1_POINT_2F point3;
 };
 
 
@@ -730,7 +754,7 @@ struct dummy_ID2D1GeometrySinkVtbl_tag {
     STDMETHOD_(ULONG, Release)(dummy_ID2D1GeometrySink*);
 
     /* ID2D1SimplifiedGeometrySink methods */
-    STDMETHOD(dummy_SetFillMode)(void);
+    STDMETHOD_(void, SetFillMode)(dummy_ID2D1GeometrySink*, dummy_D2D1_FILL_MODE);
     STDMETHOD(dummy_SetSegmentFlags)(void);
     STDMETHOD_(void, BeginFigure)(dummy_ID2D1GeometrySink*, dummy_D2D1_POINT_2F, dummy_D2D1_FIGURE_BEGIN);
     STDMETHOD(dummy_AddLines)(void);
@@ -740,7 +764,7 @@ struct dummy_ID2D1GeometrySinkVtbl_tag {
 
     /* ID2D1GeometrySink methods */
     STDMETHOD_(void, AddLine)(dummy_ID2D1GeometrySink*, dummy_D2D1_POINT_2F point);
-    STDMETHOD(dummy_AddBezier)(void);
+    STDMETHOD_(void, AddBezier)(dummy_ID2D1GeometrySink*, dummy_D2D1_BEZIER_SEGMENT*);
     STDMETHOD(dummy_AddQuadraticBezier)(void);
     STDMETHOD(dummy_AddQuadraticBeziers)(void);
     STDMETHOD_(void, AddArc)(dummy_ID2D1GeometrySink*, const dummy_D2D1_ARC_SEGMENT*);
@@ -757,7 +781,9 @@ struct dummy_ID2D1GeometrySink_tag {
 #define dummy_ID2D1GeometrySink_EndFigure(self,a)           (self)->vtbl->EndFigure(self,a)
 #define dummy_ID2D1GeometrySink_Close(self)                 (self)->vtbl->Close(self)
 #define dummy_ID2D1GeometrySink_AddLine(self,a)             (self)->vtbl->AddLine(self,a)
+#define dummy_ID2D1GeometrySink_AddBezier(self,a)           (self)->vtbl->AddBezier(self,a)
 #define dummy_ID2D1GeometrySink_AddArc(self,a)              (self)->vtbl->AddArc(self,a)
+#define dummy_ID2D1GeometrySink_SetFillMode(self,a)         (self)->vtbl->SetFillMode(self,a)
 
 
 /*****************************************
@@ -873,49 +899,95 @@ struct dummy_ID2D1Layer_tag {
 
 
 /*************************************
- ***  Interface ID2D1PathGeometry  ***
- *************************************/
+***  Interface ID2D1PathGeometry  ***
+*************************************/
 
 typedef struct dummy_ID2D1PathGeometryVtbl_tag dummy_ID2D1PathGeometryVtbl;
 struct dummy_ID2D1PathGeometryVtbl_tag {
-    /* IUnknown methods */
-    STDMETHOD(QueryInterface)(dummy_ID2D1PathGeometry*, REFIID, void**);
-    STDMETHOD_(ULONG, AddRef)(dummy_ID2D1PathGeometry*);
-    STDMETHOD_(ULONG, Release)(dummy_ID2D1PathGeometry*);
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1PathGeometry*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1PathGeometry*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1PathGeometry*);
 
-    /* ID2D1Resource methods */
-    STDMETHOD(dummy_GetFactory)(void);
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
 
-    /* ID2D1Geometry methods */
-    STDMETHOD(dummy_GetBounds)(void);
-    STDMETHOD(dummy_GetWidenedBounds)(void);
-    STDMETHOD(dummy_StrokeContainsPoint)(void);
-    STDMETHOD(dummy_FillContainsPoint)(void);
-    STDMETHOD(dummy_CompareWithGeometry)(void);
-    STDMETHOD(dummy_Simplify)(void);
-    STDMETHOD(dummy_Tessellate)(void);
-    STDMETHOD(dummy_CombineWithGeometry)(void);
-    STDMETHOD(dummy_Outline)(void);
-    STDMETHOD(dummy_ComputeArea)(void);
-    STDMETHOD(dummy_ComputeLength)(void);
-    STDMETHOD(dummy_ComputePointAtLength)(void);
-    STDMETHOD(dummy_Widen)(void);
+  /* ID2D1Geometry methods */
+  STDMETHOD(dummy_GetBounds)(void);
+  STDMETHOD(dummy_GetWidenedBounds)(void);
+  STDMETHOD(dummy_StrokeContainsPoint)(void);
+  STDMETHOD(FillContainsPoint)(dummy_ID2D1PathGeometry*, dummy_D2D1_POINT_2F, dummy_D2D1_MATRIX_3X2_F *, BOOL *);
+  STDMETHOD(dummy_CompareWithGeometry)(void);
+  STDMETHOD(dummy_Simplify)(void);
+  STDMETHOD(dummy_Tessellate)(void);
+  STDMETHOD(CombineWithGeometry)(dummy_ID2D1PathGeometry*, dummy_ID2D1Geometry*, dummy_D2D1_COMBINE_MODE, dummy_D2D1_MATRIX_3X2_F*, FLOAT flatteningTolerance, dummy_ID2D1GeometrySink*);
+  STDMETHOD(dummy_Outline)(void);
+  STDMETHOD(dummy_ComputeArea)(void);
+  STDMETHOD(dummy_ComputeLength)(void);
+  STDMETHOD(dummy_ComputePointAtLength)(void);
+  STDMETHOD(dummy_Widen)(void);
 
-    /* ID2D1PathGeometry methods */
-    STDMETHOD(Open)(dummy_ID2D1PathGeometry*, dummy_ID2D1GeometrySink**);
-    STDMETHOD(dummy_Stream)(void);
-    STDMETHOD(dummy_GetSegmentCount)(void);
-    STDMETHOD(dummy_GetFigureCount)(void);
+  /* ID2D1PathGeometry methods */
+  STDMETHOD(Open)(dummy_ID2D1PathGeometry*, dummy_ID2D1GeometrySink**);
+  STDMETHOD(dummy_Stream)(void);
+  STDMETHOD(dummy_GetSegmentCount)(void);
+  STDMETHOD(dummy_GetFigureCount)(void);
 };
 
 struct dummy_ID2D1PathGeometry_tag {
-    dummy_ID2D1PathGeometryVtbl* vtbl;
+  dummy_ID2D1PathGeometryVtbl* vtbl;
 };
 
-#define dummy_ID2D1PathGeometry_QueryInterface(self,a,b)    (self)->vtbl->QueryInterface(self,a,b)
-#define dummy_ID2D1PathGeometry_AddRef(self)                (self)->vtbl->AddRef(self)
-#define dummy_ID2D1PathGeometry_Release(self)               (self)->vtbl->Release(self)
-#define dummy_ID2D1PathGeometry_Open(self,a)                (self)->vtbl->Open(self,a)
+#define dummy_ID2D1PathGeometry_QueryInterface(self,a,b)            (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1PathGeometry_AddRef(self)                        (self)->vtbl->AddRef(self)
+#define dummy_ID2D1PathGeometry_Release(self)                       (self)->vtbl->Release(self)
+#define dummy_ID2D1PathGeometry_Open(self,a)                        (self)->vtbl->Open(self,a)
+#define dummy_ID2D1PathGeometry_CombineWithGeometry(self,a,b,c,d,e) (self)->vtbl->CombineWithGeometry(self,a,b,c,d,e)
+#define dummy_ID2D1PathGeometry_FillContainsPoint(self,a,b,c)       (self)->vtbl->FillContainsPoint(self,a,b,c)
+
+
+/*************************************
+***  Interface ID2D1EllipseGeometry  ***
+*************************************/
+
+typedef struct dummy_ID2D1EllipseGeometryVtbl_tag dummy_ID2D1EllipseGeometryVtbl;
+struct dummy_ID2D1EllipseGeometryVtbl_tag {
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1EllipseGeometry*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1EllipseGeometry*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1EllipseGeometry*);
+
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
+
+  /* ID2D1Geometry methods */
+  STDMETHOD(dummy_GetBounds)(void);
+  STDMETHOD(dummy_GetWidenedBounds)(void);
+  STDMETHOD(dummy_StrokeContainsPoint)(void);
+  STDMETHOD(dummy_FillContainsPoint)(void);
+  STDMETHOD(dummy_CompareWithGeometry)(void);
+  STDMETHOD(dummy_Simplify)(void);
+  STDMETHOD(dummy_Tessellate)(void);
+  STDMETHOD(CombineWithGeometry)(dummy_ID2D1EllipseGeometry*, dummy_ID2D1Geometry*, dummy_D2D1_COMBINE_MODE, dummy_D2D1_MATRIX_3X2_F*, FLOAT flatteningTolerance, dummy_ID2D1GeometrySink*);
+  STDMETHOD(dummy_Outline)(void);
+  STDMETHOD(dummy_ComputeArea)(void);
+  STDMETHOD(dummy_ComputeLength)(void);
+  STDMETHOD(dummy_ComputePointAtLength)(void);
+  STDMETHOD(dummy_Widen)(void);
+
+  /* ID2D1PathGeometry methods */
+  STDMETHOD(GetEllipse)(dummy_ID2D1EllipseGeometry*, dummy_D2D1_ELLIPSE*);
+};
+
+struct dummy_ID2D1EllipseGeometry_tag {
+  dummy_ID2D1EllipseGeometryVtbl* vtbl;
+};
+
+#define dummy_ID2D1EllipseGeometry_QueryInterface(self,a,b)            (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1EllipseGeometry_AddRef(self)                        (self)->vtbl->AddRef(self)
+#define dummy_ID2D1EllipseGeometry_Release(self)                       (self)->vtbl->Release(self)
+#define dummy_ID2D1EllipseGeometry_GetEllipse(self,a)                  (self)->vtbl->GetEllipse(self,a)
+#define dummy_ID2D1EllipseGeometry_CombineWithGeometry(self,a,b,c,d,e) (self)->vtbl->CombineWithGeometry(self,a,b,c,d,e)
 
 
 /*************************************
