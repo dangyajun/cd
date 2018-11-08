@@ -383,7 +383,8 @@ enum {                          /* interior style */
  CD_HATCH,
  CD_STIPPLE,
  CD_PATTERN,
- CD_HOLLOW
+ CD_HOLLOW,
+ CD_CUSTOMPATTERN     /* used only in ContextPlus drivers */
 };
 
 enum {                          /* text alignment */

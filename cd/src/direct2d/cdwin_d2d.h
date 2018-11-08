@@ -13,6 +13,8 @@
 #include "cd_private.h"
 #include "cd_d2d.h"
 
+enum { FILL_BRUSH_NORMAL, FILL_BRUSH_LINEAR, FILL_BRUSH_RADIAL, FILL_BRUSH_PATTERNIMAGE };
+
 struct _cdCtxCanvas
 {
   cdCanvas* canvas;
@@ -35,6 +37,8 @@ struct _cdCtxCanvas
   int linear_gradient_y1;
   int linear_gradient_x2;
   int linear_gradient_y2;
+
+  int fillBrushType;
 
   HWND hWnd; /* CDW_WIN handle */
   HDC hDC;   /* GDI Device Context handle */            

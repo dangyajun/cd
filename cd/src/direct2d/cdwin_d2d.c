@@ -113,12 +113,30 @@ static cdAttribute hatchboxsize_attrib =
   get_hatchboxsize_attrib
 };
 
+static void set_lineargradient_brush(cdCtxCanvas* ctxcanvas)
+{
+  int y1, y2;
+
+  y1 = ctxcanvas->linear_gradient_y1;
+  y2 = ctxcanvas->linear_gradient_y2;
+
+  if (ctxcanvas->canvas->invert_yaxis)
+  {
+    y1 = _cdInvertYAxis(ctxcanvas->canvas, y1);
+    y2 = _cdInvertYAxis(ctxcanvas->canvas, y2);
+  }
+
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+
+  ctxcanvas->fillBrush = d2dCreateLinearGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->linear_gradient_x1, (float)y1, (float)ctxcanvas->linear_gradient_x2, (float)y2, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+}
+
 static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
     int x1, y1, x2, y2;
-
     sscanf(data, "%d %d %d %d", &x1, &y1, &x2, &y2);
 
     ctxcanvas->linear_gradient_x1 = x1;
@@ -126,16 +144,10 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
     ctxcanvas->linear_gradient_x2 = x2;
     ctxcanvas->linear_gradient_y2 = y2;
 
-    if (ctxcanvas->canvas->invert_yaxis)
-    {
-      y1 = _cdInvertYAxis(ctxcanvas->canvas, y1);
-      y2 = _cdInvertYAxis(ctxcanvas->canvas, y2);
-    }
+    set_lineargradient_brush(ctxcanvas);
 
-    if (ctxcanvas->fillBrush)
-      dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-
-    ctxcanvas->fillBrush = d2dCreateLinearGradientBrush(ctxcanvas->d2d_canvas->target, (float)x1, (float)y1, (float)x2, (float)y2, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
+    ctxcanvas->fillBrushType = FILL_BRUSH_LINEAR;
   }
 }
 
@@ -158,6 +170,26 @@ static cdAttribute linegradient_attrib =
   get_linegradient_attrib
 };
 
+static void set_radialgradient_brush(cdCtxCanvas* ctxcanvas)
+{
+  int cy = ctxcanvas->radial_gradient_center_y;
+  int oy = ctxcanvas->radial_gradient_origin_offset_y;
+
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+
+  if (ctxcanvas->canvas->invert_yaxis)
+  {
+    cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
+    oy = oy * -1;
+  }
+
+  ctxcanvas->fillBrush = d2dCreateRadialGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->radial_gradient_center_x, (float)cy,
+                                                      (float)ctxcanvas->radial_gradient_origin_offset_x, (float)oy,
+                                                      (float)ctxcanvas->radial_gradient_radius_x, (float)ctxcanvas->radial_gradient_radius_y,
+                                                      ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+}
+
 static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
@@ -173,22 +205,10 @@ static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
     ctxcanvas->radial_gradient_radius_x = ry;
     ctxcanvas->radial_gradient_radius_y = ry;
 
-    if (ctxcanvas->fillBrush)
-    {
-      dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-      ctxcanvas->fillBrush = NULL;
-    }
+    set_radialgradient_brush(ctxcanvas);
 
-    if (ctxcanvas->canvas->invert_yaxis)
-    {
-      cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
-      oy = oy * -1;
-    }
-
-    ctxcanvas->fillBrush = d2dCreateRadialGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->radial_gradient_center_x, (float)cy,
-                                                                  (float)ctxcanvas->radial_gradient_origin_offset_x, (float)oy,
-                                                                  (float)ctxcanvas->radial_gradient_radius_x, (float)ctxcanvas->radial_gradient_radius_y,
-                                                                  ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
+    ctxcanvas->fillBrushType = FILL_BRUSH_RADIAL;
   }
 }
 
@@ -263,7 +283,15 @@ void cdwd2dUpdateCanvas(cdCtxCanvas* ctxcanvas)
 
   cdforeground(ctxcanvas, ctxcanvas->canvas->foreground);
 
-  cdinteriorstyle(ctxcanvas, ctxcanvas->canvas->interior_style);
+  if (ctxcanvas->canvas->interior_style != CD_SOLID)
+  {
+    cdinteriorstyle(ctxcanvas, ctxcanvas->canvas->interior_style);
+
+    if (ctxcanvas->fillBrushType == FILL_BRUSH_RADIAL)
+      set_radialgradient_brush(ctxcanvas);
+    else if (ctxcanvas->fillBrushType == FILL_BRUSH_LINEAR)
+      set_lineargradient_brush(ctxcanvas);
+  }
 
   cdtransform(ctxcanvas, ctxcanvas->canvas->use_matrix ? ctxcanvas->canvas->matrix : NULL);
 
@@ -338,6 +366,7 @@ static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
   ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+  ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
 
   d2dDestroyImage(bitmap);
 
@@ -353,6 +382,7 @@ static void cdstipple(cdCtxCanvas *ctxcanvas, int n, int m, const unsigned char 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
   ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+  ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
 
   d2dDestroyImage(bitmap);
 }
@@ -366,6 +396,7 @@ static void cdpattern(cdCtxCanvas *ctxcanvas, int n, int m, const long *pattern)
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
   ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+  ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
 
   d2dDestroyImage(bitmap);
 }
@@ -386,6 +417,7 @@ static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
       if (ctxcanvas->fillBrush)
         dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
       ctxcanvas->fillBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, ctxcanvas->canvas->foreground);
+      ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
       break;
     case CD_HATCH:
       cdhatch(ctxcanvas, ctxcanvas->canvas->hatch_style);
@@ -413,6 +445,7 @@ static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
     if (ctxcanvas->fillBrush)
       dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
     ctxcanvas->fillBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
+    ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
   }
 
   return color;

@@ -212,27 +212,22 @@ dummy_ID2D1Brush* d2dCreateLinearGradientBrush(dummy_ID2D1RenderTarget *target, 
   dummy_ID2D1GradientStopCollection *stops;
   dummy_ID2D1LinearGradientBrush *brush;
   dummy_D2D1_COLOR_F color;
-  unsigned int count;
   HRESULT hr;
-
-  d2dInitColor(&color, foreground);
 
   props.startPoint.x = x1;
   props.startPoint.y = y1;
   props.endPoint.x = x2;
   props.endPoint.y = y2;
 
+  d2dInitColor(&color, foreground);
   stop[0].color = color;
   stop[0].position = 0.0f;
 
   d2dInitColor(&color, background);
-
   stop[1].color = color;
   stop[1].position = 1.0f;
 
-  count = 2;
-
-  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, count, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_WRAP, &stops);
+  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, 2, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_WRAP, &stops);
   if (FAILED(hr)) {
     return NULL;
   }

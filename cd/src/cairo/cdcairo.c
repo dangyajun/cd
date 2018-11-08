@@ -2093,6 +2093,7 @@ static void set_pattern_image_attrib(cdCtxCanvas *ctxcanvas, char* data)
 
     cairo_set_source(ctxcanvas->cr, ctxcanvas->pattern);
     ctxcanvas->last_source = 1;
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
   }
 }
 
@@ -2129,17 +2130,19 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
     {
       if ( count % 2 )
       {
-        cairo_pattern_add_color_stop_rgb(ctxcanvas->pattern, offset,
-          cdCairoGetRed(ctxcanvas->canvas->foreground),
-          cdCairoGetGreen(ctxcanvas->canvas->foreground),
-          cdCairoGetBlue(ctxcanvas->canvas->foreground));
+        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
+                                          cdCairoGetRed(ctxcanvas->canvas->foreground),
+                                          cdCairoGetGreen(ctxcanvas->canvas->foreground),
+                                          cdCairoGetBlue(ctxcanvas->canvas->foreground),
+                                          cdCairoGetAlpha(ctxcanvas->canvas->foreground));
       }
       else
       {
-        cairo_pattern_add_color_stop_rgb(ctxcanvas->pattern, offset,
-          cdCairoGetRed(ctxcanvas->canvas->background),
-          cdCairoGetGreen(ctxcanvas->canvas->background),
-          cdCairoGetBlue(ctxcanvas->canvas->background));
+        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
+                                          cdCairoGetRed(ctxcanvas->canvas->background),
+                                          cdCairoGetGreen(ctxcanvas->canvas->background),
+                                          cdCairoGetBlue(ctxcanvas->canvas->background),
+                                          cdCairoGetAlpha(ctxcanvas->canvas->background));
       }
       count++;
     }
@@ -2148,6 +2151,7 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 
     cairo_set_source(ctxcanvas->cr, ctxcanvas->pattern);
     ctxcanvas->last_source = 1;
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
   }
 }
 
@@ -2199,19 +2203,21 @@ static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 
     for(offset = 0.1; offset < 1.0; offset += 0.1)
     {
-      if ( count % 2 )
+      if (count % 2)
       {
-        cairo_pattern_add_color_stop_rgb(ctxcanvas->pattern, offset,
-          cdCairoGetRed(ctxcanvas->canvas->foreground),
-          cdCairoGetGreen(ctxcanvas->canvas->foreground),
-          cdCairoGetBlue(ctxcanvas->canvas->foreground));
+        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
+                                          cdCairoGetRed(ctxcanvas->canvas->foreground),
+                                          cdCairoGetGreen(ctxcanvas->canvas->foreground),
+                                          cdCairoGetBlue(ctxcanvas->canvas->foreground),
+                                          cdCairoGetAlpha(ctxcanvas->canvas->foreground));
       }
       else
       {
-        cairo_pattern_add_color_stop_rgb(ctxcanvas->pattern, offset,
-          cdCairoGetRed(ctxcanvas->canvas->background),
-          cdCairoGetGreen(ctxcanvas->canvas->background),
-          cdCairoGetBlue(ctxcanvas->canvas->background));
+        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
+                                          cdCairoGetRed(ctxcanvas->canvas->background),
+                                          cdCairoGetGreen(ctxcanvas->canvas->background),
+                                          cdCairoGetBlue(ctxcanvas->canvas->background),
+                                          cdCairoGetAlpha(ctxcanvas->canvas->background));
       }
       count++;
     }
@@ -2220,6 +2226,7 @@ static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 
     cairo_set_source(ctxcanvas->cr, ctxcanvas->pattern);
     ctxcanvas->last_source = 1;
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
   }
 }
 

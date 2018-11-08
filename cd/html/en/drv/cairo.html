@@ -186,13 +186,15 @@ because there is no support for drawing primitives in GDK since GTK 3.0. The
   a filled interior style that uses a line gradient between two colors. It uses 
   2 points (&quot;%d %d %d %d&quot; = x1 y1 x2 y2), one for the starting point using 
   (using the foreground color), and another one for the end point (using the 
-  background color). If a regular interior style is set, the gradient is lost.</li>
+  background color). If a regular interior style is set, the gradient is lost. 
+  Interior style is set to CD_CUSTOMPATTERN (since 5.12). </li>
 </ul>
 
 <ul>
   <li>&quot;<span class="style1"><strong>PATTERNIMAGE</strong></span>&quot;:&nbsp;defines 
   a filled interior style using a server image as pattern. Data must be a server 
-	image handle created with the Cairo base driver.</li>
+	image handle created with the Cairo base driver. Interior style is set to 
+  CD_CUSTOMPATTERN (since 5.12). </li>
 </ul>
 
 <ul>
@@ -216,7 +218,7 @@ because there is no support for drawing primitives in GDK since GTK 3.0. The
   uses 2 points and 2 radius (&quot;%d %d %g %d %d %g&quot; = x1 y1 rad1 x2 y2 rad2), one 
   for the starting point using (using the foreground color), and another one for 
   the end point (using the background color). If a regular interior style is 
-  set, the gradient is lost.</li>
+  set, the gradient is lost. Interior style is set to CD_CUSTOMPATTERN (since 5.12). </li>
 </ul>
 
 <ul>
