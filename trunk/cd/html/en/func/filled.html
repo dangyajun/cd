@@ -143,7 +143,11 @@ canvas:InteriorStyle(style: number) -&gt; (old_style: number) [in Lua]</pre>
   <b>CD_STIPPLE</b> or <b>CD_PATTERN</b>. Note that only <b>
     CD_HATCH</b> and <b>CD_STIPPLE</b> are affected by the backopacity. It returns the previous value. Default value:  <b>CD_SOLID</b>. Value 
   <b><b>CD_QUERY</b> </b>simply returns the 
-  current value.</p>
+  current value. The value <strong>CD_CUSTOMPATTERN</strong> is returned in 
+  Context Plus base drivers when
+<font SIZE="3">
+	LINEGRADIENT, RADIALGRADIENT or PATTERNIMAGE attributes are set, it is a 
+  read-only value.</font></p>
   <p>If <i>a stipple</i> or <i>a pattern</i> were not defined, when they are 
   selected the state of the 
   attribute is not changed. </p>

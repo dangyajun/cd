@@ -195,7 +195,8 @@
 <ul>
   <li>&quot;<span class="style1"><strong>PATTERNIMAGE</strong></span>&quot;:&nbsp;defines 
   a filled interior style using a server image as pattern. Data must be a server 
-	image handle created with the GDI+ base driver. (since 5.12)</li>
+	image handle created with the GDI+ base driver. Interior style is set to 
+  CD_CUSTOMPATTERN. (since 5.12)</li>
 </ul>
 <ul>
   <li>&quot;<b><font face="Courier">ROTATE</font></b>&quot;:&nbsp; allows the usage of 1 angle and 1 coordinate (x, y), that 
@@ -207,7 +208,8 @@
   <li><b><font face="Courier">&quot;LINEGRADIENT&quot;: </font></b>defines a filled interior style that uses a line gradient 
   between two colors. It uses 2 points (&quot;%d %d %d %d&quot; = x1 y1 x2 y2), one for the starting point using (using the 
   foreground color), and another one for the end point (using the background color). 
-  If a regular interior style is set, the gradient is lost.</li>
+  If a regular interior style is set, the gradient is lost. Interior style is 
+  set to CD_CUSTOMPATTERN (since 5.12). </li>
 </ul>
 <ul>
   <li><b><font face="Courier">&quot;LINECAP&quot;: </font></b>defines additional line cap styles. It can have the following 

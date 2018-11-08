@@ -2526,6 +2526,7 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
     }
     delete ctxcanvas->fillBrush;
     ctxcanvas->fillBrush = new LinearGradientBrush(p1, p2, ctxcanvas->fg, ctxcanvas->bg);
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
   }
 }
 
@@ -2548,6 +2549,63 @@ static cdAttribute linegradient_attrib =
   get_linegradient_attrib
 }; 
 
+#if 0
+static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data)
+  {
+    int cx, cy, ox, oy, rx, ry;
+
+    sscanf(data, "%d %d %d %d %d %d", &cx, &cy, &ox, &oy, &rx, &ry);
+
+    ctxcanvas->radial_gradient_center_x = cx;
+    ctxcanvas->radial_gradient_center_y = cy;
+    ctxcanvas->radial_gradient_origin_offset_x = ox;
+    ctxcanvas->radial_gradient_origin_offset_y = oy;
+    ctxcanvas->radial_gradient_radius_x = ry;
+    ctxcanvas->radial_gradient_radius_y = ry;
+
+
+    int cx1, cy1, cx2, cy2;
+    double radious1, radious2;
+    double offset;
+    int count = 1;
+
+    sscanf(data, "%d %d %lg %d %d %lg", &cx1, &cy1, &radious1, &cx2, &cy2, &radious2);
+
+    if (ctxcanvas->canvas->invert_yaxis)
+    {
+      cy1 = _cdInvertYAxis(ctxcanvas->canvas, cy1);
+      cy2 = _cdInvertYAxis(ctxcanvas->canvas, cy2);
+    }
+
+    delete ctxcanvas->fillBrush;
+
+    //ctxcanvas->fillBrush = new PathGradientBrush
+    PathGradientBrush* brush = new PathGradientBrush((Point*)poly, n);
+    brush->SetSurroundColors(ctxcanvas->pathGradient, &count);
+    brush->SetCenterColor(ctxcanvas->pathGradient[n]);
+
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
+
+    GraphicsPath gp = new GraphicsPath();
+    gp.AddEllipse(label1.ClientRectangle);
+
+    PathGradientBrush pgb = new PathGradientBrush(gp);
+
+    pgb.CenterPoint = new PointF(label1.ClientRectangle.Width / 2,
+                                 label1.ClientRectangle.Height / 2);
+    pgb.CenterColor = Color.White;
+    pgb.SurroundColors = new Color[] { Color.Red };
+
+    e.Graphics.FillPath(pgb, gp);
+
+    pgb.Dispose();
+    gp.Dispose();
+  }
+}
+#endif
+
 static void set_pattern_image_attrib(cdCtxCanvas *ctxcanvas, char* data)
 {
   if (data)
@@ -2556,6 +2614,7 @@ static void set_pattern_image_attrib(cdCtxCanvas *ctxcanvas, char* data)
 
     delete ctxcanvas->fillBrush;
     ctxcanvas->fillBrush = new TextureBrush(ctximage->bitmap);
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
   }
 }
 

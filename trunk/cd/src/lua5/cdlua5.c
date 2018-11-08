@@ -1584,6 +1584,7 @@ static const struct cdlua5_constant cdlibconstant[] = {
   {"STIPPLE", CD_STIPPLE},
   {"PATTERN", CD_PATTERN},
   {"HOLLOW" , CD_HOLLOW},
+  {"CUSTOMPATTERN", CD_CUSTOMPATTERN },
 
   /* text alignment */
   {"NORTH"      , CD_NORTH},
@@ -1599,7 +1600,7 @@ static const struct cdlua5_constant cdlibconstant[] = {
   {"BASE_CENTER", CD_BASE_CENTER},
   {"BASE_RIGHT" , CD_BASE_RIGHT},
 
-  /* style */
+  /* font style */
   {"PLAIN"      , CD_PLAIN},
   {"BOLD"       , CD_BOLD},
   {"ITALIC"     , CD_ITALIC},
@@ -1648,6 +1649,7 @@ static const struct cdlua5_constant cdlibconstant[] = {
   {"CAP_BEZIER"         , CD_CAP_BEZIER},                                 
   {"CAP_ALL"            , CD_CAP_ALL},                                       
 
+  /* context type */
   {"CTX_WINDOW"         , CD_CTX_WINDOW},                                     
   {"CTX_DEVICE"         , CD_CTX_DEVICE},
   {"CTX_IMAGE"          , CD_CTX_IMAGE},
@@ -1673,7 +1675,7 @@ static const struct cdlua5_constant cdlibconstant[] = {
   {"SIM_LINES"     , CD_SIM_LINES},
   {"SIM_FILLS"     , CD_SIM_FILLS},
 
-  /* some conversion factors */
+  /* conversion factors */
   {"MM2PT"  , CD_MM2PT},
   {"RAD2DEG", CD_RAD2DEG},
 
