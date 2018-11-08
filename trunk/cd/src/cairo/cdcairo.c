@@ -651,7 +651,7 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
 
   sCairoRectangleWH(ctxcanvas->cr, 0, 0, ctxcanvas->canvas->w, ctxcanvas->canvas->h);
   cairo_clip(ctxcanvas->cr);
-  cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), cdCairoGetAlpha(ctxcanvas->canvas->background));
+  cairo_set_source_rgba(ctxcanvas->cr, cdCairoGetRed(ctxcanvas->canvas->background), cdCairoGetGreen(ctxcanvas->canvas->background), cdCairoGetBlue(ctxcanvas->canvas->background), 1.0); /* clear is opaque */
   cairo_set_operator (ctxcanvas->cr, CAIRO_OPERATOR_SOURCE);
   cairo_paint(ctxcanvas->cr);  /* paints the current source everywhere within the current clip region. */
 
@@ -1930,7 +1930,7 @@ static cdAttribute hatchboxsize_attrib =
   get_hatchboxsize_attrib
 }; 
 
-static void set_poly_attrib(cdCtxCanvas *ctxcanvas, char* data)
+static void set_polyhole_attrib(cdCtxCanvas *ctxcanvas, char* data)
 {
   int hole;
 
@@ -1945,18 +1945,18 @@ static void set_poly_attrib(cdCtxCanvas *ctxcanvas, char* data)
   ctxcanvas->holes++;
 }
 
-static char* get_poly_attrib(cdCtxCanvas *ctxcanvas)
+static char* get_polyhole_attrib(cdCtxCanvas *ctxcanvas)
 {
   static char holes[10];
   sprintf(holes, "%d", ctxcanvas->holes);
   return holes;
 }
 
-static cdAttribute poly_attrib =
+static cdAttribute polyhole_attrib =
 {
   "POLYHOLE",
-  set_poly_attrib,
-  get_poly_attrib
+  set_polyhole_attrib,
+  get_polyhole_attrib
 }; 
 
 static void set_rotate_attrib(cdCtxCanvas* ctxcanvas, char* data)
@@ -2361,7 +2361,7 @@ cdCtxCanvas *cdcairoCreateCanvas(cdCanvas* canvas, cairo_t* cr)
 
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &version_attrib);
-  cdRegisterAttribute(canvas, &poly_attrib);
+  cdRegisterAttribute(canvas, &polyhole_attrib);
   cdRegisterAttribute(canvas, &aa_attrib);
   cdRegisterAttribute(canvas, &txtaa_attrib);
   cdRegisterAttribute(canvas, &linegradient_attrib);

@@ -504,8 +504,8 @@ typedef int(*cdSizeCB)(cdCanvas *canvas, int w, int h, double w_mm, double h_mm)
 #define  CD_DARK_GRAY     0x808080L   /* 128,128,128 */
 #define  CD_GRAY          0xC0C0C0L   /* 192,192,192 */
 
-/* some usefull conversion factors */
-#define CD_MM2PT     2.834645669   /* milimeters to points (pt = CD_MM2PT * mm) */
+/* some useful conversion factors */
+#define CD_MM2PT     2.834645669   /* millimeters to points (pt = CD_MM2PT * mm) */
 #define CD_RAD2DEG  57.295779513   /* radians to degrees (deg = CD_RAD2DEG * rad) */
 #define CD_DEG2RAD  0.01745329252  /* degrees to radians (rad = CD_DEG2RAD * deg) */
 

@@ -729,7 +729,7 @@ int  cdCanvasFillMode(cdCanvas* canvas, int mode)
   return fill_mode;
 }
 
-int cdCanvasInteriorStyle (cdCanvas* canvas, int style)
+int cdCanvasInteriorStyle(cdCanvas* canvas, int style)
 {
   int interior_style;
 
