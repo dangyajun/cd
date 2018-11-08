@@ -20,8 +20,21 @@ struct _cdCtxCanvas
   d2dCanvas *d2d_canvas;
   d2dFont *font;
 
-  dummy_ID2D1Brush *brush;
+  dummy_ID2D1Brush *drawBrush;
+  dummy_ID2D1Brush *fillBrush;
   dummy_ID2D1StrokeStyle *stroke_style;
+
+  int radial_gradient_center_x;
+  int radial_gradient_center_y;
+  int radial_gradient_origin_offset_x;
+  int radial_gradient_origin_offset_y;
+  int radial_gradient_radius_x;
+  int radial_gradient_radius_y;
+
+  int linear_gradient_x1;
+  int linear_gradient_y1;
+  int linear_gradient_x2;
+  int linear_gradient_y2;
 
   HWND hWnd; /* CDW_WIN handle */
   HDC hDC;   /* GDI Device Context handle */            
@@ -30,13 +43,14 @@ struct _cdCtxCanvas
   int font_angle;
   int utf8mode;
 
+  int hatchboxsize;
+
   double rotate_angle;
   int    rotate_center_x,
          rotate_center_y;
 
   dummy_ID2D1PathGeometry* clip_poly;
   dummy_ID2D1PathGeometry *new_rgn;
-
 };
 
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc);

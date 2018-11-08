@@ -213,8 +213,6 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   ctxcanvas = cdwd2dCreateCanvas(canvas, hWnd, hDC);
   
-  ctxcanvas->hWnd = hWnd;
-  ctxcanvas->hDC = hDC;
   ctxcanvas->release_dc = release_dc;
   ctxcanvas->canvas->invert_yaxis = 1;
 }
