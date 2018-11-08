@@ -51,6 +51,9 @@ typedef struct dummy_IDWriteTextLayout_tag              dummy_IDWriteTextLayout;
 typedef struct dummy_ID2D1Bitmap_tag                    dummy_ID2D1Bitmap;
 typedef struct dummy_ID2D1BitmapRenderTarget_tag        dummy_ID2D1BitmapRenderTarget;
 typedef struct dummy_ID2D1Brush_tag                     dummy_ID2D1Brush;
+typedef struct dummy_ID2D1BitmapBrush_tag               dummy_ID2D1BitmapBrush;
+typedef struct dummy_ID2D1LinearGradientBrush_tag       dummy_ID2D1LinearGradientBrush;
+typedef struct dummy_ID2D1RadialGradientBrush_tag       dummy_ID2D1RadialGradientBrush;
 typedef struct dummy_ID2D1StrokeStyle_tag               dummy_ID2D1StrokeStyle;
 typedef struct dummy_ID2D1DCRenderTarget_tag            dummy_ID2D1DCRenderTarget;
 typedef struct dummy_ID2D1Factory_tag                   dummy_ID2D1Factory;
@@ -63,6 +66,7 @@ typedef struct dummy_ID2D1PathGeometry_tag              dummy_ID2D1PathGeometry;
 typedef struct dummy_ID2D1EllipseGeometry_tag           dummy_ID2D1EllipseGeometry;
 typedef struct dummy_ID2D1RenderTarget_tag              dummy_ID2D1RenderTarget;
 typedef struct dummy_ID2D1SolidColorBrush_tag           dummy_ID2D1SolidColorBrush;
+typedef struct dummy_ID2D1GradientStopCollection_tag    dummy_ID2D1GradientStopCollection;
 
 
 /*****************************
@@ -193,6 +197,20 @@ enum dummy_D2D1_COMBINE_MODE_tag {
   dummy_D2D1_COMBINE_MODE_FORCE_DWORD = 4
 };
 
+typedef enum dummy_D2D1_EXTEND_MODE_tag dummy_D2D1_EXTEND_MODE;
+enum dummy_D2D1_EXTEND_MODE_tag {
+  dummy_D2D1_EXTEND_MODE_CLAMP = 0,
+  dummy_D2D1_EXTEND_MODE_WRAP = 1,
+  dummy_D2D1_EXTEND_MODE_MIRROR = 2,
+  dummy_D2D1_EXTEND_MODE_FORCE_DWORD = 3
+};
+
+typedef enum dummy_D2D1_GAMMA_tag dummy_D2D1_GAMMA;
+enum dummy_GAMMA_tag {
+  dummy_D2D1_GAMMA_2_2 = 0,
+  dummy_D2D1_GAMMA_1_0 = 1,
+  dummy_D2D1_GAMMA_FORCE_DWORD = 3
+};
 
 /*************************
  ***  Helper Typedefs  ***
@@ -205,7 +223,6 @@ typedef struct D2D_POINT_2F                     dummy_D2D1_POINT_2F;
 typedef struct D2D_RECT_F                       dummy_D2D1_RECT_F;
 typedef struct D2D_SIZE_F                       dummy_D2D1_SIZE_F;
 typedef struct D2D_SIZE_U                       dummy_D2D1_SIZE_U;
-
 
 /***************************
  ***  Helper Structures  ***
@@ -284,6 +301,38 @@ struct dummy_D2D1_BEZIER_SEGMENT_tag {
   dummy_D2D1_POINT_2F point3;
 };
 
+typedef struct dummy_D2D1_BITMAP_BRUSH_PROPERTIES_tag dummy_D2D1_BITMAP_BRUSH_PROPERTIES;
+struct dummy_D2D1_BITMAP_BRUSH_PROPERTIES_tag {
+  dummy_D2D1_EXTEND_MODE extendModeX;
+  dummy_D2D1_EXTEND_MODE extendModeY;
+  dummy_D2D1_BITMAP_INTERPOLATION_MODE interpolationMode;
+};
+
+typedef struct dummy_D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES_tag dummy_D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES;
+struct dummy_D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES_tag {
+  dummy_D2D1_POINT_2F startPoint;
+  dummy_D2D1_POINT_2F endPoint;
+};
+
+typedef struct dummy_D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES_tag dummy_D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES;
+struct dummy_D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES_tag {
+  dummy_D2D1_POINT_2F center;
+  dummy_D2D1_POINT_2F gradientOriginOffset;
+  FLOAT radiusX;
+  FLOAT radiusY;
+};
+
+typedef struct dummy_D2D1_BRUSH_PROPERTIES_tag dummy_D2D1_BRUSH_PROPERTIES;
+struct dummy_D2D1_BRUSH_PROPERTIES_tag {
+  FLOAT opacity;
+  dummy_D2D1_MATRIX_3X2_F transform;
+};
+
+typedef struct dummy_D2D1_GRADIENT_STOP_tag dummy_D2D1_GRADIENT_STOP;
+struct dummy_D2D1_GRADIENT_STOP_tag {
+  FLOAT position;
+  dummy_D2D1_COLOR_F color;
+};
 
 /*******************************
  ***  Interface ID2D1Bitmap  ***
@@ -416,7 +465,7 @@ struct dummy_ID2D1BitmapRenderTargetVtbl_tag {
     STDMETHOD(dummy_IsSupported)(void);
 
     /* ID2D1BitmapRenderTarget methods */
-    STDMETHOD(dummy_GetBitmap)(void);
+    STDMETHOD(GetBitmap)(dummy_ID2D1Bitmap**);
 };
 
 struct dummy_ID2D1BitmapRenderTarget_tag {
@@ -426,36 +475,174 @@ struct dummy_ID2D1BitmapRenderTarget_tag {
 #define dummy_ID2D1BitmapRenderTarget_QueryInterface(self,a,b)  (self)->vtbl->QueryInterface(self,a,b)
 #define dummy_ID2D1BitmapRenderTarget_AddRef(self)              (self)->vtbl->AddRef(self)
 #define dummy_ID2D1BitmapRenderTarget_Release(self)             (self)->vtbl->Release(self)
+#define dummy_ID2D1BitmapRenderTarget_GetBitmap(self,a)         (self)->vtbl->GetBitmap(self,a)
 
+/***********************************************
+***  Interface ID2D1GradientStopCollection  ***
+************************************************/
+
+typedef struct dummy_ID2D1GradientStopCollectionVtbl_tag dummy_ID2D1GradientStopCollectionVtbl;
+struct dummy_ID2D1GradientStopCollectionVtbl_tag {
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1GradientStopCollection*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1GradientStopCollection*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1GradientStopCollection*);
+
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
+
+  /* ID2D1GradientStopCollection methods */
+  STDMETHOD(dummy_GetGradientStopCount)(void);
+  STDMETHOD(dummy_GetGradientStops)(void);
+  STDMETHOD(dummy_GetColorInterpolationGamma)(void);
+  STDMETHOD(dummy_GetExtendMode)(void);
+};
+
+struct dummy_ID2D1GradientStopCollection_tag {
+  dummy_ID2D1GradientStopCollectionVtbl* vtbl;
+};
+
+#define dummy_ID2D1GradientStopCollection_QueryInterface(self,a,b)  (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1GradientStopCollection_AddRef(self)              (self)->vtbl->AddRef(self)
+#define dummy_ID2D1GradientStopCollection_Release(self)             (self)->vtbl->Release(self)
 
 /******************************
- ***  Interface ID2D1Brush  ***
- ******************************/
+***  Interface ID2D1Brush  ***
+******************************/
 
 typedef struct dummy_ID2D1BrushVtbl_tag dummy_ID2D1BrushVtbl;
 struct dummy_ID2D1BrushVtbl_tag {
-    /* IUnknown methods */
-    STDMETHOD(QueryInterface)(dummy_ID2D1Brush*, REFIID, void**);
-    STDMETHOD_(ULONG, AddRef)(dummy_ID2D1Brush*);
-    STDMETHOD_(ULONG, Release)(dummy_ID2D1Brush*);
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1Brush*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1Brush*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1Brush*);
 
-    /* ID2D1Resource methods */
-    STDMETHOD(dummy_GetFactory)(void);
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
 
-    /* ID2D1Brush methods */
-    STDMETHOD(dummy_SetOpacity)(void);
-    STDMETHOD(dummy_SetTransform)(void);
-    STDMETHOD(dummy_GetOpacity)(void);
-    STDMETHOD(dummy_GetTransform)(void);
+  /* ID2D1Brush methods */
+  STDMETHOD(dummy_SetOpacity)(void);
+  STDMETHOD(dummy_SetTransform)(void);
+  STDMETHOD(dummy_GetOpacity)(void);
+  STDMETHOD(dummy_GetTransform)(void);
 };
 
 struct dummy_ID2D1Brush_tag {
-    dummy_ID2D1BrushVtbl* vtbl;
+  dummy_ID2D1BrushVtbl* vtbl;
 };
 
 #define dummy_ID2D1Brush_QueryInterface(self,a,b)               (self)->vtbl->QueryInterface(self,a,b)
 #define dummy_ID2D1Brush_AddRef(self)                           (self)->vtbl->AddRef(self)
 #define dummy_ID2D1Brush_Release(self)                          (self)->vtbl->Release(self)
+
+/************************************
+***  Interface ID2BitmapD1Brush  ***
+*************************************/
+
+typedef struct dummy_ID2D1BitmapBrushVtbl_tag dummy_ID2D1BitmapBrushVtbl;
+struct dummy_ID2D1BitmapBrushVtbl_tag {
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1BitmapBrush*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1BitmapBrush*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1BitmapBrush*);
+
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
+
+  /* ID2D1Brush methods */
+  STDMETHOD(dummy_SetOpacity)(void);
+  STDMETHOD(dummy_SetTransform)(void);
+  STDMETHOD(dummy_GetOpacity)(void);
+  STDMETHOD(dummy_GetTransform)(void);
+
+  /* ID2D1BitmapBrush methods */
+  STDMETHOD(dummy_SetExtendModeX)(void);
+  STDMETHOD(dummy_SetExtendModeY)(void);
+  STDMETHOD(dummy_SetInterpolationMode)(void);
+};
+
+struct dummy_ID2D1BitmapBrush_tag {
+  dummy_ID2D1BitmapBrushVtbl* vtbl;
+};
+
+#define dummy_ID2D1BitmapBrush_QueryInterface(self,a,b)               (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1BitmapBrush_AddRef(self)                           (self)->vtbl->AddRef(self)
+#define dummy_ID2D1BitmapBrush_Release(self)                          (self)->vtbl->Release(self)
+
+/**********************************************
+***  Interface ID2D1LinearGradientD1Brush  ***
+***********************************************/
+
+typedef struct dummy_ID2D1LinearGradientBrushVtbl_tag dummy_ID2D1LinearGradientBrushVtbl;
+struct dummy_ID2D1LinearGradientBrushVtbl_tag {
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1LinearGradientBrush*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1LinearGradientBrush*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1LinearGradientBrush*);
+
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
+
+  /* ID2D1Brush methods */
+  STDMETHOD(dummy_SetOpacity)(void);
+  STDMETHOD(dummy_SetTransform)(void);
+  STDMETHOD(dummy_GetOpacity)(void);
+  STDMETHOD(dummy_GetTransform)(void);
+
+  /* ID2D1LinearGradientBrush methods */
+  STDMETHOD(dummy_SetStartPoint)(void);
+  STDMETHOD(dummy_SetEndPoint)(void);
+  STDMETHOD(dummy_GetStartPoint)(void);
+  STDMETHOD(dummy_GetEndPoint)(void);
+};
+
+struct dummy_ID2D1LinearGradientBrush_tag {
+  dummy_ID2D1LinearGradientBrushVtbl* vtbl;
+};
+
+#define dummy_ID2D1LinearGradientBrush_QueryInterface(self,a,b)               (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1LinearGradientBrush_AddRef(self)                           (self)->vtbl->AddRef(self)
+#define dummy_ID2D1LinearGradientBrush_Release(self)                          (self)->vtbl->Release(self)
+
+
+/**********************************************
+***  Interface ID2D1RadialGradientD1Brush  ***
+***********************************************/
+
+typedef struct dummy_ID2D1RadialGradientBrushVtbl_tag dummy_ID2D1RadialGradientBrushVtbl;
+struct dummy_ID2D1RadialGradientBrushVtbl_tag {
+  /* IUnknown methods */
+  STDMETHOD(QueryInterface)(dummy_ID2D1RadialGradientBrush*, REFIID, void**);
+  STDMETHOD_(ULONG, AddRef)(dummy_ID2D1RadialGradientBrush*);
+  STDMETHOD_(ULONG, Release)(dummy_ID2D1RadialGradientBrush*);
+
+  /* ID2D1Resource methods */
+  STDMETHOD(dummy_GetFactory)(void);
+
+  /* ID2D1Brush methods */
+  STDMETHOD(dummy_SetOpacity)(void);
+  STDMETHOD(dummy_SetTransform)(void);
+  STDMETHOD(dummy_GetOpacity)(void);
+  STDMETHOD(dummy_GetTransform)(void);
+
+  /* ID2D1RadialGradientBrush methods */
+  STDMETHOD(dummy_SetCenter)(void);
+  STDMETHOD(dummy_SetGradientOriginOffset)(void);
+  STDMETHOD(dummy_SetRadiusX)(void);
+  STDMETHOD(dummy_SetRadiusY)(void);
+  STDMETHOD(dummy_GetCenter)(void);
+  STDMETHOD(dummy_GetGradientOriginOffset)(void);
+  STDMETHOD(dummy_GetRadiusX)(void);
+  STDMETHOD(dummy_GetRadiusY)(void);
+};
+
+struct dummy_ID2D1RadialGradientBrush_tag {
+  dummy_ID2D1RadialGradientBrushVtbl* vtbl;
+};
+
+#define dummy_ID2D1RadialGradientBrush_QueryInterface(self,a,b)               (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1RadialGradientBrush_AddRef(self)                           (self)->vtbl->AddRef(self)
+#define dummy_ID2D1RadialGradientBrush_Release(self)                          (self)->vtbl->Release(self)
 
 
 /***********************************
@@ -598,7 +785,7 @@ struct dummy_ID2D1FactoryVtbl_tag {
     STDMETHOD(CreatePathGeometry)(dummy_ID2D1Factory*, dummy_ID2D1PathGeometry**);
     STDMETHOD(CreateStrokeStyle)(dummy_ID2D1Factory*, const dummy_D2D1_STROKE_STYLE_PROPERTIES*, const FLOAT*, UINT32, dummy_ID2D1StrokeStyle**);
     STDMETHOD(dummy_CreateDrawingStateBlock)(void);
-    STDMETHOD(dummy_CreateWicBitmapRenderTarget)(void);
+    STDMETHOD(CreateWicBitmapRenderTarget)(dummy_ID2D1Factory*, IWICBitmap*, const dummy_D2D1_RENDER_TARGET_PROPERTIES*, dummy_ID2D1RenderTarget**);
     STDMETHOD(CreateHwndRenderTarget)(dummy_ID2D1Factory*, const dummy_D2D1_RENDER_TARGET_PROPERTIES*,
               const dummy_D2D1_HWND_RENDER_TARGET_PROPERTIES*, dummy_ID2D1HwndRenderTarget**);
     STDMETHOD(dummy_CreateDxgiSurfaceRenderTarget)(void);
@@ -609,13 +796,14 @@ struct dummy_ID2D1Factory_tag {
     dummy_ID2D1FactoryVtbl* vtbl;
 };
 
-#define dummy_ID2D1Factory_QueryInterface(self,a,b)             (self)->vtbl->QueryInterface(self,a,b)
-#define dummy_ID2D1Factory_AddRef(self)                         (self)->vtbl->AddRef(self)
-#define dummy_ID2D1Factory_Release(self)                        (self)->vtbl->Release(self)
-#define dummy_ID2D1Factory_CreatePathGeometry(self,a)           (self)->vtbl->CreatePathGeometry(self,a)
-#define dummy_ID2D1Factory_CreateHwndRenderTarget(self,a,b,c)   (self)->vtbl->CreateHwndRenderTarget(self,a,b,c)
-#define dummy_ID2D1Factory_CreateDCRenderTarget(self,a,b)       (self)->vtbl->CreateDCRenderTarget(self,a,b)
-#define dummy_ID2D1Factory_CreateStrokeStyle(self,a,b,c,d)      (self)->vtbl->CreateStrokeStyle(self,a,b,c,d)
+#define dummy_ID2D1Factory_QueryInterface(self,a,b)                  (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1Factory_AddRef(self)                              (self)->vtbl->AddRef(self)
+#define dummy_ID2D1Factory_Release(self)                             (self)->vtbl->Release(self)
+#define dummy_ID2D1Factory_CreatePathGeometry(self,a)                (self)->vtbl->CreatePathGeometry(self,a)
+#define dummy_ID2D1Factory_CreateHwndRenderTarget(self,a,b,c)        (self)->vtbl->CreateHwndRenderTarget(self,a,b,c)
+#define dummy_ID2D1Factory_CreateWicBitmapRenderTarget(self,a,b,c)   (self)->vtbl->CreateWicBitmapRenderTarget(self,a,b,c)
+#define dummy_ID2D1Factory_CreateDCRenderTarget(self,a,b)            (self)->vtbl->CreateDCRenderTarget(self,a,b)
+#define dummy_ID2D1Factory_CreateStrokeStyle(self,a,b,c,d)           (self)->vtbl->CreateStrokeStyle(self,a,b,c,d)
 
 
 /*****************************************************
@@ -1008,11 +1196,11 @@ struct dummy_ID2D1RenderTargetVtbl_tag {
     STDMETHOD(dummy_CreateBitmap)(void);
     STDMETHOD(CreateBitmapFromWicBitmap)(dummy_ID2D1RenderTarget*, IWICBitmapSource*, const dummy_D2D1_BITMAP_PROPERTIES*, dummy_ID2D1Bitmap**);
     STDMETHOD(dummy_CreateSharedBitmap)(void);
-    STDMETHOD(dummy_CreateBitmapBrush)(void);
+    STDMETHOD(CreateBitmapBrush)(dummy_ID2D1RenderTarget*, dummy_ID2D1Bitmap*, dummy_D2D1_BITMAP_BRUSH_PROPERTIES*, dummy_D2D1_BRUSH_PROPERTIES*, dummy_ID2D1BitmapBrush**);
     STDMETHOD(CreateSolidColorBrush)(dummy_ID2D1RenderTarget*, const dummy_D2D1_COLOR_F*, const void*, dummy_ID2D1SolidColorBrush**);
-    STDMETHOD(dummy_CreateGradientStopCollection)(void);
-    STDMETHOD(dummy_CreateLinearGradientBrush)(void);
-    STDMETHOD(dummy_CreateRadialGradientBrush)(void);
+    STDMETHOD(CreateGradientStopCollection)(dummy_ID2D1RenderTarget*, dummy_D2D1_GRADIENT_STOP*, UINT, dummy_D2D1_GAMMA, dummy_D2D1_EXTEND_MODE, dummy_ID2D1GradientStopCollection**);
+    STDMETHOD(CreateLinearGradientBrush)(dummy_ID2D1RenderTarget*, const dummy_D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES*, const dummy_D2D1_BRUSH_PROPERTIES*, dummy_ID2D1GradientStopCollection*, dummy_ID2D1LinearGradientBrush**);
+    STDMETHOD(CreateRadialGradientBrush)(dummy_ID2D1RenderTarget*, const dummy_D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES*, const dummy_D2D1_BRUSH_PROPERTIES*, dummy_ID2D1GradientStopCollection*, dummy_ID2D1RadialGradientBrush**);
     STDMETHOD(dummy_CreateCompatibleRenderTarget)(void);
     STDMETHOD(CreateLayer)(dummy_ID2D1RenderTarget*, const dummy_D2D1_SIZE_F*, dummy_ID2D1Layer**);
     STDMETHOD(dummy_CreateMesh)(void);
@@ -1065,32 +1253,36 @@ struct dummy_ID2D1RenderTarget_tag {
     dummy_ID2D1RenderTargetVtbl* vtbl;
 };
 
-#define dummy_ID2D1RenderTarget_QueryInterface(self,a,b)                (self)->vtbl->QueryInterface(self,a,b)
-#define dummy_ID2D1RenderTarget_AddRef(self)                            (self)->vtbl->AddRef(self)
-#define dummy_ID2D1RenderTarget_Release(self)                           (self)->vtbl->Release(self)
-#define dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(self,a,b,c)   (self)->vtbl->CreateBitmapFromWicBitmap(self,a,b,c)
-#define dummy_ID2D1RenderTarget_CreateSolidColorBrush(self,a,b,c)       (self)->vtbl->CreateSolidColorBrush(self,a,b,c)
-#define dummy_ID2D1RenderTarget_CreateLayer(self,a,b)                   (self)->vtbl->CreateLayer(self,a,b)
-#define dummy_ID2D1RenderTarget_DrawLine(self,a,b,c,d,e)                (self)->vtbl->DrawLine(self,a,b,c,d,e)
-#define dummy_ID2D1RenderTarget_DrawRectangle(self,a,b,c,d)             (self)->vtbl->DrawRectangle(self,a,b,c,d)
-#define dummy_ID2D1RenderTarget_FillRectangle(self,a,b)                 (self)->vtbl->FillRectangle(self,a,b)
-#define dummy_ID2D1RenderTarget_DrawEllipse(self,a,b,c,d)               (self)->vtbl->DrawEllipse(self,a,b,c,d)
-#define dummy_ID2D1RenderTarget_FillEllipse(self,a,b)                   (self)->vtbl->FillEllipse(self,a,b)
-#define dummy_ID2D1RenderTarget_DrawGeometry(self,a,b,c,d)              (self)->vtbl->DrawGeometry(self,a,b,c,d)
-#define dummy_ID2D1RenderTarget_FillGeometry(self,a,b,c)                (self)->vtbl->FillGeometry(self,a,b,c)
-#define dummy_ID2D1RenderTarget_DrawBitmap(self,a,b,c,d,e)              (self)->vtbl->DrawBitmap(self,a,b,c,d,e)
-#define dummy_ID2D1RenderTarget_DrawTextLayout(self,a,b,c,d)            (self)->vtbl->DrawTextLayout(self,a,b,c,d)
-#define dummy_ID2D1RenderTarget_SetTransform(self,a)                    (self)->vtbl->SetTransform(self,a)
-#define dummy_ID2D1RenderTarget_GetTransform(self,a)                    (self)->vtbl->GetTransform(self,a)
-#define dummy_ID2D1RenderTarget_PushLayer(self,a,b)                     (self)->vtbl->PushLayer(self,a,b)
-#define dummy_ID2D1RenderTarget_PopLayer(self)                          (self)->vtbl->PopLayer(self)
-#define dummy_ID2D1RenderTarget_PushAxisAlignedClip(self,a,b)           (self)->vtbl->PushAxisAlignedClip(self,a,b)
-#define dummy_ID2D1RenderTarget_PopAxisAlignedClip(self)                (self)->vtbl->PopAxisAlignedClip(self)
-#define dummy_ID2D1RenderTarget_Clear(self,a)                           (self)->vtbl->Clear(self,a)
-#define dummy_ID2D1RenderTarget_BeginDraw(self)                         (self)->vtbl->BeginDraw(self)
-#define dummy_ID2D1RenderTarget_EndDraw(self,a,b)                       (self)->vtbl->EndDraw(self,a,b)
-#define dummy_ID2D1RenderTarget_SetDpi(self,a,b)                        (self)->vtbl->SetDpi(self,a,b)
-#define dummy_ID2D1RenderTarget_SetTextAntialiasMode(self,a)            (self)->vtbl->SetTextAntialiasMode(self,a)
+#define dummy_ID2D1RenderTarget_QueryInterface(self,a,b)                     (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1RenderTarget_AddRef(self)                                 (self)->vtbl->AddRef(self)
+#define dummy_ID2D1RenderTarget_Release(self)                                (self)->vtbl->Release(self)
+#define dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(self,a,b,c)        (self)->vtbl->CreateBitmapFromWicBitmap(self,a,b,c)
+#define dummy_ID2D1RenderTarget_CreateBitmapBrush(self,a,b,c,d)              (self)->vtbl->CreateBitmapBrush(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_CreateSolidColorBrush(self,a,b,c)            (self)->vtbl->CreateSolidColorBrush(self,a,b,c)
+#define dummy_ID2D1RenderTarget_CreateGradientStopCollection(self,a,b,c,d,e) (self)->vtbl->CreateGradientStopCollection(self,a,b,c,d,e)
+#define dummy_ID2D1RenderTarget_CreateLinearGradientBrush(self,a,b,c,d)      (self)->vtbl->CreateLinearGradientBrush(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_CreateRadialGradientBrush(self,a,b,c,d)      (self)->vtbl->CreateRadialGradientBrush(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_CreateLayer(self,a,b)                        (self)->vtbl->CreateLayer(self,a,b)
+#define dummy_ID2D1RenderTarget_DrawLine(self,a,b,c,d,e)                     (self)->vtbl->DrawLine(self,a,b,c,d,e)
+#define dummy_ID2D1RenderTarget_DrawRectangle(self,a,b,c,d)                  (self)->vtbl->DrawRectangle(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_FillRectangle(self,a,b)                      (self)->vtbl->FillRectangle(self,a,b)
+#define dummy_ID2D1RenderTarget_DrawEllipse(self,a,b,c,d)                    (self)->vtbl->DrawEllipse(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_FillEllipse(self,a,b)                        (self)->vtbl->FillEllipse(self,a,b)
+#define dummy_ID2D1RenderTarget_DrawGeometry(self,a,b,c,d)                   (self)->vtbl->DrawGeometry(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_FillGeometry(self,a,b,c)                     (self)->vtbl->FillGeometry(self,a,b,c)
+#define dummy_ID2D1RenderTarget_DrawBitmap(self,a,b,c,d,e)                   (self)->vtbl->DrawBitmap(self,a,b,c,d,e)
+#define dummy_ID2D1RenderTarget_DrawTextLayout(self,a,b,c,d)                 (self)->vtbl->DrawTextLayout(self,a,b,c,d)
+#define dummy_ID2D1RenderTarget_SetTransform(self,a)                         (self)->vtbl->SetTransform(self,a)
+#define dummy_ID2D1RenderTarget_GetTransform(self,a)                         (self)->vtbl->GetTransform(self,a)
+#define dummy_ID2D1RenderTarget_PushLayer(self,a,b)                          (self)->vtbl->PushLayer(self,a,b)
+#define dummy_ID2D1RenderTarget_PopLayer(self)                               (self)->vtbl->PopLayer(self)
+#define dummy_ID2D1RenderTarget_PushAxisAlignedClip(self,a,b)                (self)->vtbl->PushAxisAlignedClip(self,a,b)
+#define dummy_ID2D1RenderTarget_PopAxisAlignedClip(self)                     (self)->vtbl->PopAxisAlignedClip(self)
+#define dummy_ID2D1RenderTarget_Clear(self,a)                                (self)->vtbl->Clear(self,a)
+#define dummy_ID2D1RenderTarget_BeginDraw(self)                              (self)->vtbl->BeginDraw(self)
+#define dummy_ID2D1RenderTarget_EndDraw(self,a,b)                            (self)->vtbl->EndDraw(self,a,b)
+#define dummy_ID2D1RenderTarget_SetDpi(self,a,b)                             (self)->vtbl->SetDpi(self,a,b)
+#define dummy_ID2D1RenderTarget_SetTextAntialiasMode(self,a)                 (self)->vtbl->SetTextAntialiasMode(self,a)
 
 
 /*********************************************

@@ -85,6 +85,133 @@ static cdAttribute utf8mode_attrib =
   get_utf8mode_attrib
 };
 
+static void set_hatchboxsize_attrib(cdCtxCanvas *ctxcanvas, char* data)
+{
+  int hatchboxsize;
+
+  if (data == NULL)
+  {
+    ctxcanvas->hatchboxsize = 8;
+    return;
+  }
+
+  sscanf(data, "%d", &hatchboxsize);
+  ctxcanvas->hatchboxsize = hatchboxsize;
+}
+
+static char* get_hatchboxsize_attrib(cdCtxCanvas *ctxcanvas)
+{
+  static char size[10];
+  sprintf(size, "%d", ctxcanvas->hatchboxsize);
+  return size;
+}
+
+static cdAttribute hatchboxsize_attrib =
+{
+  "HATCHBOXSIZE",
+  set_hatchboxsize_attrib,
+  get_hatchboxsize_attrib
+};
+
+static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data)
+  {
+    int x1, y1, x2, y2;
+
+    sscanf(data, "%d %d %d %d", &x1, &y1, &x2, &y2);
+
+    ctxcanvas->linear_gradient_x1 = x1;
+    ctxcanvas->linear_gradient_y1 = y1;
+    ctxcanvas->linear_gradient_x2 = x2;
+    ctxcanvas->linear_gradient_y2 = y2;
+
+    if (ctxcanvas->canvas->invert_yaxis)
+    {
+      y1 = _cdInvertYAxis(ctxcanvas->canvas, y1);
+      y2 = _cdInvertYAxis(ctxcanvas->canvas, y2);
+    }
+
+    if (ctxcanvas->fillBrush)
+      dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+
+    ctxcanvas->fillBrush = d2dCreateLinearGradientBrush(ctxcanvas->d2d_canvas->target, (float)x1, (float)y1, (float)x2, (float)y2, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+  }
+}
+
+static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
+{
+  static char data[100];
+
+  sprintf(data, "%d %d %d %d", ctxcanvas->linear_gradient_x1,
+                               ctxcanvas->linear_gradient_y1,
+                               ctxcanvas->linear_gradient_x2,
+                               ctxcanvas->linear_gradient_y2);
+
+  return data;
+}
+
+static cdAttribute linegradient_attrib =
+{
+  "LINEGRADIENT",
+  set_linegradient_attrib,
+  get_linegradient_attrib
+};
+
+static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data)
+  {
+    int cx, cy, ox, oy, rx, ry;
+
+    sscanf(data, "%d %d %d %d %d %d", &cx, &cy, &ox, &oy, &rx, &ry);
+
+    ctxcanvas->radial_gradient_center_x = cx;
+    ctxcanvas->radial_gradient_center_y = cy;
+    ctxcanvas->radial_gradient_origin_offset_x = ox;
+    ctxcanvas->radial_gradient_origin_offset_y = oy;
+    ctxcanvas->radial_gradient_radius_x = ry;
+    ctxcanvas->radial_gradient_radius_y = ry;
+
+    if (ctxcanvas->fillBrush)
+    {
+      dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+      ctxcanvas->fillBrush = NULL;
+    }
+
+    if (ctxcanvas->canvas->invert_yaxis)
+    {
+      cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
+      oy = oy * -1;
+    }
+
+    ctxcanvas->fillBrush = d2dCreateRadialGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->radial_gradient_center_x, (float)cy,
+                                                                  (float)ctxcanvas->radial_gradient_origin_offset_x, (float)oy,
+                                                                  (float)ctxcanvas->radial_gradient_radius_x, (float)ctxcanvas->radial_gradient_radius_y,
+                                                                  ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+  }
+}
+
+static char* get_radialgradient_attrib(cdCtxCanvas* ctxcanvas)
+{
+  static char data[100];
+
+  sprintf(data, "%d %d %d %d %d %d", ctxcanvas->radial_gradient_center_x,
+          ctxcanvas->radial_gradient_center_y,
+          ctxcanvas->radial_gradient_origin_offset_x,
+          ctxcanvas->radial_gradient_origin_offset_y,
+          ctxcanvas->radial_gradient_radius_x,
+          ctxcanvas->radial_gradient_radius_y);
+
+  return data;
+}
+
+static cdAttribute radialgradient_attrib =
+{
+  "RADIALGRADIENT",
+  set_radialgradient_attrib,
+  get_radialgradient_attrib
+};
 
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
 {
@@ -98,19 +225,24 @@ cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
   canvas->ctxcanvas = ctxcanvas;
   ctxcanvas->hWnd = hWnd;
   ctxcanvas->hDC = hDc;
-  ctxcanvas->d2d_canvas = NULL;
-  ctxcanvas->new_rgn = NULL;
+  ctxcanvas->hatchboxsize = 8;
 
   cdRegisterAttribute(canvas, &utf8mode_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
+  cdRegisterAttribute(canvas, &hatchboxsize_attrib);
+  cdRegisterAttribute(canvas, &linegradient_attrib);
+  cdRegisterAttribute(canvas, &radialgradient_attrib);
 
   return ctxcanvas;
 }
 
 void cdwd2dKillCanvas(cdCtxCanvas* ctxcanvas)
 {
-  if (ctxcanvas->brush)
-    dummy_ID2D1Brush_Release(ctxcanvas->brush);
+  if (ctxcanvas->drawBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->drawBrush);
+
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
 
   if (ctxcanvas->stroke_style)
     dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
@@ -122,19 +254,20 @@ void cdwd2dKillCanvas(cdCtxCanvas* ctxcanvas)
   free(ctxcanvas);
 }
 
+static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color);
+static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style);
+
 void cdwd2dUpdateCanvas(cdCtxCanvas* ctxcanvas)
 {
-  if (ctxcanvas->brush)
-    dummy_ID2D1Brush_Release(ctxcanvas->brush);
+  /* must update attributes that depends on target */
 
-  ctxcanvas->brush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, ctxcanvas->canvas->foreground);
+  cdforeground(ctxcanvas, ctxcanvas->canvas->foreground);
 
-  if (ctxcanvas->stroke_style)
-    dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
-
-  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
+  cdinteriorstyle(ctxcanvas, ctxcanvas->canvas->interior_style);
 
   cdtransform(ctxcanvas, ctxcanvas->canvas->use_matrix ? ctxcanvas->canvas->matrix : NULL);
+
+  /* no need to recreate the font or strokestyle, they do NOT depend on target */
 }
 
 static void sSetTransform(cdCtxCanvas *ctxcanvas, const double* matrix)
@@ -198,19 +331,89 @@ static int cdispointinregion(cdCtxCanvas* ctxcanvas, int x, int y)
   return contains;
 }
 
+static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
+{
+  IWICBitmap* bitmap = d2dCreateImageFromHatch(style, ctxcanvas->hatchboxsize, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+
+  d2dDestroyImage(bitmap);
+
+  return style;
+}
+
+static void cdstipple(cdCtxCanvas *ctxcanvas, int n, int m, const unsigned char *stipple)
+{
+  IWICBitmap *bitmap = d2dCreateImageFromStipple(n, m, stipple, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+  if (!bitmap)
+    return;
+
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+
+  d2dDestroyImage(bitmap);
+}
+
+static void cdpattern(cdCtxCanvas *ctxcanvas, int n, int m, const long *pattern)
+{
+  IWICBitmap *bitmap = d2dCreateImageFromPattern(n, m, pattern);
+  if (!bitmap)
+    return;
+
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+
+  d2dDestroyImage(bitmap);
+}
+
 static void cdclear(cdCtxCanvas* ctxcanvas)
 {
   dummy_D2D1_COLOR_F c;
   d2dInitColor(&c, ctxcanvas->canvas->background);
+  c.a = 1.0f; /* clear is opaque */
   dummy_ID2D1RenderTarget_Clear(ctxcanvas->d2d_canvas->target, &c);
+}
+
+static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
+{
+  switch (style)
+  {
+    case CD_SOLID:
+      if (ctxcanvas->fillBrush)
+        dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+      ctxcanvas->fillBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, ctxcanvas->canvas->foreground);
+      break;
+    case CD_HATCH:
+      cdhatch(ctxcanvas, ctxcanvas->canvas->hatch_style);
+      break;
+    case CD_STIPPLE:
+      cdstipple(ctxcanvas, ctxcanvas->canvas->stipple_w, ctxcanvas->canvas->stipple_h, ctxcanvas->canvas->stipple);
+      break;
+    case CD_PATTERN:
+      cdpattern(ctxcanvas, ctxcanvas->canvas->pattern_w, ctxcanvas->canvas->pattern_h, ctxcanvas->canvas->pattern);
+      break;
+  }
+
+  return style;
 }
 
 static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
 {
-  if (ctxcanvas->brush)
-    dummy_ID2D1Brush_Release(ctxcanvas->brush);
+  if (ctxcanvas->drawBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->drawBrush);
 
-  ctxcanvas->brush = (dummy_ID2D1Brush*)d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
+  ctxcanvas->drawBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
+
+  if (ctxcanvas->canvas->interior_style == CD_SOLID)
+  {
+    if (ctxcanvas->fillBrush)
+      dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+    ctxcanvas->fillBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
+  }
 
   return color;
 }
@@ -218,7 +421,7 @@ static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
 static int cdlinestyle(cdCtxCanvas* ctxcanvas, int style)
 {
   if (ctxcanvas->stroke_style)
-    dummy_ID2D1Brush_Release(ctxcanvas->stroke_style);
+    dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
   ctxcanvas->stroke_style = d2dSetLineStyle(style, ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
 
@@ -228,7 +431,7 @@ static int cdlinestyle(cdCtxCanvas* ctxcanvas, int style)
 static int cdlinecap(cdCtxCanvas* ctxcanvas, int cap)
 {
   if (ctxcanvas->stroke_style)
-    dummy_ID2D1Brush_Release(ctxcanvas->stroke_style);
+    dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
   ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, cap, ctxcanvas->canvas->line_join);
 
@@ -238,7 +441,7 @@ static int cdlinecap(cdCtxCanvas* ctxcanvas, int cap)
 static int cdlinejoin(cdCtxCanvas* ctxcanvas, int join)
 {
   if (ctxcanvas->stroke_style)
-    dummy_ID2D1Brush_Release(ctxcanvas->stroke_style);
+    dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
   ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, ctxcanvas->canvas->line_cap, join);
 
@@ -261,7 +464,7 @@ static void cdpixel(cdCtxCanvas *ctxcanvas, int x, int y, long color)
 
 static void cdfline(cdCtxCanvas *ctxcanvas, double x1, double y1, double x2, double y2)
 {
-  d2dDrawLine(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)x1, (float)y1, (float)x2, (float)y2, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+  d2dDrawLine(ctxcanvas->d2d_canvas->target, ctxcanvas->drawBrush, (float)x1, (float)y1, (float)x2, (float)y2, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
 }
 
 static void cdline(cdCtxCanvas *ctxcanvas, int x1, int y1, int x2, int y2)
@@ -282,7 +485,7 @@ static void cdline(cdCtxCanvas *ctxcanvas, int x1, int y1, int x2, int y2)
 
 static void cdfrect(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin, double ymax)
 {
-  d2dDrawRect(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xmin, (float)ymin, (float)xmax, (float)ymax, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+  d2dDrawRect(ctxcanvas->d2d_canvas->target, ctxcanvas->drawBrush, (float)xmin, (float)ymin, (float)xmax, (float)ymax, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
 }
 
 static void cdrect(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
@@ -352,7 +555,7 @@ static void cdfbox(cdCtxCanvas *ctxcanvas, double xmin, double xmax, double ymin
     dummy_ID2D1PathGeometry_Release(g);
   }
   else
-    d2dFillRect(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xmin, (float)ymin, (float)xmax, (float)ymax);
+    d2dFillRect(ctxcanvas->d2d_canvas->target, ctxcanvas->fillBrush, (float)xmin, (float)ymin, (float)xmax, (float)ymax);
 }
 
 static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax)
@@ -366,7 +569,7 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
 
 static void cdfarc(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, double h, double a1, double a2)
 {
-  d2dDrawArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+  d2dDrawArc(ctxcanvas->d2d_canvas->target, ctxcanvas->drawBrush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
 }
 
 static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -391,7 +594,7 @@ static void cdfsector(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, do
     dummy_ID2D1PathGeometry_Release(g);
   }
   else
-    d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 1);
+    d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->fillBrush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 1);
 }
 
 static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -416,7 +619,7 @@ static void cdfchord(cdCtxCanvas *ctxcanvas, double xc, double yc, double w, dou
     dummy_ID2D1PathGeometry_Release(g);
   }
   else
-    d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 2);
+    d2dFillArc(ctxcanvas->d2d_canvas->target, ctxcanvas->fillBrush, (float)xc, (float)yc, (float)w, (float)h, a1, a2, 2);
 }
 
 static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
@@ -428,7 +631,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 {
   if (mode == CD_PATH)
   {
-    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->brush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->fillBrush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
     if (clip_set)
       ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
   }
@@ -448,9 +651,9 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
     else if (mode == CD_FILL && ctxcanvas->canvas->new_region)
       regionCombineGeometry(ctxcanvas, g);
     else if (mode == CD_FILL)
-      d2dFillGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g);
+      d2dFillGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->fillBrush, g);
     else
-      d2dDrawGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+      d2dDrawGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->drawBrush, g, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
 
     if (g)
       dummy_ID2D1Geometry_Release(g);
@@ -461,7 +664,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 {
   if (mode == CD_PATH)
   {
-    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->brush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->fillBrush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
     if (clip_set)
       ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
   }
@@ -481,9 +684,9 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
     else if (mode == CD_FILL && ctxcanvas->canvas->new_region)
       regionCombineGeometry(ctxcanvas, g);
     else if (mode == CD_FILL)
-      d2dFillGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g);
+      d2dFillGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->fillBrush, g);
     else
-      d2dDrawGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, g, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+      d2dDrawGeometry(ctxcanvas->d2d_canvas->target, ctxcanvas->drawBrush, g, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
 
     if (g)
       dummy_ID2D1Geometry_Release(g);
@@ -787,7 +990,7 @@ static void cdftext(cdCtxCanvas *ctxcanvas, double x, double y, const char *s, i
   if (ctxcanvas->canvas->text_orientation)
     d2dRotateWorld(ctxcanvas->d2d_canvas->target, (float)x, (float)y, (float)-ctxcanvas->canvas->text_orientation);  /* counterclockwise */
 
-  d2dDrawText(ctxcanvas->d2d_canvas->target, ctxcanvas->brush, (float)x, (float)y, (float)w, (float)h, wstr, len, ctxcanvas->font);
+  d2dDrawText(ctxcanvas->d2d_canvas->target, ctxcanvas->drawBrush, (float)x, (float)y, (float)w, (float)h, wstr, len, ctxcanvas->font);
 
   /* restore settings */
   if (ctxcanvas->canvas->text_orientation)
@@ -813,9 +1016,9 @@ static void cdfputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, c
   destRect.bottom = type2float(y);
 
   srcRect.left = type2float(xmin);
-  srcRect.top = type2float(h - 1 - ymax);
+  srcRect.top = type2float(height - 1 - ymax);
   srcRect.right = type2float(xmax);
-  srcRect.bottom = type2float(h - 1 - ymin);
+  srcRect.bottom = type2float(height - 1 - ymin);
 
   d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
@@ -836,9 +1039,9 @@ static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, co
   destRect.bottom = type2float(y);
 
   srcRect.left = type2float(xmin);
-  srcRect.top = type2float(h - 1 - ymax);
+  srcRect.top = type2float(height - 1 - ymax);
   srcRect.right = type2float(xmax);
-  srcRect.bottom = type2float(h - 1 - ymin);
+  srcRect.bottom = type2float(height - 1 - ymin);
 
   d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
@@ -859,9 +1062,9 @@ static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, co
   destRect.bottom = type2float(y);
 
   srcRect.left = type2float(xmin);
-  srcRect.top = type2float(h - 1 - ymax);
+  srcRect.top = type2float(height - 1 - ymax);
   srcRect.right = type2float(xmax);
-  srcRect.bottom = type2float(h - 1 - ymin);
+  srcRect.bottom = type2float(height - 1 - ymin);
 
   d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
@@ -925,16 +1128,18 @@ void cdwd2dInitTable(cdCanvas* canvas)
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;
-  canvas->cxForeground = cdforeground;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineCap = cdlinecap;
   canvas->cxLineJoin = cdlinejoin;
   canvas->cxTransform = cdtransform;
+  canvas->cxInteriorStyle = cdinteriorstyle;
+  canvas->cxHatch = cdhatch;
+  canvas->cxStipple = cdstipple;
+  canvas->cxPattern = cdpattern;
 }
 
 //TODO
 // why call d2dResetClip in cdflush in cdwnative_d2d.c
-// hatch, pattern e stipple?
-// LINEGRADIENT, RADIALGRADIENT, IMGINTERP, holes
+// IMGINTERP, holes, PATTERNIMAGE
 // IMAGE driver
 // PRINTER, EMF, CLIPBOARD driver using HDC

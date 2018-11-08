@@ -181,6 +181,116 @@ dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long colo
   return (dummy_ID2D1Brush*)b;
 }
 
+dummy_ID2D1Brush* d2dCreateImageBrush(dummy_ID2D1RenderTarget *target, IWICBitmap* image)
+{
+  dummy_ID2D1Bitmap *bitmap;
+  dummy_ID2D1BitmapBrush* brush;
+  dummy_D2D1_BITMAP_BRUSH_PROPERTIES props;
+  HRESULT hr;
+
+  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)image, NULL, &bitmap);
+  if (FAILED(hr))
+    return NULL;
+
+  props.extendModeX = dummy_D2D1_EXTEND_MODE_WRAP;
+  props.extendModeY = dummy_D2D1_EXTEND_MODE_WRAP;
+  props.interpolationMode = dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
+
+  hr = dummy_ID2D1RenderTarget_CreateBitmapBrush(target, bitmap, &props, NULL, &brush);
+  dummy_ID2D1Bitmap_Release(bitmap);
+
+  if (FAILED(hr))
+    return NULL;
+  
+  return (dummy_ID2D1Brush*)brush;
+}
+
+dummy_ID2D1Brush* d2dCreateLinearGradientBrush(dummy_ID2D1RenderTarget *target, FLOAT x1, FLOAT y1, FLOAT x2, FLOAT y2, long foreground, long background)
+{
+  dummy_D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES props;
+  dummy_D2D1_GRADIENT_STOP stop[2];
+  dummy_ID2D1GradientStopCollection *stops;
+  dummy_ID2D1LinearGradientBrush *brush;
+  dummy_D2D1_COLOR_F color;
+  unsigned int count;
+  HRESULT hr;
+
+  d2dInitColor(&color, foreground);
+
+  props.startPoint.x = x1;
+  props.startPoint.y = y1;
+  props.endPoint.x = x2;
+  props.endPoint.y = y2;
+
+  stop[0].color = color;
+  stop[0].position = 0.0f;
+
+  d2dInitColor(&color, background);
+
+  stop[1].color = color;
+  stop[1].position = 1.0f;
+
+  count = 2;
+
+  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, count, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_WRAP, &stops);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+
+  hr = dummy_ID2D1RenderTarget_CreateLinearGradientBrush(target, &props, NULL, stops, &brush);
+  if (FAILED(hr)) {
+    dummy_ID2D1GradientStopCollection_Release(stops);
+    return NULL;
+  }
+
+  dummy_ID2D1GradientStopCollection_Release(stops);
+  return (dummy_ID2D1Brush*)brush;
+}
+
+dummy_ID2D1Brush* d2dCreateRadialGradientBrush(dummy_ID2D1RenderTarget *target, FLOAT cx, FLOAT cy, FLOAT ox, FLOAT oy, FLOAT rx, FLOAT ry, long foreground, long background)
+{
+  dummy_D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES props;
+  dummy_D2D1_GRADIENT_STOP stop[2];
+  dummy_ID2D1GradientStopCollection *stops;
+  dummy_ID2D1RadialGradientBrush *brush;
+  dummy_D2D1_COLOR_F fcolor, bcolor;
+  unsigned int count;
+  HRESULT hr;
+
+  d2dInitColor(&fcolor, foreground);
+
+  props.center.x = cx;
+  props.center.y = cy;
+  props.gradientOriginOffset.x = ox;
+  props.gradientOriginOffset.y = oy;
+  props.radiusX = rx;
+  props.radiusY = ry;
+
+  stop[0].color = fcolor;
+  stop[0].position = 0.0f;
+
+  d2dInitColor(&bcolor, background);
+
+  stop[1].color = bcolor;
+  stop[1].position = 1.0f;
+
+  count = 2;
+
+  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, count, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_CLAMP, &stops);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+
+  hr = dummy_ID2D1RenderTarget_CreateRadialGradientBrush(target, &props, NULL, stops, &brush);
+  if (FAILED(hr)) {
+    dummy_ID2D1GradientStopCollection_Release(stops);
+    return NULL;
+  }
+
+  dummy_ID2D1GradientStopCollection_Release(stops);
+  return (dummy_ID2D1Brush*)brush;
+}
+
 static void d2dFillEllipse(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float cx, float cy, float rx, float ry)
 {
   dummy_D2D1_ELLIPSE e;
@@ -439,7 +549,7 @@ void d2dFillGeometry(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, d
   dummy_ID2D1RenderTarget_FillGeometry(target, (dummy_ID2D1Geometry*)g, brush, NULL);
 }
 
-int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush *fillBrush, int* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
   dummy_ID2D1PathGeometry* g;
   dummy_ID2D1GeometrySink* sink;
@@ -591,7 +701,7 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int poi
         sink = NULL;
       }
 
-      d2dFillGeometry(canvas->target, brush, g);
+      d2dFillGeometry(canvas->target, fillBrush, g);
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
@@ -609,8 +719,8 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int poi
         sink = NULL;
       }
 
-      d2dFillGeometry(canvas->target, brush, g);
-      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+      d2dFillGeometry(canvas->target, fillBrush, g);
+      d2dDrawGeometry(canvas->target, drawBrush, g, fStrokeWidth, hStrokeStyle);
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
@@ -628,7 +738,7 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int poi
         sink = NULL;
       }
 
-      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+      d2dDrawGeometry(canvas->target, drawBrush, g, fStrokeWidth, hStrokeStyle);
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
@@ -647,7 +757,7 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *brush, int* points, int poi
   return ret;
 }
 
-int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *brush, double* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
+int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush *fillBrush, double* points, int points_n, int* path, int path_n, int invert_yaxis, int fill_mode, float fStrokeWidth, dummy_ID2D1StrokeStyle *hStrokeStyle)
 {
   dummy_ID2D1PathGeometry* g;
   dummy_ID2D1GeometrySink* sink;
@@ -799,7 +909,7 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *brush, double* points, int
         sink = NULL;
       }
 
-      d2dFillGeometry(canvas->target, brush, g);
+      d2dFillGeometry(canvas->target, fillBrush, g);
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
@@ -817,8 +927,8 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *brush, double* points, int
         sink = NULL;
       }
 
-      d2dFillGeometry(canvas->target, brush, g);
-      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+      d2dFillGeometry(canvas->target, fillBrush, g);
+      d2dDrawGeometry(canvas->target, drawBrush, g, fStrokeWidth, hStrokeStyle);
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
@@ -836,7 +946,7 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *brush, double* points, int
         sink = NULL;
       }
 
-      d2dDrawGeometry(canvas->target, brush, g, fStrokeWidth, hStrokeStyle);
+      d2dDrawGeometry(canvas->target, drawBrush, g, fStrokeWidth, hStrokeStyle);
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
