@@ -163,49 +163,13 @@ static Color sColor2Windows(long int cd_color)
   return Color(cdAlpha(cd_color),cdRed(cd_color),cdGreen(cd_color),cdBlue(cd_color));
 }
 
-static void sUpdateFillBrush(cdCtxCanvas* ctxcanvas)
-{
-  // must update the fill brush that is dependent from the Foreground and Background Color.
-  BrushType type = ctxcanvas->fillBrush->GetType();
-  switch(type)
-  {
-  case BrushTypeSolidColor:
-    {
-      SolidBrush* solidbrush = (SolidBrush*)ctxcanvas->fillBrush;
-      solidbrush->SetColor(ctxcanvas->fg);
-      break;
-    }
-  case BrushTypeHatchFill:
-    {
-      HatchBrush* hatchbrush = (HatchBrush*)ctxcanvas->fillBrush;
-      HatchStyle hatchStyle = hatchbrush->GetHatchStyle();
-      delete ctxcanvas->fillBrush;
-      ctxcanvas->fillBrush = new HatchBrush(hatchStyle, ctxcanvas->fg, ctxcanvas->bg); 
-      break;
-    }
-  case BrushTypeLinearGradient:
-    {
-      LinearGradientBrush* gradientbrush = (LinearGradientBrush*)ctxcanvas->fillBrush;
-      gradientbrush->SetLinearColors(ctxcanvas->fg, ctxcanvas->bg);
-      break;
-    }
-  case BrushTypeTextureFill:
-    {
-      // only stipple depends on Foreground and Background Color.
-      if (ctxcanvas->canvas->interior_style == CD_STIPPLE)
-        cdstipple(ctxcanvas, ctxcanvas->canvas->stipple_w, ctxcanvas->canvas->stipple_h, ctxcanvas->canvas->stipple);
-      break;
-    }
-  }
-}
-
 static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
 {
   ctxcanvas->fg = sColor2Windows(color);
   ctxcanvas->linePen->SetColor(ctxcanvas->fg);
   ctxcanvas->lineBrush->SetColor(ctxcanvas->fg);
 
-  sUpdateFillBrush(ctxcanvas);
+  /* no need to update stipple or other fill attributes, they must be set again to use the new color */
 
   return color;
 }
@@ -222,7 +186,7 @@ static long int cdbackground(cdCtxCanvas* ctxcanvas, long int color)
   if (ctxcanvas->canvas->back_opacity == CD_TRANSPARENT) 
     ctxcanvas->bg = sTranspAlpha(ctxcanvas->bg);  /* set background as full transparent */
 
-  sUpdateFillBrush(ctxcanvas);
+  /* no need to update stipple or other fill attributes, they must be set again to use the new color */
 
   return color;
 }
@@ -239,7 +203,7 @@ static int cdbackopacity(cdCtxCanvas* ctxcanvas, int opacity)
     break;
   }
 
-  sUpdateFillBrush(ctxcanvas);
+  /* no need to update stipple or other fill attributes, they must be set again to use the new color */
 
   return opacity;
 }
@@ -602,7 +566,6 @@ static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
     delete ctxcanvas->fillBrush;
     ctxcanvas->fillBrush = new SolidBrush(ctxcanvas->fg);
     break;
-    /* the remaining styles must recreate the current brush */
   case CD_HATCH:
     cdhatch(ctxcanvas, ctxcanvas->canvas->hatch_style);
     break;
@@ -1697,7 +1660,7 @@ static void cdclear(cdCtxCanvas* ctxcanvas)
     ctxcanvas->graphics->ResetClip();
   
   /* do NOT use "ctxcanvas->bg" here, because it depends on backopacity */
-  ctxcanvas->graphics->Clear(sColor2Windows(ctxcanvas->canvas->background));
+  ctxcanvas->graphics->Clear(sColor2Windows(cdEncodeAlpha(ctxcanvas->canvas->background, 255)));
   
   if (ctxcanvas->canvas->clip_mode != CD_CLIPOFF) 
     cdclip(ctxcanvas, ctxcanvas->canvas->clip_mode);
@@ -2585,6 +2548,24 @@ static cdAttribute linegradient_attrib =
   get_linegradient_attrib
 }; 
 
+static void set_pattern_image_attrib(cdCtxCanvas *ctxcanvas, char* data)
+{
+  if (data)
+  {
+    cdCtxImage *ctximage = (cdCtxImage *)data;
+
+    delete ctxcanvas->fillBrush;
+    ctxcanvas->fillBrush = new TextureBrush(ctximage->bitmap);
+  }
+}
+
+static cdAttribute pattern_image_attrib =
+{
+  "PATTERNIMAGE",
+  set_pattern_image_attrib,
+  NULL
+};
+
 static void set_linecap_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
@@ -2988,6 +2969,7 @@ cdCtxCanvas *cdwpCreateCanvas(cdCanvas* canvas, Graphics* graphics, int wtype)
   cdRegisterAttribute(canvas, &txtaa_attrib);
   cdRegisterAttribute(canvas, &gradientcolor_attrib);
   cdRegisterAttribute(canvas, &linegradient_attrib);
+  cdRegisterAttribute(canvas, &pattern_image_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &linecap_attrib);
   cdRegisterAttribute(canvas, &hdc_attrib);
