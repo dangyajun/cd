@@ -5,6 +5,11 @@
 <meta http-equiv="Content-Language" content="en">
 <title>GDI+</title>
 <link rel="stylesheet" type="text/css" href="../../style.css">
+<style type="text/css">
+.style1 {
+	font-family: Courier;
+}
+</style>
 </head>
 
 <body>
@@ -188,6 +193,11 @@
   Default: &quot;GOOD&quot;. (since 5.8.3)</li>
 </ul>
 <ul>
+  <li>&quot;<span class="style1"><strong>PATTERNIMAGE</strong></span>&quot;:&nbsp;defines 
+  a filled interior style using a server image as pattern. Data must be a server 
+	image handle created with the GDI+ base driver. (since 5.12)</li>
+</ul>
+<ul>
   <li>&quot;<b><font face="Courier">ROTATE</font></b>&quot;:&nbsp; allows the usage of 1 angle and 1 coordinate (x, y), that 
   define a global rotation transformation centered in the specified coordinate. Use 1 real and 2 integer values inside a 
   string (&quot;%g %d %d&quot; = angle x y). Can not be set if a transformation 
@@ -196,7 +206,8 @@
 <ul>
   <li><b><font face="Courier">&quot;LINEGRADIENT&quot;: </font></b>defines a filled interior style that uses a line gradient 
   between two colors. It uses 2 points (&quot;%d %d %d %d&quot; = x1 y1 x2 y2), one for the starting point using (using the 
-  foreground color), and another one for the end point (using the background color).</li>
+  foreground color), and another one for the end point (using the background color). 
+  If a regular interior style is set, the gradient is lost.</li>
 </ul>
 <ul>
   <li><b><font face="Courier">&quot;LINECAP&quot;: </font></b>defines additional line cap styles. It can have the following 
