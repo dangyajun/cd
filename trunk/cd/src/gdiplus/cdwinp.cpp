@@ -169,6 +169,12 @@ static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
   ctxcanvas->linePen->SetColor(ctxcanvas->fg);
   ctxcanvas->lineBrush->SetColor(ctxcanvas->fg);
 
+  if (ctxcanvas->canvas->interior_style == CD_SOLID)
+  {
+    SolidBrush* solidbrush = (SolidBrush*)ctxcanvas->fillBrush;
+    solidbrush->SetColor(ctxcanvas->fg);
+  }
+
   /* no need to update stipple or other fill attributes, they must be set again to use the new color */
 
   return color;
@@ -2508,7 +2514,7 @@ static cdAttribute gradientcolor_attrib =
   NULL
 }; 
 
-static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+static void set_lineargradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
@@ -2525,12 +2531,12 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
       p2.Y = _cdInvertYAxis(ctxcanvas->canvas, p2.Y);
     }
     delete ctxcanvas->fillBrush;
-    ctxcanvas->fillBrush = new LinearGradientBrush(p1, p2, ctxcanvas->fg, ctxcanvas->bg);
+    ctxcanvas->fillBrush = new LinearGradientBrush(p1, p2, ctxcanvas->fg, sColor2Windows(ctxcanvas->canvas->background));  /* do NOT use "ctxcanvas->bg" here, because it depends on backopacity */
     ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
   }
 }
 
-static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
+static char* get_lineargradient_attrib(cdCtxCanvas* ctxcanvas)
 {
   static char data[100];
 
@@ -2542,12 +2548,19 @@ static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
   return data;
 }
 
-static cdAttribute linegradient_attrib =
+static cdAttribute lineargradient_attrib =
+{
+  "LINEARGRADIENT",
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+}; 
+
+static cdAttribute old_lineargradient_attrib =
 {
   "LINEGRADIENT",
-  set_linegradient_attrib,
-  get_linegradient_attrib
-}; 
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+};
 
 #if 0
 static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
@@ -3027,7 +3040,8 @@ cdCtxCanvas *cdwpCreateCanvas(cdCanvas* canvas, Graphics* graphics, int wtype)
   cdRegisterAttribute(canvas, &aa_attrib);
   cdRegisterAttribute(canvas, &txtaa_attrib);
   cdRegisterAttribute(canvas, &gradientcolor_attrib);
-  cdRegisterAttribute(canvas, &linegradient_attrib);
+  cdRegisterAttribute(canvas, &lineargradient_attrib);
+  cdRegisterAttribute(canvas, &old_lineargradient_attrib);
   cdRegisterAttribute(canvas, &pattern_image_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &linecap_attrib);

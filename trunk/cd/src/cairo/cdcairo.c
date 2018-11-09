@@ -2104,7 +2104,7 @@ static cdAttribute pattern_image_attrib =
   NULL
 }; 
 
-static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+static void set_lineargradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
@@ -2155,7 +2155,7 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
   }
 }
 
-static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
+static char* get_lineargradient_attrib(cdCtxCanvas* ctxcanvas)
 {
   double x1, y1, x2, y2;
 
@@ -2171,12 +2171,19 @@ static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
     return NULL;
 }
 
-static cdAttribute linegradient_attrib =
+static cdAttribute lineargradient_attrib =
+{
+  "LINEARGRADIENT",
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+}; 
+
+static cdAttribute old_lineargradient_attrib =
 {
   "LINEGRADIENT",
-  set_linegradient_attrib,
-  get_linegradient_attrib
-}; 
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+};
 
 static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
@@ -2371,7 +2378,8 @@ cdCtxCanvas *cdcairoCreateCanvas(cdCanvas* canvas, cairo_t* cr)
   cdRegisterAttribute(canvas, &polyhole_attrib);
   cdRegisterAttribute(canvas, &aa_attrib);
   cdRegisterAttribute(canvas, &txtaa_attrib);
-  cdRegisterAttribute(canvas, &linegradient_attrib);
+  cdRegisterAttribute(canvas, &lineargradient_attrib);
+  cdRegisterAttribute(canvas, &old_lineargradient_attrib);
   cdRegisterAttribute(canvas, &radialgradient_attrib);
   cdRegisterAttribute(canvas, &interp_attrib);
   cdRegisterAttribute(canvas, &cairodc_attrib);

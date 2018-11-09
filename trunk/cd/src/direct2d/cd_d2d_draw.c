@@ -248,11 +248,8 @@ dummy_ID2D1Brush* d2dCreateRadialGradientBrush(dummy_ID2D1RenderTarget *target, 
   dummy_D2D1_GRADIENT_STOP stop[2];
   dummy_ID2D1GradientStopCollection *stops;
   dummy_ID2D1RadialGradientBrush *brush;
-  dummy_D2D1_COLOR_F fcolor, bcolor;
-  unsigned int count;
+  dummy_D2D1_COLOR_F color;
   HRESULT hr;
-
-  d2dInitColor(&fcolor, foreground);
 
   props.center.x = cx;
   props.center.y = cy;
@@ -261,17 +258,15 @@ dummy_ID2D1Brush* d2dCreateRadialGradientBrush(dummy_ID2D1RenderTarget *target, 
   props.radiusX = rx;
   props.radiusY = ry;
 
-  stop[0].color = fcolor;
+  d2dInitColor(&color, foreground);
+  stop[0].color = color;
   stop[0].position = 0.0f;
 
-  d2dInitColor(&bcolor, background);
-
-  stop[1].color = bcolor;
+  d2dInitColor(&color, background);
+  stop[1].color = color;
   stop[1].position = 1.0f;
 
-  count = 2;
-
-  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, count, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_CLAMP, &stops);
+  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, 2, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_CLAMP, &stops);
   if (FAILED(hr)) {
     return NULL;
   }
