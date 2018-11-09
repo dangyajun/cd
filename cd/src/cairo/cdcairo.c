@@ -2109,8 +2109,6 @@ static void set_lineargradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
   if (data)
   {
     int x1, y1, x2, y2;
-    double offset;
-    int count = 1;
 
     sscanf(data, "%d %d %d %d", &x1, &y1, &x2, &y2);
 
@@ -2126,26 +2124,17 @@ static void set_lineargradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
     ctxcanvas->pattern = cairo_pattern_create_linear((double)x1, (double)y1, (double)x2, (double)y2);
     cairo_pattern_reference(ctxcanvas->pattern);
 
-    for(offset = 0.1; offset < 1.0; offset += 0.1)
-    {
-      if ( count % 2 )
-      {
-        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
-                                          cdCairoGetRed(ctxcanvas->canvas->foreground),
-                                          cdCairoGetGreen(ctxcanvas->canvas->foreground),
-                                          cdCairoGetBlue(ctxcanvas->canvas->foreground),
-                                          cdCairoGetAlpha(ctxcanvas->canvas->foreground));
-      }
-      else
-      {
-        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
-                                          cdCairoGetRed(ctxcanvas->canvas->background),
-                                          cdCairoGetGreen(ctxcanvas->canvas->background),
-                                          cdCairoGetBlue(ctxcanvas->canvas->background),
-                                          cdCairoGetAlpha(ctxcanvas->canvas->background));
-      }
-      count++;
-    }
+    cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, 0.0,
+                                      cdCairoGetRed(ctxcanvas->canvas->foreground),
+                                      cdCairoGetGreen(ctxcanvas->canvas->foreground),
+                                      cdCairoGetBlue(ctxcanvas->canvas->foreground),
+                                      cdCairoGetAlpha(ctxcanvas->canvas->foreground));
+
+    cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, 1.0,
+                                      cdCairoGetRed(ctxcanvas->canvas->background),
+                                      cdCairoGetGreen(ctxcanvas->canvas->background),
+                                      cdCairoGetBlue(ctxcanvas->canvas->background),
+                                      cdCairoGetAlpha(ctxcanvas->canvas->background));
 
     cairo_pattern_set_extend(ctxcanvas->pattern, CAIRO_EXTEND_REPEAT);
 
