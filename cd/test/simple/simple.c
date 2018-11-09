@@ -1044,6 +1044,14 @@ void SimpleDrawAll(cdCanvas* canvas)
   //  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
   //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
 
+  if (contextplus)
+  {
+    cdCanvasForeground(canvas, CD_YELLOW);
+    cdCanvasBackground(canvas, CD_GREEN);
+    cdCanvasSetAttribute(canvas, "LINEARGRADIENT", "0 0 100 100");
+    cdCanvasBox(canvas, w - 200, w - 100, 300, 400);
+  }
+
   cdCanvasSetAttribute(canvas, "ROTATE", NULL);
   //cdCanvasSetAttribute(canvas, "ANTIALIAS", "0");
   if (use_transform)

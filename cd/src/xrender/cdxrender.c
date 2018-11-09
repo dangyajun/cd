@@ -42,8 +42,8 @@ struct _cdxContextPlus
   int antialias;
 
 #if (RENDER_MAJOR>0 || RENDER_MINOR>=10)
-  XLinearGradient linegradient;
-  Picture linegradient_pic;
+  XLinearGradient lineargradient;
+  Picture lineargradient_pic;
 #endif
 
   void (*cxKillCanvas)(cdCtxCanvas* ctxcanvas);
@@ -777,12 +777,12 @@ static void cdtext(cdCtxCanvas *ctxcanvas, int x, int y, const char *text, int l
 /******************************************************************/
 
 #if (RENDER_MAJOR>0 || RENDER_MINOR>=10)
-static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+static void set_lineargradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
-  if (ctxcanvas->ctxplus->linegradient_pic)
+  if (ctxcanvas->ctxplus->lineargradient_pic)
   {
-    XRenderFreePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->linegradient_pic);
-    ctxcanvas->ctxplus->linegradient_pic = 0;
+    XRenderFreePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->lineargradient_pic);
+    ctxcanvas->ctxplus->lineargradient_pic = 0;
   }
 
   if (data)
@@ -805,39 +805,46 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
     xrInitColor(&colors[0], ctxcanvas->canvas->foreground);
     xrInitColor(&colors[1], ctxcanvas->canvas->background);
 
-    ctxcanvas->ctxplus->linegradient.p1.x = XDoubleToFixed((double)x1); 
-    ctxcanvas->ctxplus->linegradient.p1.y = XDoubleToFixed((double)y1); 
-    ctxcanvas->ctxplus->linegradient.p2.x = XDoubleToFixed((double)x2); 
-    ctxcanvas->ctxplus->linegradient.p2.y = XDoubleToFixed((double)y2); 
+    ctxcanvas->ctxplus->lineargradient.p1.x = XDoubleToFixed((double)x1); 
+    ctxcanvas->ctxplus->lineargradient.p1.y = XDoubleToFixed((double)y1); 
+    ctxcanvas->ctxplus->lineargradient.p2.x = XDoubleToFixed((double)x2); 
+    ctxcanvas->ctxplus->lineargradient.p2.y = XDoubleToFixed((double)y2); 
 
-    ctxcanvas->ctxplus->linegradient_pic = XRenderCreateLinearGradient(ctxcanvas->dpy, &ctxcanvas->ctxplus->linegradient, stops, colors, 2);
+    ctxcanvas->ctxplus->lineargradient_pic = XRenderCreateLinearGradient(ctxcanvas->dpy, &ctxcanvas->ctxplus->lineargradient, stops, colors, 2);
     pa.repeat = 1;
-    XRenderChangePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->linegradient_pic, CPRepeat, &pa);
+    XRenderChangePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->lineargradient_pic, CPRepeat, &pa);
 
-    ctxcanvas->ctxplus->fill_picture = ctxcanvas->ctxplus->linegradient_pic;
+    ctxcanvas->ctxplus->fill_picture = ctxcanvas->ctxplus->lineargradient_pic;
   }
   else
     cdinteriorstyle(ctxcanvas, ctxcanvas->canvas->interior_style);
 }
 
-static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
+static char* get_lineargradient_attrib(cdCtxCanvas* ctxcanvas)
 {
   static char data[100];
 
-  sprintf(data, "%d %d %d %d", (int)XFixedToDouble(ctxcanvas->ctxplus->linegradient.p1.x),
-                               (int)XFixedToDouble(ctxcanvas->ctxplus->linegradient.p1.y),
-                               (int)XFixedToDouble(ctxcanvas->ctxplus->linegradient.p2.x),
-                               (int)XFixedToDouble(ctxcanvas->ctxplus->linegradient.p2.y));
+  sprintf(data, "%d %d %d %d", (int)XFixedToDouble(ctxcanvas->ctxplus->lineargradient.p1.x),
+                               (int)XFixedToDouble(ctxcanvas->ctxplus->lineargradient.p1.y),
+                               (int)XFixedToDouble(ctxcanvas->ctxplus->lineargradient.p2.x),
+                               (int)XFixedToDouble(ctxcanvas->ctxplus->lineargradient.p2.y));
 
   return data;
 }
 
-static cdAttribute linegradient_attrib =
+static cdAttribute lineargradient_attrib =
+{
+  "LINEARGRADIENT",
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+}; 
+
+static cdAttribute old_lineargradient_attrib =
 {
   "LINEGRADIENT",
-  set_linegradient_attrib,
-  get_linegradient_attrib
-}; 
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+};
 #endif
 
 static void set_aa_attrib(cdCtxCanvas* ctxcanvas, char* data)
@@ -892,8 +899,8 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
     XRenderFreePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->pattern_pic);
 
 #if (RENDER_MAJOR>0 || RENDER_MINOR>=10)
-  if (ctxcanvas->ctxplus->linegradient_pic) 
-    XRenderFreePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->linegradient_pic);
+  if (ctxcanvas->ctxplus->lineargradient_pic) 
+    XRenderFreePicture(ctxcanvas->dpy, ctxcanvas->ctxplus->lineargradient_pic);
 #endif
 
   if (ctxcanvas->ctxplus->flat_font)
@@ -964,7 +971,8 @@ static void xrCreateContextPlus(cdCtxCanvas *ctxcanvas)
   cdRegisterAttribute(ctxcanvas->canvas, &aa_attrib);
   cdRegisterAttribute(ctxcanvas->canvas, &version_attrib);
 #if (RENDER_MAJOR>0 || RENDER_MINOR>=10)
-  cdRegisterAttribute(ctxcanvas->canvas, &linegradient_attrib);
+  cdRegisterAttribute(ctxcanvas->canvas, &lineargradient_attrib);
+  cdRegisterAttribute(ctxcanvas->canvas, &old_lineargradient_attrib);
 #endif
 
   ctxcanvas->ctxplus->draw = XftDrawCreate(ctxcanvas->dpy, ctxcanvas->wnd, ctxcanvas->vis, ctxcanvas->colormap);

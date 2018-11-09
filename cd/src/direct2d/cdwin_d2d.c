@@ -132,7 +132,7 @@ static void set_lineargradient_brush(cdCtxCanvas* ctxcanvas)
   ctxcanvas->fillBrush = d2dCreateLinearGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->linear_gradient_x1, (float)y1, (float)ctxcanvas->linear_gradient_x2, (float)y2, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
 }
 
-static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
+static void set_lineargradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
@@ -151,7 +151,7 @@ static void set_linegradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
   }
 }
 
-static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
+static char* get_lineargradient_attrib(cdCtxCanvas* ctxcanvas)
 {
   static char data[100];
 
@@ -163,11 +163,18 @@ static char* get_linegradient_attrib(cdCtxCanvas* ctxcanvas)
   return data;
 }
 
-static cdAttribute linegradient_attrib =
+static cdAttribute lineargradient_attrib =
+{
+  "LINEARGRADIENT",
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
+};
+
+static cdAttribute old_lineargradient_attrib =
 {
   "LINEGRADIENT",
-  set_linegradient_attrib,
-  get_linegradient_attrib
+  set_lineargradient_attrib,
+  get_lineargradient_attrib
 };
 
 static void set_radialgradient_brush(cdCtxCanvas* ctxcanvas)
@@ -250,7 +257,8 @@ cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
   cdRegisterAttribute(canvas, &utf8mode_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &hatchboxsize_attrib);
-  cdRegisterAttribute(canvas, &linegradient_attrib);
+  cdRegisterAttribute(canvas, &lineargradient_attrib);
+  cdRegisterAttribute(canvas, &old_lineargradient_attrib);
   cdRegisterAttribute(canvas, &radialgradient_attrib);
 
   return ctxcanvas;
