@@ -645,7 +645,7 @@ void SimpleDrawAll(cdCanvas* canvas)
 
 //  cdCanvasSetAttribute(canvas, "ANTIALIAS", "0");
 
-  /* Draw a reactangle and a polyline at the bottom-left area,
+  /* Draw a rectangle and a polygon at the bottom-left area,
      using a thick line with transparency.
      Observe that transparency is only supported in a few drivers,
      and line join is not supported in the IMAGERGB driver. */
