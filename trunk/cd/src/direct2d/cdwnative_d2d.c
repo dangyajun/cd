@@ -104,7 +104,7 @@ static void d2dReleaseTarget(cdCtxCanvas *ctxcanvas)
 
 static int cdactivate(cdCtxCanvas* ctxcanvas)
 {
-  d2dCanvas *canvas;
+  d2dCanvas *d2d_canvas;
 
   if (!ctxcanvas->hWnd && !ctxcanvas->hDC)
     return CD_ERROR;
@@ -123,7 +123,7 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
 
     ctxcanvas->canvas->bpp = cdGetScreenColorPlanes();
 
-    canvas = d2dCreateCanvasWithPaintStruct(ctxcanvas->hWnd, CANVAS_DOUBLEBUFFER | CANVAS_NOGDICOMPAT);
+    d2d_canvas = d2dCreateCanvasWithPaintStruct(ctxcanvas->hWnd, CANVAS_DOUBLEBUFFER | CANVAS_NOGDICOMPAT);
   }
   else if (ctxcanvas->hDC)
   {
@@ -133,16 +133,16 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
     rcPaint.right = ctxcanvas->canvas->w;
     rcPaint.bottom = ctxcanvas->canvas->h;
 
-    canvas = d2dCreateCanvasWithHDC(ctxcanvas->hDC, &rcPaint, CANVAS_DOUBLEBUFFER);
+    d2d_canvas = d2dCreateCanvasWithHDC(ctxcanvas->hDC, &rcPaint, CANVAS_DOUBLEBUFFER);
   }
   else
     return CD_ERROR;
 
-  ctxcanvas->d2d_canvas = canvas;
-
-  cdwd2dUpdateCanvas(ctxcanvas);
+  ctxcanvas->d2d_canvas = d2d_canvas;
 
   dummy_ID2D1RenderTarget_BeginDraw(ctxcanvas->d2d_canvas->target);
+
+  cdwd2dUpdateCanvas(ctxcanvas);
 
   return CD_OK;
 }

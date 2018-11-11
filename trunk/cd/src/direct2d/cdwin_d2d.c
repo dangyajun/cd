@@ -128,7 +128,6 @@ static void set_lineargradient_brush(cdCtxCanvas* ctxcanvas)
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-
   ctxcanvas->fillBrush = d2dCreateLinearGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->linear_gradient_x1, (float)y1, (float)ctxcanvas->linear_gradient_x2, (float)y2, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
 }
 
@@ -181,16 +180,14 @@ static void set_radialgradient_brush(cdCtxCanvas* ctxcanvas)
 {
   int cy = ctxcanvas->radial_gradient_center_y;
   int oy = ctxcanvas->radial_gradient_origin_offset_y;
-
-  if (ctxcanvas->fillBrush)
-    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-
   if (ctxcanvas->canvas->invert_yaxis)
   {
     cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
     oy = oy * -1;
   }
 
+  if (ctxcanvas->fillBrush)
+    dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
   ctxcanvas->fillBrush = d2dCreateRadialGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->radial_gradient_center_x, (float)cy,
                                                       (float)ctxcanvas->radial_gradient_origin_offset_x, (float)oy,
                                                       (float)ctxcanvas->radial_gradient_radius_x, (float)ctxcanvas->radial_gradient_radius_y,
@@ -302,7 +299,6 @@ void cdwd2dUpdateCanvas(cdCtxCanvas* ctxcanvas)
   }
 
   cdtransform(ctxcanvas, ctxcanvas->canvas->use_matrix ? ctxcanvas->canvas->matrix : NULL);
-
   /* no need to recreate the font or strokestyle, they do NOT depend on target */
 }
 
@@ -409,14 +405,6 @@ static void cdpattern(cdCtxCanvas *ctxcanvas, int n, int m, const long *pattern)
   d2dDestroyImage(bitmap);
 }
 
-static void cdclear(cdCtxCanvas* ctxcanvas)
-{
-  dummy_D2D1_COLOR_F c;
-  d2dInitColor(&c, ctxcanvas->canvas->background);
-  c.a = 1.0f; /* clear is opaque */
-  dummy_ID2D1RenderTarget_Clear(ctxcanvas->d2d_canvas->target, &c);
-}
-
 static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
 {
   switch (style)
@@ -440,12 +428,18 @@ static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
 
   return style;
 }
+static void cdclear(cdCtxCanvas* ctxcanvas)
+{
+  dummy_D2D1_COLOR_F c;
+  d2dInitColor(&c, ctxcanvas->canvas->background);
+  c.a = 1.0f; /* clear is opaque */
+  dummy_ID2D1RenderTarget_Clear(ctxcanvas->d2d_canvas->target, &c);
+}
 
 static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
 {
   if (ctxcanvas->drawBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->drawBrush);
-
   ctxcanvas->drawBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
 
   if (ctxcanvas->canvas->interior_style == CD_SOLID)
@@ -455,7 +449,6 @@ static long int cdforeground(cdCtxCanvas* ctxcanvas, long int color)
     ctxcanvas->fillBrush = d2dCreateSolidBrush(ctxcanvas->d2d_canvas->target, color);
     ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
   }
-
   return color;
 }
 
@@ -672,7 +665,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 {
   if (mode == CD_PATH)
   {
-    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->fillBrush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->drawBrush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
     if (clip_set)
       ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
   }
@@ -705,7 +698,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 {
   if (mode == CD_PATH)
   {
-    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->fillBrush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->drawBrush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
     if (clip_set)
       ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
   }
@@ -1169,6 +1162,7 @@ void cdwd2dInitTable(cdCanvas* canvas)
 
   canvas->cxClip = cdclip;
   canvas->cxFClipArea = cdfcliparea;
+  canvas->cxForeground = cdforeground;
   canvas->cxLineStyle = cdlinestyle;
   canvas->cxLineCap = cdlinecap;
   canvas->cxLineJoin = cdlinejoin;

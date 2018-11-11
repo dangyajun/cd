@@ -11,6 +11,9 @@
 #include <tchar.h>
 #include <malloc.h>
 
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32        0x00000800
+#endif
 
 HMODULE d2d_cd_dll = NULL;
 HMODULE wic_cd_dll = NULL;
