@@ -665,7 +665,7 @@ static void cdpoly(cdCtxCanvas *ctxcanvas, int mode, cdPoint* poly, int n)
 {
   if (mode == CD_PATH)
   {
-    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->drawBrush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    int clip_set = d2dPolyPath(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->fillBrush, (int*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
     if (clip_set)
       ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
   }
@@ -698,7 +698,7 @@ static void cdfpoly(cdCtxCanvas *ctxcanvas, int mode, cdfPoint* poly, int n)
 {
   if (mode == CD_PATH)
   {
-    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->drawBrush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
+    int clip_set = d2dPolyPathF(ctxcanvas->d2d_canvas, ctxcanvas->drawBrush, ctxcanvas->fillBrush, (double*)poly, n, ctxcanvas->canvas->path, ctxcanvas->canvas->path_n, ctxcanvas->canvas->invert_yaxis, ctxcanvas->canvas->fill_mode, type2float(ctxcanvas->canvas->line_width), ctxcanvas->stroke_style);
     if (clip_set)
       ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
   }

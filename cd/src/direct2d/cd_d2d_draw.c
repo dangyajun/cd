@@ -555,7 +555,6 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
   hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
   if (FAILED(hr))
     return 0;
-
   dummy_ID2D1PathGeometry_Open(g, &sink);
   dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
 
@@ -582,7 +581,6 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
-
       dummy_ID2D1PathGeometry_Open(g, &sink);
       dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
 
@@ -672,9 +670,6 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
-        dummy_ID2D1GeometrySink_Close(sink);
-        dummy_ID2D1GeometrySink_Release(sink);
-        sink = NULL;
       }
       break;
     case CD_PATH_CLIP:
@@ -698,6 +693,9 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
       break;
     case CD_PATH_FILLSTROKE:
       if (begin_picture)
@@ -717,6 +715,9 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
       break;
     case CD_PATH_STROKE:
       if (begin_picture)
@@ -735,12 +736,18 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
       break;
     }
   }
 
   if (sink)
+  {
+    dummy_ID2D1GeometrySink_Close(sink);
     dummy_ID2D1GeometrySink_Release(sink);
+  }
   if (g)
     dummy_ID2D1PathGeometry_Release(g);
 
@@ -763,7 +770,6 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
   hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
   if (FAILED(hr))
     return 0;
-
   dummy_ID2D1PathGeometry_Open(g, &sink);
   dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
@@ -790,7 +796,6 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
-
       dummy_ID2D1PathGeometry_Open(g, &sink);
       dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
@@ -880,9 +885,6 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
-        dummy_ID2D1GeometrySink_Close(sink);
-        dummy_ID2D1GeometrySink_Release(sink);
-        sink = NULL;
       }
       break;
     case CD_PATH_CLIP:
@@ -906,6 +908,9 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
       break;
     case CD_PATH_FILLSTROKE:
       if (begin_picture)
@@ -925,6 +930,9 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
       break;
     case CD_PATH_STROKE:
       if (begin_picture)
@@ -943,12 +951,18 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
       if (FAILED(hr))
         return ret;
+      dummy_ID2D1PathGeometry_Open(g, &sink);
+      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
       break;
     }
   }
 
   if (sink)
+  {
+    dummy_ID2D1GeometrySink_Close(sink);
     dummy_ID2D1GeometrySink_Release(sink);
+  }
   if (g)
     dummy_ID2D1PathGeometry_Release(g);
 
