@@ -1051,8 +1051,8 @@ static void cdfputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, c
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(height - 1 - ymax);
-  srcRect.right = type2float(xmax);
-  srcRect.bottom = type2float(height - 1 - ymin);
+  srcRect.right = type2float(xmax + 1);
+  srcRect.bottom = type2float(height - 1 - ymin + 1);
 
   d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
@@ -1074,8 +1074,8 @@ static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, co
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(height - 1 - ymax);
-  srcRect.right = type2float(xmax);
-  srcRect.bottom = type2float(height - 1 - ymin);
+  srcRect.right = type2float(xmax + 1);
+  srcRect.bottom = type2float(height - 1 - ymin + 1);
 
   d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
@@ -1097,8 +1097,8 @@ static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, co
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(height - 1 - ymax);
-  srcRect.right = type2float(xmax);
-  srcRect.bottom = type2float(height - 1 - ymin);
+  srcRect.right = type2float(xmax + 1);
+  srcRect.bottom = type2float(height - 1 - ymin + 1);
 
   d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
