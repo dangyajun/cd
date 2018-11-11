@@ -397,20 +397,29 @@ void d2dFillArc(dummy_ID2D1RenderTarget *target, dummy_ID2D1Brush *brush, float 
     d2dFillEllipseChord(target, brush, xc, yc, w / 2.0f, h / 2.0f, baseAngle, sweepAngle);
 }
 
+static dummy_ID2D1PathGeometry* createPolyGeometry(dummy_ID2D1GeometrySink* *sink, int fill_mode)
+{
+  dummy_ID2D1PathGeometry* g;
+  HRESULT hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
+  if (FAILED(hr))
+    return NULL;
+
+  dummy_ID2D1PathGeometry_Open(g, sink);
+  dummy_ID2D1GeometrySink_SetFillMode(*sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+
+  return g;
+}
+
 dummy_ID2D1PathGeometry* d2dCreatePolygonGeometry(int* points, int count, int mode, int fill_mode)
 {
   dummy_ID2D1PathGeometry* g;
   dummy_ID2D1GeometrySink* sink;
   dummy_D2D1_POINT_2F pt;
-  HRESULT hr;
   int i;
 
-  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-  if (FAILED(hr))
+  g = createPolyGeometry(&sink, fill_mode);
+  if (!g)
     return NULL;
-
-  dummy_ID2D1PathGeometry_Open(g, &sink);
-  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
 
   pt.x = type2float(points[0]);
   pt.y = type2float(points[1]);
@@ -461,15 +470,11 @@ dummy_ID2D1PathGeometry* d2dCreatePolygonGeometryF(double* points, int count, in
   dummy_ID2D1PathGeometry* g;
   dummy_ID2D1GeometrySink* sink;
   dummy_D2D1_POINT_2F pt;
-  HRESULT hr;
   int i;
 
-  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-  if (FAILED(hr))
+  g = createPolyGeometry(&sink, fill_mode);
+  if (!g)
     return NULL;
-
-  dummy_ID2D1PathGeometry_Open(g, &sink);
-  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
   pt.x = type2float(points[0]);
   pt.y = type2float(points[1]);
@@ -547,16 +552,13 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
   dummy_D2D1_FIGURE_BEGIN figureBegin = dummy_D2D1_FIGURE_BEGIN_HOLLOW;
   dummy_D2D1_ARC_SEGMENT arc_seg;
   dummy_D2D1_BEZIER_SEGMENT segment;
-  HRESULT hr;
   float cx, cy, w, h, a1, a2;
   float baseAngle, sweepAngle, base_rads;
   int i, begin_picture = 0, p, n = 2 * points_n, ret = 0;
 
-  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-  if (FAILED(hr))
-    return 0;
-  dummy_ID2D1PathGeometry_Open(g, &sink);
-  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
+  g = createPolyGeometry(&sink, fill_mode);
+  if (!g)
+    return ret;
 
   i = 0;
   for (p = 0; p<path_n; p++)
@@ -578,11 +580,9 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       if (g)
         dummy_ID2D1PathGeometry_Release(g);
 
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode==CD_EVENODD?dummy_D2D1_FILL_MODE_ALTERNATE:dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     case CD_PATH_MOVETO:
@@ -669,7 +669,7 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       if (begin_picture)
       {
         begin_picture = 0;
-        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
       }
       break;
     case CD_PATH_CLIP:
@@ -680,7 +680,7 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       if (begin_picture)
       {
         begin_picture = 0;
-        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -690,18 +690,17 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     case CD_PATH_FILLSTROKE:
       if (begin_picture)
       {
         begin_picture = 0;
-        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -712,11 +711,10 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     case CD_PATH_STROKE:
@@ -733,11 +731,10 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     }
@@ -762,16 +759,13 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
   dummy_D2D1_FIGURE_BEGIN figureBegin = dummy_D2D1_FIGURE_BEGIN_HOLLOW;
   dummy_D2D1_ARC_SEGMENT arc_seg;
   dummy_D2D1_BEZIER_SEGMENT segment;
-  HRESULT hr;
   float cx, cy, w, h, a1, a2;
   float baseAngle, sweepAngle, base_rads;
   int i, begin_picture = 0, p, n = 2 * points_n, ret = 0;
 
-  hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-  if (FAILED(hr))
-    return 0;
-  dummy_ID2D1PathGeometry_Open(g, &sink);
-  dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
+  g = createPolyGeometry(&sink, fill_mode);
+  if (!g)
+    return ret;
 
   i = 0;
   for (p = 0; p<path_n; p++)
@@ -793,11 +787,9 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       if (g)
         dummy_ID2D1PathGeometry_Release(g);
 
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     case CD_PATH_MOVETO:
@@ -884,7 +876,7 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       if (begin_picture)
       {
         begin_picture = 0;
-        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
       }
       break;
     case CD_PATH_CLIP:
@@ -895,7 +887,7 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       if (begin_picture)
       {
         begin_picture = 0;
-        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -905,18 +897,17 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     case CD_PATH_FILLSTROKE:
       if (begin_picture)
       {
         begin_picture = 0;
-        dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -927,11 +918,10 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     case CD_PATH_STROKE:
@@ -948,11 +938,10 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
 
       /* reset the geometry */
       dummy_ID2D1PathGeometry_Release(g);
-      hr = dummy_ID2D1Factory_CreatePathGeometry(d2d_cd_factory, &g);
-      if (FAILED(hr))
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
         return ret;
-      dummy_ID2D1PathGeometry_Open(g, &sink);
-      dummy_ID2D1GeometrySink_SetFillMode(sink, fill_mode == CD_EVENODD ? dummy_D2D1_FILL_MODE_ALTERNATE : dummy_D2D1_FILL_MODE_WINDING);
 
       break;
     }
