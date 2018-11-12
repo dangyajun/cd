@@ -615,6 +615,7 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       break;
     case CD_PATH_ARC:
       if (i + 3*2 > n) return ret;
+      /* same as cdGetArcPath (notice the interger fix by 1000) */
       cx = type2float(points[i++]);
       cy = type2float(points[i++]);
       w = type2float(points[i++]);
@@ -822,12 +823,13 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       break;
     case CD_PATH_ARC:
       if (i + 3 * 2 > n) return ret;
+      /* same as cdfGetArcPath (no integer fix here) */
       cx = type2float(points[i++]);
       cy = type2float(points[i++]);
       w = type2float(points[i++]);
       h = type2float(points[i++]);
-      a1 = type2float(points[i++] / 1000.);
-      a2 = type2float(points[i++] / 1000.);
+      a1 = type2float(points[i++]);
+      a2 = type2float(points[i++]);
       if (invert_yaxis)
       {
         a1 *= -1;
