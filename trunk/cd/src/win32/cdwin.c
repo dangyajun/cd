@@ -717,7 +717,7 @@ static void sUpdateFill(cdCtxCanvas* ctxcanvas, int fill)
   if (fill)
   {
     if ((ctxcanvas->logBrush.lbColor != ctxcanvas->fg) && 
-      (ctxcanvas->canvas->interior_style != CD_PATTERN)) 
+      (ctxcanvas->canvas->interior_style == CD_SOLID)) 
       cdinteriorstyle(ctxcanvas, ctxcanvas->canvas->interior_style);
   }
   else
