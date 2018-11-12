@@ -312,6 +312,25 @@ static void cdbox(cdCtxCanvas *ctxcanvas, int xmin, int xmax, int ymin, int ymax
   pptxEndFill(ctxcanvas->presentation);
 }
 
+static void sCalcAngles(int xc, int yc, int arcStartX, int arcStartY, int arcEndX, int arcEndY, double *angle1, double *angle2)
+{
+  *angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
+  *angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
+
+  if (*angle1 < 0.)
+    *angle1 += 360.;
+
+  if (*angle2 < 0.)
+    *angle2 += 360.;
+
+  if (*angle2 < *angle1)
+  {
+    double tmp = *angle1;
+    *angle1 = *angle2;
+    *angle2 = tmp;
+  }
+}
+
 static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a1, double a2)
 {
   int arcStartX, arcStartY, arcEndX, arcEndY;
@@ -337,21 +356,7 @@ static void cdarc(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double a
   else
     cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
 
-  angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
-  angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
-
-  if (angle1 < 0.)
-    angle1 += 360.;
-
-  if (angle2 < 0.)
-    angle2 += 360.;
-
-  if (angle2 < angle1)
-  {
-    double tmp = angle1;
-    angle1 = angle2;
-    angle2 = tmp;
-  }
+  sCalcAngles(xc, yc, arcStartX, arcStartY, arcEndX, arcEndY, &angle1, &angle2);
 
   pptxBeginSector(ctxcanvas->presentation, "arc", pxmin, pymin, abs(w), abs(h), (int)angle1, (int)angle2);
 
@@ -390,21 +395,7 @@ static void cdsector(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, doubl
   else
     cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
 
-  angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
-  angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
-
-  if (angle1 < 0.)
-    angle1 += 360.;
-
-  if (angle2 < 0.)
-    angle2 += 360.;
-
-  if (angle2 < angle1)
-  {
-    double tmp = angle1;
-    angle1 = angle2;
-    angle2 = tmp;
-  }
+  sCalcAngles(xc, yc, arcStartX, arcStartY, arcEndX, arcEndY, &angle1, &angle2);
 
   pptxBeginSector(ctxcanvas->presentation, "pie", pxmin, pymin, abs(w), abs(h), (int)angle1, (int)angle2);
 
@@ -443,21 +434,7 @@ static void cdchord(cdCtxCanvas *ctxcanvas, int xc, int yc, int w, int h, double
   else
     cdGetArcStartEnd(xc, yc, w, h, a1, a2, &arcStartX, &arcStartY, &arcEndX, &arcEndY);
 
-  angle1 = atan2(arcStartY - yc, arcStartX - xc)*CD_RAD2DEG;
-  angle2 = atan2(arcEndY - yc, arcEndX - xc)*CD_RAD2DEG;
-
-  if (angle1 < 0.)
-    angle1 += 360.;
-
-  if (angle2 < 0.)
-    angle2 += 360.;
-
-  if (angle2 < angle1)
-  {
-    double tmp = angle1;
-    angle1 = angle2;
-    angle2 = tmp;
-  }
+  sCalcAngles(xc, yc, arcStartX, arcStartY, arcEndX, arcEndY, &angle1, &angle2);
 
   pptxBeginSector(ctxcanvas->presentation, "chord", pxmin, pymin, abs(w), abs(h), (int)angle1, (int)angle2);
 
