@@ -654,7 +654,7 @@ static void cdfbox(cdCtxCanvas* ctxcanvas, double xmin, double xmax, double ymin
   }
 }
 
-static void sFixAngles(cdCanvas* canvas, double *a1, double *a2, double w, double h)
+static void sFixAngles(cdCanvas* canvas, double *a1, double *a2, double w, double h, int fix_order)
 {
   // the angles relative to the center are dependent from the ellipse size.
   // in GDI+ must use the actual angle
@@ -667,7 +667,11 @@ static void sFixAngles(cdCanvas* canvas, double *a1, double *a2, double w, doubl
   {
     *a2 = atan2((h/2.0)*sin(*a2*CD_DEG2RAD), (w/2.0)*cos(*a2*CD_DEG2RAD))*CD_RAD2DEG;
     if (*a2 < 0) *a2 += 360;
-    if (*a2 < *a1) *a2 += 360;
+
+    if (fix_order)
+    {
+      if (*a2 < *a1) *a2 += 360;
+    }
   }
 
   // GDI+ angles are clock-wise by default, in degrees
@@ -692,7 +696,7 @@ static void cdarc(cdCtxCanvas* ctxcanvas, int xc, int yc, int w, int h, double a
     ctxcanvas->graphics->DrawEllipse(ctxcanvas->linePen, rect);
   else
   {
-    sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+    sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
     ctxcanvas->graphics->DrawArc(ctxcanvas->linePen, rect, (REAL)angle1, (REAL)(angle2-angle1));
   }
   ctxcanvas->dirty = 1;
@@ -705,7 +709,7 @@ static void cdfarc(cdCtxCanvas* ctxcanvas, double xc, double yc, double w, doubl
     ctxcanvas->graphics->DrawEllipse(ctxcanvas->linePen, rect);
   else
   {
-    sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+    sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
     ctxcanvas->graphics->DrawArc(ctxcanvas->linePen, rect, (REAL)angle1, (REAL)(angle2-angle1));
   }
   ctxcanvas->dirty = 1;
@@ -721,7 +725,7 @@ static void cdsector(cdCtxCanvas* ctxcanvas, int xc, int yc, int w, int h, doubl
       path.AddEllipse(rect);
     else
     {
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       path.AddPie(rect, (REAL)angle1, (REAL)(angle2-angle1));
     }
     Region region(&path);
@@ -739,7 +743,7 @@ static void cdsector(cdCtxCanvas* ctxcanvas, int xc, int yc, int w, int h, doubl
     }
     else
     {
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       ctxcanvas->graphics->FillPie(ctxcanvas->fillBrush, rect, (REAL)angle1, (REAL)(angle2-angle1));
       ctxcanvas->graphics->DrawArc(&pen, rect, (REAL)angle1, (REAL)(angle2-angle1));
     }
@@ -758,7 +762,7 @@ static void cdfsector(cdCtxCanvas* ctxcanvas, double xc, double yc, double w, do
       path.AddEllipse(rect);
     else
     {
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       path.AddPie(rect, (REAL)angle1, (REAL)(angle2-angle1));
     }
     Region region(&path);
@@ -776,7 +780,7 @@ static void cdfsector(cdCtxCanvas* ctxcanvas, double xc, double yc, double w, do
     }
     else
     {
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       ctxcanvas->graphics->FillPie(ctxcanvas->fillBrush, rect, (REAL)angle1, (REAL)(angle2-angle1));
       ctxcanvas->graphics->DrawArc(&pen, rect, (REAL)angle1, (REAL)(angle2-angle1));
     }
@@ -794,7 +798,7 @@ static void cdchord(cdCtxCanvas* ctxcanvas, int xc, int yc, int w, int h, double
       path.AddEllipse(rect);
     else
     {
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       path.AddArc(rect, (REAL)angle1, (REAL)(angle2-angle1));
       path.CloseFigure();
     }
@@ -808,7 +812,7 @@ static void cdchord(cdCtxCanvas* ctxcanvas, int xc, int yc, int w, int h, double
     else
     {
       GraphicsPath path;
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       path.AddArc(rect, (REAL)angle1, (REAL)(angle2-angle1));
       ctxcanvas->graphics->FillPath(ctxcanvas->fillBrush, &path);
     }
@@ -828,7 +832,7 @@ static void cdfchord(cdCtxCanvas* ctxcanvas, double xc, double yc, double w, dou
       path.AddEllipse(rect);
     else
     {
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       path.AddArc(rect, (REAL)angle1, (REAL)(angle2-angle1));
       path.CloseFigure();
     }
@@ -842,7 +846,7 @@ static void cdfchord(cdCtxCanvas* ctxcanvas, double xc, double yc, double w, dou
     else
     {
       GraphicsPath path;
-      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h);
+      sFixAngles(ctxcanvas->canvas, &angle1, &angle2, w, h, 1);
       path.AddArc(rect, (REAL)angle1, (REAL)(angle2-angle1));
       ctxcanvas->graphics->FillPath(ctxcanvas->fillBrush, &path);
     }
@@ -898,7 +902,7 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
 
             if (i+3 > n) break;
 
-            if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2))
+            if (!cdGetArcPath(poly + i, &xc, &yc, &w, &h, &a1, &a2))
               return;
 
             if (current_pt_set)
@@ -918,7 +922,8 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
               graphics_path->AddEllipse(rect);
             else
             {
-              sFixAngles(ctxcanvas->canvas, &a1, &a2, w, h);
+              /* path angles can be counter-clockwise (a1<a2) or clockwise (a1>a2) */
+              sFixAngles(ctxcanvas->canvas, &a1, &a2, w, h, 0);
               graphics_path->AddArc(rect, (REAL)a1, (REAL)(a2-a1));
             }
 
@@ -1143,7 +1148,8 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
               graphics_path->AddEllipse(rect);
             else
             {
-              sFixAngles(ctxcanvas->canvas, &a1, &a2, w, h);
+              /* path angles can be counter-clockwise (a1<a2) or clockwise (a1>a2) */
+              sFixAngles(ctxcanvas->canvas, &a1, &a2, w, h, 0);
               graphics_path->AddArc(rect, (REAL)a1, (REAL)(a2-a1));
             }
 
