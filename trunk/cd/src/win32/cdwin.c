@@ -970,15 +970,15 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
           if (!cdGetArcPath(poly+i, &xc, &yc, &w, &h, &a1, &a2)) 
             return;
 
-          sCalcArc(ctxcanvas->canvas, xc, yc, w, h, a1, a2, &arc, 0);
+          sCalcArc(ctxcanvas->canvas, xc, yc, w, h, a1, a2, &arc, 0);  /* Arc behave different when GM_ADVANCED is set */
 
           if (current_pt_set)
             LineTo(ctxcanvas->hDC, arc.XStartArc, arc.YStartArc);
           
           if ((a2-a1)<0) /* can be clockwise */
           {
-            /* Arc behave different when GM_ADVANCED is set */
-            old_arcmode = SetArcDirection(ctxcanvas->hDC, ctxcanvas->canvas->invert_yaxis? AD_CLOCKWISE: AD_COUNTERCLOCKWISE);
+            /* in a PATH angles are handled differently */
+            old_arcmode = SetArcDirection(ctxcanvas->hDC, ctxcanvas->canvas->invert_yaxis ? AD_CLOCKWISE : AD_COUNTERCLOCKWISE);
           }
 
           ArcTo(ctxcanvas->hDC, arc.LeftRect, arc.TopRect, arc.RightRect, arc.BottomRect, arc.XStartArc, arc.YStartArc, arc.XEndArc, arc.YEndArc);
