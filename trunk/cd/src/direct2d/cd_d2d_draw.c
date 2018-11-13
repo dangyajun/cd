@@ -266,7 +266,7 @@ dummy_ID2D1Brush* d2dCreateRadialGradientBrush(dummy_ID2D1RenderTarget *target, 
   stop[1].color = color;
   stop[1].position = 1.0f;
 
-  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, 2, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_CLAMP, &stops);
+  hr = dummy_ID2D1RenderTarget_CreateGradientStopCollection(target, stop, 2, dummy_D2D1_GAMMA_2_2, dummy_D2D1_EXTEND_MODE_WRAP, &stops);
   if (FAILED(hr)) {
     return NULL;
   }
@@ -570,11 +570,12 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
-        dummy_ID2D1PathGeometry_Release(g); /* discard current path */
         sink = NULL;
-        g = NULL;
       }
 
       if (g)
@@ -682,6 +683,9 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -702,6 +706,9 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -723,6 +730,9 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -778,11 +788,12 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
-        dummy_ID2D1PathGeometry_Release(g); /* discard current path */
         sink = NULL;
-        g = NULL;
       }
 
       if (g)
@@ -890,6 +901,9 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -910,6 +924,9 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
@@ -931,6 +948,9 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       {
         begin_picture = 0;
         dummy_ID2D1GeometrySink_EndFigure(sink, figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED ? dummy_D2D1_FIGURE_END_CLOSED : dummy_D2D1_FIGURE_END_OPEN);
+      }
+      if (sink)
+      {
         dummy_ID2D1GeometrySink_Close(sink);
         dummy_ID2D1GeometrySink_Release(sink);
         sink = NULL;
