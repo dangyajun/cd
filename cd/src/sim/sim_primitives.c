@@ -827,23 +827,37 @@ void cdfSimPolyPath(cdCanvas* canvas, const cdfPoint* poly, int n)
       }
       break;
     case CD_PATH_FILL:
-      if (poly)
+      if (path_poly)
+      {
         canvas->cxFPoly(canvas->ctxcanvas, CD_FILL, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     case CD_PATH_STROKE:
-      if (poly)
+      if (path_poly)
+      {
         canvas->cxFPoly(canvas->ctxcanvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     case CD_PATH_FILLSTROKE:
-      if (poly)
+      if (path_poly)
       {
         canvas->cxFPoly(canvas->ctxcanvas, CD_FILL, path_poly, path_poly_n);
         canvas->cxFPoly(canvas->ctxcanvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
       }
       break;
     case CD_PATH_CLIP:
-      if (poly)
+      if (path_poly)
+      {
         canvas->cxFPoly(canvas->ctxcanvas, CD_CLIP, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     }
   }
@@ -943,23 +957,37 @@ static void sSimPolyFPath(cdCanvas* canvas, const cdPoint* poly, int n)
       }
       break;
     case CD_PATH_FILL:
-      if (poly)
+      if (path_poly)
+      {
         canvas->cxFPoly(canvas->ctxcanvas, CD_FILL, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     case CD_PATH_STROKE:
-      if (poly)
+      if (path_poly)
+      {
         canvas->cxFPoly(canvas->ctxcanvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     case CD_PATH_FILLSTROKE:
-      if (poly)
+      if (path_poly)
       {
         canvas->cxFPoly(canvas->ctxcanvas, CD_FILL, path_poly, path_poly_n);
         canvas->cxFPoly(canvas->ctxcanvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
       }
       break;
     case CD_PATH_CLIP:
-      if (poly)
+      if (path_poly)
+      {
         canvas->cxFPoly(canvas->ctxcanvas, CD_CLIP, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     }
   }
@@ -1075,23 +1103,37 @@ void cdSimPolyPath(cdCanvas* canvas, const cdPoint* poly, int n)
       }
       break;
     case CD_PATH_FILL:
-      if (poly)
+      if (path_poly)
+      {
         cdPoly(canvas, CD_FILL, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     case CD_PATH_STROKE:
-      if (poly)
+      if (path_poly)
+      {
         cdPoly(canvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     case CD_PATH_FILLSTROKE:
-      if (poly)
+      if (path_poly)
       {
         cdPoly(canvas, CD_FILL, path_poly, path_poly_n);
         cdPoly(canvas, CD_OPEN_LINES, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
       }
       break;
     case CD_PATH_CLIP:
-      if (poly)
+      if (path_poly)
+      {
         cdPoly(canvas, CD_CLIP, path_poly, path_poly_n);
+        free(path_poly);
+        path_poly = NULL;
+      }
       break;
     }
   }
