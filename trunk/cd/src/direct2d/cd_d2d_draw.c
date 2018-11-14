@@ -675,8 +675,28 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
       }
       break;
     case CD_PATH_CLIP:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+      }
+      if (sink)
+      {
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
       d2dSetClipGeometry(canvas, g);
-      ret = 1;
+      ret = 1;  /* clipping was set */
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
+        return ret;
+
       break;
     case CD_PATH_FILL: 
       if (begin_picture)
@@ -893,8 +913,28 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
       }
       break;
     case CD_PATH_CLIP:
+      if (begin_picture)
+      {
+        begin_picture = 0;
+        dummy_ID2D1GeometrySink_EndFigure(sink, dummy_D2D1_FIGURE_END_CLOSED);
+      }
+      if (sink)
+      {
+        dummy_ID2D1GeometrySink_Close(sink);
+        dummy_ID2D1GeometrySink_Release(sink);
+        sink = NULL;
+      }
+
       d2dSetClipGeometry(canvas, g);
-      ret = 1;
+      ret = 1;  /* clipping was set */
+
+      /* reset the geometry */
+      dummy_ID2D1PathGeometry_Release(g);
+
+      g = createPolyGeometry(&sink, fill_mode);
+      if (!g)
+        return ret;
+
       break;
     case CD_PATH_FILL:
       if (begin_picture)
