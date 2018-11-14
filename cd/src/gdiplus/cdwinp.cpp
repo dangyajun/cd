@@ -954,16 +954,20 @@ static void cdpoly(cdCtxCanvas* ctxcanvas, int mode, cdPoint* poly, int n)
           break;
         case CD_PATH_FILL:
           ctxcanvas->graphics->FillPath(ctxcanvas->fillBrush, graphics_path);
+          graphics_path->Reset();
           break;
         case CD_PATH_STROKE:
           ctxcanvas->graphics->DrawPath(ctxcanvas->linePen, graphics_path);
+          graphics_path->Reset();
           break;
         case CD_PATH_FILLSTROKE:
           ctxcanvas->graphics->FillPath(ctxcanvas->fillBrush, graphics_path);
           ctxcanvas->graphics->DrawPath(ctxcanvas->linePen, graphics_path);
+          graphics_path->Reset();
           break;
         case CD_PATH_CLIP:
           ctxcanvas->graphics->SetClip(graphics_path, CombineModeIntersect);
+          graphics_path->Reset();
           ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
           break;
         }
@@ -1180,16 +1184,20 @@ static void cdfpoly(cdCtxCanvas* ctxcanvas, int mode, cdfPoint* poly, int n)
           break;
         case CD_PATH_FILL:
           ctxcanvas->graphics->FillPath(ctxcanvas->fillBrush, graphics_path);
+          graphics_path->Reset();
           break;
         case CD_PATH_STROKE:
           ctxcanvas->graphics->DrawPath(ctxcanvas->linePen, graphics_path);
+          graphics_path->Reset();
           break;
         case CD_PATH_FILLSTROKE:
           ctxcanvas->graphics->FillPath(ctxcanvas->fillBrush, graphics_path);
           ctxcanvas->graphics->DrawPath(ctxcanvas->linePen, graphics_path);
+          graphics_path->Reset();
           break;
         case CD_PATH_CLIP:
           ctxcanvas->graphics->SetClip(graphics_path, CombineModeIntersect);
+          graphics_path->Reset();
           ctxcanvas->canvas->clip_mode = CD_CLIPPATH;
           break;
         }
