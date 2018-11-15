@@ -56,6 +56,10 @@ struct _cdCtxCanvas
 
   int antialias, txt_antialias;
 
+  int radial_gradient_center_x;
+  int radial_gradient_center_y;
+  int radial_gradient_radius;
+
   Point gradient[2];
 
   Color pathGradient[500];

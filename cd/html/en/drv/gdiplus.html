@@ -199,6 +199,14 @@
   CD_CUSTOMPATTERN. (since 5.12)</li>
 </ul>
 <ul>
+  <li>&quot;<b><font face="Courier">RADIALGRADIENT</font></b>&quot;:&nbsp;defines 
+  a filled interior style that uses a radial gradient between two colors. It 
+  uses a center point and a radius (&quot;%d %d %d&quot; = xc yc r). It starts 
+  at the center using the foreground color, and end at the radius using the background color. If a regular interior style is 
+  set after the attribute, the gradient is lost. Interior style is set to CD_CUSTOMPATTERN.&nbsp; 
+  (since 5.12)</li>
+</ul>
+<ul>
   <li>&quot;<b><font face="Courier">ROTATE</font></b>&quot;:&nbsp; allows the usage of 1 angle and 1 coordinate (x, y), that 
   define a global rotation transformation centered in the specified coordinate. Use 1 real and 2 integer values inside a 
   string (&quot;%g %d %d&quot; = angle x y). Can not be set if a transformation 
