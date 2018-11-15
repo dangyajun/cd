@@ -28,10 +28,7 @@ struct _cdCtxCanvas
 
   int radial_gradient_center_x;
   int radial_gradient_center_y;
-  int radial_gradient_origin_offset_x;
-  int radial_gradient_origin_offset_y;
-  int radial_gradient_radius_x;
-  int radial_gradient_radius_y;
+  int radial_gradient_radius;
 
   int linear_gradient_x1;
   int linear_gradient_y1;
