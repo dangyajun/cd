@@ -2576,62 +2576,55 @@ static cdAttribute old_lineargradient_attrib =
   get_lineargradient_attrib
 };
 
-#if 0
 static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
-    int cx, cy, ox, oy, rx, ry;
+    int cx, cy, r;
 
-    sscanf(data, "%d %d %d %d %d %d", &cx, &cy, &ox, &oy, &rx, &ry);
+    sscanf(data, "%d %d %d", &cx, &cy, &r);
 
     ctxcanvas->radial_gradient_center_x = cx;
     ctxcanvas->radial_gradient_center_y = cy;
-    ctxcanvas->radial_gradient_origin_offset_x = ox;
-    ctxcanvas->radial_gradient_origin_offset_y = oy;
-    ctxcanvas->radial_gradient_radius_x = ry;
-    ctxcanvas->radial_gradient_radius_y = ry;
-
-
-    int cx1, cy1, cx2, cy2;
-    double radious1, radious2;
-    double offset;
-    int count = 1;
-
-    sscanf(data, "%d %d %lg %d %d %lg", &cx1, &cy1, &radious1, &cx2, &cy2, &radious2);
+    ctxcanvas->radial_gradient_radius = r;
 
     if (ctxcanvas->canvas->invert_yaxis)
-    {
-      cy1 = _cdInvertYAxis(ctxcanvas->canvas, cy1);
-      cy2 = _cdInvertYAxis(ctxcanvas->canvas, cy2);
-    }
+      cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
 
     delete ctxcanvas->fillBrush;
 
-    //ctxcanvas->fillBrush = new PathGradientBrush
-    PathGradientBrush* brush = new PathGradientBrush((Point*)poly, n);
-    brush->SetSurroundColors(ctxcanvas->pathGradient, &count);
-    brush->SetCenterColor(ctxcanvas->pathGradient[n]);
+    GraphicsPath path;
+    path.AddEllipse(cx - r / 2, cy - r / 2, r, r);
+
+    PathGradientBrush* gbrush = new PathGradientBrush(&path);
+    ctxcanvas->fillBrush = gbrush;
+
+    gbrush->SetCenterColor(ctxcanvas->fg);
+    int count = 1;
+    Color bg = sColor2Windows(ctxcanvas->canvas->background);
+    gbrush->SetSurroundColors(&bg, &count);
 
     ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
-
-    GraphicsPath gp = new GraphicsPath();
-    gp.AddEllipse(label1.ClientRectangle);
-
-    PathGradientBrush pgb = new PathGradientBrush(gp);
-
-    pgb.CenterPoint = new PointF(label1.ClientRectangle.Width / 2,
-                                 label1.ClientRectangle.Height / 2);
-    pgb.CenterColor = Color.White;
-    pgb.SurroundColors = new Color[] { Color.Red };
-
-    e.Graphics.FillPath(pgb, gp);
-
-    pgb.Dispose();
-    gp.Dispose();
   }
 }
-#endif
+
+static char* get_radialgradient_attrib(cdCtxCanvas* ctxcanvas)
+{
+  static char data[100];
+
+  sprintf(data, "%d %d %d", ctxcanvas->radial_gradient_center_x,
+                            ctxcanvas->radial_gradient_center_y,
+                            ctxcanvas->radial_gradient_radius);
+
+  return data;
+}
+
+static cdAttribute radialgradient_attrib =
+{
+  "RADIALGRADIENT",
+  set_radialgradient_attrib,
+  get_radialgradient_attrib
+};
 
 static void set_pattern_image_attrib(cdCtxCanvas *ctxcanvas, char* data)
 {
@@ -3056,6 +3049,7 @@ cdCtxCanvas *cdwpCreateCanvas(cdCanvas* canvas, Graphics* graphics, int wtype)
   cdRegisterAttribute(canvas, &gradientcolor_attrib);
   cdRegisterAttribute(canvas, &lineargradient_attrib);
   cdRegisterAttribute(canvas, &old_lineargradient_attrib);
+  cdRegisterAttribute(canvas, &radialgradient_attrib);
   cdRegisterAttribute(canvas, &pattern_image_attrib);
   cdRegisterAttribute(canvas, &rotate_attrib);
   cdRegisterAttribute(canvas, &linecap_attrib);
