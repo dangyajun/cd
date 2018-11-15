@@ -8,34 +8,6 @@ const GUID wic_cd_pixel_format =
 { 0x6fddc324, 0x4e03, 0x4bfe, { 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x10 } };
 
 
-static void bufferRGB2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, const unsigned char *red, const unsigned char *green, const unsigned char *blue)
-{
-  UINT i, j;
-
-  for (j = 0; j < height; j++)
-  {
-    UINT line_offset = (height - 1 - j) * width;
-    const BYTE* r_line = red + line_offset;
-    const BYTE* g_line = green + line_offset;
-    const BYTE* b_line = blue + line_offset;
-    BYTE* line_data = Scan0 + j * dstStride;
-
-    for (i = 0; i < width; i++)
-    {
-      int offset_data = i * 4;
-
-      unsigned char r = r_line[i];
-      unsigned char g = g_line[i];
-      unsigned char b = b_line[i];
-
-      line_data[offset_data + 0] = b;  /* Blue */
-      line_data[offset_data + 1] = g;  /* Green */
-      line_data[offset_data + 2] = r;  /* Red */
-      line_data[offset_data + 3] = 255;
-    }
-  }
-}
-
 static void bufferMap2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, const BYTE* map, const long* palette)
 {
   UINT i, j;
@@ -60,6 +32,33 @@ static void bufferMap2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height
   }
 }
 
+static void bufferRGB2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, const unsigned char *red, const unsigned char *green, const unsigned char *blue)
+{
+  UINT i, j;
+
+  for (j = 0; j < height; j++)
+  {
+    UINT line_offset = (height - 1 - j) * width;
+    const BYTE* r_line = red + line_offset;
+    const BYTE* g_line = green + line_offset;
+    const BYTE* b_line = blue + line_offset;
+    BYTE* line_data = Scan0 + j * dstStride;
+
+    for (i = 0; i < width; i++)
+    {
+      unsigned char r = r_line[i];
+      unsigned char g = g_line[i];
+      unsigned char b = b_line[i];
+
+      int offset_data = i * 4;
+      line_data[offset_data + 0] = b;  /* Blue */
+      line_data[offset_data + 1] = g;  /* Green */
+      line_data[offset_data + 2] = r;  /* Red */
+      line_data[offset_data + 3] = 255;
+    }
+  }
+}
+
 static void bufferRGBA2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, const unsigned char *red, const unsigned char *green, const unsigned char *blue, const unsigned char *alpha)
 {
   UINT i, j;
@@ -75,18 +74,17 @@ static void bufferRGBA2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT heigh
 
     for (i = 0; i < width; i++)
     {
-      int offset = i * 4;
-      unsigned char r = r_line[offset + 0];
-      unsigned char g = g_line[offset + 1];
-      unsigned char b = b_line[offset + 2];
-      unsigned char a = a_line[offset + 3];
+      unsigned char r = r_line[i];
+      unsigned char g = g_line[i];
+      unsigned char b = b_line[i];
+      unsigned char a = a_line[i];
 
       /* pre-multiplied alpha */
-      line_data[offset + 0] = (b * a) / 255;  /* Blue */
-      line_data[offset + 1] = (g * a) / 255;  /* Green */
-      line_data[offset + 2] = (r * a) / 255;  /* Red */
-
-      line_data[offset + 3] = a;  /* Alpha */
+      int offset_data = i * 4;
+      line_data[offset_data + 0] = (b * a) / 255;  /* Blue */
+      line_data[offset_data + 1] = (g * a) / 255;  /* Green */
+      line_data[offset_data + 2] = (r * a) / 255;  /* Red */
+      line_data[offset_data + 3] = a;  /* Alpha */
     }
   }
 }
