@@ -1048,8 +1048,11 @@ void SimpleDrawAll(cdCanvas* canvas)
   {
     cdCanvasForeground(canvas, CD_YELLOW);
     cdCanvasBackground(canvas, CD_GREEN);
-    cdCanvasSetAttribute(canvas, "LINEARGRADIENT", "0 0 50 50");
+    cdCanvasSetfAttribute(canvas, "LINEARGRADIENT", "%d 200 %d 250", w - 150, w - 100);  /* x1 y1 x2 y2 */
     cdCanvasBox(canvas, w - 150, w - 100, 200, 250);
+
+    cdCanvasSetfAttribute(canvas, "RADIALGRADIENT", "%d %d 50", w - 125, 325);
+    cdCanvasSector(canvas, w - 125, 325, 50, 50, 0, 360);
   }
 
   cdCanvasSetAttribute(canvas, "ROTATE", NULL);

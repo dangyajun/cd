@@ -2178,45 +2178,30 @@ static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
-    int cx1, cy1, cx2, cy2;
-    double rad1, rad2;
-    double offset;
-    int count = 1;
+    int cx, cy, r;
 
-    sscanf(data, "%d %d %lg %d %d %lg", &cx1, &cy1, &rad1, &cx2, &cy2, &rad2);
+    sscanf(data, "%d %d %d", &cx, &cy, &r);
 
     if (ctxcanvas->canvas->invert_yaxis)
-    {
-      cy1 = _cdInvertYAxis(ctxcanvas->canvas, cy1);
-      cy2 = _cdInvertYAxis(ctxcanvas->canvas, cy2);
-    }
+      cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
 
     if (ctxcanvas->pattern)
       cairo_pattern_destroy(ctxcanvas->pattern);
 
-    ctxcanvas->pattern = cairo_pattern_create_radial((double)cx1, (double)cx1, rad1, (double)cx2, (double)cx2, rad2);
+    ctxcanvas->pattern = cairo_pattern_create_radial((double)cx, (double)cy, 0, (double)cx, (double)cy, r);
     cairo_pattern_reference(ctxcanvas->pattern);
 
-    for(offset = 0.1; offset < 1.0; offset += 0.1)
-    {
-      if (count % 2)
-      {
-        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
-                                          cdCairoGetRed(ctxcanvas->canvas->foreground),
-                                          cdCairoGetGreen(ctxcanvas->canvas->foreground),
-                                          cdCairoGetBlue(ctxcanvas->canvas->foreground),
-                                          cdCairoGetAlpha(ctxcanvas->canvas->foreground));
-      }
-      else
-      {
-        cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, offset,
-                                          cdCairoGetRed(ctxcanvas->canvas->background),
-                                          cdCairoGetGreen(ctxcanvas->canvas->background),
-                                          cdCairoGetBlue(ctxcanvas->canvas->background),
-                                          cdCairoGetAlpha(ctxcanvas->canvas->background));
-      }
-      count++;
-    }
+    cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, 0.0,
+                                      cdCairoGetRed(ctxcanvas->canvas->foreground),
+                                      cdCairoGetGreen(ctxcanvas->canvas->foreground),
+                                      cdCairoGetBlue(ctxcanvas->canvas->foreground),
+                                      cdCairoGetAlpha(ctxcanvas->canvas->foreground));
+
+    cairo_pattern_add_color_stop_rgba(ctxcanvas->pattern, 1.0,
+                                      cdCairoGetRed(ctxcanvas->canvas->background),
+                                      cdCairoGetGreen(ctxcanvas->canvas->background),
+                                      cdCairoGetBlue(ctxcanvas->canvas->background),
+                                      cdCairoGetAlpha(ctxcanvas->canvas->background));
 
     cairo_pattern_set_extend(ctxcanvas->pattern, CAIRO_EXTEND_REPEAT);
 
@@ -2228,13 +2213,13 @@ static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 
 static char* get_radialgradient_attrib(cdCtxCanvas* ctxcanvas)
 {
-  double cx1, cy1, rad1, cx2, cy2, rad2;
+  double cx1, cy1, r1, cx, cy, r;
 
 #if (CAIRO_VERSION_MAJOR>1 || (CAIRO_VERSION_MAJOR==1 && CAIRO_VERSION_MINOR>=4))
-  if (cairo_pattern_get_radial_circles(ctxcanvas->pattern, &cx1, &cy1, &rad1, &cx2, &cy2, &rad2) == CAIRO_STATUS_SUCCESS)
+  if (cairo_pattern_get_radial_circles(ctxcanvas->pattern, &cx1, &cy1, &r1, &cx, &cy, &r) == CAIRO_STATUS_SUCCESS)
   {
     static char data[100];
-    sprintf(data, "%d %d %g %d %d %g", (int)cx1, (int)cy1, rad1, (int)cx2, (int)cy2, rad2);
+    sprintf(data, "%d %d %d", (int)cx, (int)cy, (int)r);
     return data;
   }
   else

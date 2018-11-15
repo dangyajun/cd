@@ -179,18 +179,13 @@ static cdAttribute old_lineargradient_attrib =
 static void set_radialgradient_brush(cdCtxCanvas* ctxcanvas)
 {
   int cy = ctxcanvas->radial_gradient_center_y;
-  int oy = ctxcanvas->radial_gradient_origin_offset_y;
   if (ctxcanvas->canvas->invert_yaxis)
-  {
     cy = _cdInvertYAxis(ctxcanvas->canvas, cy);
-    oy = oy * -1;
-  }
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
   ctxcanvas->fillBrush = d2dCreateRadialGradientBrush(ctxcanvas->d2d_canvas->target, (float)ctxcanvas->radial_gradient_center_x, (float)cy,
-                                                      (float)ctxcanvas->radial_gradient_origin_offset_x, (float)oy,
-                                                      (float)ctxcanvas->radial_gradient_radius_x, (float)ctxcanvas->radial_gradient_radius_y,
+                                                      0, 0, (float)ctxcanvas->radial_gradient_radius, (float)ctxcanvas->radial_gradient_radius,
                                                       ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
 }
 
@@ -198,16 +193,13 @@ static void set_radialgradient_attrib(cdCtxCanvas* ctxcanvas, char* data)
 {
   if (data)
   {
-    int cx, cy, ox, oy, rx, ry;
+    int cx, cy, r;
 
-    sscanf(data, "%d %d %d %d %d %d", &cx, &cy, &ox, &oy, &rx, &ry);
+    sscanf(data, "%d %d %d", &cx, &cy, &r);
 
     ctxcanvas->radial_gradient_center_x = cx;
     ctxcanvas->radial_gradient_center_y = cy;
-    ctxcanvas->radial_gradient_origin_offset_x = ox;
-    ctxcanvas->radial_gradient_origin_offset_y = oy;
-    ctxcanvas->radial_gradient_radius_x = ry;
-    ctxcanvas->radial_gradient_radius_y = ry;
+    ctxcanvas->radial_gradient_radius = r;
 
     set_radialgradient_brush(ctxcanvas);
 
@@ -220,12 +212,9 @@ static char* get_radialgradient_attrib(cdCtxCanvas* ctxcanvas)
 {
   static char data[100];
 
-  sprintf(data, "%d %d %d %d %d %d", ctxcanvas->radial_gradient_center_x,
-          ctxcanvas->radial_gradient_center_y,
-          ctxcanvas->radial_gradient_origin_offset_x,
-          ctxcanvas->radial_gradient_origin_offset_y,
-          ctxcanvas->radial_gradient_radius_x,
-          ctxcanvas->radial_gradient_radius_y);
+  sprintf(data, "%d %d %d", ctxcanvas->radial_gradient_center_x,
+                            ctxcanvas->radial_gradient_center_y,
+                            ctxcanvas->radial_gradient_radius);
 
   return data;
 }

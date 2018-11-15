@@ -215,10 +215,9 @@ because there is no support for drawing primitives in GDK since GTK 3.0. The
 <ul>
   <li>&quot;<b><font face="Courier">RADIALGRADIENT</font></b>&quot;:&nbsp;defines 
   a filled interior style that uses a radial gradient between two colors. It 
-  uses 2 points and 2 radius (&quot;%d %d %g %d %d %g&quot; = x1 y1 rad1 x2 y2 rad2), one 
-  for the starting point using (using the foreground color), and another one for 
-  the end point (using the background color). If a regular interior style is 
-  set, the gradient is lost. Interior style is set to CD_CUSTOMPATTERN (since 5.12). </li>
+  uses a center point and a radius (&quot;%d %d %d&quot; = xc yc r). It starts 
+  at the center using the foreground color, and end at the radius using the background color. If a regular interior style is 
+  set after the attribute, the gradient is lost. Interior style is set to CD_CUSTOMPATTERN (since 5.12). </li>
 </ul>
 
 <ul>
