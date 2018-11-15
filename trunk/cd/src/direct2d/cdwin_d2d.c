@@ -1166,4 +1166,5 @@ void cdwd2dInitTable(cdCanvas* canvas)
 // why call d2dResetClip in cdflush in cdwnative_d2d.c
 // IMGINTERP, holes, PATTERNIMAGE
 // IMAGE driver
+// Custom Line Styles
 // PRINTER, EMF, CLIPBOARD driver using HDC
