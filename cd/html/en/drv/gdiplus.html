@@ -175,7 +175,12 @@
   cdPutImageRect</strong></font>,  the pointer must exists while the image exists. The alpha values are transfered to 
   the image only in <font face="Courier"><strong>cdPutImageRect</strong></font>, so they can be freely changed any time. 
   The data is not duplicated, only the pointer is stored. The size of the data must be the same size of the image. Use 
-  NULL to remove the attribute. Not accessible in Lua.</li>
+  NULL to remove the attribute. Not accessible in Lua. For example:</li>
+	<pre> unsigned char* alpha = malloc(w * h);
+myInitAlpha(w, h, alpha);
+cdCanvasSetAttribute(curCanvas, "IMAGEALPHA", (char*)alpha);
+cdCanvasSetAttribute(curCanvas, "IMAGEFORMAT", "32");
+myImage = cdCanvasCreateImage(curCanvas, w, h);</pre>
 </ul>
 <ul>
   <li>&quot;<b><font face="Courier">IMAGEPOINTS</font></b>&quot;:&nbsp; define 3 coordinates of a paralelogram that will be used 
@@ -204,7 +209,13 @@
   uses a center point and a radius (&quot;%d %d %d&quot; = xc yc r). It starts 
   at the center using the foreground color, and end at the radius using the background color. If a regular interior style is 
   set after the attribute, the gradient is lost. Interior style is set to CD_CUSTOMPATTERN.&nbsp; 
-  (since 5.12)</li>
+  (since 5.12)</li>&nbsp; For example:
+
+	<pre>cdCanvasForeground(canvas, CD_YELLOW); <img src="../../img/radialgradient.png" style="float: right">
+cdCanvasBackground(canvas, CD_GREEN);
+cdCanvasSetfAttribute(canvas, "RADIALGRADIENT", "%d %d 50", w - 125, 325);
+cdCanvasSector(canvas, w - 125, 325, 50, 50, 0, 360);</pre>
+
 </ul>
 <ul>
   <li>&quot;<b><font face="Courier">ROTATE</font></b>&quot;:&nbsp; allows the usage of 1 angle and 1 coordinate (x, y), that 
@@ -217,7 +228,11 @@
   between two colors. It uses 2 points (&quot;%d %d %d %d&quot; = x1 y1 x2 y2), one for the starting point using (using the 
   foreground color), and another one for the end point (using the background color). 
   If a regular interior style is set, the gradient is lost. Interior style is 
-  set to CD_CUSTOMPATTERN (since 5.12). </li>
+  set to CD_CUSTOMPATTERN (since 5.12).&nbsp; For example:</li>
+	<pre> cdCanvasForeground(canvas, CD_YELLOW);<img src="../../img/lineargradient.png" style="float: right">
+cdCanvasBackground(canvas, CD_GREEN);
+cdCanvasSetfAttribute(canvas, "LINEARGRADIENT", "%d 200 %d 250", w - 150, w - 100); /* x1 y1 x2 y2 */
+cdCanvasBox(canvas, w - 150, w - 100, 200, 250);</pre>
 </ul>
 <ul>
   <li><b><font face="Courier">&quot;LINECAP&quot;: </font></b>defines additional line cap styles. It can have the following 
