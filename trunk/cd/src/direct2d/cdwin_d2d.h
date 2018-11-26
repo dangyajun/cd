@@ -15,6 +15,15 @@
 
 enum { FILL_BRUSH_NORMAL, FILL_BRUSH_LINEAR, FILL_BRUSH_RADIAL, FILL_BRUSH_PATTERNIMAGE };
 
+struct _cdCtxImage
+{
+  IWICBitmap *bitmap;  
+  int w, h;
+  double w_mm, h_mm;   
+  double xres, yres;   /* resolution in pixels/mm */
+  int bpp;
+};
+
 struct _cdCtxCanvas
 {
   cdCanvas* canvas;
@@ -52,6 +61,11 @@ struct _cdCtxCanvas
 
   dummy_ID2D1PathGeometry* clip_poly;
   dummy_ID2D1PathGeometry *new_rgn;
+
+  /* Used by the Double buffer driver */
+  cdImage* image_dbuffer; 
+  cdCanvas* canvas_dbuffer;
+  int kill_dbuffer;
 };
 
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc);

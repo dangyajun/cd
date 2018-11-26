@@ -228,11 +228,13 @@ void d2dShutdown(void)
   }
 }
 
-FLOAT d2dFloatMax() {
+FLOAT d2dFloatMax(void) 
+{
   return 3.402823466e+38f;
 }
 
-dummy_D2D1_RECT_F d2dInfiniteRect() {
+dummy_D2D1_RECT_F d2dInfiniteRect(void)
+{
   dummy_D2D1_RECT_F r;
   r.left = -d2dFloatMax();
   r.top = -d2dFloatMax();
@@ -241,7 +243,7 @@ dummy_D2D1_RECT_F d2dInfiniteRect() {
   return r;
 }
 
-d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl)
+static d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type)
 {
   d2dCanvas* c;
 
@@ -253,7 +255,7 @@ d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl)
   memset(c, 0, sizeof(d2dCanvas));
 
   c->type = type;
-  c->flags = (rtl ? D2D_CANVASFLAG_RTL : 0);
+  c->flags = 0;
   c->target = target;
 
   /* We use raw pixels as units. D2D by default works with DIPs ("device
@@ -264,6 +266,130 @@ d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl)
   d2dResetTransform(target);
 
   return c;
+}
+
+d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags)
+{
+  RECT rect;
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
+  dummy_D2D1_HWND_RENDER_TARGET_PROPERTIES props2;
+  d2dCanvas* c;
+  dummy_ID2D1HwndRenderTarget* target;
+  HRESULT hr;
+
+  GetClientRect(hWnd, &rect);
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ? 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
+
+  props2.hwnd = hWnd;
+  props2.pixelSize.width = rect.right - rect.left;
+  props2.pixelSize.height = rect.bottom - rect.top;
+  props2.presentOptions = dummy_D2D1_PRESENT_OPTIONS_NONE;
+
+  /* Note ID2D1HwndRenderTarget is implicitly double-buffered. */
+  hr = dummy_ID2D1Factory_CreateHwndRenderTarget(d2d_cd_factory, &props, &props2, &target);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+
+  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_HWND);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  /* make sure text anti-aliasing is clear type */
+  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+
+  return c;
+}
+
+d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
+{
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
+  d2dCanvas* c;
+  dummy_ID2D1DCRenderTarget* target;
+  HRESULT hr;
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ? 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
+
+  hr = dummy_ID2D1Factory_CreateDCRenderTarget(d2d_cd_factory, &props, &target);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+
+  hr = dummy_ID2D1DCRenderTarget_BindDC(target, hDC, pRect);
+  if (FAILED(hr)) {
+    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);
+    return NULL;
+  }
+
+  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_DC);
+  if (c == NULL) {
+    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);
+    return NULL;
+  }
+
+  /* make sure text anti-aliasing is clear type */
+  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+
+  return c;
+}
+
+d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap)
+{
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
+  d2dCanvas* c;
+  dummy_ID2D1RenderTarget *target;
+  HRESULT hr;
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = 0;
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
+
+  hr = dummy_ID2D1Factory_CreateWicBitmapRenderTarget(d2d_cd_factory, bitmap, &props, &target);
+  if (FAILED(hr)) {
+    return NULL;
+  }
+
+  c = d2dCanvasCreate(target, D2D_CANVASTYPE_IMAGE);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  /* make sure text anti-aliasing is clear type */
+  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+
+  return c;
+}
+
+void d2dCanvasDestroy(d2dCanvas* d2d_canvas)
+{
+  if (d2d_canvas)
+  {
+    dummy_ID2D1RenderTarget_Release(d2d_canvas->target);
+    free(d2d_canvas);
+  }
+}
+
+void d2dGetTransform(dummy_ID2D1RenderTarget* target, dummy_D2D1_MATRIX_3X2_F* m)
+{
+  dummy_ID2D1RenderTarget_GetTransform(target, m);
 }
 
 void d2dResetTransform(dummy_ID2D1RenderTarget* target)
