@@ -1275,3 +1275,4 @@ void cdwd2dInitTable(cdCanvas* canvas)
 // IMGINTERP, holes, PATTERNIMAGE
 // Custom Line Styles
 // PRINTER, EMF, CLIPBOARD driver using HDC
+// check if Direct2D really needs to be re-created in cdactivate
