@@ -12,7 +12,7 @@
 
 static void cdkillcanvas (cdCtxCanvas* ctxcanvas)
 {
-  cdwpKillCanvas(ctxcanvas);
+  cdwpKillCanvas(ctxcanvas);  /* this does NOT release the ctxcanvas pointer */
   delete ctxcanvas;
 }
 

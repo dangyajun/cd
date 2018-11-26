@@ -20,10 +20,6 @@ static void cdkillcanvas (cdCtxCanvas *ctxcanvas)
   free(ctxcanvas);
 }
 
-/*
-%F cdCreateCanvas para Image.
-O DC é um BITMAP em memoria.
-*/
 static void cdcreatecanvas(cdCanvas* canvas, void *data)
 {
   cdCtxCanvas* ctxcanvas;
@@ -34,11 +30,9 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   ctximage = ((cdImage*)data)->ctximage;
 
-  /* Inicializa parametros */
   if (ctximage == NULL) 
     return;
   
-  /* Inicializa driver Image */
   ctxcanvas = cdwCreateCanvas(canvas, NULL, ctximage->hDC, CDW_BMP);
 
   canvas->w = ctximage->w;
@@ -48,6 +42,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   canvas->bpp = ctximage->bpp;
   canvas->xres = ctximage->xres;
   canvas->yres = ctximage->yres;
+
   ctxcanvas->clip_pnt[2].x = ctxcanvas->clip_pnt[1].x = canvas->w - 1;
   ctxcanvas->clip_pnt[3].y = ctxcanvas->clip_pnt[2].y = canvas->h - 1;
 }
