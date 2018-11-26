@@ -95,7 +95,9 @@
     <None Include="..\src\direct2d\cdcontextplus.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\direct2d\cdwdbuf_d2d.c" />
     <ClCompile Include="..\src\direct2d\cdwdirect2d.c" />
+    <ClCompile Include="..\src\direct2d\cdwimg_d2d.c" />
     <ClCompile Include="..\src\direct2d\cdwin_d2d.c" />
     <ClCompile Include="..\src\direct2d\cdwnative_d2d.c" />
     <ClCompile Include="..\src\direct2d\cd_d2d.c" />

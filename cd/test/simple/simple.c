@@ -767,7 +767,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasTextAlignment(canvas, CD_NORTH);
   cdCanvasTextAlignment(canvas, CD_CENTER);
   cdCanvasTextOrientation(canvas, 70);
-  cdCanvasFont(canvas, "Times", CD_BOLD, 24);
+  cdCanvasFont(canvas, "Times", CD_BOLD, 14);
   //  cdCanvasSetAttribute(canvas, "ADDFONTMAP", "MyWingDings=wingxing");
   //  cdCanvasFont(canvas, "MyWingDings", CD_PLAIN, 24);
   //  cdCanvasFont(canvas, "wingxing", CD_PLAIN, 24); // Current folder
@@ -783,10 +783,11 @@ void SimpleDrawAll(cdCanvas* canvas)
     int rect[8];
     char* mode = cdCanvasGetAttribute(canvas, "UTF8MODE");
     int utf8mode = mode ? (mode[0] == '1' ? 1 : 0) : 0;
-    if (utf8mode)
-      cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p8-Γ§Γ£Γ­)­\nSecond Line", rect);
-    else
-      cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p-ηγν)\nSecond Line", rect);
+    //if (utf8mode)
+    //  cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p8-Γ§Γ£Γ­)­\nSecond Line", rect);
+    //else
+    //  cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p-ηγν)\nSecond Line", rect);
+    cdCanvasGetTextBounds(canvas, w / 2, h / 2, "cdMin Draw (ηγν)", rect);
     cdCanvasForeground(canvas, CD_RED);
     cdCanvasBegin(canvas, CD_CLOSED_LINES);
     cdCanvasVertex(canvas, rect[0], rect[1]);
@@ -797,10 +798,11 @@ void SimpleDrawAll(cdCanvas* canvas)
 
 
     cdCanvasForeground(canvas, CD_BLUE);
-    if (utf8mode)
-      cdCanvasText(canvas, w / 2, h / 2, "Simple Draw (p8-Γ§Γ£Γ­)\nSecond Line");
-    else
-      cdCanvasText(canvas, w / 2, h / 2, "Simple Draw (p-ηγν)\nSecond Line");
+    //if (utf8mode)
+    //  cdCanvasText(canvas, w / 2, h / 2, "Simple Draw (p8-Γ§Γ£Γ­)\nSecond Line");
+    //else
+    //  cdCanvasText(canvas, w / 2, h / 2, "Simple Draw (p-ηγν)\nSecond Line");
+    cdCanvasText(canvas, w / 2, h / 2, "cdMin Draw (ηγν)");
     cdCanvasTextOrientation(canvas, 0);
   }
 
@@ -876,8 +878,8 @@ void SimpleDrawAll(cdCanvas* canvas)
 
   /* Draw a filled path at center-right (looks like a weird fish).
      Notice that in PDF the arc is necessarily a circle arc, and not an ellipse. */
-  cdCanvasInteriorStyle(canvas, CD_HATCH);
-  cdCanvasHatch(canvas, CD_DIAGCROSS);
+  //cdCanvasInteriorStyle(canvas, CD_HATCH);
+  //cdCanvasHatch(canvas, CD_DIAGCROSS);
   cdCanvasForeground(canvas, CD_GREEN);
   cdCanvasBegin(canvas, CD_PATH);
   cdCanvasPathSet(canvas, CD_PATH_MOVETO);
@@ -902,15 +904,15 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasVertex(canvas, -30 * 1000, -170 * 1000);  /* start angle, end angle (degrees / 1000) */
   //cdCanvasPathSet(canvas, CD_PATH_CLOSE);
   //cdCanvasPathSet(canvas, CD_PATH_STROKE);
-  //cdCanvasPathSet(canvas, CD_PATH_FILL);
-  cdCanvasPathSet(canvas, CD_PATH_FILLSTROKE);
+  cdCanvasPathSet(canvas, CD_PATH_FILL);
+  //cdCanvasPathSet(canvas, CD_PATH_FILLSTROKE);
   cdCanvasEnd(canvas);
 
-  cdCanvasForeground(canvas, CD_BLACK);
-  cdCanvasArc(canvas, w / 2 + 300, h / 2, 200, 100, -170, -30);
+  //cdCanvasForeground(canvas, CD_BLACK);
+  //cdCanvasArc(canvas, w / 2 + 300, h / 2, 200, 100, -170, -30);
 
-  cdCanvasForeground(canvas, CD_DARK_RED);
-  cdCanvasRect(canvas, w / 2 + 300 - 100, w / 2 + 300 + 100, h / 2 - 50, h / 2 + 50);
+  //cdCanvasForeground(canvas, CD_DARK_RED);
+  //cdCanvasRect(canvas, w / 2 + 300 - 100, w / 2 + 300 + 100, h / 2 - 50, h / 2 + 50);
 
   /* Draw 3 pixels at center left. */
   cdCanvasPixel(canvas, 10, h / 2 + 0, CD_RED);
@@ -1039,12 +1041,13 @@ void SimpleDrawAll(cdCanvas* canvas)
     }
   }
 
-  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
+//    cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
   //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, IMAGE_SIZE, IMAGE_SIZE, 0, 0, 0, 0);
   //  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
-  //  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
+  cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
 
   if (contextplus)
+//  if (0)
   {
     cdCanvasForeground(canvas, CD_YELLOW);
     cdCanvasBackground(canvas, CD_GREEN);

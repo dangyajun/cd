@@ -8,6 +8,8 @@
     <ClCompile Include="..\src\direct2d\cd_d2d_draw.c" />
     <ClCompile Include="..\src\direct2d\cd_d2d_image.c" />
     <ClCompile Include="..\src\direct2d\cd_d2d_text.c" />
+    <ClCompile Include="..\src\direct2d\cdwdbuf_d2d.c" />
+    <ClCompile Include="..\src\direct2d\cdwimg_d2d.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\direct2d\cd_d2d.h">

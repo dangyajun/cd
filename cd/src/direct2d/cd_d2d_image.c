@@ -410,3 +410,4 @@ void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *bitmap, const d
   dummy_ID2D1RenderTarget_DrawBitmap(target, b, &pDest, 1.0f, dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, pSourceRect);
   dummy_ID2D1Bitmap_Release(b);
 }
+

@@ -11,7 +11,8 @@
 #include <memory.h>
 
 cdContext* cdContextNativeWindowPlus(void);
-//cdContext* cdContextImagePlus(void);
+cdContext* cdContextImagePlus(void);
+cdContext* cdContextDBufferPlus(void);
 //cdContext* cdContextPrinterPlus(void);
 //cdContext* cdContextEMFPlus(void);
 //cdContext* cdContextClipboardPlus(void);
@@ -22,8 +23,8 @@ void cdInitContextPlus(void)
   memset(ctx_list, 0, sizeof(ctx_list));
 
   ctx_list[CD_CTXPLUS_NATIVEWINDOW] = cdContextNativeWindowPlus();
-  //ctx_list[CD_CTXPLUS_IMAGE] = cdContextImagePlus();
-  ctx_list[CD_CTXPLUS_DBUFFER] = cdContextNativeWindowPlus();  /* always double buffered */
+  ctx_list[CD_CTXPLUS_IMAGE] = cdContextImagePlus();
+  ctx_list[CD_CTXPLUS_DBUFFER] = cdContextDBufferPlus();
   //ctx_list[CD_CTXPLUS_PRINTER] = cdContextPrinterPlus();
   //ctx_list[CD_CTXPLUS_EMF] = cdContextEMFPlus();
   //ctx_list[CD_CTXPLUS_CLIPBOARD] = cdContextClipboardPlus();

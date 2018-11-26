@@ -220,7 +220,9 @@ typedef struct dummy_D2D1_BITMAP_PROPERTIES_tag dummy_D2D1_BITMAP_PROPERTIES;
 typedef D2D_COLOR_F                             dummy_D2D1_COLOR_F;
 typedef struct D2D_MATRIX_3X2_F                 dummy_D2D1_MATRIX_3X2_F;
 typedef struct D2D_POINT_2F                     dummy_D2D1_POINT_2F;
+typedef struct D2D_POINT_2U                     dummy_D2D1_POINT_2U;
 typedef struct D2D_RECT_F                       dummy_D2D1_RECT_F;
+typedef struct D2D_RECT_U                       dummy_D2D1_RECT_U;
 typedef struct D2D_SIZE_F                       dummy_D2D1_SIZE_F;
 typedef struct D2D_SIZE_U                       dummy_D2D1_SIZE_U;
 
@@ -381,7 +383,7 @@ struct dummy_ID2D1BitmapVtbl_tag {
     STDMETHOD(dummy_GetPixelFormat)(void);
     STDMETHOD(dummy_GetDpi)(void);
     STDMETHOD(dummy_CopyFromBitmap)(void);
-    STDMETHOD(dummy_CopyFromRenderTarget)(void);
+    STDMETHOD(CopyFromRenderTarget)(dummy_ID2D1Bitmap*, const dummy_D2D1_POINT_2U *, dummy_ID2D1RenderTarget *, const dummy_D2D1_RECT_U *);
     STDMETHOD(dummy_CopyFromMemory)(void);
 };
 
@@ -389,10 +391,11 @@ struct dummy_ID2D1Bitmap_tag {
     dummy_ID2D1BitmapVtbl* vtbl;
 };
 
-#define dummy_ID2D1Bitmap_QueryInterface(self,a,b)  (self)->vtbl->QueryInterface(self,a,b)
-#define dummy_ID2D1Bitmap_AddRef(self)              (self)->vtbl->AddRef(self)
-#define dummy_ID2D1Bitmap_Release(self)             (self)->vtbl->Release(self)
-#define dummy_ID2D1Bitmap_GetPixelSize(self,a)      (self)->vtbl->GetPixelSize(self,a)
+#define dummy_ID2D1Bitmap_QueryInterface(self,a,b)         (self)->vtbl->QueryInterface(self,a,b)
+#define dummy_ID2D1Bitmap_AddRef(self)                     (self)->vtbl->AddRef(self)
+#define dummy_ID2D1Bitmap_Release(self)                    (self)->vtbl->Release(self)
+#define dummy_ID2D1Bitmap_GetPixelSize(self,a)             (self)->vtbl->GetPixelSize(self,a)
+#define dummy_ID2D1Bitmap_CopyFromRenderTarget(self,a,b,c) (self)->vtbl->CopyFromRenderTarget(self,a,b,c)
 
 
 /*******************************************

@@ -1,5 +1,5 @@
 /** \file
- * \brief Windows GDI+ Native Window Driver
+ * \brief Direct2D Native Window Driver
  *
  * See Copyright Notice in cd.h
  */
@@ -8,99 +8,8 @@
 #include "cdnative.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
-
-static d2dCanvas* d2dCreateCanvasWithPaintStruct(HWND hWnd, DWORD dwFlags)
-{
-  RECT rect;
-  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
-  dummy_D2D1_HWND_RENDER_TARGET_PROPERTIES props2;
-  d2dCanvas* c;
-  dummy_ID2D1HwndRenderTarget* target;
-  HRESULT hr;
-
-  GetClientRect(hWnd, &rect);
-
-  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
-  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
-  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
-  props.dpiX = 0.0f;
-  props.dpiY = 0.0f;
-  props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ?
-                 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
-  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
-
-  props2.hwnd = hWnd;
-  props2.pixelSize.width = rect.right - rect.left;
-  props2.pixelSize.height = rect.bottom - rect.top;
-  props2.presentOptions = dummy_D2D1_PRESENT_OPTIONS_NONE;
-
-  /* Note ID2D1HwndRenderTarget is implicitly double-buffered. */
-  hr = dummy_ID2D1Factory_CreateHwndRenderTarget(d2d_cd_factory, &props, &props2, &target);
-  if (FAILED(hr)) {
-    return NULL;
-  }
-
-  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_HWND, (dwFlags & CANVAS_LAYOUTRTL));
-  if (c == NULL) {
-    return NULL;
-  }
-
-  /* make sure text anti-aliasing is clear type */
-  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
-
-  return c;
-}
-
-static d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
-{
-  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
-  d2dCanvas* c;
-  dummy_ID2D1DCRenderTarget* target;
-  HRESULT hr;
-
-  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
-  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
-  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
-  props.dpiX = 0.0f;
-  props.dpiY = 0.0f;
-  props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ?
-                 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
-  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
-
-  hr = dummy_ID2D1Factory_CreateDCRenderTarget(d2d_cd_factory, &props, &target);
-  if (FAILED(hr)) {
-    return NULL;
-  }
-
-  hr = dummy_ID2D1DCRenderTarget_BindDC(target, hDC, pRect);
-  if (FAILED(hr)) {
-    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);
-    return NULL;
-  }
-
-  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_DC, (dwFlags & CANVAS_LAYOUTRTL));
-  if (c == NULL) {
-    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);
-    return NULL;
-  }
-
-  /* make sure text anti-aliasing is clear type */
-  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
-
-  return c;
-}
-
-static void d2dReleaseTarget(cdCtxCanvas *ctxcanvas)
-{
-  if (ctxcanvas->d2d_canvas)
-  {
-    dummy_ID2D1RenderTarget_Release(ctxcanvas->d2d_canvas->target);
-    free(ctxcanvas->d2d_canvas);
-
-    ctxcanvas->d2d_canvas = NULL;
-  }
-}
 
 static int cdactivate(cdCtxCanvas* ctxcanvas)
 {
@@ -109,7 +18,7 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
   if (!ctxcanvas->hWnd && !ctxcanvas->hDC)
     return CD_ERROR;
 
-  d2dReleaseTarget(ctxcanvas);
+  d2dCanvasDestroy(ctxcanvas->d2d_canvas);
 
   if (ctxcanvas->hWnd)
   {
@@ -123,7 +32,7 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
 
     ctxcanvas->canvas->bpp = cdGetScreenColorPlanes();
 
-    d2d_canvas = d2dCreateCanvasWithPaintStruct(ctxcanvas->hWnd, CANVAS_DOUBLEBUFFER | CANVAS_NOGDICOMPAT);
+    d2d_canvas = d2dCreateCanvasWithWindow(ctxcanvas->hWnd, CANVAS_NOGDICOMPAT);
   }
   else if (ctxcanvas->hDC)
   {
@@ -133,7 +42,7 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
     rcPaint.right = ctxcanvas->canvas->w;
     rcPaint.bottom = ctxcanvas->canvas->h;
 
-    d2d_canvas = d2dCreateCanvasWithHDC(ctxcanvas->hDC, &rcPaint, CANVAS_DOUBLEBUFFER);
+    d2d_canvas = d2dCreateCanvasWithHDC(ctxcanvas->hDC, &rcPaint, 0);
   }
   else
     return CD_ERROR;
@@ -149,10 +58,11 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
 
 static void cdflush(cdCtxCanvas *ctxcanvas)
 {
-  //TODO: why need this?
-  d2dResetClip(ctxcanvas->d2d_canvas);
+  HRESULT hr = dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+  if (FAILED(hr))
+    assert(!FAILED(hr));
 
-  dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+  dummy_ID2D1RenderTarget_BeginDraw(ctxcanvas->d2d_canvas->target);
 }
 
 static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
@@ -160,9 +70,8 @@ static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
   if (ctxcanvas->hDC && ctxcanvas->release_dc)
     ReleaseDC(NULL, ctxcanvas->hDC);  /* to match GetDC(NULL) */
 
-  d2dReleaseTarget(ctxcanvas);
-
-  cdwd2dKillCanvas(ctxcanvas);
+  d2dCanvasDestroy(ctxcanvas->d2d_canvas);
+  cdwd2dKillCanvas(ctxcanvas);  /* this will NOT release the target */
 }
 
 static void cdcreatecanvas(cdCanvas* canvas, void *data)

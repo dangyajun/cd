@@ -19,14 +19,13 @@
 
 #define D2D_CANVASTYPE_DC           0
 #define D2D_CANVASTYPE_HWND         1
+#define D2D_CANVASTYPE_IMAGE        2
 
-#define CANVAS_DOUBLEBUFFER      0x0001
-#define CANVAS_NOGDICOMPAT       0x0002
-#define CANVAS_LAYOUTRTL         0x0004
+#define CANVAS_NOGDICOMPAT       0x0001
+#define CANVAS_LAYOUTRTL         0x0002
 
 #define D2D_CANVASFLAG_RECTCLIP     0x1
 #define D2D_CANVASFLAG_POLYCLIP     0x2
-#define D2D_CANVASFLAG_RTL          0x3
 
 #define D2D_BASEDELTA_X             0.5f
 #define D2D_BASEDELTA_Y             0.5f
@@ -63,14 +62,19 @@ typedef struct _d2dFontMetrics {
                           /* Usually: fEmHeight < fAscent + fDescent <= fLeading */
 } d2dFontMetrics;
 
-FLOAT d2dFloatMax();
-dummy_D2D1_RECT_F d2dInfiniteRect();
+FLOAT d2dFloatMax(void);
+dummy_D2D1_RECT_F d2dInfiniteRect(void);
 
 void d2dStartup(void);
 void d2dShutdown(void);
 
-d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type, BOOL rtl);
+d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags);
+d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags);
+d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap);
+void d2dCanvasDestroy(d2dCanvas* d2d_canvas);
+
 void d2dResetTransform(dummy_ID2D1RenderTarget* target);
+void d2dGetTransform(dummy_ID2D1RenderTarget* target, dummy_D2D1_MATRIX_3X2_F* matrix);
 void d2dRotateWorld(dummy_ID2D1RenderTarget *target, float cx, float cy, float fAngle);
 void d2dApplyTransform(dummy_ID2D1RenderTarget* target, const dummy_D2D1_MATRIX_3X2_F* matrix);
 void d2dSetClipRect(d2dCanvas *canvas, double x1, double y1, double x2, double y2);

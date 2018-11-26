@@ -213,7 +213,7 @@ static char* get_radialgradient_attrib(cdCtxCanvas* ctxcanvas)
   static char data[100];
 
   sprintf(data, "%d %d %d", ctxcanvas->radial_gradient_center_x,
-                            ctxcanvas->radial_gradient_center_y,
+          ctxcanvas->radial_gradient_center_y,
                             ctxcanvas->radial_gradient_radius);
 
   return data;
@@ -352,9 +352,98 @@ static int cdispointinregion(cdCtxCanvas* ctxcanvas, int x, int y)
   return contains;
 }
 
+static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
+{
+  cdCtxImage *ctximage = (cdCtxImage *)malloc(sizeof(cdCtxImage));
+  IWICBitmap *bitmap;
+
+  ctximage->w = w;
+  ctximage->h = h;
+  ctximage->bpp = ctxcanvas->canvas->bpp;
+  ctximage->xres = ctxcanvas->canvas->xres;
+  ctximage->yres = ctxcanvas->canvas->yres;
+  ctximage->w_mm = ctximage->w / ctximage->xres;
+  ctximage->h_mm = ctximage->h / ctximage->yres;
+
+  bitmap = d2dCreateImage(w, h);
+  ctximage->bitmap = bitmap;
+
+  if (!ctximage->bitmap)
+  {
+    free(ctximage);
+    return NULL;
+  }
+
+  return ctximage;
+}
+
+static void cdkillimage(cdCtxImage *ctximage)
+{
+  d2dDestroyImage(ctximage->bitmap);
+  free(ctximage);
+}
+
+static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y)
+{
+  dummy_D2D1_POINT_2U destPoint;
+  dummy_D2D1_RECT_U srcRect;
+  dummy_D2D1_MATRIX_3X2_F old_matrix;
+  dummy_ID2D1Bitmap* bitmap;
+  HRESULT hr;
+
+  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(ctxcanvas->d2d_canvas->target, (IWICBitmapSource*)ctximage->bitmap, NULL, &bitmap);
+  if (FAILED(hr))
+    return;
+
+  d2dGetTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
+  d2dResetTransform(ctxcanvas->d2d_canvas->target);
+
+  destPoint.x = 0;
+  destPoint.y = 0;
+
+  /* if 0, invert because the transform was reset */
+  if (!ctxcanvas->canvas->invert_yaxis)
+    y = _cdInvertYAxis(ctxcanvas->canvas, y);
+
+  /* y is the bottom-left of the image in CD, must be at upper-left */
+  y -= ctximage->h - 1;
+
+  srcRect.left = 0;
+  srcRect.right = ctximage->w + x - 1;
+  srcRect.top = 0;
+  srcRect.bottom = ctximage->h + y - 1;
+
+  dummy_ID2D1Bitmap_CopyFromRenderTarget(bitmap, &destPoint, ctxcanvas->d2d_canvas->target, &srcRect);
+
+  d2dApplyTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
+}
+
+static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y, int xmin, int xmax, int ymin, int ymax)
+{
+  dummy_D2D1_RECT_F destRect;
+  dummy_D2D1_RECT_F srcRect;
+
+  /* y is already inverted, but must be relative to the top-left corner */
+  /* must add a pixel to bottom-right */
+
+  destRect.left = type2float(x);
+  destRect.top = type2float(y - (ctximage->h - 1));
+  destRect.right = type2float(x + ctximage->w);
+  destRect.bottom = type2float(y + 1); 
+
+  srcRect.left = type2float(xmin);
+  srcRect.top = type2float(ctximage->h - 1 - ymax);
+  srcRect.right = type2float(xmax + 1);
+  srcRect.bottom = type2float(ctximage->h - 1 - ymin + 1);
+
+  d2dBitBltImage(ctxcanvas->d2d_canvas->target, ctximage->bitmap, &destRect, &srcRect);
+}
+
 static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
 {
   IWICBitmap* bitmap = d2dCreateImageFromHatch(style, ctxcanvas->hatchboxsize, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+  if (!bitmap)
+    return;
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
@@ -1032,11 +1121,16 @@ static void cdfputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, c
   dummy_D2D1_RECT_F srcRect;
 
   IWICBitmap* bitmap = d2dCreateImageFromBufferRGB(width, height, red, green, blue, alpha);
+  if (!bitmap)
+    return;
+
+  /* y is already inverted, but must be relative to the top-left corner */
+  /* must add a pixel to bottom-right */
 
   destRect.left = type2float(x);
-  destRect.top = type2float(y - h);
+  destRect.top = type2float(y - (h - 1));
   destRect.right = type2float(x + w);
-  destRect.bottom = type2float(y);
+  destRect.bottom = type2float(y + 1);
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(height - 1 - ymax);
@@ -1055,11 +1149,16 @@ static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, co
   dummy_D2D1_RECT_F srcRect;
 
   IWICBitmap* bitmap = d2dCreateImageFromBufferRGB(width, height, red, green, blue, NULL);
+  if (!bitmap)
+    return;
+
+  /* y is already inverted, but must be relative to the top-left corner */
+  /* must add a pixel to bottom-right */
 
   destRect.left = type2float(x);
-  destRect.top = type2float(y - h);
+  destRect.top = type2float(y - (h - 1));
   destRect.right = type2float(x + w);
-  destRect.bottom = type2float(y);
+  destRect.bottom = type2float(y + 1);
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(height - 1 - ymax);
@@ -1078,11 +1177,16 @@ static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, co
   dummy_D2D1_RECT_F srcRect;
 
   IWICBitmap* bitmap = d2dCreateImageFromBufferMap(width, height, index, colors);
+  if (!bitmap)
+    return;
+
+  /* y is already inverted, but must be relative to the top-left corner */
+  /* must add a pixel to bottom-right */
 
   destRect.left = type2float(x);
-  destRect.top = type2float(y - h);
+  destRect.top = type2float(y - (h - 1));
   destRect.right = type2float(x + w);
-  destRect.bottom = type2float(y);
+  destRect.bottom = type2float(y + 1);
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(height - 1 - ymax);
@@ -1142,6 +1246,11 @@ void cdwd2dInitTable(cdCanvas* canvas)
   canvas->cxNewRegion = cdnewregion;
   canvas->cxIsPointInRegion = cdispointinregion;
 
+  canvas->cxCreateImage = cdcreateimage;
+  canvas->cxGetImage = cdgetimage;
+  canvas->cxPutImageRect = cdputimagerect;
+  canvas->cxKillImage = cdkillimage;
+
   canvas->cxPutImageRectRGBA = cdputimagerectrgba;
   canvas->cxPutImageRectRGB = cdputimagerectrgb;
   canvas->cxPutImageRectMap = cdputimagerectmap;
@@ -1163,8 +1272,6 @@ void cdwd2dInitTable(cdCanvas* canvas)
 }
 
 //TODO
-// why call d2dResetClip in cdflush in cdwnative_d2d.c
 // IMGINTERP, holes, PATTERNIMAGE
-// IMAGE driver
 // Custom Line Styles
 // PRINTER, EMF, CLIPBOARD driver using HDC
