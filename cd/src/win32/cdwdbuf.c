@@ -17,6 +17,7 @@ static void cdkillcanvas(cdCtxCanvas *ctxcanvas)
   if (ctxcanvas->kill_dbuffer)
     cdKillCanvas(ctxcanvas->canvas_dbuffer);
   cdwKillCanvas(ctxcanvas);
+
   memset(ctxcanvas, 0, sizeof(cdCtxCanvas));
   free(ctxcanvas);
 }
