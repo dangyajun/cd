@@ -107,9 +107,9 @@ static void pattern2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, 
       unsigned char b = cdBlue(pat_line[i]);
       unsigned char a = cdAlpha(pat_line[i]);
 
-      line_data[offset_data + 0] = b;  /* Blue */
-      line_data[offset_data + 1] = g;  /* Green */
-      line_data[offset_data + 2] = r;  /* Red */
+      line_data[offset_data + 0] = (b * a) / 255; /* Blue */
+      line_data[offset_data + 1] = (g * a) / 255; /* Green */
+      line_data[offset_data + 2] = (r * a) / 255; /* Red */
       line_data[offset_data + 3] = a;
     }
   }
@@ -127,7 +127,9 @@ static void stipple2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, 
 
     for (i = 0; i < width; i++)
     {
-      int offset_data;
+      int offset_data = i * 4;
+      unsigned char r, g, b, a;
+
       int map_index = map_line[i];
       int color;
       if (map_index == 0)
@@ -135,15 +137,19 @@ static void stipple2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, 
       else
         color = foreground;
 
-      offset_data = i * 4;
-      line_data[offset_data + 0] = cdBlue(color);
-      line_data[offset_data + 1] = cdGreen(color);
-      line_data[offset_data + 2] = cdRed(color);
+      r = cdRed(color);
+      g = cdGreen(color);
+      b = cdBlue(color);
 
-      if (back_opacity)
-        line_data[offset_data + 3] = 0;  /* fully transparent if back_opacity is transparent */
+      if (map_index == 0 && back_opacity)
+        a = 0;  /* fully transparent if back_opacity is transparent */
       else
-        line_data[offset_data + 3] = cdAlpha(color);
+        a = cdAlpha(color);
+
+      line_data[offset_data + 0] = (b * a) / 255; /* Blue */
+      line_data[offset_data + 1] = (g * a) / 255; /* Green */
+      line_data[offset_data + 2] = (r * a) / 255; /* Red */
+      line_data[offset_data + 3] = a;
     }
   }
 }
