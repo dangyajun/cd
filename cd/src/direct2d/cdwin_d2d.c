@@ -155,9 +155,9 @@ static char* get_lineargradient_attrib(cdCtxCanvas* ctxcanvas)
   static char data[100];
 
   sprintf(data, "%d %d %d %d", ctxcanvas->linear_gradient_x1,
-                               ctxcanvas->linear_gradient_y1,
-                               ctxcanvas->linear_gradient_x2,
-                               ctxcanvas->linear_gradient_y2);
+          ctxcanvas->linear_gradient_y1,
+          ctxcanvas->linear_gradient_x2,
+          ctxcanvas->linear_gradient_y2);
 
   return data;
 }
@@ -214,7 +214,7 @@ static char* get_radialgradient_attrib(cdCtxCanvas* ctxcanvas)
 
   sprintf(data, "%d %d %d", ctxcanvas->radial_gradient_center_x,
           ctxcanvas->radial_gradient_center_y,
-                            ctxcanvas->radial_gradient_radius);
+          ctxcanvas->radial_gradient_radius);
 
   return data;
 }
@@ -429,7 +429,7 @@ static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, 
   destRect.left = type2float(x);
   destRect.top = type2float(y - (ctximage->h - 1));
   destRect.right = type2float(x + ctximage->w);
-  destRect.bottom = type2float(y + 1); 
+  destRect.bottom = type2float(y + 1);
 
   srcRect.left = type2float(xmin);
   srcRect.top = type2float(ctximage->h - 1 - ymax);
@@ -443,7 +443,7 @@ static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
 {
   IWICBitmap* bitmap = d2dCreateImageFromHatch(style, ctxcanvas->hatchboxsize, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
   if (!bitmap)
-    return;
+    return style;
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
@@ -535,7 +535,10 @@ static int cdlinestyle(cdCtxCanvas* ctxcanvas, int style)
   if (ctxcanvas->stroke_style)
     dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
-  ctxcanvas->stroke_style = d2dSetLineStyle(style, ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
+  if (style == CD_CUSTOM)
+    ctxcanvas->stroke_style = d2dSetCustomLineStyle(ctxcanvas->canvas->line_dashes, ctxcanvas->canvas->line_dashes_count, type2float(ctxcanvas->canvas->line_width), ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
+  else
+    ctxcanvas->stroke_style = d2dSetLineStyle(style, ctxcanvas->canvas->line_cap, ctxcanvas->canvas->line_join);
 
   return style;
 }
@@ -545,7 +548,10 @@ static int cdlinecap(cdCtxCanvas* ctxcanvas, int cap)
   if (ctxcanvas->stroke_style)
     dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
-  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, cap, ctxcanvas->canvas->line_join);
+  if (ctxcanvas->canvas->line_style == CD_CUSTOM)
+    ctxcanvas->stroke_style = d2dSetCustomLineStyle(ctxcanvas->canvas->line_dashes, ctxcanvas->canvas->line_dashes_count, type2float(ctxcanvas->canvas->line_width), cap, ctxcanvas->canvas->line_join);
+  else
+    ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, cap, ctxcanvas->canvas->line_join);
 
   return cap;
 }
@@ -555,7 +561,10 @@ static int cdlinejoin(cdCtxCanvas* ctxcanvas, int join)
   if (ctxcanvas->stroke_style)
     dummy_ID2D1StrokeStyle_Release(ctxcanvas->stroke_style);
 
-  ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, ctxcanvas->canvas->line_cap, join);
+  if (ctxcanvas->canvas->line_style == CD_CUSTOM)
+    ctxcanvas->stroke_style = d2dSetCustomLineStyle(ctxcanvas->canvas->line_dashes, ctxcanvas->canvas->line_dashes_count, type2float(ctxcanvas->canvas->line_width), ctxcanvas->canvas->line_cap, join);
+  else
+    ctxcanvas->stroke_style = d2dSetLineStyle(ctxcanvas->canvas->line_style, ctxcanvas->canvas->line_cap, join);
 
   return join;
 }

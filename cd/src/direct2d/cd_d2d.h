@@ -101,6 +101,7 @@ dummy_ID2D1Brush* d2dCreateImageBrush(dummy_ID2D1RenderTarget *target, IWICBitma
 dummy_ID2D1Brush* d2dCreateLinearGradientBrush(dummy_ID2D1RenderTarget *target, FLOAT x1, FLOAT y1, FLOAT x2, FLOAT y2, long foreground, long background);
 dummy_ID2D1Brush* d2dCreateRadialGradientBrush(dummy_ID2D1RenderTarget *target, FLOAT cx, FLOAT cy, FLOAT ox, FLOAT oy, FLOAT rx, FLOAT ry, long foreground, long background);
 dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_join);
+dummy_ID2D1StrokeStyle *d2dSetCustomLineStyle(int *dashes, int dashes_count, float line_width, int line_cap, int line_join);
 void d2dInitColor(dummy_D2D1_COLOR_F* c, long color);
 
 dummy_ID2D1PathGeometry* d2dCreateArcGeometry(float cx, float cy, float rx, float ry, float base_angle, float sweep_angle, int pie);
