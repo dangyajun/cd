@@ -73,8 +73,18 @@ dummy_ID2D1PathGeometry* d2dCreateArcGeometry(float cx, float cy, float rx, floa
   pt.y = cy + ry * sinf(base_rads);
   dummy_ID2D1GeometrySink_BeginFigure(s, pt, dummy_D2D1_FIGURE_BEGIN_FILLED);
 
-  d2dInitArcSegment(&arc_seg, cx, cy, rx, ry, base_angle, sweep_angle);
-  dummy_ID2D1GeometrySink_AddArc(s, &arc_seg);
+  if (sweep_angle == 360.0f)
+  {
+    d2dInitArcSegment(&arc_seg, cx, cy, rx, ry, base_angle, 180.0f);
+    dummy_ID2D1GeometrySink_AddArc(s, &arc_seg);
+    d2dInitArcSegment(&arc_seg, cx, cy, rx, ry, base_angle + 180.0f, 180.0f);
+    dummy_ID2D1GeometrySink_AddArc(s, &arc_seg);
+  }
+  else
+  {
+    d2dInitArcSegment(&arc_seg, cx, cy, rx, ry, base_angle, sweep_angle);
+    dummy_ID2D1GeometrySink_AddArc(s, &arc_seg);
+  }
 
   if (pie == 2)
     dummy_ID2D1GeometrySink_EndFigure(s, dummy_D2D1_FIGURE_END_CLOSED);
@@ -164,6 +174,15 @@ dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_j
     return createStrokeStyle(line_cap, line_join);
 
   return NULL;
+}
+
+dummy_ID2D1StrokeStyle *d2dSetCustomLineStyle(int *dashes, int dashes_count, float line_width, int line_cap, int line_join)
+{
+  int i;
+  float *fdashes = (float *)malloc(dashes_count*sizeof(float));
+  for (i = 0; i < dashes_count; i++)
+    fdashes[i] = (float)dashes[i] / line_width;
+  return createStrokeStyleDashed(fdashes, dashes_count, line_cap, line_join);
 }
 
 dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long color)
@@ -645,8 +664,18 @@ int d2dPolyPath(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brush
         begin_picture = 1;
       }
 
-      d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, sweepAngle);
-      dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      if (sweepAngle == 360.0f)
+      {
+        d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, 180.0f);
+        dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+        d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle + 180.0f, 180.0f);
+        dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      }
+      else
+      {
+        d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, sweepAngle);
+        dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      }
       break;
     case CD_PATH_CURVETO:
       if (i + 3*2 > n) return ret;
@@ -883,8 +912,18 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
         begin_picture = 1;
       }
 
-      d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, sweepAngle);
-      dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      if (sweepAngle == 360.0f)
+      {
+        d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, 180.0f);
+        dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+        d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle + 180.0f, 180.0f);
+        dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      }
+      else
+      {
+        d2dInitArcSegment(&arc_seg, cx, cy, w / 2.f, h / 2.f, baseAngle, sweepAngle);
+        dummy_ID2D1GeometrySink_AddArc(sink, &arc_seg);
+      }
       break;
     case CD_PATH_CURVETO:
       if (i + 3 * 2 > n) return ret;
