@@ -17,7 +17,7 @@ enum { FILL_BRUSH_NORMAL, FILL_BRUSH_LINEAR, FILL_BRUSH_RADIAL, FILL_BRUSH_PATTE
 
 struct _cdCtxImage
 {
-  IWICBitmap *bitmap;  
+  dummy_ID2D1BitmapRenderTarget *target;
   int w, h;
   double w_mm, h_mm;   
   double xres, yres;   /* resolution in pixels/mm */

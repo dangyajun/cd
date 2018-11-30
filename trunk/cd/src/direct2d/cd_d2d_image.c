@@ -417,3 +417,18 @@ void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *bitmap, const d
   dummy_ID2D1Bitmap_Release(b);
 }
 
+void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect)
+{
+  dummy_D2D1_RECT_F pDest;
+
+  /* Compensation for the translation in the base transformation matrix.
+  * This is to fit the image precisely into the pixel grid the canvas
+  * when there is no custom transformation applied.
+  */
+  pDest.left = pDestRect->left - D2D_BASEDELTA_X;
+  pDest.top = pDestRect->top - D2D_BASEDELTA_X;
+  pDest.right = pDestRect->right - D2D_BASEDELTA_X;
+  pDest.bottom = pDestRect->bottom - D2D_BASEDELTA_X;
+
+  dummy_ID2D1RenderTarget_DrawBitmap(target, bitmap, &pDest, 1.0f, dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, pSourceRect);
+}

@@ -71,6 +71,7 @@ void d2dShutdown(void);
 d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags);
 d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags);
 d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap);
+d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1BitmapRenderTarget *target);
 void d2dCanvasDestroy(d2dCanvas* d2d_canvas);
 
 void d2dResetTransform(dummy_ID2D1RenderTarget* target);
@@ -90,6 +91,7 @@ IWICBitmap* d2dCreateImageFromPattern(UINT uWidth, UINT uHeight, const long *pat
 IWICBitmap* d2dCreateImage(UINT uWidth, UINT uHeight);
 void d2dDestroyImage(IWICBitmap *image);
 void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect);
+void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect);
 
 d2dFont* d2dCreateFont(const LOGFONTW* pLogFont);
 void d2dDestroyFont(d2dFont* font);

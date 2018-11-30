@@ -355,7 +355,9 @@ static int cdispointinregion(cdCtxCanvas* ctxcanvas, int x, int y)
 static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
 {
   cdCtxImage *ctximage = (cdCtxImage *)malloc(sizeof(cdCtxImage));
-  IWICBitmap *bitmap;
+  dummy_ID2D1BitmapRenderTarget* target = NULL;
+  dummy_D2D1_SIZE_F desiredSize;
+  HRESULT hr;
 
   ctximage->w = w;
   ctximage->h = h;
@@ -365,22 +367,19 @@ static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
   ctximage->w_mm = ctximage->w / ctximage->xres;
   ctximage->h_mm = ctximage->h / ctximage->yres;
 
-  bitmap = d2dCreateImage(w, h);
-  ctximage->bitmap = bitmap;
+  desiredSize.width = type2float(w);
+  desiredSize.height = type2float(h);
 
-  if (!ctximage->bitmap)
-  {
-    free(ctximage);
-    return NULL;
-  }
+  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, desiredSize, &target);
+
+  ctximage->target = target;
 
   return ctximage;
 }
 
 static void cdkillimage(cdCtxImage *ctximage)
 {
-  d2dDestroyImage(ctximage->bitmap);
-  free(ctximage);
+  dummy_ID2D1BitmapRenderTarget_Release(ctximage->target);
 }
 
 static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y)
@@ -390,10 +389,6 @@ static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int 
   dummy_D2D1_MATRIX_3X2_F old_matrix;
   dummy_ID2D1Bitmap* bitmap;
   HRESULT hr;
-
-  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(ctxcanvas->d2d_canvas->target, (IWICBitmapSource*)ctximage->bitmap, NULL, &bitmap);
-  if (FAILED(hr))
-    return;
 
   d2dGetTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
   d2dResetTransform(ctxcanvas->d2d_canvas->target);
@@ -413,15 +408,23 @@ static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int 
   srcRect.top = 0;
   srcRect.bottom = ctximage->h + y - 1;
 
+  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
+  if (FAILED(hr))
+    return;
+
   dummy_ID2D1Bitmap_CopyFromRenderTarget(bitmap, &destPoint, ctxcanvas->d2d_canvas->target, &srcRect);
 
   d2dApplyTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
+
+  dummy_ID2D1Bitmap_Release(bitmap);
 }
 
 static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y, int xmin, int xmax, int ymin, int ymax)
 {
   dummy_D2D1_RECT_F destRect;
   dummy_D2D1_RECT_F srcRect;
+  dummy_ID2D1Bitmap* bitmap;
+  HRESULT hr;
 
   /* y is already inverted, but must be relative to the top-left corner */
   /* must add a pixel to bottom-right */
@@ -436,7 +439,13 @@ static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, 
   srcRect.right = type2float(xmax + 1);
   srcRect.bottom = type2float(ctximage->h - 1 - ymin + 1);
 
-  d2dBitBltImage(ctxcanvas->d2d_canvas->target, ctximage->bitmap, &destRect, &srcRect);
+  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
+  if (FAILED(hr))
+    return;
+
+  d2dBitBltBitmap(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
+
+  dummy_ID2D1Bitmap_Release(bitmap);
 }
 
 static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
@@ -1283,6 +1292,5 @@ void cdwd2dInitTable(cdCanvas* canvas)
 //TODO
 // canvas->cxGetImageRGB = cdgetimagergb;
 // IMGINTERP, holes, PATTERNIMAGE
-// Custom Line Styles
 // PRINTER, EMF, CLIPBOARD driver using HDC
 // check if Direct2D really needs to be re-created in cdactivate
