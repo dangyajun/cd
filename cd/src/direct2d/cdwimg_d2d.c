@@ -50,7 +50,7 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   ctxcanvas = cdwd2dCreateCanvas(canvas, NULL, NULL);
 
-  d2d_canvas = d2dCreateCanvasWithImage(ctximage->bitmap);
+  d2d_canvas = d2dCreateCanvasWithTarget(ctximage->target);
 
   ctxcanvas->d2d_canvas = d2d_canvas;
 

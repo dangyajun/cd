@@ -378,6 +378,30 @@ d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap)
   return c;
 }
 
+d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1BitmapRenderTarget *target)
+{
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
+  d2dCanvas* c;
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = 0;
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
+
+  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_IMAGE);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  /* make sure text anti-aliasing is clear type */
+  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+
+  return c;
+}
+
 void d2dCanvasDestroy(d2dCanvas* d2d_canvas)
 {
   if (d2d_canvas)
