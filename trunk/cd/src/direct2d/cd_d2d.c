@@ -263,6 +263,9 @@ static d2dCanvas* d2dCanvasCreate(dummy_ID2D1RenderTarget* target, WORD type)
   * So we enforce the render target to think we have this DPI. */
   dummy_ID2D1RenderTarget_SetDpi(c->target, 96.0f, 96.0f);
 
+  /* make sure text anti-aliasing is clear type */
+  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+
   d2dResetTransform(target);
 
   return c;
@@ -299,12 +302,6 @@ d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags)
   }
 
   c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_HWND);
-  if (c == NULL) {
-    return NULL;
-  }
-
-  /* make sure text anti-aliasing is clear type */
-  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 
   return c;
 }
@@ -341,9 +338,6 @@ d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
     return NULL;
   }
 
-  /* make sure text anti-aliasing is clear type */
-  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
-
   return c;
 }
 
@@ -368,12 +362,6 @@ d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap)
   }
 
   c = d2dCanvasCreate(target, D2D_CANVASTYPE_IMAGE);
-  if (c == NULL) {
-    return NULL;
-  }
-
-  /* make sure text anti-aliasing is clear type */
-  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 
   return c;
 }
@@ -392,12 +380,6 @@ d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1BitmapRenderTarget *target)
   props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
   c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_IMAGE);
-  if (c == NULL) {
-    return NULL;
-  }
-
-  /* make sure text anti-aliasing is clear type */
-  dummy_ID2D1RenderTarget_SetTextAntialiasMode(c->target, dummy_D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 
   return c;
 }

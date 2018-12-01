@@ -4,9 +4,6 @@
  * See Copyright Notice in cd.h
  */
 
-//#define D2D_USE_C_DEFINITIONS
-//#include <d2d1.h>
-//#define dummy_ 
 
 #include "cdwin_d2d.h"
 #include <stdlib.h>
@@ -356,7 +353,7 @@ static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
 {
   cdCtxImage *ctximage = (cdCtxImage *)malloc(sizeof(cdCtxImage));
   dummy_ID2D1BitmapRenderTarget* target = NULL;
-  dummy_D2D1_SIZE_F desiredSize;
+  dummy_D2D1_SIZE_U desiredPixelSize;
   HRESULT hr;
 
   ctximage->w = w;
@@ -367,10 +364,15 @@ static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
   ctximage->w_mm = ctximage->w / ctximage->xres;
   ctximage->h_mm = ctximage->h / ctximage->yres;
 
-  desiredSize.width = type2float(w);
-  desiredSize.height = type2float(h);
+  desiredPixelSize.width = w;
+  desiredPixelSize.height = h;
 
-  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, desiredSize, &target);
+  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, NULL, &desiredPixelSize, NULL, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &target);
+  if (FAILED(hr))
+  {
+    free(ctximage);
+    return NULL;
+  }
 
   ctximage->target = target;
 

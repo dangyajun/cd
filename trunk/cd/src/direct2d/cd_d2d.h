@@ -14,8 +14,15 @@
 #include <windows.h>                                                                                                     
 #include <wincodec.h>
 
+#if 0
+// To Use Standard Direct 2D headers
+#define D2D_USE_C_DEFINITIONS
+#include <d2d1.h>
+#define dummy_ 
+#else
 #include "dummy/d2d1.h"
 #include "dummy/dwrite.h"
+#endif
 
 #define D2D_CANVASTYPE_DC           0
 #define D2D_CANVASTYPE_HWND         1
