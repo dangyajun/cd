@@ -1210,7 +1210,7 @@ struct dummy_ID2D1RenderTargetVtbl_tag {
     STDMETHOD(CreateGradientStopCollection)(dummy_ID2D1RenderTarget*, dummy_D2D1_GRADIENT_STOP*, UINT, dummy_D2D1_GAMMA, dummy_D2D1_EXTEND_MODE, dummy_ID2D1GradientStopCollection**);
     STDMETHOD(CreateLinearGradientBrush)(dummy_ID2D1RenderTarget*, const dummy_D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES*, const dummy_D2D1_BRUSH_PROPERTIES*, dummy_ID2D1GradientStopCollection*, dummy_ID2D1LinearGradientBrush**);
     STDMETHOD(CreateRadialGradientBrush)(dummy_ID2D1RenderTarget*, const dummy_D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES*, const dummy_D2D1_BRUSH_PROPERTIES*, dummy_ID2D1GradientStopCollection*, dummy_ID2D1RadialGradientBrush**);
-    STDMETHOD(CreateCompatibleRenderTarget)(dummy_ID2D1RenderTarget*, dummy_D2D1_SIZE_F, dummy_ID2D1BitmapRenderTarget**);
+    STDMETHOD(CreateCompatibleRenderTarget)(dummy_ID2D1RenderTarget*, const dummy_D2D1_SIZE_F*, const dummy_D2D1_SIZE_U *desiredPixelSize, const dummy_D2D1_PIXEL_FORMAT *desiredFormat, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS, dummy_ID2D1BitmapRenderTarget **);
     STDMETHOD(CreateLayer)(dummy_ID2D1RenderTarget*, const dummy_D2D1_SIZE_F*, dummy_ID2D1Layer**);
     STDMETHOD(dummy_CreateMesh)(void);
     STDMETHOD_(void, DrawLine)(dummy_ID2D1RenderTarget*, dummy_D2D1_POINT_2F, dummy_D2D1_POINT_2F, dummy_ID2D1Brush*, FLOAT, dummy_ID2D1StrokeStyle*);
@@ -1271,7 +1271,7 @@ struct dummy_ID2D1RenderTarget_tag {
 #define dummy_ID2D1RenderTarget_CreateGradientStopCollection(self,a,b,c,d,e) (self)->vtbl->CreateGradientStopCollection(self,a,b,c,d,e)
 #define dummy_ID2D1RenderTarget_CreateLinearGradientBrush(self,a,b,c,d)      (self)->vtbl->CreateLinearGradientBrush(self,a,b,c,d)
 #define dummy_ID2D1RenderTarget_CreateRadialGradientBrush(self,a,b,c,d)      (self)->vtbl->CreateRadialGradientBrush(self,a,b,c,d)
-#define dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(self,a,b)       (self)->vtbl->CreateCompatibleRenderTarget(self,a,b)
+#define dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(self,a,b,c,d,e)       (self)->vtbl->CreateCompatibleRenderTarget(self,a,b,c,d,e)
 #define dummy_ID2D1RenderTarget_CreateLayer(self,a,b)                        (self)->vtbl->CreateLayer(self,a,b)
 #define dummy_ID2D1RenderTarget_DrawLine(self,a,b,c,d,e)                     (self)->vtbl->DrawLine(self,a,b,c,d,e)
 #define dummy_ID2D1RenderTarget_DrawRectangle(self,a,b,c,d)                  (self)->vtbl->DrawRectangle(self,a,b,c,d)
