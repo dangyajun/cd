@@ -352,9 +352,28 @@ static int cdispointinregion(cdCtxCanvas* ctxcanvas, int x, int y)
 static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
 {
   cdCtxImage *ctximage = (cdCtxImage *)malloc(sizeof(cdCtxImage));
+#ifdef D2D_BITMAP_IMAGE
   dummy_ID2D1BitmapRenderTarget* target = NULL;
   dummy_D2D1_SIZE_U desiredPixelSize;
   HRESULT hr;
+
+  desiredPixelSize.width = w;
+  desiredPixelSize.height = h;
+
+  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, NULL, &desiredPixelSize, NULL, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &target);
+  if (FAILED(hr))
+#else
+  ctximage->bitmap = d2dCreateImage(w, h);
+  if (!ctximage->bitmap)
+#endif
+  {
+    free(ctximage);
+    return NULL;
+  }
+
+#ifdef D2D_BITMAP_IMAGE
+  ctximage->target = target;
+#endif
 
   ctximage->w = w;
   ctximage->h = h;
@@ -364,24 +383,17 @@ static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
   ctximage->w_mm = ctximage->w / ctximage->xres;
   ctximage->h_mm = ctximage->h / ctximage->yres;
 
-  desiredPixelSize.width = w;
-  desiredPixelSize.height = h;
-
-  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, NULL, &desiredPixelSize, NULL, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &target);
-  if (FAILED(hr))
-  {
-    free(ctximage);
-    return NULL;
-  }
-
-  ctximage->target = target;
-
   return ctximage;
 }
 
 static void cdkillimage(cdCtxImage *ctximage)
 {
+#ifdef D2D_BITMAP_IMAGE
   dummy_ID2D1BitmapRenderTarget_Release(ctximage->target);
+#else
+  d2dDestroyImage(ctximage->bitmap);
+#endif
+  free(ctximage);
 }
 
 static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y)
@@ -410,13 +422,26 @@ static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int 
   srcRect.top = 0;
   srcRect.bottom = ctximage->h + y - 1;
 
+#ifdef D2D_BITMAP_IMAGE
   hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
   if (FAILED(hr))
     return;
+#else
+  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(ctxcanvas->d2d_canvas->target, (IWICBitmapSource*)ctximage->bitmap, NULL, &bitmap);
+  if (FAILED(hr))
+    return;
+#endif
 
   dummy_ID2D1Bitmap_CopyFromRenderTarget(bitmap, &destPoint, ctxcanvas->d2d_canvas->target, &srcRect);
 
   d2dApplyTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
+
+#ifndef D2D_BITMAP_IMAGE
+  /* TODO: Copy from Bitmap to WICBitmap */
+  // Acho que a solução aqui é chamar CreateWicBitmapRenderTarget para criar um target e
+  // copiar de um target para outro sem precisar do Bitmap
+  // ou desenhar o Bitmap nesse target
+#endif
 
   dummy_ID2D1Bitmap_Release(bitmap);
 }
@@ -425,8 +450,6 @@ static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, 
 {
   dummy_D2D1_RECT_F destRect;
   dummy_D2D1_RECT_F srcRect;
-  dummy_ID2D1Bitmap* bitmap;
-  HRESULT hr;
 
   /* y is already inverted, but must be relative to the top-left corner */
   /* must add a pixel to bottom-right */
@@ -441,13 +464,20 @@ static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, 
   srcRect.right = type2float(xmax + 1);
   srcRect.bottom = type2float(ctximage->h - 1 - ymin + 1);
 
-  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
-  if (FAILED(hr))
-    return;
+#ifdef D2D_BITMAP_IMAGE
+  {
+    dummy_ID2D1Bitmap* bitmap;
+    HRESULT hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
+    if (FAILED(hr))
+      return;
 
-  d2dBitBltBitmap(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
+    d2dBitBltBitmap(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
 
-  dummy_ID2D1Bitmap_Release(bitmap);
+    dummy_ID2D1Bitmap_Release(bitmap);
+  }
+#else
+  d2dBitBltImage(ctxcanvas->d2d_canvas->target, ctximage->bitmap, &destRect, &srcRect);
+#endif
 }
 
 static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
