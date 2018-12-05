@@ -1058,7 +1058,3 @@ int d2dPolyPathF(d2dCanvas *canvas, dummy_ID2D1Brush *drawBrush, dummy_ID2D1Brus
 
   return ret;
 }
-
-//TODO
-//if (figureBegin == dummy_D2D1_FIGURE_BEGIN_FILLED)  Porque precisava disso????
-//  dummy_ID2D1GeometrySink_AddLine(sink, initial_pt);

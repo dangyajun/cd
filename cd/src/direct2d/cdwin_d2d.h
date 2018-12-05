@@ -15,9 +15,15 @@
 
 enum { FILL_BRUSH_NORMAL, FILL_BRUSH_LINEAR, FILL_BRUSH_RADIAL, FILL_BRUSH_PATTERNIMAGE };
 
+#define D2D_BITMAP_IMAGE
+
 struct _cdCtxImage
 {
+#ifdef D2D_BITMAP_IMAGE
   dummy_ID2D1BitmapRenderTarget *target;
+#else
+  IWICBitmap *bitmap;
+#endif
   int w, h;
   double w_mm, h_mm;   
   double xres, yres;   /* resolution in pixels/mm */

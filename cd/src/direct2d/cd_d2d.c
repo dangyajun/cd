@@ -63,7 +63,11 @@ static HMODULE d2d_cd_load_system_dll(const TCHAR* dll_name)
 
 static int d2d_cd_init(void)
 {
+#ifdef _DEBUG
+  static const dummy_D2D1_FACTORY_OPTIONS factory_options = { dummy_D2D1_DEBUG_LEVEL_INFORMATION };
+#else
   static const dummy_D2D1_FACTORY_OPTIONS factory_options = { dummy_D2D1_DEBUG_LEVEL_NONE };
+#endif
   HRESULT(WINAPI* fn_D2D1CreateFactory)(dummy_D2D1_FACTORY_TYPE, REFIID, const dummy_D2D1_FACTORY_OPTIONS*, void**);
   HRESULT hr;
 

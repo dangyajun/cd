@@ -113,7 +113,10 @@ enum dummy_D2D1_DC_INITIALIZE_MODE_tag {
 
 typedef enum dummy_D2D1_DEBUG_LEVEL_tag dummy_D2D1_DEBUG_LEVEL;
 enum dummy_D2D1_DEBUG_LEVEL_tag {
-    dummy_D2D1_DEBUG_LEVEL_NONE = 0
+    dummy_D2D1_DEBUG_LEVEL_NONE = 0,
+    dummy_D2D1_DEBUG_LEVEL_ERROR = 1,
+    dummy_D2D1_DEBUG_LEVEL_WARNING = 2,
+    dummy_D2D1_DEBUG_LEVEL_INFORMATION = 3
 };
 
 typedef enum dummy_D2D1_FACTORY_TYPE_tag dummy_D2D1_FACTORY_TYPE;
@@ -184,8 +187,7 @@ enum dummy_D2D1_LINE_JOIN_tag {
 typedef enum dummy_D2D1_FILL_MODE_tag dummy_D2D1_FILL_MODE;
 enum dummy_D2D1_FILL_MODE_tag {
   dummy_D2D1_FILL_MODE_ALTERNATE = 0,
-  dummy_D2D1_FILL_MODE_WINDING = 1,
-  dummy_D2D1_FILL_MODE_FORCE_DWORD = 2
+  dummy_D2D1_FILL_MODE_WINDING = 1
 };
 
 typedef enum dummy_D2D1_COMBINE_MODE_tag dummy_D2D1_COMBINE_MODE;
@@ -193,31 +195,28 @@ enum dummy_D2D1_COMBINE_MODE_tag {
   dummy_D2D1_COMBINE_MODE_UNION = 0,
   dummy_D2D1_COMBINE_MODE_INTERSECT = 1,
   dummy_D2D1_COMBINE_MODE_XOR = 2,
-  dummy_D2D1_COMBINE_MODE_EXCLUDE = 3,
-  dummy_D2D1_COMBINE_MODE_FORCE_DWORD = 4
+  dummy_D2D1_COMBINE_MODE_EXCLUDE = 3
 };
 
 typedef enum dummy_D2D1_EXTEND_MODE_tag dummy_D2D1_EXTEND_MODE;
 enum dummy_D2D1_EXTEND_MODE_tag {
   dummy_D2D1_EXTEND_MODE_CLAMP = 0,
   dummy_D2D1_EXTEND_MODE_WRAP = 1,
-  dummy_D2D1_EXTEND_MODE_MIRROR = 2,
-  dummy_D2D1_EXTEND_MODE_FORCE_DWORD = 3
+  dummy_D2D1_EXTEND_MODE_MIRROR = 2
 };
 
 typedef enum dummy_D2D1_GAMMA_tag dummy_D2D1_GAMMA;
 enum dummy_D2D1_GAMMA_tag {
   dummy_D2D1_GAMMA_2_2 = 0,
-  dummy_D2D1_GAMMA_1_0 = 1,
-  dummy_D2D1_GAMMA_FORCE_DWORD = 3
+  dummy_D2D1_GAMMA_1_0 = 1
 };
 
 typedef enum dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_tag dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS;
 enum dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_tag {
   dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE = 0,
-  dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_GDI_COMPATIBLE = 1,
-  dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_FORCE_DWORD = 2
+  dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_GDI_COMPATIBLE = 1
 };
+
 /*************************
  ***  Helper Typedefs  ***
  *************************/

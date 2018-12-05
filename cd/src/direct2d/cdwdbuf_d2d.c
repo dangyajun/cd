@@ -13,6 +13,8 @@
 
 static void cdkillcanvas (cdCtxCanvas* ctxcanvas)
 {
+  dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+
   cdKillImage(ctxcanvas->image_dbuffer);
   if (ctxcanvas->kill_dbuffer)
     cdKillCanvas(ctxcanvas->canvas_dbuffer);
@@ -105,7 +107,11 @@ static void cdcreatecanvas(cdCanvas* canvas, cdCanvas* canvas_dbuffer)
 
   ctxcanvas->canvas->invert_yaxis = 1;
 
+#ifdef D2D_BITMAP_IMAGE
   d2d_canvas = d2dCreateCanvasWithTarget(ctximage->target);
+#else
+  d2d_canvas = d2dCreateCanvasWithImage(ctximage->bitmap);
+#endif
 
   ctxcanvas->d2d_canvas = d2d_canvas;
 

@@ -18,6 +18,9 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
   if (!ctxcanvas->hWnd && !ctxcanvas->hDC)
     return CD_ERROR;
 
+  if (ctxcanvas->d2d_canvas)
+    dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+
   d2dCanvasDestroy(ctxcanvas->d2d_canvas);
 
   if (ctxcanvas->hWnd)
@@ -67,6 +70,9 @@ static void cdflush(cdCtxCanvas *ctxcanvas)
 
 static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
 {
+  if (ctxcanvas->d2d_canvas)
+    dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+
   if (ctxcanvas->hDC && ctxcanvas->release_dc)
     ReleaseDC(NULL, ctxcanvas->hDC);  /* to match GetDC(NULL) */
 
@@ -124,6 +130,8 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
   
   ctxcanvas->release_dc = release_dc;
   ctxcanvas->canvas->invert_yaxis = 1;
+
+  cdactivate(ctxcanvas);
 }
 
 static void cdinittable(cdCanvas* canvas)
@@ -131,7 +139,7 @@ static void cdinittable(cdCanvas* canvas)
   cdwd2dInitTable(canvas);
 
   canvas->cxKillCanvas = cdkillcanvas;
-  canvas->cxActivate = cdactivate;
+//  canvas->cxActivate = cdactivate;
   canvas->cxFlush = cdflush;
 }
 

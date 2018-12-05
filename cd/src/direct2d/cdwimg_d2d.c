@@ -22,6 +22,8 @@ static void cdflush(cdCtxCanvas *ctxcanvas)
 
 static void cdkillcanvas(cdCtxCanvas* ctxcanvas)
 {
+  dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
+
   d2dCanvasDestroy(ctxcanvas->d2d_canvas);
   cdwd2dKillCanvas(ctxcanvas);  /* this will NOT release the target */
 }
@@ -50,7 +52,11 @@ static void cdcreatecanvas(cdCanvas* canvas, void *data)
 
   ctxcanvas = cdwd2dCreateCanvas(canvas, NULL, NULL);
 
+#ifdef D2D_BITMAP_IMAGE
   d2d_canvas = d2dCreateCanvasWithTarget(ctximage->target);
+#else
+  d2d_canvas = d2dCreateCanvasWithImage(ctximage->bitmap);
+#endif
 
   ctxcanvas->d2d_canvas = d2d_canvas;
 
