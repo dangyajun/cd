@@ -370,7 +370,7 @@ d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap)
   return c;
 }
 
-d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1BitmapRenderTarget *target)
+d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1RenderTarget *target)
 {
   dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   d2dCanvas* c;
@@ -383,7 +383,7 @@ d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1BitmapRenderTarget *target)
   props.usage = 0;
   props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
-  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_IMAGE);
+  c = d2dCanvasCreate(target, D2D_CANVASTYPE_TARGET);
 
   return c;
 }
@@ -392,7 +392,8 @@ void d2dCanvasDestroy(d2dCanvas* d2d_canvas)
 {
   if (d2d_canvas)
   {
-    dummy_ID2D1RenderTarget_Release(d2d_canvas->target);
+    if (d2d_canvas->type != D2D_CANVASTYPE_TARGET)
+      dummy_ID2D1RenderTarget_Release(d2d_canvas->target);
     free(d2d_canvas);
   }
 }
