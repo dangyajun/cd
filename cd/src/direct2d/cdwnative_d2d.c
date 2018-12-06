@@ -8,7 +8,6 @@
 #include "cdnative.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 
 
 static int cdactivate(cdCtxCanvas* ctxcanvas)
@@ -62,8 +61,8 @@ static int cdactivate(cdCtxCanvas* ctxcanvas)
 static void cdflush(cdCtxCanvas *ctxcanvas)
 {
   HRESULT hr = dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
-  if (FAILED(hr))
-    assert(!FAILED(hr));
+  if (hr == D2DERR_RECREATE_TARGET)
+    cdactivate(ctxcanvas);
 
   dummy_ID2D1RenderTarget_BeginDraw(ctxcanvas->d2d_canvas->target);
 }
@@ -139,7 +138,7 @@ static void cdinittable(cdCanvas* canvas)
   cdwd2dInitTable(canvas);
 
   canvas->cxKillCanvas = cdkillcanvas;
-//  canvas->cxActivate = cdactivate;
+/*  canvas->cxActivate = cdactivate; -- NOT necessary */
   canvas->cxFlush = cdflush;
 }
 

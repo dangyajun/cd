@@ -8,14 +8,11 @@
 #include "cdimage.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 
 
 static void cdflush(cdCtxCanvas *ctxcanvas)
 {
-  HRESULT hr = dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
-  if (FAILED(hr))
-    assert(!FAILED(hr));
+  dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
 
   dummy_ID2D1RenderTarget_BeginDraw(ctxcanvas->d2d_canvas->target);
 }
