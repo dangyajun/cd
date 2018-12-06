@@ -66,7 +66,7 @@ cd.DecodeColorAlpha(color: lightuserdata) -&gt; (r, g, b, a: number) [in Lua]</p
 cd.EncodeAlpha(color: lightuserdata, alpha: number) -&gt; (color: lightuserdata) [in Lua]</pre>
     <p>Returns the given color coded with the alpha information. ATENTION: At the 
       moment only the <a href="../drv/cairo.html">Cairo</a>,
-	<a href="../drv/gdiplus.html">GDI+</a>, <a href="../drv/xrender.html">XRender</a> 
+	<a href="../drv/direct2d.html">Direct2D</a><strong>, </strong>&nbsp;<a href="../drv/gdiplus.html">GDI+</a>, <a href="../drv/xrender.html">XRender</a> 
 	and <a href="../drv/irgb.html">IMAGERGB</a> 
 	drivers support alpha components in color coding. The 
       internal representation of the component is inverted, because the default value 

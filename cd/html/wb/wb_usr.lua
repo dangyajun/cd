@@ -1110,6 +1110,10 @@ wb_usr.tree =
               link= "drv/cairo.html"
             },
             {
+              name= {nl= "Direct2D"},
+              link= "drv/direct2d.html"
+            },
+            {
               name= {nl= "GDI+"},
               link= "drv/gdiplus.html"
             },

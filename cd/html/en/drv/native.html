@@ -23,7 +23,7 @@
   canvas based on an existing system canvas. The parameter <font face="Courier">Data</font> is a pointer to a handle of 
   the canvas. It is system-dependent, having a different meaning in each platform:</p>
   
-    <p><strong>GDI and GDI+</strong>: can be the handle of the Windows window (<font face="Courier">HWND</font>), 
+    <p><strong>Direct2D, GDI and GDI+</strong>: can be the handle of the Windows window (<font face="Courier">HWND</font>), 
     or the handle of a previously created Device Context (<font face="Courier">HDC</font>), or can be a string in the 
     format &quot;<font face="Courier">hdc width height</font>&quot; or, in C, &quot;<font face="Courier">%p %d %d</font>&quot;. 
     To get the entire screen use a NULL data.<br>
@@ -69,7 +69,7 @@
 	with a context plus base driver is necessary to call 
   <font face="Courier"><strong>
   cdUseContextPlus</strong></font><strong><font face="Courier">(1)</font></strong> 
-  before creating the canvas, see the <a href="../drv/gdiplus.html">GDI+</a>,&nbsp;<a href="../drv/cairo.html">Cairo</a> 
+  before creating the canvas, see the <a href="direct2d.html">Direct2D</a><strong>, </strong>&nbsp;<a href="../drv/gdiplus.html">GDI+</a>,&nbsp;<a href="../drv/cairo.html">Cairo</a> 
 and <a href="../drv/xrender.html">XRender</a> base drivers.</p>
 
 <h4>Control</h4>

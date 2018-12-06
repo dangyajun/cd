@@ -223,6 +223,19 @@ static cdAttribute radialgradient_attrib =
   get_radialgradient_attrib
 };
 
+static char* get_direct2d_attrib(cdCtxCanvas* ctxcanvas)
+{
+  (void)ctxcanvas;
+  return "1";
+}
+
+static cdAttribute direct2d_attrib =
+{
+  "Direct2D",
+  NULL,
+  get_direct2d_attrib
+};
+
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
 {
   cdCtxCanvas* ctxcanvas;
@@ -243,6 +256,7 @@ cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
   cdRegisterAttribute(canvas, &lineargradient_attrib);
   cdRegisterAttribute(canvas, &old_lineargradient_attrib);
   cdRegisterAttribute(canvas, &radialgradient_attrib);
+  cdRegisterAttribute(canvas, &direct2d_attrib);
 
   return ctxcanvas;
 }
