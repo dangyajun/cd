@@ -8,7 +8,6 @@
 #include "cddbuf.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 
 
 static void cdkillcanvas (cdCtxCanvas* ctxcanvas)
@@ -36,9 +35,7 @@ static void cdflush(cdCtxCanvas* ctxcanvas)
   cdCanvas* canvas_dbuffer = ctxcanvas->canvas_dbuffer;
 
   /* flush the writing in the image */
-  HRESULT hr = dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
-  if (FAILED(hr))
-    assert(!FAILED(hr));
+  dummy_ID2D1RenderTarget_EndDraw(ctxcanvas->d2d_canvas->target, NULL, NULL);
 
   cdCanvasActivate(canvas_dbuffer);
 

@@ -285,7 +285,8 @@ void cdwd2dUpdateCanvas(cdCtxCanvas* ctxcanvas)
   }
 
   cdtransform(ctxcanvas, ctxcanvas->canvas->use_matrix ? ctxcanvas->canvas->matrix : NULL);
-  /* no need to recreate the font or strokestyle, they do NOT depend on target */
+
+  /* no need to recreate the font, path geometry or stroke style, they do NOT depend on target */
 }
 
 static void sSetTransform(cdCtxCanvas *ctxcanvas, const double* matrix)
@@ -547,6 +548,7 @@ static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
 
   return style;
 }
+
 static void cdclear(cdCtxCanvas* ctxcanvas)
 {
   dummy_D2D1_COLOR_F c;
@@ -1322,7 +1324,6 @@ void cdwd2dInitTable(cdCanvas* canvas)
 }
 
 //TODO
-// canvas->cxGetImageRGB = cdgetimagergb;
-// IMGINTERP, holes, PATTERNIMAGE
+// canvas->cxGetImageRGB = cdgetimagergb;  -- ver cdgetimage
+// IMGINTERP, PATTERNIMAGE
 // PRINTER, EMF, CLIPBOARD driver using HDC
-// check if Direct2D really needs to be re-created in cdactivate
