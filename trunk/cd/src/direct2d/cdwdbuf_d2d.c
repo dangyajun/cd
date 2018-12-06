@@ -108,7 +108,7 @@ static void cdcreatecanvas(cdCanvas* canvas, cdCanvas* canvas_dbuffer)
   ctxcanvas->canvas->invert_yaxis = 1;
 
 #ifdef D2D_BITMAP_IMAGE
-  d2d_canvas = d2dCreateCanvasWithTarget(ctximage->target);
+  d2d_canvas = d2dCreateCanvasWithTarget((dummy_ID2D1RenderTarget*)ctximage->target);
 #else
   d2d_canvas = d2dCreateCanvasWithImage(ctximage->bitmap);
 #endif

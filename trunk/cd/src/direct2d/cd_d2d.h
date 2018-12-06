@@ -27,6 +27,7 @@
 #define D2D_CANVASTYPE_DC           0
 #define D2D_CANVASTYPE_HWND         1
 #define D2D_CANVASTYPE_IMAGE        2
+#define D2D_CANVASTYPE_TARGET       3
 
 #define CANVAS_NOGDICOMPAT       0x0001
 #define CANVAS_LAYOUTRTL         0x0002
@@ -78,7 +79,7 @@ void d2dShutdown(void);
 d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags);
 d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags);
 d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap);
-d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1BitmapRenderTarget *target);
+d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1RenderTarget* target);
 void d2dCanvasDestroy(d2dCanvas* d2d_canvas);
 
 void d2dResetTransform(dummy_ID2D1RenderTarget* target);
