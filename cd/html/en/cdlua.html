@@ -61,8 +61,16 @@
 
 &quot;.\\?51.dll;&quot;     [in Windows]
 </pre>
-<p>The <a href="http://luabinaries.luaforge.net/">LuaBinaries</a> distribution 
+    <p>
+        Also compatible with Lua 5.2 and 5.3, just replace the &quot;51&quot; suffix by &quot;52&quot; 
+		or &quot;53&quot;.</p>
+<p>The <a href="http://luabinaries.sourceforge.net/">LuaBinaries</a> distribution 
 already includes these modifications on the default search path.</p>
+<p>
+        If you are using another Lua distribution you can use the environment:</p>
+<pre>export LUA_CPATH=./\?.so\;./lib\?.so\;./lib\?51.so\;   [in UNIX]</pre>
+<p>Or you can set it in Lua before loading iup modules:</p>
+<pre>package.cpath = package.cpath .. &quot;.<a href="file://?51.dll">\\?51.dll</a>&quot;     [in Windows]</pre>
 <p>The simplest form <b>require</b>&quot;<b>cd</b>&quot; and so on, can not be used 
 because there are CD dynamic libraries with names that will conflict with the 
 names used by <b>require</b> during search.</p>
