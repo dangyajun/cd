@@ -10,6 +10,7 @@
     <ClCompile Include="..\src\direct2d\cd_d2d_text.c" />
     <ClCompile Include="..\src\direct2d\cdwdbuf_d2d.c" />
     <ClCompile Include="..\src\direct2d\cdwimg_d2d.c" />
+    <ClCompile Include="..\src\direct2d\cdwprn_d2d.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\direct2d\cd_d2d.h">
@@ -24,9 +25,9 @@
     <ClInclude Include="..\src\direct2d\dummy\dwrite.h">
       <Filter>dummy</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\direct2d\cdcontextplus.def" />
+    <ClInclude Include="..\include\cddirect2d.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="inc">
@@ -35,5 +36,11 @@
     <Filter Include="dummy">
       <UniqueIdentifier>{27ec3a06-ed9d-4a2d-9ce9-7b3b0b47215f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{eaf89bc5-64a5-4973-b5ef-48572d6608c3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\direct2d\cddirect2d.def" />
   </ItemGroup>
 </Project>

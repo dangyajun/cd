@@ -457,6 +457,8 @@ EXPORTS
   cdwInitTable
   cdwKillCanvas
   cdwRestoreDC
+  cdwStrToSystem
+  cdwStrToSystemLen
 
   cdCreateVectorFont
   cdKillVectorFont

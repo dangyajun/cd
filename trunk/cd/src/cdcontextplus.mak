@@ -3,20 +3,12 @@ LIBNAME = cdcontextplus
 OPT = YES
 
 ifneq ($(findstring Win, $(TEC_SYSNAME)), )
-  ifdef USE_D2D
-    SRCDIR = direct2d
-    SRC = cd_d2d.c cd_d2d_draw.c cd_d2d_image.c cd_d2d_text.c cdwdirect2d.c cdwin_d2d.c cdwnative_d2d.c \
-          cdwdbuf_d2d.c cdwimg_d2d.c
+  SRCDIR = gdiplus
+  SRC = cdwemfp.cpp cdwimgp.cpp cdwinp.cpp cdwnativep.cpp cdwprnp.cpp cdwdbufp.cpp cdwclpp.cpp cdwgdiplus.c
 
-    INCLUDES = . direct2d
-  else
-    SRCDIR = gdiplus
-    SRC = cdwemfp.cpp cdwimgp.cpp cdwinp.cpp cdwnativep.cpp cdwprnp.cpp cdwdbufp.cpp cdwclpp.cpp cdwgdiplus.c
-
-    INCLUDES = . gdiplus
-    LIBS = gdiplus
-    CHECK_GDIPLUS = Yes
-  endif
+  INCLUDES = . gdiplus
+  LIBS = gdiplus
+  CHECK_GDIPLUS = Yes
 else
   INCLUDES = . sim
   USE_FREETYPE = Yes

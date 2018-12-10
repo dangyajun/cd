@@ -78,7 +78,7 @@ static cdContext cdImageContext =
   NULL,
 };
 
-cdContext* cdContextImagePlus(void)
+cdContext* cdContextDirect2DImage(void)
 {
   return &cdImageContext;
 }

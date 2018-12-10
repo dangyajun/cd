@@ -1340,4 +1340,3 @@ void cdwd2dInitTable(cdCanvas* canvas)
 //TODO
 // canvas->cxGetImageRGB = cdgetimagergb;  -- ver cdgetimage
 // IMGINTERP, PATTERNIMAGE
-// PRINTER, EMF, CLIPBOARD driver using HDC

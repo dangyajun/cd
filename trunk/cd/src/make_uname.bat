@@ -12,6 +12,8 @@ call tecmake %1 "MF=cdim" %2 %3 %4 %5 %6 %7 %8
 REM GDI+ and Cairo are NOT available in some compilers
 REM so this may result in errors, just ignore them
 call tecmake %1 "MF=cdcontextplus" %2 %3 %4 %5 %6
+
+call tecmake %1 "MF=cddirect2d" %2 %3 %4 %5 %6
   
 REM Building for the default (USE_LUA51) 
 REM or for the defined at the environment

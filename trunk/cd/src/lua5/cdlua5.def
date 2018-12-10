@@ -10,5 +10,6 @@ EXPORTS
   luaopen_cdlua
   cdlua_pushbitmap
   cdlua_checkbitmap
+  cdlua_checkimage
   cdlua_register_lib
   cdlua_register_funcs

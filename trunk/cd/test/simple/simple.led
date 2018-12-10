@@ -73,6 +73,7 @@ mnSurface = MENU
  ITEM("Image RGB", SimpleDrawImageRGB),
  ITEM("OpenGL", SimpleDrawGL),
  ITEM("IupDraw", SimpleDrawIupDraw)
+ ITEM("Direct2D", SimpleDrawDirect2D)
 )    
 
 mnPrimitives = MENU

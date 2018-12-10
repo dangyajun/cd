@@ -41,6 +41,7 @@ int SimpleDrawImageRGB(void);
 int SimpleDrawSimulate(void);
 int SimpleDrawGL(void);
 int SimpleDrawIupDraw(void);
+int SimpleDrawDirect2D(void);
 
 int SimpleNotXor(void);
 int SimpleXor(void);

@@ -199,14 +199,7 @@ static cdContext cdDBufferContext =
   NULL, 
 };
 
-cdContext* cdContextDBufferPlus(void)
+cdContext* cdContextDirect2DDBuffer(void)
 {
-  if (cdUseContextPlus(CD_QUERY))
-  {
-    cdContext* ctx = cdGetContextPlus(CD_CTXPLUS_DBUFFER);
-    if (ctx != NULL)
-      return ctx;
-  }
-
   return &cdDBufferContext;
 }

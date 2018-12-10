@@ -22,6 +22,8 @@ cdim:
   
 cdcontextplus:
 	@$(TECMAKE_CMD) MF=cdcontextplus
+cddirect2d:
+	@$(TECMAKE_CMD) MF=cddirect2d
   
 # Building for the default (USE_LUA51) 
 # or for the defined at the environment
@@ -46,6 +48,11 @@ cdluacontextplus5:
 #	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA51=Yes
 #	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA52=Yes
 #	@$(TECMAKE_CMD) MF=cdluacontextplus5 USE_LUA53=Yes
+cdluadirect2d5:
+	@$(TECMAKE_CMD) MF=cdluadirect2d5 
+#	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA51=Yes
+#	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA52=Yes
+#	@$(TECMAKE_CMD) MF=cdluadirect2d5 USE_LUA53=Yes
 cdluaim5:
 	@$(TECMAKE_CMD) MF=cdluaim5 
 #	@$(TECMAKE_CMD) MF=cdluaim5 USE_LUA51=Yes

@@ -84,7 +84,7 @@ static int cdlua5_initcairo(lua_State *L)
   return 0;
 }
 
-static const struct luaL_Reg cdlib[] = {
+static const struct luaL_Reg funcs[] = {
   {"InitContextPlus", cdlua5_initcairo},
   {NULL, NULL},
 };
@@ -93,8 +93,8 @@ static const struct luaL_Reg cdlib[] = {
 static int cdluacairo_open (lua_State *L)
 {
   cdluaLuaState* cdL = cdlua_getstate(L);
+  cdlua_register_lib(L, funcs);  /* leave cd table at the top of the stack */
   cdInitContextPlus();
-  luaL_register(L, "cd", cdlib);   /* leave "cd" table at the top of the stack */
   cdlua_addcontext(L, cdL, &cdluapdfctx);
   cdlua_addcontext(L, cdL, &cdluapsctx);
   cdlua_addcontext(L, cdL, &cdluasvgctx);

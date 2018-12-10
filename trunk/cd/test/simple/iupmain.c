@@ -4,6 +4,7 @@
 #include <iup.h>
 #include <iupgl.h>
 #include <cd.h>
+#include "cddirect2d.h"
 
 #include "simple.h"
 
@@ -55,6 +56,9 @@ int main(int argc, char** argv)
 #ifdef USE_OPENGL
   IupGLCanvasOpen();
 #endif
+#ifdef WIN32
+  cdInitDirect2D();
+#endif
 
   simple_loadled();
 #ifdef USE_OPENGL
@@ -72,7 +76,7 @@ int main(int argc, char** argv)
   IupSetAttribute(IupGetHandle("SimpleDialog"), "SIZE", "HALFxHALF");
   IupSetAttribute(IupGetHandle("SimpleDialog"), "PLACEMENT", "MAXIMIZED");
   IupShow(IupGetHandle("SimpleDialog"));
-  IupSetAttribute(IupGetHandle("SimpleDialog"), "SIZE", NULL);
+  IupSetAttribute(IupGetHandle("SimpleDialog"), "USERSIZE", NULL);
 
   SimpleCreateCanvas((char*)IupGetHandle("SimpleCanvas"));
 
@@ -112,6 +116,7 @@ int main(int argc, char** argv)
   IupSetFunction("SimpleDrawGL", (Icallback) SimpleDrawGL);
 #endif
   IupSetFunction("SimpleDrawIupDraw", (Icallback)SimpleDrawIupDraw);
+  IupSetFunction("SimpleDrawDirect2D", (Icallback)SimpleDrawDirect2D);
 
   IupSetFunction("SimpleNotXor", (Icallback) SimpleNotXor);
   IupSetFunction("SimpleXor", (Icallback) SimpleXor);
@@ -143,6 +148,9 @@ int main(int argc, char** argv)
 
 #ifdef USE_CONTEXTPLUS
   cdFinishContextPlus();
+#endif
+#ifdef WIN32
+  cdFinishDirect2D();
 #endif
 
   IupClose();

@@ -77,6 +77,7 @@ void simple_loadled (void)
     IupItem( "Image RGB", "SimpleDrawImageRGB" ),
     IupItem( "OpenGL", "SimpleDrawGL" ),
     IupItem( "IupDraw", "SimpleDrawIupDraw" ),
+    IupItem( "Direct2D", "SimpleDrawDirect2D" ),
   NULL), NULL );
   named[8] = IupSetAtt( "mnPrimitives", IupMenu(
     IupItem( "All", "SimpleAll" ),
