@@ -330,6 +330,7 @@ d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
     return NULL;
   }
 
+  /* TODO: this fails for printer */
   hr = dummy_ID2D1DCRenderTarget_BindDC(target, hDC, pRect);
   if (FAILED(hr)) {
     dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);

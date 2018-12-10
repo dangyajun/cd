@@ -9,13 +9,6 @@
 .style1 {
 	font-family: Courier;
 }
-.auto-style1 {
-	color: #FF0000;
-}
-.auto-style2 {
-	color: #FF0000;
-	font-weight: bold;
-}
 .auto-style3 {
 	font-size: medium;
 }
@@ -28,34 +21,36 @@
 (since 5.12)</span></em></h2>
 
   <p>This driver represents a base driver for all system-dependent drivers implemented in the Microsoft Windows system, 
-  but uses a new API called Direct2D. The drivers <b><span class="auto-style1">Clipboard</span>, Native Window</b>, <b>IUP</b>, <b>Image</b>, 
-  <span class="auto-style2">Printer</span>,
-  <span class="auto-style2">EMF</span> and <b>Double Buffer</b> were implemented. The driver <b>WMF</b>, and the function <font face="Courier">
-  <strong>cdPlay</strong></font> of the <b>Clipboard</b> and <b>EMF</b> drivers were not implemented using Direct2D.</p>
-<p>It can be used only as the context plus driver of the GDI based drivers.</p>
+  but uses a new API called Direct2D. The drivers <b>Native Window</b>, <b>IUP</b>, <b>Image</b> and <b>Double Buffer</b> 
+  were implemented. </p>
   <p>The main motivation for the use of Direct2D was transparency for all the primitives. Beyond that we got other features 
   like anti-aliasing, gradient filling and bezier lines.</p>
   <p>This driver still does not completely replace the GDI Windows base driver, because Direct2D does not have support for 
-  XOR. Also the applications need to adapt the rendering of text that is slightly different from GDI. It is know that 
-  Direct2D can be slower than GDI in some cases and faster in other cases, Microsoft does not make this clear.</p>
-  <p>So we let the programmer to choose what to use. We created the function <font face="Courier"><strong>
-  <a href="../func/init.html#cdUseContextPlus">cdUseContextPlus</a> </strong></font> that allows to activate or to deactivate the use of Direct2D for the 
-	GDI based drivers. 
-  This function affects only the <font face="Courier"><strong>cdCreateCanvas</strong></font> function call, once created 
-  the canvas will be always a Direct2D canvas. In fact the function affects primary the definitions 
-	<font face="Courier"><strong>CD_NATIVEWINDOW</strong></font>, 
-  <strong><span style="font-family: Courier">CD_IMAGE</span></strong>, <strong>
-  <span style="font-family: Courier">CD_PRINTER</span></strong>, <strong>
-  <span style="font-family: Courier">CD_EMF</span></strong>, <strong>
-  <span style="font-family: Courier">CD_DBUFFER</span></strong> and <strong>
-  <span style="font-family: Courier">CD_CLIPBOARD</span></strong>, because they are 
-  function calls and not static defines.</p>
-  <p>To enable the use of Direct2D based drivers you must call the initialization function <font face="Courier"><strong>
-  <a href="../func/init.html#cdInitContextPlus">cdInitContextPlus</a></strong></font> once, and link to the libraries &quot;<strong>cdcontextplus_d2d.lib</strong>".</p>
-  <p>In CDLua it is not necessary any additional initialization, but the 
-	application must still be linked with the <strong>cdcontextplus_d2d.lib</strong> 
-	library or a <strong>require&quot;cdluacontextplus_d2d&quot;</strong> can be used when 
-	using dynamic libraries.</p>
+  XOR, EMF nor Printer. Also the applications need to adapt the rendering of text that is slightly different from GDI. It is know that 
+  Direct2D can be slower than GDI in some cases and faster in other cases.</p>
+  <p>To be able to use the driver the function <strong>
+  <font face="Courier">cdInitDirect2D </font> </strong>must be called. Notice 
+  that this is NOT a context plus driver.</p>
+  
+
+
+  <p>The application must be linked with the &quot;<strong>cddirect2d.lib</strong>" library 
+  and use the "<strong>cddirect2d.h</strong>" header. This driver only works in 
+  Windows.</p>
+  <p>In Lua, you should do require&quot;cdluadirect2d&quot;. The <strong>
+  <font face="Courier">cdInitDirect2D</font></strong> call is not necessary in 
+  Lua.</p>
+
+<h3>Extra Drivers (cddirect2d.h)</h3>
+<p>These are not ContextPlus drivers.</p>
+
+<h4>CD_DIRECT2D_NATIVEWINDOW - Native window Driver</h4>
+
+  <p>Same as <a href="native.html">CD_NATIVEWINDOW</a>, uses the same creation 
+  parameters. It is already double buffered and requires <strong>cdCanvasFlush</strong> 
+  to be called.</p>
+<h4>CD_DIRECT2D_IMAGE - Server Image Driver</h4>
+<p>Same as CD_IMAGE, uses a server image created by the native window driver.</p>
 
 <h3>Behavior of Functions</h3>
 <h4>Control</h4>
@@ -133,7 +128,7 @@
   Default: "GOOD".</li>
 </ul>
 <ul>
-	<li>"HATCHBOXSIZE": size of the hatch grid in pixels used to create hatches.</li>
+	<li>"<strong><span class="style1">HATCHBOXSIZE</span></strong>": size of the hatch grid in pixels used to create hatches.</li>
 </ul>
 <ul>
   <li>&quot;<span class="style1"><strong>PATTERNIMAGE</strong></span>":&nbsp;defines 

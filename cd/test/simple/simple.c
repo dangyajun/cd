@@ -29,6 +29,7 @@
 #include "cddebug.h"
 #include "wd.h"
 #include "cdgdiplus.h"
+#include "cddirect2d.h"
 #include "cdgl.h"
 #include <iupdraw_cd.h>
 
@@ -540,6 +541,25 @@ int SimpleDrawIupDraw(void)
   return 0;
 }
 
+#ifdef WIN32
+#include <iup.h>
+#endif
+
+int SimpleDrawDirect2D(void)
+{
+#ifdef WIN32
+  if (dbCanvas) cdKillCanvas(dbCanvas);
+
+  dbCanvas = cdCreateCanvas(CD_DIRECT2D_NATIVEWINDOW, IupGetAttribute((Ihandle*)winData, "HWND"));
+
+  curCanvas = dbCanvas;
+
+  SimpleDraw(curCanvas);
+#endif
+
+  return 0;
+}
+
 int SimpleDrawSimulate(void)
 {
   simulate = !simulate;
@@ -781,8 +801,8 @@ void SimpleDrawAll(cdCanvas* canvas)
      Notice that in some drivers the bounding box is not precise. */
   {
     int rect[8];
-    char* mode = cdCanvasGetAttribute(canvas, "UTF8MODE");
-    int utf8mode = mode ? (mode[0] == '1' ? 1 : 0) : 0;
+    //char* mode = cdCanvasGetAttribute(canvas, "UTF8MODE");
+    //int utf8mode = mode ? (mode[0] == '1' ? 1 : 0) : 0;
     //if (utf8mode)
     //  cdCanvasGetTextBounds(canvas, w / 2, h / 2, "Simple Draw (p8-çãí)�\nSecond Line", rect);
     //else
@@ -878,8 +898,8 @@ void SimpleDrawAll(cdCanvas* canvas)
 
   /* Draw a filled path at center-right (looks like a weird fish).
      Notice that in PDF the arc is necessarily a circle arc, and not an ellipse. */
-  //cdCanvasInteriorStyle(canvas, CD_HATCH);
-  //cdCanvasHatch(canvas, CD_DIAGCROSS);
+  cdCanvasInteriorStyle(canvas, CD_HATCH);
+  cdCanvasHatch(canvas, CD_DIAGCROSS);
   cdCanvasForeground(canvas, CD_GREEN);
   cdCanvasBegin(canvas, CD_PATH);
   cdCanvasPathSet(canvas, CD_PATH_MOVETO);
@@ -904,8 +924,8 @@ void SimpleDrawAll(cdCanvas* canvas)
   cdCanvasVertex(canvas, -30 * 1000, -170 * 1000);  /* start angle, end angle (degrees / 1000) */
   //cdCanvasPathSet(canvas, CD_PATH_CLOSE);
   //cdCanvasPathSet(canvas, CD_PATH_STROKE);
-  cdCanvasPathSet(canvas, CD_PATH_FILL);
-  //cdCanvasPathSet(canvas, CD_PATH_FILLSTROKE);
+  //cdCanvasPathSet(canvas, CD_PATH_FILL);
+  cdCanvasPathSet(canvas, CD_PATH_FILLSTROKE);
   cdCanvasEnd(canvas);
 
   //cdCanvasForeground(canvas, CD_BLACK);
@@ -1046,7 +1066,7 @@ void SimpleDrawAll(cdCanvas* canvas)
   //  cdCanvasPutImageRectRGB(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue,         w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
   cdCanvasPutImageRectRGBA(canvas, IMAGE_SIZE, IMAGE_SIZE, red, green, blue, alpha, w - 400, h - 310, 3*IMAGE_SIZE, 3*IMAGE_SIZE, 0, 0, 0, 0);
 
-  if (contextplus)
+  if (contextplus || cdCanvasGetAttribute(canvas, "LINEARGRADIENT") != NULL)
 //  if (0)
   {
     cdCanvasForeground(canvas, CD_YELLOW);

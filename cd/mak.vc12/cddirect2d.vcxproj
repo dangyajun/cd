@@ -87,12 +87,12 @@
       <Culture>0x0416</Culture>
     </ResourceCompile>
     <Lib>
-      <OutputFile>$(OutDir)cdcontextplus_d2d.lib</OutputFile>
+      <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\src\direct2d\cdcontextplus.def" />
+    <None Include="..\src\direct2d\cddirect2d.def" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\direct2d\cdwdbuf_d2d.c" />
@@ -100,6 +100,7 @@
     <ClCompile Include="..\src\direct2d\cdwimg_d2d.c" />
     <ClCompile Include="..\src\direct2d\cdwin_d2d.c" />
     <ClCompile Include="..\src\direct2d\cdwnative_d2d.c" />
+    <ClCompile Include="..\src\direct2d\cdwprn_d2d.c" />
     <ClCompile Include="..\src\direct2d\cd_d2d.c" />
     <ClCompile Include="..\src\direct2d\cd_d2d_draw.c" />
     <ClCompile Include="..\src\direct2d\cd_d2d_image.c" />
@@ -112,6 +113,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\cddirect2d.h" />
     <ClInclude Include="..\src\direct2d\cdwin_d2d.h" />
     <ClInclude Include="..\src\direct2d\cd_d2d.h" />
     <ClInclude Include="..\src\direct2d\dummy\d2d1.h" />
