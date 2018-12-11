@@ -78,7 +78,7 @@ void d2dShutdown(void);
 
 d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags);
 d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags);
-d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap);
+d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *wic_bitmap);
 d2dCanvas* d2dCreateCanvasWithTarget(dummy_ID2D1RenderTarget* target);
 void d2dCanvasDestroy(d2dCanvas* d2d_canvas);
 
@@ -97,9 +97,9 @@ IWICBitmap* d2dCreateImageFromHatch(int style, int hsize, int back_opacity, long
 IWICBitmap* d2dCreateImageFromStipple(UINT uWidth, UINT uHeight, const unsigned char *stipple, int opacity, long foreground, long background);
 IWICBitmap* d2dCreateImageFromPattern(UINT uWidth, UINT uHeight, const long *pattern);
 IWICBitmap* d2dCreateImage(UINT uWidth, UINT uHeight);
-void d2dDestroyImage(IWICBitmap *image);
-void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect);
-void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect);
+void d2dDestroyImage(IWICBitmap *wic_bitmap);
+void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *wic_bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect, dummy_D2D1_BITMAP_INTERPOLATION_MODE mode);
+void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect, dummy_D2D1_BITMAP_INTERPOLATION_MODE mode);
 
 d2dFont* d2dCreateFont(const LOGFONTW* pLogFont);
 void d2dDestroyFont(d2dFont* font);
@@ -107,7 +107,7 @@ void d2dFontGetMetrics(d2dFont *font, d2dFontMetrics *pMetrics);
 void d2dFontMeasureString(d2dFont *hFont, const WCHAR* pszText, int iTextLength, int *w, int *h);
 
 dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long color);
-dummy_ID2D1Brush* d2dCreateImageBrush(dummy_ID2D1RenderTarget *target, IWICBitmap *image);
+dummy_ID2D1Brush* d2dCreateImageBrush(dummy_ID2D1RenderTarget *target, IWICBitmap* wic_bitmap);
 dummy_ID2D1Brush* d2dCreateLinearGradientBrush(dummy_ID2D1RenderTarget *target, FLOAT x1, FLOAT y1, FLOAT x2, FLOAT y2, long foreground, long background);
 dummy_ID2D1Brush* d2dCreateRadialGradientBrush(dummy_ID2D1RenderTarget *target, FLOAT cx, FLOAT cy, FLOAT ox, FLOAT oy, FLOAT rx, FLOAT ry, long foreground, long background);
 dummy_ID2D1StrokeStyle *d2dSetLineStyle(int line_style, int line_cap, int line_join);

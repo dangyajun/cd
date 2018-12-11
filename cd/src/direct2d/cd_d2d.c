@@ -281,7 +281,7 @@ d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags)
   dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   dummy_D2D1_HWND_RENDER_TARGET_PROPERTIES props2;
   d2dCanvas* c;
-  dummy_ID2D1HwndRenderTarget* target;
+  dummy_ID2D1HwndRenderTarget* hwnd_target;
   HRESULT hr;
 
   GetClientRect(hWnd, &rect);
@@ -300,12 +300,12 @@ d2dCanvas* d2dCreateCanvasWithWindow(HWND hWnd, DWORD dwFlags)
   props2.presentOptions = dummy_D2D1_PRESENT_OPTIONS_NONE;
 
   /* Note ID2D1HwndRenderTarget is implicitly double-buffered. */
-  hr = dummy_ID2D1Factory_CreateHwndRenderTarget(d2d_cd_factory, &props, &props2, &target);
+  hr = dummy_ID2D1Factory_CreateHwndRenderTarget(d2d_cd_factory, &props, &props2, &hwnd_target);
   if (FAILED(hr)) {
     return NULL;
   }
 
-  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_HWND);
+  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)hwnd_target, D2D_CANVASTYPE_HWND);
 
   return c;
 }
@@ -314,7 +314,7 @@ d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
 {
   dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   d2dCanvas* c;
-  dummy_ID2D1DCRenderTarget* target;
+  dummy_ID2D1DCRenderTarget* dc_target;
   HRESULT hr;
 
   props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
@@ -325,28 +325,28 @@ d2dCanvas* d2dCreateCanvasWithHDC(HDC hDC, const RECT* pRect, DWORD dwFlags)
   props.usage = ((dwFlags & CANVAS_NOGDICOMPAT) ? 0 : dummy_D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE);
   props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
-  hr = dummy_ID2D1Factory_CreateDCRenderTarget(d2d_cd_factory, &props, &target);
+  hr = dummy_ID2D1Factory_CreateDCRenderTarget(d2d_cd_factory, &props, &dc_target);
   if (FAILED(hr)) {
     return NULL;
   }
 
   /* TODO: this fails for printer */
-  hr = dummy_ID2D1DCRenderTarget_BindDC(target, hDC, pRect);
+  hr = dummy_ID2D1DCRenderTarget_BindDC(dc_target, hDC, pRect);
   if (FAILED(hr)) {
-    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);
+    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)dc_target);
     return NULL;
   }
 
-  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)target, D2D_CANVASTYPE_DC);
+  c = d2dCanvasCreate((dummy_ID2D1RenderTarget*)dc_target, D2D_CANVASTYPE_DC);
   if (c == NULL) {
-    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)target);
+    dummy_ID2D1RenderTarget_Release((dummy_ID2D1RenderTarget*)dc_target);
     return NULL;
   }
 
   return c;
 }
 
-d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap)
+d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *wic_bitmap)
 {
   dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   d2dCanvas* c;
@@ -361,7 +361,7 @@ d2dCanvas* d2dCreateCanvasWithImage(IWICBitmap *bitmap)
   props.usage = 0;
   props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
-  hr = dummy_ID2D1Factory_CreateWicBitmapRenderTarget(d2d_cd_factory, bitmap, &props, &target);
+  hr = dummy_ID2D1Factory_CreateWicBitmapRenderTarget(d2d_cd_factory, wic_bitmap, &props, &target);
   if (FAILED(hr)) {
     return NULL;
   }
