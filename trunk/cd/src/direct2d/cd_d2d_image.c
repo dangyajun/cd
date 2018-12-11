@@ -156,7 +156,7 @@ static void stipple2Bitmap(BYTE* Scan0, INT dstStride, UINT width, UINT height, 
 
 IWICBitmap* d2dCreateImageFromBufferRGB(UINT uWidth, UINT uHeight, const unsigned char *red, const unsigned char *green, const unsigned char *blue, const unsigned char *alpha)
 {
-  IWICBitmap* bitmap = NULL;
+  IWICBitmap* wic_bitmap = NULL;
   HRESULT hr;
   WICRect rect;
   IWICBitmapLock *bitmap_lock = NULL;
@@ -168,7 +168,7 @@ IWICBitmap* d2dCreateImageFromBufferRGB(UINT uWidth, UINT uHeight, const unsigne
     return NULL;
   }
 
-  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
+  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &wic_bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
   if (FAILED(hr)) {
     return NULL;
   }
@@ -178,9 +178,9 @@ IWICBitmap* d2dCreateImageFromBufferRGB(UINT uWidth, UINT uHeight, const unsigne
   rect.Width = uWidth;
   rect.Height = uHeight;
 
-  hr = IWICBitmap_Lock(bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
+  hr = IWICBitmap_Lock(wic_bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
   if (FAILED(hr)) {
-    IWICBitmap_Release(bitmap);
+    IWICBitmap_Release(wic_bitmap);
     return NULL;
   }
 
@@ -193,12 +193,12 @@ IWICBitmap* d2dCreateImageFromBufferRGB(UINT uWidth, UINT uHeight, const unsigne
     bufferRGB2Bitmap(Scan0, dstStride, uWidth, uHeight, red, green, blue);
  
   IWICBitmapLock_Release(bitmap_lock);
-  return bitmap;
+  return wic_bitmap;
 }
 
 IWICBitmap* d2dCreateImageFromBufferMap(UINT uWidth, UINT uHeight, const unsigned char *map, const long* cPalette)
 {
-  IWICBitmap* bitmap = NULL;
+  IWICBitmap* wic_bitmap = NULL;
   HRESULT hr;
   WICRect rect;
   IWICBitmapLock *bitmap_lock = NULL;
@@ -210,7 +210,7 @@ IWICBitmap* d2dCreateImageFromBufferMap(UINT uWidth, UINT uHeight, const unsigne
     return NULL;
   }
 
-  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
+  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &wic_bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
   if (FAILED(hr)) {
     return NULL;
   }
@@ -220,9 +220,9 @@ IWICBitmap* d2dCreateImageFromBufferMap(UINT uWidth, UINT uHeight, const unsigne
   rect.Width = uWidth;
   rect.Height = uHeight;
 
-  hr = IWICBitmap_Lock(bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
+  hr = IWICBitmap_Lock(wic_bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
   if (FAILED(hr)) {
-    IWICBitmap_Release(bitmap);
+    IWICBitmap_Release(wic_bitmap);
     return NULL;
   }
 
@@ -232,19 +232,19 @@ IWICBitmap* d2dCreateImageFromBufferMap(UINT uWidth, UINT uHeight, const unsigne
   bufferMap2Bitmap(Scan0, dstStride, uWidth, uHeight, map, cPalette);
 
   IWICBitmapLock_Release(bitmap_lock);
-  return bitmap;
+  return wic_bitmap;
 }
 
 IWICBitmap* d2dCreateImageFromHatch(int style, int hsize, int back_opacity, long foreground, long background)
 {
   dummy_ID2D1RenderTarget *target;
-  IWICBitmap *bitmap;
+  IWICBitmap *wic_bitmap;
   dummy_D2D1_RENDER_TARGET_PROPERTIES props;
   dummy_ID2D1Brush *brush;
   int hhalf = hsize / 2;
 
-  bitmap = d2dCreateImage(hsize, hsize);
-  if (!bitmap)
+  wic_bitmap = d2dCreateImage(hsize, hsize);
+  if (!wic_bitmap)
     return NULL;
 
   props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
@@ -255,7 +255,7 @@ IWICBitmap* d2dCreateImageFromHatch(int style, int hsize, int back_opacity, long
   props.usage = 0;
   props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
 
-  dummy_ID2D1Factory_CreateWicBitmapRenderTarget(d2d_cd_factory, bitmap, &props, &target);
+  dummy_ID2D1Factory_CreateWicBitmapRenderTarget(d2d_cd_factory, wic_bitmap, &props, &target);
 
   dummy_ID2D1RenderTarget_BeginDraw(target);
 
@@ -298,12 +298,12 @@ IWICBitmap* d2dCreateImageFromHatch(int style, int hsize, int back_opacity, long
 
   dummy_ID2D1RenderTarget_Release(target);
 
-  return bitmap;
+  return wic_bitmap;
 }
 
 IWICBitmap* d2dCreateImageFromPattern(UINT uWidth, UINT uHeight, const long *pattern)
 {
-  IWICBitmap* bitmap = NULL;
+  IWICBitmap* wic_bitmap = NULL;
   HRESULT hr;
   WICRect rect;
   IWICBitmapLock *bitmap_lock = NULL;
@@ -315,7 +315,7 @@ IWICBitmap* d2dCreateImageFromPattern(UINT uWidth, UINT uHeight, const long *pat
     return NULL;
   }
 
-  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
+  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &wic_bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
   if (FAILED(hr)) {
     return NULL;
   }
@@ -325,9 +325,9 @@ IWICBitmap* d2dCreateImageFromPattern(UINT uWidth, UINT uHeight, const long *pat
   rect.Width = uWidth;
   rect.Height = uHeight;
 
-  hr = IWICBitmap_Lock(bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
+  hr = IWICBitmap_Lock(wic_bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
   if (FAILED(hr)) {
-    IWICBitmap_Release(bitmap);
+    IWICBitmap_Release(wic_bitmap);
     return NULL;
   }
 
@@ -337,12 +337,12 @@ IWICBitmap* d2dCreateImageFromPattern(UINT uWidth, UINT uHeight, const long *pat
   pattern2Bitmap(Scan0, dstStride, uWidth, uHeight, pattern);
 
   IWICBitmapLock_Release(bitmap_lock);
-  return bitmap;
+  return wic_bitmap;
 }
 
 IWICBitmap* d2dCreateImageFromStipple(UINT uWidth, UINT uHeight, const unsigned char *stipple, int back_opacity, long foreground, long background)
 {
-  IWICBitmap* bitmap = NULL;
+  IWICBitmap* wic_bitmap = NULL;
   HRESULT hr;
   WICRect rect;
   IWICBitmapLock *bitmap_lock = NULL;
@@ -354,7 +354,7 @@ IWICBitmap* d2dCreateImageFromStipple(UINT uWidth, UINT uHeight, const unsigned 
     return NULL;
   }
 
-  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
+  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &wic_bitmap);   /* GUID_WICPixelFormat32bppPBGRA - pre-multiplied alpha, BGRA order */
   if (FAILED(hr)) {
     return NULL;
   }
@@ -364,9 +364,9 @@ IWICBitmap* d2dCreateImageFromStipple(UINT uWidth, UINT uHeight, const unsigned 
   rect.Width = uWidth;
   rect.Height = uHeight;
 
-  hr = IWICBitmap_Lock(bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
+  hr = IWICBitmap_Lock(wic_bitmap, &rect, WICBitmapLockWrite, &bitmap_lock);
   if (FAILED(hr)) {
-    IWICBitmap_Release(bitmap);
+    IWICBitmap_Release(wic_bitmap);
     return NULL;
   }
 
@@ -376,28 +376,28 @@ IWICBitmap* d2dCreateImageFromStipple(UINT uWidth, UINT uHeight, const unsigned 
   stipple2Bitmap(Scan0, dstStride, uWidth, uHeight, stipple, back_opacity, foreground, background);
 
   IWICBitmapLock_Release(bitmap_lock);
-  return bitmap;
+  return wic_bitmap;
 }
 
 IWICBitmap *d2dCreateImage(UINT uWidth, UINT uHeight)
 {
-  IWICBitmap* bitmap = NULL;
+  IWICBitmap* wic_bitmap = NULL;
   HRESULT hr;
-  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &bitmap);
+  hr = IWICImagingFactory_CreateBitmap(wic_cd_factory, uWidth, uHeight, &wic_cd_pixel_format, WICBitmapCacheOnDemand, &wic_bitmap);
   if (FAILED(hr)) {
     return NULL;
   }
-  return bitmap;
+  return wic_bitmap;
 }
 
-void d2dDestroyImage(IWICBitmap *image)
+void d2dDestroyImage(IWICBitmap *wic_bitmap)
 {
-  IWICBitmap_Release(image);
+  IWICBitmap_Release(wic_bitmap);
 }
 
-void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect)
+void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *wic_bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect, dummy_D2D1_BITMAP_INTERPOLATION_MODE mode)
 {
-  dummy_ID2D1Bitmap* b;
+  dummy_ID2D1Bitmap* bitmap;
   HRESULT hr;
   dummy_D2D1_RECT_F pDest;
 
@@ -410,14 +410,14 @@ void d2dBitBltImage(dummy_ID2D1RenderTarget *target, IWICBitmap *bitmap, const d
   pDest.right = pDestRect->right - D2D_BASEDELTA_X;
   pDest.bottom = pDestRect->bottom - D2D_BASEDELTA_X;
 
-  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)bitmap, NULL, &b);
+  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)wic_bitmap, NULL, &bitmap);
   if (FAILED(hr))
     return;
-  dummy_ID2D1RenderTarget_DrawBitmap(target, b, &pDest, 1.0f, dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, pSourceRect);
-  dummy_ID2D1Bitmap_Release(b);
+  dummy_ID2D1RenderTarget_DrawBitmap(target, bitmap, &pDest, 1.0f, mode, pSourceRect);
+  dummy_ID2D1Bitmap_Release(bitmap);
 }
 
-void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect)
+void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap, const dummy_D2D1_RECT_F* pDestRect, const dummy_D2D1_RECT_F* pSourceRect, dummy_D2D1_BITMAP_INTERPOLATION_MODE mode)
 {
   dummy_D2D1_RECT_F pDest;
 
@@ -430,5 +430,5 @@ void d2dBitBltBitmap(dummy_ID2D1RenderTarget *target, dummy_ID2D1Bitmap *bitmap,
   pDest.right = pDestRect->right - D2D_BASEDELTA_X;
   pDest.bottom = pDestRect->bottom - D2D_BASEDELTA_X;
 
-  dummy_ID2D1RenderTarget_DrawBitmap(target, bitmap, &pDest, 1.0f, dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, pSourceRect);
+  dummy_ID2D1RenderTarget_DrawBitmap(target, bitmap, &pDest, 1.0f, mode, pSourceRect);
 }

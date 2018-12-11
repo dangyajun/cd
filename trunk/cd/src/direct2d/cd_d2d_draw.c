@@ -187,27 +187,27 @@ dummy_ID2D1StrokeStyle *d2dSetCustomLineStyle(int *dashes, int dashes_count, flo
 
 dummy_ID2D1Brush* d2dCreateSolidBrush(dummy_ID2D1RenderTarget *target, long color)
 {
-  dummy_ID2D1SolidColorBrush* b;
+  dummy_ID2D1SolidColorBrush* brush;
   dummy_D2D1_COLOR_F clr;
   HRESULT hr;
 
   d2dInitColor(&clr, color);
 
-  hr = dummy_ID2D1RenderTarget_CreateSolidColorBrush(target, &clr, NULL, &b);
+  hr = dummy_ID2D1RenderTarget_CreateSolidColorBrush(target, &clr, NULL, &brush);
   if (FAILED(hr)) {
     return NULL;
   }
-  return (dummy_ID2D1Brush*)b;
+  return (dummy_ID2D1Brush*)brush;
 }
 
-dummy_ID2D1Brush* d2dCreateImageBrush(dummy_ID2D1RenderTarget *target, IWICBitmap* image)
+dummy_ID2D1Brush* d2dCreateImageBrush(dummy_ID2D1RenderTarget *target, IWICBitmap* wic_bitmap)
 {
   dummy_ID2D1Bitmap *bitmap;
   dummy_ID2D1BitmapBrush* brush;
   dummy_D2D1_BITMAP_BRUSH_PROPERTIES props;
   HRESULT hr;
 
-  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)image, NULL, &bitmap);
+  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)wic_bitmap, NULL, &bitmap);
   if (FAILED(hr))
     return NULL;
 

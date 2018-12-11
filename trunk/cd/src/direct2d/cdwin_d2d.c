@@ -223,6 +223,68 @@ static cdAttribute radialgradient_attrib =
   get_radialgradient_attrib
 };
 
+static void set_pattern_image_attrib(cdCtxCanvas *ctxcanvas, char* data)
+{
+  if (data)
+  {
+    dummy_ID2D1Bitmap *bitmap;
+    dummy_ID2D1BitmapBrush* brush;
+    dummy_D2D1_BITMAP_BRUSH_PROPERTIES props;
+    HRESULT hr;
+    cdCtxImage *ctximage = (cdCtxImage *)data;
+
+    hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->bitmap_target, &bitmap);
+    if (FAILED(hr))
+      return;
+
+    props.extendModeX = dummy_D2D1_EXTEND_MODE_WRAP;
+    props.extendModeY = dummy_D2D1_EXTEND_MODE_WRAP;
+    props.interpolationMode = dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
+
+    hr = dummy_ID2D1RenderTarget_CreateBitmapBrush(ctxcanvas->d2d_canvas->target, bitmap, &props, NULL, &brush);
+    dummy_ID2D1Bitmap_Release(bitmap);
+
+    if (FAILED(hr))
+      return;
+
+    if (ctxcanvas->fillBrush)
+      dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
+
+    ctxcanvas->fillBrush = (dummy_ID2D1Brush*)brush;
+    ctxcanvas->canvas->interior_style = CD_CUSTOMPATTERN;
+  }
+}
+
+static cdAttribute pattern_image_attrib =
+{
+  "PATTERNIMAGE",
+  set_pattern_image_attrib,
+  NULL
+};
+
+static void set_interp_attrib(cdCtxCanvas* ctxcanvas, char* data)
+{
+  if (data && cdStrEqualNoCase(data, "NEAREST"))
+    ctxcanvas->interpolation_mode = dummy_D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR;
+  else
+    ctxcanvas->interpolation_mode = dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
+}
+
+static char* get_interp_attrib(cdCtxCanvas* ctxcanvas)
+{
+  if (ctxcanvas->interpolation_mode == dummy_D2D1_BITMAP_INTERPOLATION_MODE_LINEAR)
+    return "BILINEAR";
+  else
+    return "NEAREST";
+}
+
+static cdAttribute interp_attrib =
+{
+  "IMGINTERP",
+  set_interp_attrib,
+  get_interp_attrib
+};
+
 static char* get_direct2d_attrib(cdCtxCanvas* ctxcanvas)
 {
   (void)ctxcanvas;
@@ -257,6 +319,8 @@ cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc)
   cdRegisterAttribute(canvas, &old_lineargradient_attrib);
   cdRegisterAttribute(canvas, &radialgradient_attrib);
   cdRegisterAttribute(canvas, &direct2d_attrib);
+  cdRegisterAttribute(canvas, &interp_attrib);
+  cdRegisterAttribute(canvas, &pattern_image_attrib);
 
   return ctxcanvas;
 }
@@ -367,28 +431,21 @@ static int cdispointinregion(cdCtxCanvas* ctxcanvas, int x, int y)
 static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
 {
   cdCtxImage *ctximage = (cdCtxImage *)malloc(sizeof(cdCtxImage));
-#ifdef D2D_BITMAP_IMAGE
-  dummy_ID2D1BitmapRenderTarget* target = NULL;
+  dummy_ID2D1BitmapRenderTarget* bitmap_target = NULL;
   dummy_D2D1_SIZE_U desiredPixelSize;
   HRESULT hr;
 
   desiredPixelSize.width = w;
   desiredPixelSize.height = h;
 
-  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, NULL, &desiredPixelSize, NULL, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &target);
+  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, NULL, &desiredPixelSize, NULL, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &bitmap_target);
   if (FAILED(hr))
-#else
-  ctximage->bitmap = d2dCreateImage(w, h);
-  if (!ctximage->bitmap)
-#endif
   {
     free(ctximage);
     return NULL;
   }
 
-#ifdef D2D_BITMAP_IMAGE
-  ctximage->target = target;
-#endif
+  ctximage->bitmap_target = bitmap_target;
 
   ctximage->w = w;
   ctximage->h = h;
@@ -403,11 +460,7 @@ static cdCtxImage *cdcreateimage(cdCtxCanvas *ctxcanvas, int w, int h)
 
 static void cdkillimage(cdCtxImage *ctximage)
 {
-#ifdef D2D_BITMAP_IMAGE
-  dummy_ID2D1BitmapRenderTarget_Release(ctximage->target);
-#else
-  d2dDestroyImage(ctximage->bitmap);
-#endif
+  dummy_ID2D1BitmapRenderTarget_Release(ctximage->bitmap_target);
   free(ctximage);
 }
 
@@ -432,39 +485,170 @@ static void cdgetimage(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int 
   /* y is the bottom-left of the image in CD, must be at upper-left */
   y -= ctximage->h - 1;
 
-  srcRect.left = 0;
-  srcRect.right = ctximage->w + x - 1;
-  srcRect.top = 0;
-  srcRect.bottom = ctximage->h + y - 1;
+  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->bitmap_target, &bitmap);
+  if (FAILED(hr))
+    return;
 
-#ifdef D2D_BITMAP_IMAGE
-  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
-  if (FAILED(hr))
-    return;
-#else
-  hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(ctxcanvas->d2d_canvas->target, (IWICBitmapSource*)ctximage->bitmap, NULL, &bitmap);
-  if (FAILED(hr))
-    return;
-#endif
+  srcRect.left = x;
+  srcRect.right = x + ctximage->w;
+  srcRect.top = y;
+  srcRect.bottom = y + ctximage->h;
 
   dummy_ID2D1Bitmap_CopyFromRenderTarget(bitmap, &destPoint, ctxcanvas->d2d_canvas->target, &srcRect);
 
   d2dApplyTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
 
-#ifndef D2D_BITMAP_IMAGE
-  /* TODO: Copy from Bitmap to WICBitmap */
-  // Acho que a solução aqui é chamar CreateWicBitmapRenderTarget para criar um target e
-  // copiar de um target para outro sem precisar do Bitmap
-  // ou desenhar o Bitmap nesse target
-#endif
+  dummy_ID2D1Bitmap_Release(bitmap);
+}
+
+static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *red, unsigned char *green, unsigned char *blue, int x, int y, int w, int h)
+{
+  dummy_ID2D1RenderTarget *target;
+  IWICBitmap *wic_bitmap;
+  WICRect wic_rect;
+  IWICBitmapLock *bitmap_lock = NULL;
+  dummy_ID2D1Bitmap* bitmap;
+  dummy_D2D1_RENDER_TARGET_PROPERTIES props;
+  dummy_D2D1_POINT_2U destPoint;
+  dummy_D2D1_RECT_U srcRect;
+  dummy_D2D1_RECT_F dstRect;
+  dummy_D2D1_MATRIX_3X2_F old_matrix;
+  UINT dstStride = 0;
+  UINT cbBufferSize = 0;
+  int i, j;
+  BYTE *Scan0 = NULL;
+  HRESULT hr;
+  dummy_ID2D1BitmapRenderTarget* bitmap_target = NULL;
+  dummy_D2D1_SIZE_U desiredPixelSize;
+
+  d2dGetTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
+  d2dResetTransform(ctxcanvas->d2d_canvas->target);
+
+  destPoint.x = 0;
+  destPoint.y = 0;
+
+  /* if 0, invert because the transform was reset */
+  if (!ctxcanvas->canvas->invert_yaxis)
+    y = _cdInvertYAxis(ctxcanvas->canvas, y);
+
+  /* y is the bottom-left of the image in CD, must be at upper-left */
+  y -= h - 1;
+
+
+  /* Copy from target to a Bitmap - OK */
+
+  desiredPixelSize.width = w;
+  desiredPixelSize.height = h;
+
+  hr = dummy_ID2D1RenderTarget_CreateCompatibleRenderTarget(ctxcanvas->d2d_canvas->target, NULL, &desiredPixelSize, NULL, dummy_D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE, &bitmap_target);
+  if (FAILED(hr))
+    return;
+
+  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(bitmap_target, &bitmap);
+  if (FAILED(hr))
+  {
+    dummy_ID2D1RenderTarget_Release(bitmap_target);
+    return;
+  }
+
+  srcRect.left = x;
+  srcRect.right = x + w;
+  srcRect.top = y;
+  srcRect.bottom = y + h;
+
+  hr = dummy_ID2D1Bitmap_CopyFromRenderTarget(bitmap, &destPoint, ctxcanvas->d2d_canvas->target, &srcRect);
+  if (FAILED(hr))
+  {
+    dummy_ID2D1RenderTarget_Release(bitmap_target);
+    dummy_ID2D1Bitmap_Release(bitmap);
+    return;
+  }
+
+  /* Copy from Bitmap to WIC Bitmap - FAIL */
+
+  wic_bitmap = d2dCreateImage(w, h);
+  if (!wic_bitmap)
+    return;
+
+  props.type = dummy_D2D1_RENDER_TARGET_TYPE_DEFAULT;
+  props.pixelFormat.format = dummy_DXGI_FORMAT_B8G8R8A8_UNORM;
+  props.pixelFormat.alphaMode = dummy_D2D1_ALPHA_MODE_PREMULTIPLIED;
+  props.dpiX = 0.0f;
+  props.dpiY = 0.0f;
+  props.usage = 0;
+  props.minLevel = dummy_D2D1_FEATURE_LEVEL_DEFAULT;
+
+  hr = dummy_ID2D1Factory_CreateWicBitmapRenderTarget(d2d_cd_factory, wic_bitmap, &props, &target);
+  if (FAILED(hr))
+  {
+    d2dDestroyImage(wic_bitmap);
+    return;
+  }
+
+  dstRect.left = 0;
+  dstRect.top = 0;
+  dstRect.right = (FLOAT)w;
+  dstRect.bottom = (FLOAT)h;
+
+  dummy_ID2D1RenderTarget_BeginDraw(target);
+
+  d2dBitBltBitmap(target, bitmap, &dstRect, &dstRect, ctxcanvas->interpolation_mode); /* FAIL HERE - bitmap and target are NOT compatible */
+
+  hr = dummy_ID2D1RenderTarget_EndDraw(target, NULL, NULL);
+
+  //hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)wic_bitmap, NULL, &bitmap);
+  //if (FAILED(hr))
+  //{
+  //  dummy_ID2D1RenderTarget_Release(target);
+  //  d2dDestroyImage(wic_bitmap);
+  //  return;
+  //}
+
+  /* Copy from WicBitmap to RGB data - OK */
+
+  wic_rect.X = 0;
+  wic_rect.Y = 0;
+  wic_rect.Width = w;
+  wic_rect.Height = h;
+
+  hr = IWICBitmap_Lock(wic_bitmap, &wic_rect, WICBitmapLockWrite, &bitmap_lock);
+  if (FAILED(hr)) {
+    dummy_ID2D1RenderTarget_Release(target);
+    dummy_ID2D1Bitmap_Release(bitmap);
+    d2dDestroyImage(wic_bitmap);
+    return;
+  }
+
+  IWICBitmapLock_GetStride(bitmap_lock, &dstStride);
+  IWICBitmapLock_GetDataPointer(bitmap_lock, &cbBufferSize, &Scan0);
+
+  for (j = 0; j < h; j++)
+  {
+    UINT line_offset = (h - 1 - j) * w;
+    BYTE* line_data = Scan0 + j * dstStride;
+
+    for (i = 0; i < w; i++)
+    {
+      int offset_data = i * 4;
+      red[line_offset + i] = line_data[offset_data + 0] * 255;
+      green[line_offset + i] = line_data[offset_data + 1] * 255;
+      blue[line_offset + i] = line_data[offset_data + 2] * 255;
+    }
+  }
+
+  IWICBitmapLock_Release(bitmap_lock);
 
   dummy_ID2D1Bitmap_Release(bitmap);
+  dummy_ID2D1RenderTarget_Release(target);
+  d2dDestroyImage(wic_bitmap);
 }
 
 static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y, int xmin, int xmax, int ymin, int ymax)
 {
+  dummy_ID2D1Bitmap* bitmap;
   dummy_D2D1_RECT_F destRect;
   dummy_D2D1_RECT_F srcRect;
+  HRESULT hr;
 
   /* y is already inverted, but must be relative to the top-left corner */
   /* must add a pixel to bottom-right */
@@ -479,64 +663,57 @@ static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, 
   srcRect.right = type2float(xmax + 1);
   srcRect.bottom = type2float(ctximage->h - 1 - ymin + 1);
 
-#ifdef D2D_BITMAP_IMAGE
-  {
-    dummy_ID2D1Bitmap* bitmap;
-    HRESULT hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->target, &bitmap);
-    if (FAILED(hr))
-      return;
+  hr = dummy_ID2D1BitmapRenderTarget_GetBitmap(ctximage->bitmap_target, &bitmap);
+  if (FAILED(hr))
+    return;
 
-    d2dBitBltBitmap(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
+  d2dBitBltBitmap(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect, ctxcanvas->interpolation_mode);
 
-    dummy_ID2D1Bitmap_Release(bitmap);
-  }
-#else
-  d2dBitBltImage(ctxcanvas->d2d_canvas->target, ctximage->bitmap, &destRect, &srcRect);
-#endif
+  dummy_ID2D1Bitmap_Release(bitmap);
 }
 
 static int cdhatch(cdCtxCanvas *ctxcanvas, int style)
 {
-  IWICBitmap* bitmap = d2dCreateImageFromHatch(style, ctxcanvas->hatchboxsize, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
-  if (!bitmap)
+  IWICBitmap* wic_bitmap = d2dCreateImageFromHatch(style, ctxcanvas->hatchboxsize, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+  if (!wic_bitmap)
     return style;
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, wic_bitmap);
   ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
 
-  d2dDestroyImage(bitmap);
+  d2dDestroyImage(wic_bitmap);
 
   return style;
 }
 
 static void cdstipple(cdCtxCanvas *ctxcanvas, int n, int m, const unsigned char *stipple)
 {
-  IWICBitmap *bitmap = d2dCreateImageFromStipple(n, m, stipple, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
-  if (!bitmap)
+  IWICBitmap *wic_bitmap = d2dCreateImageFromStipple(n, m, stipple, ctxcanvas->canvas->back_opacity, ctxcanvas->canvas->foreground, ctxcanvas->canvas->background);
+  if (!wic_bitmap)
     return;
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, wic_bitmap);
   ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
 
-  d2dDestroyImage(bitmap);
+  d2dDestroyImage(wic_bitmap);
 }
 
 static void cdpattern(cdCtxCanvas *ctxcanvas, int n, int m, const long *pattern)
 {
-  IWICBitmap *bitmap = d2dCreateImageFromPattern(n, m, pattern);
-  if (!bitmap)
+  IWICBitmap *wic_bitmap = d2dCreateImageFromPattern(n, m, pattern);
+  if (!wic_bitmap)
     return;
 
   if (ctxcanvas->fillBrush)
     dummy_ID2D1Brush_Release(ctxcanvas->fillBrush);
-  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, bitmap);
+  ctxcanvas->fillBrush = d2dCreateImageBrush(ctxcanvas->d2d_canvas->target, wic_bitmap);
   ctxcanvas->fillBrushType = FILL_BRUSH_NORMAL;
 
-  d2dDestroyImage(bitmap);
+  d2dDestroyImage(wic_bitmap);
 }
 
 static int cdinteriorstyle(cdCtxCanvas* ctxcanvas, int style)
@@ -1186,8 +1363,8 @@ static void cdfputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, c
   dummy_D2D1_RECT_F destRect;
   dummy_D2D1_RECT_F srcRect;
 
-  IWICBitmap* bitmap = d2dCreateImageFromBufferRGB(width, height, red, green, blue, alpha);
-  if (!bitmap)
+  IWICBitmap* wic_bitmap = d2dCreateImageFromBufferRGB(width, height, red, green, blue, alpha);
+  if (!wic_bitmap)
     return;
 
   /* y is already inverted, but must be relative to the top-left corner */
@@ -1203,9 +1380,9 @@ static void cdfputimagerectrgba(cdCtxCanvas* ctxcanvas, int width, int height, c
   srcRect.right = type2float(xmax + 1);
   srcRect.bottom = type2float(height - 1 - ymin + 1);
 
-  d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
+  d2dBitBltImage(ctxcanvas->d2d_canvas->target, wic_bitmap, &destRect, &srcRect, ctxcanvas->interpolation_mode);
 
-  d2dDestroyImage(bitmap);
+  d2dDestroyImage(wic_bitmap);
 }
 
 static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *red,
@@ -1214,8 +1391,8 @@ static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, co
   dummy_D2D1_RECT_F destRect;
   dummy_D2D1_RECT_F srcRect;
 
-  IWICBitmap* bitmap = d2dCreateImageFromBufferRGB(width, height, red, green, blue, NULL);
-  if (!bitmap)
+  IWICBitmap* wic_bitmap = d2dCreateImageFromBufferRGB(width, height, red, green, blue, NULL);
+  if (!wic_bitmap)
     return;
 
   /* y is already inverted, but must be relative to the top-left corner */
@@ -1231,9 +1408,9 @@ static void cdfputimagerectrgb(cdCtxCanvas* ctxcanvas, int width, int height, co
   srcRect.right = type2float(xmax + 1);
   srcRect.bottom = type2float(height - 1 - ymin + 1);
 
-  d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
+  d2dBitBltImage(ctxcanvas->d2d_canvas->target, wic_bitmap, &destRect, &srcRect, ctxcanvas->interpolation_mode);
 
-  d2dDestroyImage(bitmap);
+  d2dDestroyImage(wic_bitmap);
 }
 
 static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, const unsigned char *index,
@@ -1242,8 +1419,8 @@ static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, co
   dummy_D2D1_RECT_F destRect;
   dummy_D2D1_RECT_F srcRect;
 
-  IWICBitmap* bitmap = d2dCreateImageFromBufferMap(width, height, index, colors);
-  if (!bitmap)
+  IWICBitmap* wic_bitmap = d2dCreateImageFromBufferMap(width, height, index, colors);
+  if (!wic_bitmap)
     return;
 
   /* y is already inverted, but must be relative to the top-left corner */
@@ -1259,9 +1436,9 @@ static void cdfputimagerectmap(cdCtxCanvas* ctxcanvas, int width, int height, co
   srcRect.right = type2float(xmax + 1);
   srcRect.bottom = type2float(height - 1 - ymin + 1);
 
-  d2dBitBltImage(ctxcanvas->d2d_canvas->target, bitmap, &destRect, &srcRect);
+  d2dBitBltImage(ctxcanvas->d2d_canvas->target, wic_bitmap, &destRect, &srcRect, ctxcanvas->interpolation_mode);
 
-  d2dDestroyImage(bitmap);
+  d2dDestroyImage(wic_bitmap);
 }
 
 static void cdputimagerectrgb(cdCtxCanvas *ctxcanvas, int iw, int ih, const unsigned char *r, const unsigned char *g, const unsigned char *b,
@@ -1314,6 +1491,7 @@ void cdwd2dInitTable(cdCanvas* canvas)
 
   canvas->cxCreateImage = cdcreateimage;
   canvas->cxGetImage = cdgetimage;
+/*  canvas->cxGetImageRGB = cdgetimagergb; NOT WORKING */
   canvas->cxPutImageRect = cdputimagerect;
   canvas->cxKillImage = cdkillimage;
 
@@ -1336,7 +1514,3 @@ void cdwd2dInitTable(cdCanvas* canvas)
   canvas->cxStipple = cdstipple;
   canvas->cxPattern = cdpattern;
 }
-
-//TODO
-// canvas->cxGetImageRGB = cdgetimagergb;  -- ver cdgetimage
-// IMGINTERP, PATTERNIMAGE
