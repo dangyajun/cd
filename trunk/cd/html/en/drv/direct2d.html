@@ -27,7 +27,13 @@
   like anti-aliasing, gradient filling and bezier lines.</p>
   <p>This driver still does not completely replace the GDI Windows base driver, because Direct2D does not have support for 
   XOR, EMF nor Printer. Also the applications need to adapt the rendering of text that is slightly different from GDI. It is know that 
-  Direct2D can be slower than GDI in some cases and faster in other cases.</p>
+  Direct2D can be slower than GDI in some cases (specially when drawing in 
+  integer coordinates) and faster in other cases.</p>
+<p>It has features similar to the GDI+ driver. But does not support the regular 
+metafile input/output. On the other hand it seems to be faster than GDI+. It is 
+similar to the OpenGL driver in the sense it was designed for display only. 
+Printer support exists since Windows 8 only, but it is complicated and not 
+implemented in CD.</p>
   <p>To be able to use the driver the function <strong>
   <font face="Courier">cdInitDirect2D </font> </strong>must be called. Notice 
   that this is NOT a context plus driver.</p>
