@@ -19,13 +19,13 @@
 
 static void *cddbuf_checkdata(lua_State * L, int param)
 {
-  return cdlua_checkcanvas(L, param);
+  return (void *)luaL_checkstring(L, param);
 }
 
 static cdluaContext cdluadbufctx = 
 {
   0,
-  "DIRECT2DDBUFFER",
+  "DIRECT2D_DBUFFER",
   cdContextDirect2DDBuffer,
   cddbuf_checkdata,
   NULL,
@@ -40,9 +40,24 @@ static void *cdimage_checkdata(lua_State *L, int param)
 static cdluaContext cdluaimagectx = 
 {
   0,
-  "DIRECT2DIMAGE",
+  "DIRECT2D_IMAGE",
   cdContextDirect2DImage,
   cdimage_checkdata,
+  NULL,
+  0
+};
+
+static void *cdimagergb_checkdata(lua_State *L, int param)
+{
+  return (void *)luaL_checkstring(L, param);
+}
+
+static cdluaContext cdluaimagergbctx = 
+{
+  0,
+  "DIRECT2D_IMAGERGB",
+  cdContextDirect2DImageRGB,
+  cdimagergb_checkdata,
   NULL,
   0
 };
@@ -63,7 +78,7 @@ static void *cdnativewindow_checkdata(lua_State *L, int param)
 static cdluaContext cdluanativewindowctx = 
 {
   0,
-  "DIRECT2DNATIVEWINDOW",
+  "DIRECT2D_NATIVEWINDOW",
   cdContextDirect2DNativeWindow,
   cdnativewindow_checkdata,
   NULL,
@@ -78,7 +93,7 @@ static void *cdprinter_checkdata(lua_State *L, int param)
 static cdluaContext cdluaprinterctx = 
 {
   0,
-  "DIRECT2DPRINTER",
+  "DIRECT2D_PRINTER",
   cdContextDirect2DPrinter,
   cdprinter_checkdata,
   NULL,
@@ -112,6 +127,7 @@ static int cdluadirect2d_open (lua_State *L)
   cdlua_register_lib(L, funcs);  /* leave cd table at the top of the stack */
   cdInitDirect2D();
   cdlua_addcontext(L, cdL, &cdluaimagectx);
+  cdlua_addcontext(L, cdL, &cdluaimagergbctx);
   cdlua_addcontext(L, cdL, &cdluanativewindowctx);
   cdlua_addcontext(L, cdL, &cdluaprinterctx);
   cdlua_addcontext(L, cdL, &cdluadbufctx);
