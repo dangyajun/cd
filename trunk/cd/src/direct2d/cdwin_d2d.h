@@ -68,6 +68,9 @@ struct _cdCtxCanvas
   cdImage* image_dbuffer; 
   cdCanvas* canvas_dbuffer;
   int kill_dbuffer;
+
+  /* Used by the IMAGERGB driver */
+  IWICBitmap* wic_bitmap;
 };
 
 cdCtxCanvas *cdwd2dCreateCanvas(cdCanvas* canvas, HWND hWnd, HDC hDc);

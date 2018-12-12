@@ -596,14 +596,6 @@ static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *red, unsigned c
 
   hr = dummy_ID2D1RenderTarget_EndDraw(target, NULL, NULL);
 
-  //hr = dummy_ID2D1RenderTarget_CreateBitmapFromWicBitmap(target, (IWICBitmapSource*)wic_bitmap, NULL, &bitmap);
-  //if (FAILED(hr))
-  //{
-  //  dummy_ID2D1RenderTarget_Release(target);
-  //  d2dDestroyImage(wic_bitmap);
-  //  return;
-  //}
-
   /* Copy from WicBitmap to RGB data - OK */
 
   wic_rect.X = 0;
@@ -612,7 +604,8 @@ static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *red, unsigned c
   wic_rect.Height = h;
 
   hr = IWICBitmap_Lock(wic_bitmap, &wic_rect, WICBitmapLockWrite, &bitmap_lock);
-  if (FAILED(hr)) {
+  if (FAILED(hr)) 
+  {
     dummy_ID2D1RenderTarget_Release(target);
     dummy_ID2D1Bitmap_Release(bitmap);
     d2dDestroyImage(wic_bitmap);
@@ -641,6 +634,8 @@ static void cdgetimagergb(cdCtxCanvas* ctxcanvas, unsigned char *red, unsigned c
   dummy_ID2D1Bitmap_Release(bitmap);
   dummy_ID2D1RenderTarget_Release(target);
   d2dDestroyImage(wic_bitmap);
+
+  d2dApplyTransform(ctxcanvas->d2d_canvas->target, &old_matrix);
 }
 
 static void cdputimagerect(cdCtxCanvas* ctxcanvas, cdCtxImage *ctximage, int x, int y, int xmin, int xmax, int ymin, int ymax)

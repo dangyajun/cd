@@ -13,12 +13,14 @@ extern "C" {
 
 
 cdContext* cdContextDirect2DNativeWindow(void); /* already double buffered */
-cdContext* cdContextDirect2DImage(void);  /* to draw on an image */
-cdContext* cdContextDirect2DDBuffer(void); /* Not necessary, used to test image drawing */
-cdContext* cdContextDirect2DPrinter(void);  /* NOT working */
+cdContext* cdContextDirect2DImage(void);        /* to draw on an image */
+cdContext* cdContextDirect2DImageRGB(void);     /* to draw on an RGBA image */
+cdContext* cdContextDirect2DDBuffer(void);      /* Not necessary, used to test image drawing */
+cdContext* cdContextDirect2DPrinter(void);      /* NOT working */
 
 #define CD_DIRECT2D_NATIVEWINDOW cdContextDirect2DNativeWindow()
 #define CD_DIRECT2D_IMAGE cdContextDirect2DImage()
+#define CD_DIRECT2D_IMAGERGB cdContextDirect2DImageRGB()
 #define CD_DIRECT2D_DBUFFER cdContextDirect2DDBuffer()
 #define CD_DIRECT2D_PRINTER cdContextDirect2DPrinter()
 

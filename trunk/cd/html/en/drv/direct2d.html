@@ -12,6 +12,9 @@
 .auto-style3 {
 	font-size: medium;
 }
+.style3 {
+	text-decoration: underline;
+}
 </style>
 </head>
 
@@ -57,6 +60,12 @@ implemented in CD.</p>
   to be called.</p>
 <h4>CD_DIRECT2D_IMAGE - Server Image Driver</h4>
 <p>Same as CD_IMAGE, uses a server image created by the native window driver.</p>
+<h4>CD_DIRECT2D_IMAGERGB - RGB Client Image Driver</h4>
+
+  <p>Similar to <a href="irgb.html">CD_IMAGERGB</a>, but accept only the size "wxh" 
+  as parameter. The image is always 32 bits per pixel RGBA and created 
+  internally. The data buffer can be obtained using the <strong>
+  cdCanvasGetImageRGB</strong> function.</p>
 
 <h3>Behavior of Functions</h3>
 <h4>Control</h4>
@@ -113,11 +122,12 @@ implemented in CD.</p>
 <h4>Client Images </h4>
 <ul>
   <li><a href="../func/client.html#cdGetImageRGB"><font face="Courier"><strong>
-  GetImageRGB</strong></font></a>: NOT supported.</li>
+  GetImageRGB</strong></font></a>: NOT supported. Except when using the 
+  CD_DIRECT2D_IMAGERGB driver.</li>
 </ul>
 <h4>Server Images </h4>
 <ul>
-  <li><strong><a href="../func/server.html#cdScrollArea">ScrollArea</a></strong>: 
+  <li><a href="../func/server.html#cdScrollArea">ScrollArea</a>: 
   NOT supported.</li>
 </ul>
 <h4>Exclusive Attributes</h4>
