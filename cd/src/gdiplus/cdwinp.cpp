@@ -521,7 +521,7 @@ static void cdstipple(cdCtxCanvas* ctxcanvas, int w, int h, const unsigned char 
       if (index[line_offset_index+i] != 0)
         bitmap_data[line_offset+i] = ctxcanvas->fg.GetValue();
       else
-        bitmap_data[line_offset+i] = ctxcanvas->bg.GetValue();
+        bitmap_data[line_offset+i] = ctxcanvas->bg.GetValue();   // already contains backopacity
     }
   }
 

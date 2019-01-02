@@ -103,72 +103,75 @@ static void setInteriorStyle(cdCtxCanvas *ctxcanvas, int interiorStyle, int hatc
     pptxSolidFill(ctxcanvas->presentation, red, green, blue, alpha);
     break;
   case CD_HATCH:
+    if (backopacity == CD_TRANSPARENT)
+      bAlpha = 0;
     pptxHatchLine(ctxcanvas->presentation, getHatchStyles(hatchStyle), red, green, blue, alpha, bRed, bGreen, bBlue, bAlpha);
     break;
   case CD_PATTERN:
   {
-                   int width, height;
-                   long *pattern = cdCanvasGetPattern(ctxcanvas->canvas, &width, &height);
-                   int plane_size = width*height;
-                   unsigned char* rgb = (unsigned char*)malloc(plane_size * 3);
-                   int lin, col;
+    int width, height;
+    long *pattern = cdCanvasGetPattern(ctxcanvas->canvas, &width, &height);
+    int plane_size = width*height;
+    unsigned char* rgba = (unsigned char*)malloc(plane_size * 4);
+    int lin, col;
 
-                   for (lin = 0; lin < width; lin++)
-                   {
-                     for (col = 0; col < height; col++)
-                     {
-                       int ind = ((height - 1 - lin)*width + col) * 3;
-                       int i = width*lin + col;
-                       rgb[ind + 0] = cdRed(pattern[i]);
-                       rgb[ind + 1] = cdGreen(pattern[i]);
-                       rgb[ind + 2] = cdBlue(pattern[i]);
-                     }
-                   }
+    for (lin = 0; lin < width; lin++)
+    {
+      for (col = 0; col < height; col++)
+      {
+        int ind = ((height - 1 - lin)*width + col) * 4;
+        int i = width*lin + col;
+        rgba[ind + 0] = cdRed(pattern[i]);
+        rgba[ind + 1] = cdGreen(pattern[i]);
+        rgba[ind + 2] = cdBlue(pattern[i]);
+        rgba[ind + 3] = cdAlpha(pattern[i]);
+      }
+    }
 
-                   pptxPattern(ctxcanvas->presentation, rgb, width, height);
+    pptxPattern(ctxcanvas->presentation, rgba, width, height);
 
-                   free(rgb);
-                   break;
+    free(rgba);
+    break;
   }
   case CD_STIPPLE:
   {
-                   int width, height;
-                   unsigned char *stipple = cdCanvasGetStipple(ctxcanvas->canvas, &width, &height);
-                   long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
-                   long background = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
-                   int lin, col;
-                   int plane_size = width*height;
-                   unsigned char* rgba = (unsigned char*)malloc(plane_size * 4);
+    int width, height;
+    unsigned char *stipple = cdCanvasGetStipple(ctxcanvas->canvas, &width, &height);
+    long foreground = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
+    long background = cdCanvasForeground(ctxcanvas->canvas, CD_QUERY);
+    int lin, col;
+    int plane_size = width*height;
+    unsigned char* rgba = (unsigned char*)malloc(plane_size * 4);
 
-                   for (lin = 0; lin < width; lin++)
-                   {
-                     for (col = 0; col < height; col++)
-                     {
-                       int ind = ((height - 1 - lin)*width + col) * 4;
-                       if (stipple[width*lin + col] == 0)
-                       {
-                         rgba[ind + 0] = cdRed(background);
-                         rgba[ind + 1] = cdGreen(background);
-                         rgba[ind + 2] = cdBlue(background);
-                         if (backopacity == CD_TRANSPARENT)
-                           rgba[ind + 3] = 0;
-                         else
-                           rgba[ind + 3] = 255;
-                       }
-                       else
-                       {
-                         rgba[ind + 0] = cdRed(foreground);
-                         rgba[ind + 1] = cdGreen(foreground);
-                         rgba[ind + 2] = cdBlue(foreground);
-                         rgba[ind + 3] = 255;
-                       }
-                     }
-                   }
+    for (lin = 0; lin < width; lin++)
+    {
+      for (col = 0; col < height; col++)
+      {
+        int ind = ((height - 1 - lin)*width + col) * 4;
+        if (stipple[width*lin + col] == 0)
+        {
+          rgba[ind + 0] = cdRed(background);
+          rgba[ind + 1] = cdGreen(background);
+          rgba[ind + 2] = cdBlue(background);
+          if (backopacity == CD_TRANSPARENT)
+            rgba[ind + 3] = 0;
+          else
+            rgba[ind + 3] = cdAlpha(background);
+        }
+        else
+        {
+          rgba[ind + 0] = cdRed(foreground);
+          rgba[ind + 1] = cdGreen(foreground);
+          rgba[ind + 2] = cdBlue(foreground);
+          rgba[ind + 3] = cdAlpha(foreground);
+        }
+      }
+    }
 
-                   pptxStipple(ctxcanvas->presentation, rgba, width, height);
+    pptxStipple(ctxcanvas->presentation, rgba, width, height);
 
-                   free(rgba);
-                   break;
+    free(rgba);
+    break;
   }
   default: /* CD_HOLLOW */
     pptxNoFill(ctxcanvas->presentation);
