@@ -79,7 +79,7 @@ void cdGetScreenSize(int *width, int *height, double *width_mm, double *height_m
 
 static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
 {
-#if GTK_CHECK_VERSION(3, 0, 0)
+#if GTK_CHECK_VERSION(3, 0, 0) && !defined(GDK_NULL)
 	cairo_t* cr;
 	cairo_surface_t* surface;
 
@@ -122,7 +122,7 @@ static cairo_t* cdcairoNativeCreateContext(cdCanvas* canvas, GdkWindow* window)
   return cr;
 #else
   (void)canvas;
-  return gdk_cairo_create(window);  /* this does not work for GTK3 because of the new paint stack they implemented */
+  return gdk_cairo_create(window);  /* this does not work for GTK3 because of the new paint stack they implemented, TODO: must test again */
 #endif
 }
 

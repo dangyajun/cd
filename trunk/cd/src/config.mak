@@ -89,6 +89,13 @@ ifdef USE_GDK
   # Cairo is always included
   SRC += $(SRCCAIRO) cairo/cdcaironative_gdk.c
   
+  #GDK_NULL = Yes
+  ifdef GDK_NULL 
+    #to completely remove X11 and Win32 calls
+    #works only for GTK3
+    DEFINES += GDK_NULL
+  endif
+  
   ifneq ($(findstring Win, $(TEC_SYSNAME)), )
     SRC += cairo/cdcairoprn_win32.c cairo/cdcairoemf.c
   else
