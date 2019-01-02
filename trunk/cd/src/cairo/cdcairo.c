@@ -327,7 +327,7 @@ static int uchar2rgba(cdCtxCanvas *ctxcanvas, int n, int i, int j, void* data, u
   else
   {
     if (ctxcanvas->canvas->back_opacity == CD_TRANSPARENT)
-      return -1;
+      return -1; /* fully transparent */
     else
     {
       cdDecodeColor(ctxcanvas->canvas->background, r, g, b);

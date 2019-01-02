@@ -29,7 +29,7 @@ void pptxBeginSector(pptxPresentation *presentation, const char *geomType, int x
 void pptxNoFill(pptxPresentation *presentation);
 void pptxSolidFill(pptxPresentation *presentation, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, unsigned char bRed, unsigned char bGreen, unsigned char bBlue, unsigned char bAlpha);
-void pptxPattern(pptxPresentation *presentation, const unsigned char *rgb_data, int width, int height);
+void pptxPattern(pptxPresentation *presentation, const unsigned char *rgba_data, int width, int height);
 void pptxStipple(pptxPresentation *presentation, const unsigned char *rgba_data, int width, int height);
 void pptxEndLine(pptxPresentation *presentation, int width, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha, const char* lineStyle, int nDashes, int *dashes);
 void pptxEndFill(pptxPresentation *presentation);

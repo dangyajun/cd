@@ -985,16 +985,16 @@ void pptxHatchLine(pptxPresentation *presentation, const char* style, unsigned c
     "                  </a:fgClr>\n"
     "                  <a:bgClr>\n"
     "                     <a:srgbClr val=\"%02X%02X%02X\">\n"
-    "                        <a:alpha val=\"0\"/>\n"
+    "                        <a:alpha val=\"%d\"/>\n"
     "                     </a:srgbClr>\n"
     "                  </a:bgClr>\n"
     "               </a:pattFill>\n"
   };
 
-  fprintf(presentation->slideFile, patt, style, red, green, blue, alphaPct, bRed, bGreen, bBlue);
+  fprintf(presentation->slideFile, patt, style, red, green, blue, alphaPct, bRed, bGreen, bBlue, bAlpha);
 }
 
-void pptxPattern(pptxPresentation *presentation, const unsigned char* rgb_data, int width, int height)
+void pptxPattern(pptxPresentation *presentation, const unsigned char* rgba_data, int width, int height)
 {
   const char *img =
   {/*012345678901234| - path style ident (15) */
@@ -1008,7 +1008,7 @@ void pptxPattern(pptxPresentation *presentation, const unsigned char* rgb_data, 
 
   sprintf(filename, "%s/"PPTX_IMAGE_FILE, presentation->baseDir, presentation->mediaNum);
 
-  lodepng_encode_file(filename, rgb_data, width, height, LCT_RGB, 8);
+  lodepng_encode_file(filename, rgba_data, width, height, LCT_RGBA, 8);
 
   fprintf(presentation->slideFile, img, presentation->imageId);
 
