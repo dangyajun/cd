@@ -35,7 +35,6 @@ cd $TEC_LUA_LIB
 
 Make_Lua_Link cdlua
 Make_Lua_Link cdluacontextplus
-Make_Lua_Link cdluacairo
 Make_Lua_Link cdluagl
 Make_Lua_Link cdluaim
 Make_Lua_Link cdluapdf
